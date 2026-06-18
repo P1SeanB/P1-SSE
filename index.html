@@ -8089,7 +8089,7 @@ function doIOSPrint() {
 
   <div class="q-section" id="q-notes-section" style="display:none;">
     <div class="q-section-title">Additional Information</div>
-    <div id="q-notes-content" style="font-size:12px;color:#444;line-height:1.6;white-space:pre-wrap;"></div>
+    <div id="q-notes-content" class="rte-doc" style="font-size:12px;color:#444;line-height:1.6;"></div>
   </div>
 
   <!-- Per-site monthly breakdown — only shown when site rates are entered -->
@@ -9561,7 +9561,7 @@ function generateSLAProposal() {
   if (notes) {
     html += '<div class="q-section">' +
       '<div class="q-section-title">Additional Information</div>' +
-      '<div style="font-size:12px;color:#444;line-height:1.6;white-space:pre-wrap;">'+notes.replace(/</g,'&lt;').replace(/\n/g,'<br>')+'</div>' +
+      '<div class="rte-doc" style="font-size:12px;color:#444;line-height:1.6;">'+notes+'</div>' +
     '</div>';
   }
 
@@ -9918,7 +9918,7 @@ function generateSLAPrint() {
   // ── Special Notes ──
   var notesSec = pmScopeRows ? (notes ? '§8' : '§7') : (notes ? '§7' : '§6');
   if (notes) {
-    html += '<div class="fa-section"><div class="fa-section-head"><span class="fa-section-num">'+notesSec+'</span><span class="fa-section-title">Special Terms &amp; Notes</span></div><p class="fa-body">'+notes+'</p></div>';
+    html += '<div class="fa-section"><div class="fa-section-head"><span class="fa-section-num">'+notesSec+'</span><span class="fa-section-title">Special Terms &amp; Notes</span></div><div class="fa-body rte-doc" style="margin-top:6px;">'+notes+'</div></div>';
   }
 
   // ── SIGNATURES ──
