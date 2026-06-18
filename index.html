@@ -1192,6 +1192,17 @@
     #sla-view { padding: 0 !important; }
   }
 </style>
+<style id="rte-styles">
+  .rte-wrap{width:100%;}
+  .rte-toolbar{display:flex;flex-wrap:wrap;gap:4px;align-items:center;padding:5px 6px;background:var(--surface2);border:1px solid var(--border);border-bottom:none;border-radius:var(--radius-sm) var(--radius-sm) 0 0;}
+  .rte-tb-btn{min-width:26px;height:26px;padding:0 6px;font-size:13px;line-height:1;color:var(--text);background:var(--surface);border:1px solid var(--border);border-radius:5px;cursor:pointer;font-family:'DM Sans',sans-serif;}
+  .rte-tb-btn:hover{background:var(--surface2);border-color:var(--text3);}
+  .rte-tb-btn:active{background:#e8620a;color:#fff;border-color:#e8620a;}
+  .rte-toolbar select{height:26px;font-size:12px;color:var(--text);background:var(--surface);border:1px solid var(--border);border-radius:5px;padding:0 4px;cursor:pointer;font-family:'DM Sans',sans-serif;outline:none;}
+  .rte{min-height:64px;width:100%;font-size:13px;font-family:'DM Sans',sans-serif;background:var(--surface2);border:1px solid var(--border);border-radius:0 0 var(--radius-sm) var(--radius-sm);padding:8px 10px;color:var(--text);outline:none;box-sizing:border-box;overflow-wrap:anywhere;}
+  .rte:focus{border-color:#e8620a;}
+  .rte:empty:before{content:attr(data-ph);color:var(--text3);pointer-events:none;}
+</style>
 </head>
 <body>
 <div id="p1-login-overlay">
@@ -1429,7 +1440,7 @@
     <!-- Notes -->
     <div class="card">
       <div class="card-title">Notes</div>
-      <textarea id="notes" rows="3" style="resize:none; font-size:13px; font-family:'DM Sans',sans-serif; width:100%; background:var(--surface2); border:1px solid var(--border); border-radius:var(--radius-sm); padding:8px 10px; color:var(--text); outline:none; overflow:hidden; box-sizing:border-box;" placeholder="Scope notes, special terms, follow-up items…" oninput="this.style.height='auto'; this.style.height=(this.value?this.scrollHeight:'')+'px'"></textarea>
+      <div class="rte-wrap"><div class="rte" contenteditable="true" data-ph="Scope notes, special terms, follow-up items…"></div><textarea id="notes" style="display:none"></textarea></div>
     </div>
 
     <!-- Monthly Costs -->
@@ -3091,7 +3102,7 @@
         </div>
         <div class="sla-field">
           <label>Special Terms / Notes</label>
-          <textarea id="sla-notes" rows="3" placeholder="Site-specific terms, exclusions, or follow-up items…"></textarea>
+          <div class="rte-wrap"><div class="rte" contenteditable="true" data-ph="Site-specific terms, exclusions, or follow-up items…"></div><textarea id="sla-notes" style="display:none"></textarea></div>
         </div>
       </div>
 
@@ -4552,7 +4563,7 @@ function clearForm() {
   $('estimatorName').value = '';
   $('estimateNum').value = '';
   $('estimatorEmail').value = '';
-  $('notes').value = ''; $('notes').style.height = '';
+  $('notes').value = ''; if(typeof rteRehydrate==='function')rteRehydrate();
   updateMonthlyCostsVisibility();
   updateFireFields();
 updateULCerts();
@@ -4899,7 +4910,7 @@ function copyQuote() {
     '--- SERVICES INCLUDED ---',
     ...serviceLines,
     '',
-    notesVal ? ('--- ADDITIONAL INFORMATION ---\n' + notesVal) : '',
+    notesVal ? ('--- ADDITIONAL INFORMATION ---\n' + rteText(notesVal)) : '',
     '',
     (matCostTotal > 0 || laborCostTotal > 0) ? '--- INSTALLATION LABOR/MATERIALS (ONE-TIME) ---' : '',
     ...(function(){
@@ -6528,6 +6539,7 @@ function restoreEstimateData(data) {
     qbBillingRestore(data.qbBilling || { same: true });
     qbUpdateBillingPreview();
   }
+  if (typeof rteRehydrate === 'function') rteRehydrate();
 }
 
 function updateTMSubSliderRange() {
@@ -7633,7 +7645,7 @@ function generateCustomerQuote() {
   const notesVal = document.getElementById('notes').value.trim();
   const notesSection = document.getElementById('q-notes-section');
   if (notesVal) {
-    document.getElementById('q-notes-content').textContent = notesVal;
+    document.getElementById('q-notes-content').innerHTML = notesVal;
     notesSection.style.display = '';
   } else {
     notesSection.style.display = 'none';
@@ -8795,6 +8807,7 @@ function slaClearNonCustomer() {
     var el = document.getElementById(id);
     if (el) el.value = '';
   });
+  if(typeof rteRehydrate==='function')rteRehydrate();
   // Reset computed total displays
   ['sla-bud-reg-amt','sla-bud-ah-amt','sla-bud-em-amt'].forEach(function(id) {
     var el = document.getElementById(id);
@@ -9905,7 +9918,7 @@ function generateSLAPrint() {
   // ── Special Notes ──
   var notesSec = pmScopeRows ? (notes ? '§8' : '§7') : (notes ? '§7' : '§6');
   if (notes) {
-    html += '<div class="fa-section"><div class="fa-section-head"><span class="fa-section-num">'+notesSec+'</span><span class="fa-section-title">Special Terms &amp; Notes</span></div><p class="fa-body">'+notes.replace(/\n/g,'<br>')+'</p></div>';
+    html += '<div class="fa-section"><div class="fa-section-head"><span class="fa-section-num">'+notesSec+'</span><span class="fa-section-title">Special Terms &amp; Notes</span></div><p class="fa-body">'+notes+'</p></div>';
   }
 
   // ── SIGNATURES ──
@@ -11315,5 +11328,86 @@ function qbRenderQuoteSites(){
 })();
 </script>
 
+<script>
+/* ── Rich-text engine for .rte-wrap fields ── */
+(function(){
+  var FONTS = [["'DM Sans', sans-serif","Default"],["Arial, sans-serif","Arial"],
+               ["'Times New Roman', serif","Times New Roman"],["Georgia, serif","Georgia"],
+               ["'Courier New', monospace","Courier New"]];
+  var SIZES = [["","Size"],["12px","12"],["14px","14"],["16px","16"],["18px","18"],["24px","24"]];
+
+  function wrapOf(el){ return el.closest ? el.closest('.rte-wrap') : null; }
+  function rteOf(el){ var w=wrapOf(el); return w?w.querySelector('.rte'):null; }
+  function taOf(rte){ var w=wrapOf(rte); return w?w.querySelector('textarea'):null; }
+  function isEmpty(rte){
+    var h=(rte.innerHTML||'').replace(/<br\s*\/?>/gi,'').replace(/&nbsp;/gi,'')
+          .replace(/<div>\s*<\/div>/gi,'').replace(/\s/g,'');
+    return h==='';
+  }
+  function sync(rte){ var ta=taOf(rte); if(ta) ta.value = isEmpty(rte) ? '' : rte.innerHTML; }
+
+  function buildToolbar(){
+    var t=document.createElement('div'); t.className='rte-toolbar';
+    [['bold','B','font-weight:700'],['italic','I','font-style:italic'],['underline','U','text-decoration:underline']]
+      .forEach(function(b){ var x=document.createElement('button'); x.type='button'; x.className='rte-tb-btn';
+        x.setAttribute('data-cmd',b[0]); x.title=b[0].charAt(0).toUpperCase()+b[0].slice(1);
+        x.innerHTML='<span style="'+b[2]+'">'+b[1]+'</span>'; t.appendChild(x); });
+    var fs=document.createElement('select'); fs.className='rte-font'; fs.title='Font';
+    FONTS.forEach(function(f){ var o=document.createElement('option'); o.value=f[0]; o.textContent=f[1]; fs.appendChild(o); });
+    t.appendChild(fs);
+    var ss=document.createElement('select'); ss.className='rte-size'; ss.title='Font size';
+    SIZES.forEach(function(s){ var o=document.createElement('option'); o.value=s[0]; o.textContent=s[1]; ss.appendChild(o); });
+    t.appendChild(ss);
+    return t;
+  }
+  function initToolbars(root){
+    (root||document).querySelectorAll('.rte-wrap').forEach(function(w){
+      if(!w.querySelector('.rte-toolbar')) w.insertBefore(buildToolbar(), w.firstChild);
+    });
+  }
+
+  function applySize(rte, px){
+    if(!px) return; rte.focus();
+    document.execCommand('fontSize', false, '7');
+    rte.querySelectorAll('font[size="7"]').forEach(function(f){ f.removeAttribute('size'); f.style.fontSize=px; });
+  }
+
+  document.addEventListener('mousedown', function(e){
+    var b=e.target.closest && e.target.closest('.rte-tb-btn'); if(!b) return;
+    e.preventDefault();                       // keep the text selection
+    var rte=rteOf(b); if(!rte) return; rte.focus();
+    document.execCommand(b.getAttribute('data-cmd'), false, null);
+    sync(rte);
+  });
+  document.addEventListener('change', function(e){
+    var s=e.target;
+    if(s.classList && s.classList.contains('rte-font')){
+      var r=rteOf(s); if(r){ r.focus(); document.execCommand('fontName', false, s.value); sync(r); s.selectedIndex=0; }
+    } else if(s.classList && s.classList.contains('rte-size')){
+      var r2=rteOf(s); if(r2){ applySize(r2, s.value); sync(r2); s.selectedIndex=0; }
+    }
+  });
+  document.addEventListener('input', function(e){
+    if(e.target.classList && e.target.classList.contains('rte')) sync(e.target);
+  });
+  document.addEventListener('blur', function(e){
+    if(e.target.classList && e.target.classList.contains('rte') && isEmpty(e.target)) e.target.innerHTML='';
+  }, true);
+
+  // Fill .rte boxes from their (hidden) textareas — call after restore/clear.
+  window.rteRehydrate = function(root){
+    (root||document).querySelectorAll('.rte-wrap').forEach(function(w){
+      var ta=w.querySelector('textarea'), rte=w.querySelector('.rte');
+      if(ta&&rte) rte.innerHTML = ta.value || '';
+    });
+  };
+  window.rteText = function(h){ var d=document.createElement('div'); d.innerHTML=h||'';
+    return (d.textContent||'').replace(/\u00a0/g,' ').trim(); };
+  window.rteInitToolbars = initToolbars;
+
+  if(document.readyState!=='loading'){ initToolbars(); }
+  else document.addEventListener('DOMContentLoaded', function(){ initToolbars(); });
+})();
+</script>
 </body>
 </html>
