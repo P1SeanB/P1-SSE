@@ -2631,7 +2631,7 @@
         <div class="sla-tier-grid">
           <div class="sla-tier-card" onclick="slaSelectTier(this)">
             <div class="sla-tier-head">
-              <div class="sla-tier-name">Essential Plan</div>
+              <div class="sla-tier-name">Essential</div>
               <div class="sla-tier-sub">Standard T&amp;M · 1, 2, or 4× PM</div>
             </div>
             <div class="sla-tier-body">
@@ -2644,26 +2644,26 @@
           </div>
           <div class="sla-tier-card active" onclick="slaSelectTier(this)">
             <div class="sla-tier-head">
-              <div class="sla-tier-name">Priority Plan</div>
+              <div class="sla-tier-name">Priority</div>
               <div class="sla-tier-sub">Priority T&amp;M · 1, 2, or 4× PM</div>
             </div>
             <div class="sla-tier-body">
               <div class="sla-tier-row"><span>PM visits</span><strong>1× per year</strong></div>
               <div class="sla-tier-row"><span>Response</span><strong>4–8 hr priority</strong></div>
-              <div class="sla-tier-row"><span>Labor rate</span><strong>Priority T&amp;M (+20%)</strong></div>
+              <div class="sla-tier-row"><span>Labor rate</span><strong>Priority T&amp;M</strong></div>
               <div class="sla-tier-row"><span>Parts</span><strong>At cost</strong></div>
               <div class="sla-tier-row"><span>Hosted server</span><strong>Add-on</strong></div>
             </div>
           </div>
           <div class="sla-tier-card" onclick="slaSelectTier(this)">
             <div class="sla-tier-head">
-              <div class="sla-tier-name">Premier Plan</div>
+              <div class="sla-tier-name">Premier</div>
               <div class="sla-tier-sub">Priority T&amp;M · 2 or 4× annual PM</div>
             </div>
             <div class="sla-tier-body">
               <div class="sla-tier-row"><span>PM visits</span><strong>2 or 4× per year</strong></div>
               <div class="sla-tier-row"><span>Response</span><strong>2–4 hr, 24/7</strong></div>
-              <div class="sla-tier-row"><span>Labor rate</span><strong>Priority T&amp;M (+30%)</strong></div>
+              <div class="sla-tier-row"><span>Labor rate</span><strong>Priority T&amp;M</strong></div>
               <div class="sla-tier-row"><span>Parts</span><strong>At cost</strong></div>
               <div class="sla-tier-row"><span>Hosted server</span><strong>Add-on</strong></div>
             </div>
@@ -2766,8 +2766,8 @@
         <div class="sla-rate-note">
           <strong>SLA Labor Rates (Dec 2025 – Nov 2026):</strong>
           &nbsp; <u>Essential:</u> Straight $177.44 · T&amp;H $219.87 · DT $266.03/hr
-          &nbsp;|&nbsp; <u>Priority (+20%):</u> Straight $212.93 · T&amp;H $263.84 · DT $319.24/hr
-          &nbsp;|&nbsp; <u>Premier (+30%):</u> Straight $230.67 · T&amp;H $285.83 · DT $345.84/hr
+          &nbsp;|&nbsp; <u>Priority:</u> Straight $212.93 · T&amp;H $230.67 · DT $266.03/hr
+          &nbsp;|&nbsp; <u>Premier:</u> Straight $230.67 · T&amp;H $263.84 · DT $266.03/hr
           &nbsp;|&nbsp; <u>PM visits (all tiers):</u> $177.44/hr
           &nbsp;|&nbsp; Min. trip: 4 hrs · Remote min.: 2 hrs
         </div>
@@ -6418,7 +6418,8 @@ function restoreEstimateData(data) {
   // Restore active tier
   if (data.slaTier) {
     document.querySelectorAll('.sla-tier-card').forEach(function(card) {
-      card.classList.toggle('active', card.querySelector('.sla-tier-name').textContent.trim() === data.slaTier);
+      var _cn = card.querySelector('.sla-tier-name').textContent.trim();
+      card.classList.toggle('active', _cn === data.slaTier || (data.slaTier && data.slaTier.indexOf(_cn) === 0));
     });
     var activeTC = document.querySelector('.sla-tier-card.active');
     if (activeTC && typeof slaSelectTier === 'function') slaSelectTier(activeTC);
@@ -6429,17 +6430,17 @@ function restoreEstimateData(data) {
                      'sla-resp-ah-triage','sla-resp-ah-onsite',
                      'sla-resp-em-triage','sla-resp-em-onsite'];
       var tierDefaults = {
-        'Essential Plan': {
+        'Essential': {
           'sla-resp-reg-triage':'Next business day', 'sla-resp-reg-onsite':'Best effort',
           'sla-resp-ah-triage':'Same day',           'sla-resp-ah-onsite':'Best effort',
           'sla-resp-em-triage':'Same day',           'sla-resp-em-onsite':'Best effort'
         },
-        'Priority Plan': {
+        'Priority': {
           'sla-resp-reg-triage':'4 hours',      'sla-resp-reg-onsite':'3 business days',
           'sla-resp-ah-triage':'4 hours',       'sla-resp-ah-onsite':'Next business day',
           'sla-resp-em-triage':'4 hours',       'sla-resp-em-onsite':'8 hours'
         },
-        'Premier Plan': {
+        'Premier': {
           'sla-resp-reg-triage':'2 hours',      'sla-resp-reg-onsite':'12 hours',
           'sla-resp-ah-triage':'2 hours',       'sla-resp-ah-onsite':'6 hours',
           'sla-resp-em-triage':'2 hours',       'sla-resp-em-onsite':'4 hours'
@@ -8691,11 +8692,11 @@ function slaSelectTier(card) {
 
   // Rate defaults per tier (auto-set when tier is selected):
   // Essential  → Straight $177.44 · T&H $219.87 · DT $266.03
-  // Priority   → Straight $212.93 · T&H $263.84 · DT $319.24  (+20%)
-  // Premier    → Straight $230.67 · T&H $285.83 · DT $345.84  (+30%)
+  // Priority   → Straight $212.93 · T&H $230.67 · DT $266.03
+  // Premier    → Straight $230.67 · T&H $263.84 · DT $266.03
   var regRate = isEssential ? '177.44' : isPremier ? '230.67' : '212.93';
-  var ahRate  = isEssential ? '219.87' : isPremier ? '285.83' : '263.84';
-  var emRate  = isEssential ? '266.03' : isPremier ? '345.84' : '319.24';
+  var ahRate  = isEssential ? '219.87' : isPremier ? '263.84' : '230.67';
+  var emRate  = isEssential ? '266.03' : isPremier ? '266.03' : '266.03';
 
   function setSelect(id, val) {
     var el = document.getElementById(id);
@@ -8837,7 +8838,7 @@ function slaClearNonCustomer() {
   var pmGrid = document.getElementById('sla-pm-grid');
   if (pmGrid) pmGrid.style.display = 'none';
   document.querySelectorAll('.sla-tier-card').forEach((c,i) => {
-    c.classList.toggle('active', i === 1); // default: Priority Plan
+    c.classList.toggle('active', i === 1); // default: Priority
   });
   document.querySelectorAll('.sla-pm-cb').forEach(cb => cb.checked = false);
   // Reapply Priority defaults (rates, PM visit options, and response-time dropdowns)
@@ -9305,7 +9306,7 @@ function generateSLAProposal() {
 
   // ── Tier detection ──
   var tierCard   = document.querySelector('.sla-tier-card.active');
-  var tierName   = tierCard ? tierCard.querySelector('.sla-tier-name').textContent.trim() : 'Priority Plan';
+  var tierName   = tierCard ? tierCard.querySelector('.sla-tier-name').textContent.trim() : 'Priority';
   var isEssential= tierName.toLowerCase().indexOf('essential') >= 0;
   var isPriority = tierName.toLowerCase().indexOf('priority')  >= 0;
   var isPremier  = tierName.toLowerCase().indexOf('premier')   >= 0;
@@ -9531,8 +9532,8 @@ function generateSLAProposal() {
   // T&M labor rate schedule — shown when no unscheduled labor budget hours are allocated
   if (parseDollar(regAmt) === 0 && parseDollar(ahAmt) === 0 && parseDollar(emAmt) === 0) {
     var tmR = isEssential ? {st:'$177.44', th:'$219.87', dt:'$266.03'}
-            : isPremier   ? {st:'$230.67', th:'$285.83', dt:'$345.84'}
-            :               {st:'$212.93', th:'$263.84', dt:'$319.24'};
+            : isPremier   ? {st:'$230.67', th:'$263.84', dt:'$266.03'}
+            :               {st:'$212.93', th:'$230.67', dt:'$266.03'};
     html += '<div class="q-section">' +
       '<div class="q-section-title">Time &amp; Materials Labor Rates — '+tierName+'</div>' +
       '<div style="font-size:11px;color:#666;margin-bottom:6px;">No pre-allocated unscheduled service &amp; repair labor budget. Unscheduled work is billed on a time-and-materials basis at the rates below.</div>' +
@@ -9644,7 +9645,7 @@ function generateSLAPrint() {
 
   // ── Tier detection ──
   var tierCard   = document.querySelector('.sla-tier-card.active');
-  var tierName   = tierCard ? tierCard.querySelector('.sla-tier-name').textContent.trim() : 'Priority Plan';
+  var tierName   = tierCard ? tierCard.querySelector('.sla-tier-name').textContent.trim() : 'Priority';
   var isEssential= tierName.toLowerCase().indexOf('essential') >= 0;
   var isPriority = tierName.toLowerCase().indexOf('priority')  >= 0;
   var isPremier  = tierName.toLowerCase().indexOf('premier')   >= 0;
@@ -9808,8 +9809,8 @@ function generateSLAPrint() {
 
   // ── T&M rate schedule (shown when no unscheduled labor budget hours are allocated) ──
   var tmRates = isEssential ? {st:'$177.44', th:'$219.87', dt:'$266.03'}
-              : isPremier   ? {st:'$230.67', th:'$285.83', dt:'$345.84'}
-              :               {st:'$212.93', th:'$263.84', dt:'$319.24'};
+              : isPremier   ? {st:'$230.67', th:'$263.84', dt:'$266.03'}
+              :               {st:'$212.93', th:'$230.67', dt:'$266.03'};
   var tmRateTable = (laborBudget === 0) ?
     '<p class="fa-body" style="margin-top:8px;">No pre-allocated unscheduled service &amp; repair labor budget has been established under this Agreement. Unscheduled service &amp; repair labor will be billed on a time-and-materials basis at Company\'s then-current published rates for the <strong>'+tierName+'</strong>, as set forth below:</p>' +
     '<table class="fa-budget-table"><thead><tr><th style="width:60%">Unscheduled Labor Rate — '+tierName+'</th><th style="text-align:right;">Rate per Hour</th></tr></thead><tbody>' +
