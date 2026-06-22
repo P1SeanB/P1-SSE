@@ -11398,7 +11398,17 @@ function qbRenderQuoteSites(){
   window.rteRehydrate = function(root){
     (root||document).querySelectorAll('.rte-wrap').forEach(function(w){
       var ta=w.querySelector('textarea'), rte=w.querySelector('.rte');
-      if(ta&&rte) rte.innerHTML = ta.value || '';
+      if(!ta||!rte) return;
+      var val = ta.value || '';
+      // Older estimates saved notes as plain text with real line breaks; the editor
+      // stores HTML, where bare newlines are ignored. If the value has no HTML tags,
+      // treat it as legacy plain text and convert its line breaks so they survive.
+      if(val && !/<(div|p|br|b|i|u|font|span|strong|em|ul|ol|li|a)\b/i.test(val)){
+        val = val.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+                 .replace(/\r\n?|\n/g,'<br>');
+      }
+      rte.innerHTML = val;
+      sync(rte); // push the normalized HTML back so generated documents match the display
     });
   };
   window.rteText = function(h){ var d=document.createElement('div'); d.innerHTML=h||'';
