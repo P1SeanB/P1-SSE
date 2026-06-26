@@ -585,6 +585,7 @@
     gap: 8px;
     margin-bottom: 16px;
   }
+  #sla-view .sla-print-bar { position: sticky; top: 0; z-index: 30; align-items: center; background: #fff; padding: 8px 4px; margin-bottom: 10px; border-bottom: 1px solid #eee; }
   .sla-btn-print {
     font-family: 'DM Sans', sans-serif;
     font-size: 12px;
@@ -1203,6 +1204,50 @@
   .rte:focus{border-color:#e8620a;}
   .rte:empty:before{content:attr(data-ph);color:var(--text3);pointer-events:none;}
 </style>
+<style id="slaops-css">
+  .slaops-sel{width:100%;font-size:13px;font-family:'DM Sans',sans-serif;padding:7px 9px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface2);color:var(--text);outline:none;box-sizing:border-box;}
+  .slaops-sel:focus{border-color:#e8620a;}
+  .sla-ms{display:flex;flex-wrap:wrap;gap:6px;margin-top:3px;}
+  .sla-ms label{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--text);background:var(--surface2);border:1px solid var(--border);border-radius:999px;padding:5px 11px;cursor:pointer;user-select:none;}
+  .sla-ms label:hover{border-color:var(--text3);}
+  .sla-ms input:checked + span{font-weight:600;color:#e8620a;}
+  .sla-ms input{accent-color:#e8620a;margin:0;}
+  .slaops-sub{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;margin-top:8px;}
+  .slaops-btn{margin-left:auto;background:#e8620a;color:#fff;border:none;border-radius:var(--radius-sm);padding:6px 12px;font-size:11px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;}
+  .slaops-btn:hover{background:#cf560a;}
+  .slaops-module .sla-section-title:before{content:'';}
+  .slapm-sys{margin-bottom:12px;}
+  .slapm-sys-name{font-size:11px;font-weight:700;color:#e8620a;text-transform:uppercase;letter-spacing:.04em;margin-bottom:5px;}
+  .sla-co-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;margin-bottom:8px;}
+  .sla-co-card label{display:block;font-size:9px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--text3);margin-bottom:3px;}
+  .sla-co-card input,.sla-co-card select{width:100%;font-size:12px;font-family:'DM Sans',sans-serif;padding:6px 8px;border:1px solid var(--border);border-radius:6px;background:#fff;color:var(--text);box-sizing:border-box;outline:none;}
+  .sla-co-card input:focus,.sla-co-card select:focus{border-color:#e8620a;}
+  .sla-co-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px;}
+  .sla-co-grid.g4{grid-template-columns:1fr 1fr 1fr 1fr;}
+  .sla-co-amt{font-family:'DM Mono',monospace;font-size:14px;font-weight:600;color:#1a6b4a;padding:5px 0;}
+  .sla-co-head{display:flex;gap:8px;align-items:center;margin-bottom:8px;}
+  .sla-co-rm{background:transparent;border:1px solid var(--border);border-radius:6px;color:#b33;width:28px;height:28px;cursor:pointer;font-size:16px;flex:0 0 auto;line-height:1;}
+  .sla-co-incl{flex:0 0 auto;width:auto!important;font-size:11px!important;padding:6px 8px;border:1px solid var(--border);border-radius:6px;background:#fff;}
+  .sla-co-add{margin-top:8px;background:transparent;border:1px dashed var(--border);border-radius:var(--radius-sm);padding:7px 14px;font-size:12px;color:var(--text2);cursor:pointer;font-family:'DM Sans',sans-serif;width:100%;}
+  .sla-co-add:hover{border-color:#e8620a;color:#e8620a;}
+  .sla-dd{position:relative;}
+  .sla-dd-btn{width:100%;text-align:left;font-size:13px;font-family:'DM Sans',sans-serif;padding:7px 9px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface2);color:var(--text);cursor:pointer;display:flex;justify-content:space-between;align-items:center;box-sizing:border-box;}
+  .sla-dd-btn:after{content:'\25BE';color:var(--text3);font-size:10px;margin-left:8px;}
+  .sla-dd.open .sla-dd-btn{border-color:#e8620a;}
+  .sla-dd-ph{color:var(--text3);}
+  .sla-dd-panel{display:none;position:absolute;z-index:50;top:calc(100% + 4px);left:0;right:0;background:#fff;border:1px solid var(--border);border-radius:var(--radius-sm);box-shadow:0 8px 24px rgba(0,0,0,0.14);padding:6px;max-height:280px;overflow:auto;}
+  .sla-dd.open .sla-dd-panel{display:block;}
+  .sla-ms-list{display:flex;flex-direction:column;gap:1px;}
+  .sla-ms-list label{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text);padding:5px 7px;border-radius:6px;cursor:pointer;}
+  .sla-ms-list label:hover{background:var(--surface2);}
+  .sla-ms-list input{accent-color:#e8620a;margin:0;flex:0 0 auto;}
+  .sla-dd-opt{position:relative;font-size:12px;color:var(--text);padding:6px 8px;border-radius:6px;cursor:pointer;}
+  .sla-dd-opt:hover{background:var(--surface2);}
+  .sla-dd-opt.sel{background:#fff0e8;color:#e8620a;font-weight:600;}
+  .sla-dd-tip{display:none;position:absolute;right:calc(100% + 8px);left:auto;top:0;width:230px;background:#1c1c1c;color:#fff;font-size:11px;font-weight:400;line-height:1.45;padding:8px 10px;border-radius:6px;box-shadow:0 6px 18px rgba(0,0,0,0.28);z-index:60;}
+  .sla-dd-opt:hover .sla-dd-tip{display:block;}
+  @media(max-width:640px){.sla-dd-tip{left:0;right:auto;top:calc(100% + 2px);width:100%;}}
+</style>
 </head>
 <body>
 <div id="p1-login-overlay">
@@ -1251,7 +1296,7 @@
     </div>
   </div>
   <div class="header-right">
-    <div style="display:flex;align-items:center;gap:16px;margin-right:12px;padding-right:12px;border-right:1px solid rgba(255,255,255,0.15);">
+    <div id="h-rev-sse" style="display:flex;align-items:center;gap:16px;margin-right:12px;padding-right:12px;border-right:1px solid rgba(255,255,255,0.15);">
       <div id="h-rmr-wrap" style="display:flex;align-items:center;gap:16px;">
         <div style="text-align:right;">
           <div style="font-size:9px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.4);">Recommended RMR</div>
@@ -1265,6 +1310,26 @@
       <div id="h-onetime-wrap" style="display:none;text-align:right;padding-left:16px;border-left:1px solid rgba(255,255,255,0.15);">
         <div style="font-size:9px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.4);">One-Time Total</div>
         <div style="font-family:'DM Mono',monospace;font-size:16px;font-weight:600;color:#fff;line-height:1.2;" id="h-onetime">—</div>
+      </div>
+    </div>
+    <div id="h-rev-mc" style="display:none;align-items:center;gap:16px;margin-right:12px;padding-right:12px;border-right:1px solid rgba(255,255,255,0.15);">
+      <div style="text-align:right;">
+        <div style="font-size:9px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.4);">Monitoring RMR</div>
+        <div style="font-family:'DM Mono',monospace;font-size:16px;font-weight:600;color:#e8620a;line-height:1.2;" id="h-mc-rmr">&mdash;</div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-size:9px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.4);">Annual Revenue</div>
+        <div style="font-family:'DM Mono',monospace;font-size:16px;font-weight:600;color:rgba(255,255,255,0.75);line-height:1.2;" id="h-mc-annrev">&mdash;</div>
+      </div>
+    </div>
+    <div id="h-rev-sla" style="display:none;align-items:center;gap:16px;margin-right:12px;padding-right:12px;border-right:1px solid rgba(255,255,255,0.15);">
+      <div style="text-align:right;">
+        <div style="font-size:9px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.4);">SLA Rate</div>
+        <div style="font-family:'DM Mono',monospace;font-size:16px;font-weight:600;color:#e8620a;line-height:1.2;" id="sla-rt-freq">&mdash;</div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-size:9px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.4);">Annual Total</div>
+        <div style="font-family:'DM Mono',monospace;font-size:16px;font-weight:600;color:rgba(255,255,255,0.75);line-height:1.2;" id="sla-rt-annual">&mdash;</div>
       </div>
     </div>
     <div class="view-toggle" id="view-toggle">
@@ -2682,6 +2747,67 @@
         </div>
       </div>
 
+      <!-- 3b. OPERATIONAL REQUIREMENTS (Phase 1 configurator) -->
+      <div class="sla-section" id="slaops-sec-opreq">
+        <div class="sla-section-head">
+          <div class="sla-section-num">+</div>
+          <div class="sla-section-title">Operational Requirements</div>
+          <button type="button" class="slaops-btn" onclick="slaLoadSanBruno()">Load San&nbsp;Bruno defaults</button>
+        </div>
+        <div class="sla-grid3" style="margin-bottom:10px;">
+          <div class="sla-field"><label>Industry Type</label><select id="slaops-industry" class="slaops-sel" data-opts="industry"></select></div>
+          <div class="sla-field"><label>Operational Criticality</label><select id="slaops-criticality" class="slaops-sel" data-opts="criticality"></select></div>
+          <div class="sla-field"><label>Primary PM Objective</label><div class="sla-dd" data-single="1"><button type="button" class="sla-dd-btn" data-for="slaops-pmobjective"><span class="sla-dd-ph">— Select —</span></button><input type="hidden" id="slaops-pmobjective"><div class="sla-dd-panel" style="overflow:visible;"><div class="sla-dd-opts" id="slaops-pmobjective-opts"></div></div></div></div>
+        </div>
+        <div class="sla-field"><label>Operational Requirement &mdash; select all that apply</label><div class="sla-dd" data-ms="1"><button type="button" class="sla-dd-btn" data-for="slaops-opreq"><span class="sla-dd-ph">Select all that apply…</span></button><div class="sla-dd-panel"><div class="sla-ms-list" id="slaops-opreq" data-opts="opReq"></div></div></div></div>
+      </div>
+
+      <!-- Scheduled Meeting Support (conditional) -->
+      <div class="sla-section slaops-module" id="slaops-sec-meeting" style="display:none;">
+        <div class="sla-section-head"><div class="sla-section-num">+</div><div class="sla-section-title">Scheduled Meeting Support</div></div>
+        <div class="sla-grid3" style="margin-bottom:10px;">
+          <div class="sla-field" style="grid-column:span 2;"><label>Include Scheduled Meeting Support?</label><select id="slaops-meeting-include" class="slaops-sel" data-opts="meetingInclude"></select></div>
+          <div class="sla-field"><label>Meeting Schedule Source</label><select id="slaops-meeting-source" class="slaops-sel" data-opts="scheduleSource"></select></div>
+        </div>
+        <div class="sla-field" style="margin-bottom:10px;"><label>Meeting Types Covered</label><div class="sla-dd" data-ms="1"><button type="button" class="sla-dd-btn" data-for="slaops-meeting-types"><span class="sla-dd-ph">Select all that apply…</span></button><div class="sla-dd-panel"><div class="sla-ms-list" id="slaops-meeting-types" data-opts="meetingTypes"></div></div></div></div>
+        <div class="sla-grid3" style="margin-bottom:10px;">
+          <div class="sla-field"><label>Meeting Frequency</label><select id="slaops-meeting-freq" class="slaops-sel" data-opts="frequency"></select></div>
+          <div class="sla-field"><label>Estimated Duration</label><select id="slaops-meeting-duration" class="slaops-sel" data-opts="duration"></select></div>
+          <div class="sla-field"><label>Support Window</label><select id="slaops-meeting-window" class="slaops-sel" data-opts="supportWindow"></select></div>
+        </div>
+        <div class="sla-grid3" style="margin-bottom:10px;">
+          <div class="sla-field"><label>Remote Response (during meetings)</label><select id="slaops-meeting-remoteresp" class="slaops-sel" data-opts="remoteResp"></select></div>
+          <div class="sla-field"><label>Onsite Dispatch (during meetings)</label><select id="slaops-meeting-onsite" class="slaops-sel" data-opts="onsiteDispatch"></select></div>
+          <div class="sla-field"><label>Remote Hands Available?</label><select id="slaops-meeting-remotehands" class="slaops-sel" data-opts="remoteHands"></select></div>
+        </div>
+        <div class="sla-field"><label>Remote Support Method</label><div class="sla-dd" data-ms="1"><button type="button" class="sla-dd-btn" data-for="slaops-meeting-method"><span class="sla-dd-ph">Select all that apply…</span></button><div class="sla-dd-panel"><div class="sla-ms-list" id="slaops-meeting-method" data-opts="remoteMethod"></div></div></div></div>
+      </div>
+
+      <!-- Customer Workflow (conditional) -->
+      <div class="sla-section slaops-module" id="slaops-sec-workflow" style="display:none;">
+        <div class="sla-section-head"><div class="sla-section-num">+</div><div class="sla-section-title">Customer Workflow</div></div>
+        <div class="sla-grid3" style="margin-bottom:10px;">
+          <div class="sla-field"><label>Meeting Setup Performed By</label><select id="slaops-wf-setup" class="slaops-sel" data-opts="setupBy"></select></div>
+          <div class="sla-field"><label>Initial System Check By</label><select id="slaops-wf-check" class="slaops-sel" data-opts="checkBy"></select></div>
+          <div class="sla-field"><label>Point 1 Role</label><select id="slaops-wf-role" class="slaops-sel" data-opts="p1Role"></select></div>
+        </div>
+        <div class="sla-field"><label>Customer Responsibilities</label><div class="sla-dd" data-ms="1"><button type="button" class="sla-dd-btn" data-for="slaops-custresp"><span class="sla-dd-ph">Select all that apply…</span></button><div class="sla-dd-panel"><div class="sla-ms-list" id="slaops-custresp" data-opts="custResp"></div></div></div></div>
+      </div>
+
+      <!-- Hot Spare / Material Strategy -->
+      <div class="sla-section" id="slaops-sec-hotspare">
+        <div class="sla-section-head"><div class="sla-section-num">+</div><div class="sla-section-title">Customer-Owned Hot Spare Inventory Program</div></div>
+        <div class="sla-field"><label>Material Strategy</label><select id="slaops-material" class="slaops-sel" data-opts="materialStrategy"></select></div>
+        <div class="slaops-sub" id="slaops-hotspare-detail" style="display:none;">
+          <div class="sla-grid3">
+            <div class="sla-field"><label>Inventory Audit Frequency</label><select id="slaops-audit" class="slaops-sel" data-opts="auditFreq"></select></div>
+            <div class="sla-field" style="grid-column:span 2;"><label>&nbsp;</label>
+              <div class="sla-dd" data-ms="1"><button type="button" class="sla-dd-btn" data-for="slaops-hotspare-opts"><span class="sla-dd-ph">Select all that apply…</span></button><div class="sla-dd-panel"><div class="sla-ms-list" id="slaops-hotspare-opts" data-opts="hotSpareOpts"></div></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- 4. RMR / PRICING -->
       <div class="sla-section">
         <div class="sla-section-head">
@@ -2866,6 +2992,15 @@
         </div><!-- /sla-pm-grid -->
       </div>
 
+      <!-- 5b. PM BUILDER -->
+      <div class="sla-section" id="slapm-sec">
+        <div class="sla-section-head"><div class="sla-section-num">+</div><div class="sla-section-title">PM Builder &mdash; Manufacturers &amp; Tasks</div></div>
+        <div style="font-size:11px;color:var(--text3);margin-bottom:10px;line-height:1.5;">Pick the manufacturers for each covered system. The equipment, quarterly tasks, and annual manufacturer-recommended tasks are written into the proposal automatically. Driven by <strong>Systems Covered</strong> (section 2).</div>
+        <div id="slapm-empty" style="font-size:12px;color:var(--text3);padding:6px 0;">Select one or more systems in Systems Covered to choose manufacturers.</div>
+        <div id="slapm-systems"></div>
+        <label style="display:inline-flex;align-items:center;gap:8px;font-size:12px;color:var(--text);margin-top:10px;cursor:pointer;"><input type="checkbox" id="slapm-annual" checked style="accent-color:#e8620a;"> Include annual manufacturer-recommended services in the proposal</label>
+      </div>
+
       <!-- 6. RESPONSE TIME SLA -->
       <div class="sla-section">
         <div class="sla-section-head">
@@ -2888,7 +3023,7 @@
             <tr>
               <td><span class="sla-badge sla-badge-green">Regular Time</span></td>
               <td>
-                <select id="sla-resp-reg-triage" class="sla-resp-select" onchange="slaUpdateRespCustom()">
+                <select id="sla-resp-reg-triage" class="sla-resp-select" onchange="slaUpdateRespCustom()"><option value="15 minutes">15 minutes</option><option value="30 minutes">30 minutes</option><option value="45 minutes">45 minutes</option>
                   <option value="1 hour">1 hour</option>
                   <option value="2 hours">2 hours</option>
                   <option value="4 hours" selected>4 hours</option>
@@ -2922,7 +3057,7 @@
             <tr>
               <td><span class="sla-badge sla-badge-amber">After Hours</span></td>
               <td>
-                <select id="sla-resp-ah-triage" class="sla-resp-select" onchange="slaUpdateRespCustom()">
+                <select id="sla-resp-ah-triage" class="sla-resp-select" onchange="slaUpdateRespCustom()"><option value="15 minutes">15 minutes</option><option value="30 minutes">30 minutes</option><option value="45 minutes">45 minutes</option>
                   <option value="1 hour">1 hour</option>
                   <option value="2 hours">2 hours</option>
                   <option value="4 hours" selected>4 hours</option>
@@ -2958,7 +3093,7 @@
             <tr>
               <td><span class="sla-badge sla-badge-red">Emergency</span></td>
               <td>
-                <select id="sla-resp-em-triage" class="sla-resp-select" onchange="slaUpdateRespCustom()">
+                <select id="sla-resp-em-triage" class="sla-resp-select" onchange="slaUpdateRespCustom()"><option value="15 minutes">15 minutes</option><option value="30 minutes">30 minutes</option><option value="45 minutes">45 minutes</option>
                   <option value="1 hour">1 hour</option>
                   <option value="2 hours">2 hours</option>
                   <option value="4 hours" selected>4 hours</option>
@@ -2991,6 +3126,12 @@
             </tr>
           </tbody>
         </table>
+        <div style="margin-top:12px;">
+          <div style="font-size:10px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#e8620a;margin-bottom:6px;">Custom Call-Outs</div>
+          <div style="font-size:11px;color:var(--text3);margin-bottom:8px;line-height:1.5;">Add named response commitments outside the standard tiers (meeting support, lockdown response, etc.). Rate &times; hours is spread into the SLA rate and billing frequency, and each prints on the proposal as its own response and budget line.</div>
+          <div id="sla-co-list"></div>
+          <button type="button" class="sla-co-add" onclick="slaCoAdd()">+ Add custom call-out</button>
+        </div>
       </div>
 
       <!-- 7. EXCLUSIONS -->
@@ -5994,6 +6135,11 @@ function gatherEstimateData() {
     if (el) data.slaSelects[id] = el.value;
   });
 
+  // Operational configurator (Phase 1)
+  if (typeof slaOpsGather === 'function') data.slaOps = slaOpsGather();
+  if (typeof slaPmGather === 'function') data.slaPm = slaPmGather();
+  if (typeof slaCoGather === 'function') data.slaCallouts = slaCoGather();
+
   // Active tier
   var activeTierCard = document.querySelector('.sla-tier-card.active');
   data.slaTier = activeTierCard ? activeTierCard.querySelector('.sla-tier-name').textContent.trim() : '';
@@ -6468,6 +6614,12 @@ function restoreEstimateData(data) {
     }
   }
   // Restore active systems + PM blocks
+  if (data.slaOps && typeof slaOpsRestore === 'function') slaOpsRestore(data.slaOps);
+  if (data.slaPm && typeof slaPmRestore === 'function') slaPmRestore(data.slaPm);
+  if (data.slaCallouts && typeof slaCoRestore === 'function') slaCoRestore(data.slaCallouts);
+  if (window.slaRevealAll) setTimeout(window.slaRevealAll, 30);
+  if (typeof slaUpdateRunningTotal === 'function') setTimeout(slaUpdateRunningTotal, 50);
+
   if (data.slaSystems && data.slaSystems.length > 0) {
     data.slaSystems.forEach(function(sys) {
       var card = document.querySelector('.sla-sys-card[data-sys="'+sys+'"]');
@@ -7988,6 +8140,14 @@ function doIOSPrint() {
     .q-rmr-box { padding: 8px 14px !important; margin: 6px 0 !important; }
     .q-rmr-value { font-size: 20px !important; }
     #q-mat-box { margin: 8px 0 !important; padding: 8px 14px !important; }
+    /* Keep a section header with its content. Short sections stay whole so a heading
+       can't be stranded at the bottom of a page; long sections may flow across pages. */
+    .q-section { break-inside: avoid; page-break-inside: avoid; }
+    .q-flow { break-inside: auto; page-break-inside: auto; }
+    .q-section-title { break-after: avoid; page-break-after: avoid; }
+    .q-section-title + * { break-before: avoid; page-break-before: avoid; }
+    .q-service-row { break-inside: avoid; page-break-inside: avoid; }
+    .pm-keep { break-inside: avoid; page-break-inside: avoid; }
   }
   #customer-quote-overlay {
     display: none;
@@ -8194,10 +8354,32 @@ function switchView(view) {
     tabSSE.classList.add('active');
     setHdr(true);
   }
+  var hRevSse = document.getElementById('h-rev-sse');
+  var hRevMc  = document.getElementById('h-rev-mc');
+  var hRevSla = document.getElementById('h-rev-sla');
+  if (hRevSse) hRevSse.style.display = (view==='sse') ? 'flex' : 'none';
+  if (hRevMc)  hRevMc.style.display  = (view==='mc')  ? 'flex' : 'none';
+  if (hRevSla) hRevSla.style.display = (view==='sla') ? 'flex' : 'none';
+  if (view==='mc'  && typeof mcUpdateHeaderRevenue==='function') mcUpdateHeaderRevenue();
+  if (view==='sla' && typeof slaUpdateRunningTotal==='function') slaUpdateRunningTotal();
 }
 
 // Tracks current frequency and the base monthly value
 var _slaFreqState = { freq: 'monthly', monthlyBase: 0 };
+
+function slaUpdateRunningTotal() {
+  var freqEl = document.getElementById('sla-rt-freq');
+  var annEl  = document.getElementById('sla-rt-annual');
+  if (!freqEl || !annEl) return;
+  var input = document.getElementById('sla-rmr-monthly');
+  var disp  = input ? (parseFloat((input.value || '').replace(/[^0-9.]/g,'')) || 0) : 0;
+  var freq  = (_slaFreqState && _slaFreqState.freq) || 'monthly';
+  var annual = freq === 'quarterly' ? disp * 4 : freq === 'annual' ? disp : disp * 12;
+  var per    = freq === 'quarterly' ? '/ qtr' : freq === 'annual' ? '/ yr' : '/ mo';
+  function f(n){ return '$' + (n||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+  freqEl.textContent = disp   > 0 ? (f(disp) + '  ' + per) : '\u2014';
+  annEl.textContent  = annual > 0 ? f(annual) : '\u2014';
+}
 
 function slaSetFreq(newFreq) {
   var input     = document.getElementById('sla-rmr-monthly');
@@ -8257,6 +8439,7 @@ function slaSetFreq(newFreq) {
   if (rateInput && rateInput.style.color === 'var(--green)') {
     slaBudgetCalc();
   }
+  if (typeof slaUpdateRunningTotal === 'function') slaUpdateRunningTotal();
 }
 
 function slaBillingCycleChanged() {
@@ -8277,6 +8460,7 @@ function slaRateInput() {
   if (freq === 'monthly')   _slaFreqState.monthlyBase = val;
   if (freq === 'quarterly') _slaFreqState.monthlyBase = val / 3;
   if (freq === 'annual')    _slaFreqState.monthlyBase = val / 12;
+  if (typeof slaUpdateRunningTotal === 'function') slaUpdateRunningTotal();
 }
 
 // ── SLA RATE CONSTANTS (Dec 2025–Nov 2026) ──
@@ -8346,7 +8530,7 @@ function slaCalcSLARate(regTotal, ahTotal, emTotal) {
   var matEl  = document.getElementById('sla-bud-mat-amt');
   var matVal = matEl ? (parseFloat(matEl.value.replace(/[^0-9.]/g,'')) || 0) : 0;
 
-  var annualTotal = pmVal + (regTotal || 0) + (ahTotal || 0) + (emTotal || 0) + matVal;
+  var annualTotal = pmVal + (regTotal || 0) + (ahTotal || 0) + (emTotal || 0) + matVal + (typeof slaCalloutTotal==='function'?slaCalloutTotal():0);
   if (annualTotal <= 0) return;
 
   // Convert annual total to monthly base, then display per selected frequency
@@ -8370,6 +8554,7 @@ function slaCalcSLARate(regTotal, ahTotal, emTotal) {
     var freqLabel = freq === 'monthly' ? 'per month' : freq === 'quarterly' ? 'per quarter' : 'per year';
     subEl.textContent = 'Auto-calculated from budget · ' + freqLabel;
   }
+  if (typeof slaUpdateRunningTotal === 'function') slaUpdateRunningTotal();
 }
 
 // ── SLA DATE PICKER ────────────────────────────────────────────────────────
@@ -8617,6 +8802,7 @@ function slaToggleSys(card) {
   card.classList.toggle('active');
   var sys = card.getAttribute('data-sys');
   var isNowActive = card.classList.contains('active');
+  if (window.slaPmRefresh) setTimeout(window.slaPmRefresh, 0);
 
   var pmBlock = document.querySelector('.sla-pm-block[data-pm="' + sys + '"]');
   if (pmBlock) {
@@ -8771,6 +8957,7 @@ function slaUpdateRespCustom() {
 }
 
 function slaClearNonCustomer() {
+  if (window.slaRevealReset) setTimeout(window.slaRevealReset, 0);
   // Reset SLA-specific inputs (not the synced customer fields)
   // Reset SLA rate frequency back to monthly
   _slaFreqState = { freq: 'monthly', monthlyBase: 0 };
@@ -9348,12 +9535,15 @@ function generateSLAProposal() {
   // ── Financial calculations ──
   var laborBudget  = parseDollar(regAmt) + parseDollar(ahAmt) + parseDollar(emAmt);
   var matBudget    = parseDollar(matAmt);
-  var annualBudget = pmTotal + laborBudget + matBudget;
+  var annualBudget = pmTotal + laborBudget + matBudget + (typeof slaCalloutTotal==='function'?slaCalloutTotal():0);
   var freqState    = _slaFreqState.freq || billing;
   var slaRateNum   = parseDollar(rateVal);
   var monthlyBase  = freqState==='monthly' ? slaRateNum : freqState==='quarterly' ? slaRateNum/3 : slaRateNum/12;
   var perInvoice   = billing==='quarterly' ? monthlyBase*3 : billing==='annual' ? monthlyBase*12 : monthlyBase;
-  var totalAnnual  = annualBudget;
+  // Total Annual Commitment = the billed SLA rate × periods/yr, so it always
+  // reconciles to the recurring rate (which already folds in PM, labor, materials
+  // and any included custom call-outs).
+  var totalAnnual  = Math.round(perInvoice*100)/100 * (billing==='quarterly' ? 4 : billing==='annual' ? 1 : 12);
 
   // ── Systems ──
   var sysCards = Array.from(document.querySelectorAll('.sla-sys-card.active'));
@@ -9507,6 +9697,7 @@ function generateSLAProposal() {
   sysRows += respLine('Regular-Time Response', respRegTri, respRegOn);
   sysRows += respLine('After-Hours Response',  respAhTri,  respAhOn);
   sysRows += respLine('Emergency Response',    respEmTri,  respEmOn);
+  if (typeof slaCoRespRows === 'function') sysRows += slaCoRespRows();
   if (pmHrsNum > 0) {
     sysRows += '<div class="q-service-row"><div class="q-service-name">Preventive Maintenance Visits</div><div class="q-service-price" style="font-size:10px;color:#666;font-weight:500;">'+pmFreqText+' per year</div></div>';
   }
@@ -9536,30 +9727,40 @@ function generateSLAProposal() {
     if (parseDollar(matAmt) > 0) {
       budgetRows += '<div class="q-service-row"><div class="q-service-name">Materials Budget</div><div class="q-service-price">'+matAmt+'</div></div>';
     }
+    if (typeof slaCoBudgetRows === 'function') budgetRows += slaCoBudgetRows();
     html += '<div class="q-section">' +
       '<div class="q-section-title">Annual Budget Allocation</div>' +
       budgetRows +
     '</div>';
   }
 
-  // T&M labor rate schedule — shown when no unscheduled labor budget hours are allocated
-  if (parseDollar(regAmt) === 0 && parseDollar(ahAmt) === 0 && parseDollar(emAmt) === 0) {
+  // Service rate schedule — always shown, based on the selected tier (+ custom call-out rates)
+  {
     var tmR = isEssential ? {st:'$177.44', th:'$219.87', dt:'$266.03'}
             : isPremier   ? {st:'$230.67', th:'$263.84', dt:'$266.03'}
             :               {st:'$212.93', th:'$230.67', dt:'$266.03'};
+    var _noBud = (parseDollar(regAmt) === 0 && parseDollar(ahAmt) === 0 && parseDollar(emAmt) === 0);
+    var _rNote = _noBud
+      ? 'No pre-allocated unscheduled service &amp; repair labor budget. Unscheduled work is billed on a time-and-materials basis at the rates below.'
+      : 'Labor rates applicable to work performed outside the allocated service budget, billed at the rates below.';
+    var _coR = (typeof slaCoRateRowsQ === 'function') ? slaCoRateRowsQ() : '';
     html += '<div class="q-section">' +
-      '<div class="q-section-title">Time &amp; Materials Labor Rates — '+tierName+'</div>' +
-      '<div style="font-size:11px;color:#666;margin-bottom:6px;">No pre-allocated unscheduled service &amp; repair labor budget. Unscheduled work is billed on a time-and-materials basis at the rates below.</div>' +
+      '<div class="q-section-title">Service Rate Schedule \u2014 '+tierName+'</div>' +
+      '<div style="font-size:11px;color:#666;margin-bottom:6px;">'+_rNote+'</div>' +
       '<div class="q-service-row"><div class="q-service-name">Regular Time (straight)</div><div class="q-service-price">'+tmR.st+' / hr</div></div>' +
       '<div class="q-service-row"><div class="q-service-name">After-Hours (time &amp; one-half)</div><div class="q-service-price">'+tmR.th+' / hr</div></div>' +
       '<div class="q-service-row"><div class="q-service-name">Emergency (double time)</div><div class="q-service-price">'+tmR.dt+' / hr</div></div>' +
       '<div class="q-service-row"><div class="q-service-name">Preventive Maintenance Labor</div><div class="q-service-price">$177.44 / hr</div></div>' +
+      _coR +
     '</div>';
   }
 
+  // Operational modules (Phase 1) — only the sections the user selected
+  if (typeof slaOpsProposalHTML === 'function') html += slaOpsProposalHTML();
+
   // Notes
   if (notes) {
-    html += '<div class="q-section">' +
+    html += '<div class="q-section q-flow">' +
       '<div class="q-section-title">Additional Information</div>' +
       '<div class="rte-doc" style="font-size:12px;color:#444;line-height:1.6;">'+notes+'</div>' +
     '</div>';
@@ -9693,15 +9894,16 @@ function generateSLAPrint() {
   }
   var laborBudget  = parseDollar(regAmt) + parseDollar(ahAmt) + parseDollar(emAmt);
   var matBudget    = parseDollar(matAmt);
-  var annualBudget = pmTotal + laborBudget + matBudget;
+  var annualBudget = pmTotal + laborBudget + matBudget + (typeof slaCalloutTotal==='function'?slaCalloutTotal():0);
 
-  // The SLA rate is auto-calculated from the budget, so totalAnnual = annualBudget.
-  // perInvoice is how often the customer is billed based on the billing cycle.
+  // Total Annual Commitment = the billed SLA rate × periods/yr. The recurring rate
+  // already includes PM, labor budget, materials and any included custom call-outs,
+  // so the annual figure always reconciles to the rate the customer actually pays.
   var freqState    = _slaFreqState.freq || billing;
   var slaRateNum   = parseDollar(rateVal);
   var monthlyBase  = freqState==='monthly' ? slaRateNum : freqState==='quarterly' ? slaRateNum/3 : slaRateNum/12;
   var perInvoice   = billing==='quarterly' ? monthlyBase*3 : billing==='annual' ? monthlyBase*12 : monthlyBase;
-  var totalAnnual  = annualBudget; // SLA rate == annualBudget, don't double count
+  var totalAnnual  = Math.round(perInvoice*100)/100 * (billing==='quarterly' ? 4 : billing==='annual' ? 1 : 12);
 
   // ── Systems ──
   var sysCards = Array.from(document.querySelectorAll('.sla-sys-card.active'));
@@ -9807,7 +10009,8 @@ function generateSLAPrint() {
     '<tr><td><span class="fa-bcat-dot" style="background:#1a6b4a;"></span>Regular Time Labor</td><td style="text-align:center;">'+regHrs+'</td><td style="text-align:right;">'+regAmt+'</td></tr>' +
     '<tr><td><span class="fa-bcat-dot" style="background:#8a5a00;"></span>After-Hours Labor</td><td style="text-align:center;">'+ahHrs+'</td><td style="text-align:right;">'+ahAmt+'</td></tr>' +
     '<tr><td><span class="fa-bcat-dot" style="background:#8a1f1f;"></span>Emergency Labor</td><td style="text-align:center;">'+emHrs+'</td><td style="text-align:right;">'+emAmt+'</td></tr>' +
-    '<tr><td><span class="fa-bcat-dot" style="background:#1a4a8a;"></span>Materials Budget</td><td style="text-align:center;">—</td><td style="text-align:right;">'+(matAmt||'—')+'</td></tr>';
+    '<tr><td><span class="fa-bcat-dot" style="background:#1a4a8a;"></span>Materials Budget</td><td style="text-align:center;">—</td><td style="text-align:right;">'+(matAmt||'—')+'</td></tr>' +
+    (typeof slaCoBudgetRowsTr === 'function' ? slaCoBudgetRowsTr() : '');
 
   var summaryRows = '';
   if (perInvoice > 0) {
@@ -9824,15 +10027,19 @@ function generateSLAPrint() {
   var tmRates = isEssential ? {st:'$177.44', th:'$219.87', dt:'$266.03'}
               : isPremier   ? {st:'$230.67', th:'$263.84', dt:'$266.03'}
               :               {st:'$212.93', th:'$230.67', dt:'$266.03'};
-  var tmRateTable = (laborBudget === 0) ?
-    '<p class="fa-body" style="margin-top:8px;">No pre-allocated unscheduled service &amp; repair labor budget has been established under this Agreement. Unscheduled service &amp; repair labor will be billed on a time-and-materials basis at Company\'s then-current published rates for the <strong>'+tierName+'</strong>, as set forth below:</p>' +
-    '<table class="fa-budget-table"><thead><tr><th style="width:60%">Unscheduled Labor Rate — '+tierName+'</th><th style="text-align:right;">Rate per Hour</th></tr></thead><tbody>' +
+  var _tmNote = (laborBudget === 0)
+    ? 'No pre-allocated unscheduled service &amp; repair labor budget has been established under this Agreement. Unscheduled service &amp; repair labor will be billed on a time-and-materials basis at Company\'s then-current published rates for the <strong>'+tierName+'</strong>, as set forth below:'
+    : 'Labor performed outside the allocated service budget will be billed at Company\'s then-current published rates for the <strong>'+tierName+'</strong>, as set forth below:';
+  var _coTr = (typeof slaCoRateRowsTr === 'function') ? slaCoRateRowsTr() : '';
+  var tmRateTable =
+    '<p class="fa-body" style="margin-top:8px;">'+_tmNote+'</p>' +
+    '<table class="fa-budget-table"><thead><tr><th style="width:60%">Service Labor Rate — '+tierName+'</th><th style="text-align:right;">Rate per Hour</th></tr></thead><tbody>' +
       '<tr><td><span class="fa-bcat-dot" style="background:#1a6b4a;"></span>Regular Time (straight)</td><td style="text-align:right;">'+tmRates.st+' / hr</td></tr>' +
       '<tr><td><span class="fa-bcat-dot" style="background:#8a5a00;"></span>After-Hours (time &amp; one-half)</td><td style="text-align:right;">'+tmRates.th+' / hr</td></tr>' +
       '<tr><td><span class="fa-bcat-dot" style="background:#8a1f1f;"></span>Emergency (double time)</td><td style="text-align:right;">'+tmRates.dt+' / hr</td></tr>' +
       '<tr><td>Preventive Maintenance Labor</td><td style="text-align:right;">$177.44 / hr</td></tr>' +
-    '</tbody></table>'
-    : '';
+      _coTr +
+    '</tbody></table>';
 
   html += '<div class="fa-section"><div class="fa-section-head"><span class="fa-section-num">§3</span><span class="fa-section-title">Service Fees &amp; Annual Budget</span></div>' +
     '<p class="fa-body">The recurring service fee and annual labor and materials budget allocation established under this Agreement are set forth below. The SLA fee is a fixed recurring charge billed on a <strong>'+billingLbl.toLowerCase()+'</strong> basis regardless of service volume. Budget allocations represent the maximum included value per contract year; hours or amounts exceeding these allocations require advance written authorization and will be invoiced separately.</p>' +
@@ -10218,7 +10425,7 @@ function mcAddAgreement(){
 }
 function mcRemoveAgreement(id){
   var c=document.querySelector('#mc-agreements-list .mc-card[data-agrid="'+id+'"]'); if(c) c.remove();
-  mcRenumberAgreements(); mcUpdateCount();
+  mcRenumberAgreements(); mcUpdateCount(); mcUpdateHeaderRevenue();
 }
 function mcRenumberAgreements(){
   document.querySelectorAll('#mc-agreements-list .mc-card').forEach(function(c,i){
@@ -10361,6 +10568,26 @@ function mcResetFields(){
 }
 
 // ── Read one agreement ──
+function mcUpdateHeaderRevenue(){
+  var rmrEl=document.getElementById('h-mc-rmr'), annEl=document.getElementById('h-mc-annrev');
+  if(!rmrEl||!annEl) return;
+  var num=function(x){ return parseFloat(String(x==null?'':x).replace(/[^0-9.]/g,''))||0; };
+  var annual=0;
+  document.querySelectorAll('#mc-agreements-list .mc-card').forEach(function(card){
+    var d=mcReadAgreement(card);
+    var charge=d.perSite ? d.chargeTotal : num(d.charge);
+    if(charge<=0) return;
+    var periods=d.freq==='quarterly'?4:d.freq==='annual'?1:12;
+    annual+=charge*periods;
+  });
+  var monthly=annual/12;
+  function f(n){ return '$'+(n||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+  rmrEl.textContent=monthly>0?f(monthly):'\u2014';
+  annEl.textContent=annual>0?f(annual):'\u2014';
+}
+document.addEventListener('input',function(e){ if(e.target&&e.target.closest&&e.target.closest('#mc-view')) mcUpdateHeaderRevenue(); });
+document.addEventListener('change',function(e){ if(e.target&&e.target.closest&&e.target.closest('#mc-view')) mcUpdateHeaderRevenue(); });
+
 function mcReadAgreement(card){
   function v(f){ var e=card.querySelector('[data-f="'+f+'"]'); return e?(e.value||'').trim():''; }
   var type=card.getAttribute('data-type');
@@ -11417,6 +11644,742 @@ function qbRenderQuoteSites(){
 
   if(document.readyState!=='loading'){ initToolbars(); }
   else document.addEventListener('DOMContentLoaded', function(){ initToolbars(); });
+})();
+</script>
+<script>
+/* ── SLA Operational Configurator (v2: dropdowns + system/industry filtering) ── */
+(function(){
+  // System-aware + industry-aware option model. sys/ind = 'all' or array.
+  var OPREQ=[
+    {l:'Standard Preventive Maintenance',sys:'all',ind:'all'},
+    {l:'Meeting Support',sys:['av'],ind:'all'},
+    {l:'Scheduled Public Meetings',sys:['av'],ind:['Municipality / Government','Education']},
+    {l:'City Council / Board Meetings',sys:['av'],ind:['Municipality / Government']},
+    {l:'Planning Commission Meetings',sys:['av'],ind:['Municipality / Government']},
+    {l:'Public Hearings',sys:['av'],ind:['Municipality / Government']},
+    {l:'Training Room Support',sys:['av'],ind:['Education','Commercial','Healthcare','Municipality / Government','Mixed Use']},
+    {l:'Presentation / Event Support',sys:['av'],ind:['Hospitality','Commercial','Mixed Use','Education']},
+    {l:'Credential & Access Administration',sys:['ac'],ind:'all'},
+    {l:'After-Hours Access Management',sys:['ac'],ind:'all'},
+    {l:'Lockdown / Emergency Egress Readiness',sys:['ac'],ind:['Education','Healthcare','Municipality / Government']},
+    {l:'Visitor / Tenant Access Support',sys:['ac'],ind:['Commercial','Mixed Use','Hospitality']},
+    {l:'Intrusion Detection Readiness',sys:['ba'],ind:'all'},
+    {l:'Alarm Response & Dispatch Support',sys:['ba'],ind:'all'},
+    {l:'Surveillance Continuity',sys:['cc'],ind:'all'},
+    {l:'Recording / Evidence Integrity',sys:['cc'],ind:['Municipality / Government','Financial','Retail','Education','Transportation']},
+    {l:'Remote Video Verification',sys:['cc'],ind:'all'},
+    {l:'Security Operations',sys:['ac','ba','cc'],ind:'all'},
+    {l:'After-Hours Security Coverage',sys:['ac','ba','cc'],ind:'all'},
+    {l:'Dispatch Center Support',sys:['ac','ba','cc'],ind:['Municipality / Government','Transportation','Healthcare']},
+    {l:'Emergency Operations',sys:'all',ind:'all'},
+    {l:'Healthcare Operations',sys:'all',ind:['Healthcare']},
+    {l:'Production Support',sys:'all',ind:['Industrial','Manufacturing','Warehouse']},
+    {l:'Network Dependent System',sys:'all',ind:'all'},
+    {l:'Custom',sys:'all',ind:'all'}
+  ];
+  var PMOBJ=[
+    {l:'Equipment Health',sys:'all',ind:'all',d:'Focuses on the long-term reliability and lifespan of the covered equipment through scheduled inspection, testing, and manufacturer-recommended maintenance.'},
+    {l:'Operational Readiness',sys:'all',ind:'all',d:'Keeps the covered systems operational, properly configured, and ready to support day-to-day facility operations throughout the year.'},
+    {l:'Meeting Readiness',sys:['av'],ind:'all',d:'Ensures A/V systems are operational and ready ahead of scheduled meetings, presentations, training sessions, and public events.'},
+    {l:'Public Meeting Continuity',sys:['av'],ind:['Municipality / Government','Education'],d:'Maintains A/V continuity specifically for public and government meetings on the customer-provided calendar (council, commission, hearings).'},
+    {l:'Life Safety Readiness',sys:['ba','ac'],ind:['Healthcare','Education','Municipality / Government'],d:'Maintains the covered systems in continuous readiness for life-safety, lockdown, and emergency operations.'},
+    {l:'Production Continuity',sys:'all',ind:['Industrial','Manufacturing','Warehouse','Hospitality'],d:'Sustains production and operational continuity by keeping the covered systems online and minimizing unplanned downtime.'},
+    {l:'Security Readiness',sys:['ac','ba','cc'],ind:'all',d:'Keeps access control, intrusion, and video systems operational, monitored, and ready to support continuous facility protection.'},
+    {l:'Custom',sys:'all',ind:'all',d:'Define a custom program objective for this customer.'}
+  ];
+  // static multi-select option lists
+  var OPS={
+    meetingTypes:['City Council Meetings','Planning Commission Meetings','Board Meetings','Public Hearings','Community Meetings','Training Sessions','Other Scheduled Events','Custom'],
+    remoteMethod:['Phone support','Microsoft Teams','Zoom','VPN','TeamViewer','ScreenConnect','Crestron remote access','Manufacturer portal','Other'],
+    custResp:['Provide meeting calendar','Provide remote access','Provide onsite contact','Provide access to equipment rooms','Maintain hot spare inventory onsite','Perform basic setup before meetings','Contact Point 1 when support is needed','Provide network / IT support when required'],
+    hotSpareOpts:['Manufacturer-recommended spare list (jointly developed)','Quarterly inspection, testing & firmware synchronization','Lifecycle & replenishment recommendations','Spare equipment purchased and owned by Customer','Deployment labor under Included Annual Service Coverage']
+  };
+  var SEL={
+    industry:['Commercial','Municipality / Government','Education','Healthcare','Industrial','Warehouse','Manufacturing','Financial','Data Center','Transportation','Hospitality','Retail','Mixed Use','Custom'],
+    criticality:['Standard','Business Critical','Mission Critical','Life Safety','Public Meeting Critical','Custom'],
+    meetingInclude:['No','Yes \u2013 Remote Support Only','Yes \u2013 Technician Standby','Yes \u2013 Onsite Technician Coverage','Yes \u2013 Hybrid Remote / Onsite Support'],
+    scheduleSource:['Customer-provided annual calendar','Customer-provided monthly calendar','Recurring schedule','Manual entry','As requested / quoted separately'],
+    frequency:['1 meeting per month','2 meetings per month','3 meetings per month','4 meetings per month','Custom'],
+    duration:['1 hour','2 hours','3 hours','4 hours','5 hours','Custom'],
+    supportWindow:['Setup only','First hour only','First two hours','Full meeting duration','Custom'],
+    remoteResp:['15 minutes','30 minutes','45 minutes','60 minutes','Custom'],
+    onsiteDispatch:['Not included','Immediate dispatch','Within 30 minutes','Within 45 minutes','Within 60 minutes','Custom','Quoted separately'],
+    remoteHands:['Yes \u2013 Customer IT','Yes \u2013 Customer AV Operator','Yes \u2013 Third-party operator','No','Unknown'],
+    setupBy:['Customer','Customer IT','Third-party AV operator','Point 1','Shared responsibility','Not applicable'],
+    checkBy:['Customer','Customer IT','Third-party AV operator','Point 1','Shared responsibility','Not applicable'],
+    p1Role:['Preventive maintenance only','Remote escalation support','Technician standby','Onsite operator support','Full meeting support','Custom'],
+    materialStrategy:['Annual material allowance','Customer-owned hot spare inventory','Point 1-managed hot spare inventory','Hybrid: material allowance + hot spares','Materials billed as needed','Custom'],
+    auditFreq:['Quarterly','Semi-annual','Annual','During PM visits','Custom']
+  };
+  var PM_TXT={};PMOBJ.forEach(function(o){PM_TXT[o.l]=o.d;});
+  var MEETING_RE=/meeting|hearing|council|commission/i;
+  var MEETING_BODY='Point 1 Electrical Systems, Inc. shall provide scheduled technical support for customer-designated meetings and critical facility usage dates identified by the Customer. This support is intended to assist the Customer with maintaining operational readiness during scheduled public meetings, board meetings, planning commission meetings, public hearings, training sessions, or other critical events identified by the Customer. During covered scheduled meetings, Point 1 will provide the selected level of support, which may include remote technical assistance, technician standby, guided troubleshooting with Customer IT or AV operators, and onsite dispatch when included within the selected service option. Covered meetings shall be based on the Customer-provided meeting calendar. Meetings not included on the provided calendar, emergency meetings, special meetings, or events added after the agreed scheduling window may be subject to separate scheduling, availability, and billing.';
+  function hsSysLabel(){
+    var m={ac:'Access Control',ba:'Intrusion',cc:'Video Surveillance',av:'Audio Visual'};
+    var s=(typeof curSystems==='function'?curSystems():[]).map(function(x){return m[x];}).filter(Boolean);
+    return s.length?s.join(' / '):'covered';
+  }
+  function hotSpareBody(){
+    var X=hsSysLabel();
+    return 'This Service Level Agreement does NOT include replacement '+X+' equipment. Point 1 will work collaboratively with the Customer to identify manufacturer-recommended spare equipment based on equipment criticality, lead times, lifecycle, historical failures and operational objectives. The Customer is responsible for purchasing and owning the mutually agreed-upon spare equipment and maintaining it onsite or at another approved location. During each quarterly Preventive Maintenance visit Point 1 will inspect, configure, synchronize firmware and programming, functionally test, document, and maintain the Customer-Owned Hot Spare Inventory so it remains deployment-ready and matches the production '+X+' system where applicable. Customer-owned spare equipment may be deployed during Preventive Maintenance, Corrective Maintenance, Scheduled Public Meeting Support, After-Hours Service or Emergency Service. Labor associated with deployment utilizes the Included Annual Service Coverage.';
+  }
+
+  function $id(id){return document.getElementById(id);}
+  function val(id){var e=$id(id);return e?e.value:'';}
+  function setVal(id,v){var e=$id(id);if(e)e.value=v||'';}
+  function show(id,on){var e=$id(id);if(e)e.style.display=on?'':'none';}
+  function esc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  function curSystems(){return [].slice.call(document.querySelectorAll('.sla-sys-card.active')).map(function(c){return c.getAttribute('data-sys');});}
+  function matchSys(o,sys){return o.sys==='all'||!sys.length||o.sys.some(function(s){return sys.indexOf(s)>=0;});}
+  function matchInd(o,ind){return o.ind==='all'||!ind||o.ind.indexOf(ind)>=0;}
+  function msVals(id){var c=$id(id);return c?[].slice.call(c.querySelectorAll('input:checked')).map(function(i){return i.value;}):[];}
+  function setMs(id,arr){var c=$id(id);if(!c)return;arr=arr||[];[].slice.call(c.querySelectorAll('input')).forEach(function(i){i.checked=arr.indexOf(i.value)>=0;});msSummary(id);}
+  function btnFor(id){return document.querySelector('.sla-dd-btn[data-for="'+id+'"]');}
+  function msSummary(id){var b=btnFor(id);if(!b)return;var n=msVals(id).length;b.innerHTML=n?('<span>'+n+' selected</span>'):'<span class="sla-dd-ph">Select all that apply\u2026</span>';}
+
+  function fillSelect(sel){var k=sel.getAttribute('data-opts'),o=SEL[k]||[];sel.innerHTML='<option value="">\u2014 Select \u2014</option>'+o.map(function(x){return '<option value="'+esc(x)+'">'+esc(x)+'</option>';}).join('');}
+  function fillMsStatic(box){var k=box.getAttribute('data-opts');if(!OPS[k])return;box.innerHTML=OPS[k].map(function(x){var v=esc(x);return '<label><input type="checkbox" value="'+v+'"><span>'+v+'</span></label>';}).join('');}
+
+  function buildOpReq(){
+    var ind=val('slaops-industry'),sys=curSystems(),box=$id('slaops-opreq');if(!box)return;
+    var prev=msVals('slaops-opreq');
+    var avail=OPREQ.filter(function(o){return matchSys(o,sys)&&matchInd(o,ind);});
+    box.innerHTML=avail.map(function(o){var v=esc(o.l);return '<label><input type="checkbox" value="'+v+'"><span>'+v+'</span></label>';}).join('');
+    setMs('slaops-opreq',prev); // keep still-available picks
+  }
+  function buildPmObj(){
+    var ind=val('slaops-industry'),sys=curSystems(),box=$id('slaops-pmobjective-opts');if(!box)return;
+    var cur=val('slaops-pmobjective');
+    var avail=PMOBJ.filter(function(o){return matchSys(o,sys)&&matchInd(o,ind);});
+    box.innerHTML=avail.map(function(o){return '<div class="sla-dd-opt" data-val="'+esc(o.l)+'" title="'+esc(o.d)+'"><span>'+esc(o.l)+'</span><div class="sla-dd-tip">'+esc(o.d)+'</div></div>';}).join('');
+    setPmObj(avail.some(function(o){return o.l===cur;})?cur:'');
+  }
+  function setPmObj(v){
+    setVal('slaops-pmobjective',v);
+    var b=btnFor('slaops-pmobjective');if(b)b.innerHTML=v?('<span>'+esc(v)+'</span>'):'<span class="sla-dd-ph">\u2014 Select \u2014</span>';
+    var box=$id('slaops-pmobjective-opts');if(box)[].slice.call(box.children).forEach(function(o){o.classList.toggle('sel',o.getAttribute('data-val')===v);});
+  }
+  function applyFilters(){buildOpReq();buildPmObj();refresh();}
+
+  function refresh(){
+    var crit=val('slaops-criticality'),ops=msVals('slaops-opreq');
+    var avCov=curSystems().indexOf('av')>=0;
+    var trigger=avCov&&(ops.some(function(o){return MEETING_RE.test(o);})||crit==='Public Meeting Critical');
+    show('slaops-sec-meeting',trigger);show('slaops-sec-workflow',trigger);
+    var mat=val('slaops-material');
+    show('slaops-hotspare-detail',mat==='Customer-owned hot spare inventory'||mat==='Point 1-managed hot spare inventory'||mat==='Hybrid: material allowance + hot spares');
+  }
+
+  function gather(){return{
+    industry:val('slaops-industry'),criticality:val('slaops-criticality'),pmObjective:val('slaops-pmobjective'),
+    opReq:msVals('slaops-opreq'),
+    meetingInclude:val('slaops-meeting-include'),meetingSource:val('slaops-meeting-source'),
+    meetingTypes:msVals('slaops-meeting-types'),meetingFreq:val('slaops-meeting-freq'),
+    meetingDuration:val('slaops-meeting-duration'),meetingWindow:val('slaops-meeting-window'),
+    meetingRemoteResp:val('slaops-meeting-remoteresp'),meetingOnsite:val('slaops-meeting-onsite'),
+    meetingRemoteHands:val('slaops-meeting-remotehands'),meetingMethod:msVals('slaops-meeting-method'),
+    wfSetup:val('slaops-wf-setup'),wfCheck:val('slaops-wf-check'),wfRole:val('slaops-wf-role'),
+    custResp:msVals('slaops-custresp'),
+    material:val('slaops-material'),audit:val('slaops-audit'),hotSpareOpts:msVals('slaops-hotspare-opts')
+  };}
+  var _pending=null;
+  function restore(d){
+    if(!d)return;_pending=d;
+    setVal('slaops-industry',d.industry);setVal('slaops-criticality',d.criticality);
+    setVal('slaops-meeting-include',d.meetingInclude);setVal('slaops-meeting-source',d.meetingSource);
+    setMs('slaops-meeting-types',d.meetingTypes);setVal('slaops-meeting-freq',d.meetingFreq);
+    setVal('slaops-meeting-duration',d.meetingDuration);setVal('slaops-meeting-window',d.meetingWindow);
+    setVal('slaops-meeting-remoteresp',d.meetingRemoteResp);setVal('slaops-meeting-onsite',d.meetingOnsite);
+    setVal('slaops-meeting-remotehands',d.meetingRemoteHands);setMs('slaops-meeting-method',d.meetingMethod);
+    setVal('slaops-wf-setup',d.wfSetup);setVal('slaops-wf-check',d.wfCheck);setVal('slaops-wf-role',d.wfRole);
+    setMs('slaops-custresp',d.custResp);
+    setVal('slaops-material',d.material);setVal('slaops-audit',d.audit);setMs('slaops-hotspare-opts',d.hotSpareOpts);
+    // defer until systems (restored elsewhere) are active
+    setTimeout(function(){ buildOpReq();buildPmObj(); setMs('slaops-opreq',d.opReq); setPmObj(d.pmObjective); refresh(); },0);
+  }
+
+  function qsec(t,b){return '<div class="q-section"><div class="q-section-title">'+esc(t)+'</div><div style="font-size:12px;color:#444;line-height:1.6;">'+b+'</div></div>';}
+  function bullets(a){return (a&&a.length)?'<ul style="margin:6px 0 0 0;padding-left:18px;">'+a.map(function(x){return '<li>'+esc(x)+'</li>';}).join('')+'</ul>':'';}
+  function proposalHTML(){
+    var out='',d=gather();
+    if(d.pmObjective)out+=qsec('Program Objective',esc(PM_TXT[d.pmObjective]||('The objective of this program is to support '+d.pmObjective+' for the covered systems.')));
+    if(typeof window.slaPmProposalHTML==='function')out+=window.slaPmProposalHTML();
+    var trigger=(curSystems().indexOf('av')>=0)&&((d.opReq||[]).some(function(o){return MEETING_RE.test(o);})||d.criticality==='Public Meeting Critical');
+    var on=trigger&&d.meetingInclude&&d.meetingInclude!=='No'&&d.meetingInclude!=='';
+    if(on){
+      var det='<div style="margin-top:8px;"><strong>Support level:</strong> '+esc(d.meetingInclude.replace(/^Yes\s\u2013\s/,''))+'</div>';
+      if(d.meetingTypes&&d.meetingTypes.length)det+='<div style="margin-top:4px;"><strong>Covered meeting types:</strong></div>'+bullets(d.meetingTypes);
+      var c=[];
+      if(d.meetingRemoteResp)c.push('Remote response during scheduled meetings: '+d.meetingRemoteResp);
+      if(d.meetingOnsite&&d.meetingOnsite!=='Not included')c.push('Onsite dispatch during scheduled meetings: '+d.meetingOnsite);
+      if(d.meetingWindow)c.push('Support window: '+d.meetingWindow);
+      if(d.meetingSource)c.push('Meeting schedule source: '+d.meetingSource);
+      if(c.length)det+='<div style="margin-top:6px;"><strong>Scheduled support commitments:</strong></div>'+bullets(c);
+      out+=qsec('Scheduled Meeting Support',esc(MEETING_BODY)+det);
+    }
+    if(trigger&&(d.wfRole||(d.custResp&&d.custResp.length)||d.wfSetup||d.wfCheck)){
+      var rb='',roles=[];
+      if(d.wfSetup)roles.push('Meeting setup performed by: '+d.wfSetup);
+      if(d.wfCheck)roles.push('Initial system check performed by: '+d.wfCheck);
+      if(d.wfRole)roles.push('Point 1 role: '+d.wfRole);
+      if(roles.length)rb+=bullets(roles);
+      if(d.custResp&&d.custResp.length)rb+='<div style="margin-top:6px;"><strong>Customer responsibilities:</strong></div>'+bullets(d.custResp);
+      out+=qsec('Roles & Responsibilities',rb);
+    }
+    if(d.material==='Customer-owned hot spare inventory'||d.material==='Point 1-managed hot spare inventory'||d.material==='Hybrid: material allowance + hot spares'){
+      var hb=esc(hotSpareBody()),ho=(d.hotSpareOpts||[]).slice();if(d.audit)ho.push('Inventory audit frequency: '+d.audit);
+      out+=qsec('Customer-Owned Hot Spare Inventory Program (Managed Spare Parts Program)',hb+bullets(ho));
+    }
+    return out;
+  }
+
+  function init(){
+    if(!$id('slaops-sec-opreq'))return;
+    document.querySelectorAll('.slaops-sel[data-opts]').forEach(fillSelect);
+    document.querySelectorAll('.sla-ms-list[data-opts]').forEach(fillMsStatic);
+    ['slaops-meeting-types','slaops-meeting-method','slaops-custresp','slaops-hotspare-opts'].forEach(msSummary);
+    applyFilters();
+    // industry change -> refilter; criticality/others -> refresh
+    var iSel=$id('slaops-industry');if(iSel)iSel.addEventListener('change',applyFilters);
+    // systems toggles -> refilter (fires after slaToggleSys)
+    document.querySelectorAll('.sla-sys-card').forEach(function(c){c.addEventListener('click',function(){setTimeout(applyFilters,0);});});
+    // multi-select checkbox changes -> summary + refresh
+    document.addEventListener('change',function(e){
+      var list=e.target.closest&&e.target.closest('.sla-ms-list');
+      if(list){msSummary(list.id);refresh();return;}
+      var sec=e.target.closest&&e.target.closest('#slaops-sec-meeting,#slaops-sec-workflow,#slaops-sec-hotspare,#slaops-sec-opreq');
+      if(sec&&e.target.id!=='slaops-industry')refresh();
+    });
+    // dropdown open/close
+    document.addEventListener('click',function(e){
+      var btn=e.target.closest&&e.target.closest('.sla-dd-btn');
+      if(btn){e.preventDefault();var dd=btn.closest('.sla-dd'),open=dd.classList.contains('open');
+        document.querySelectorAll('.sla-dd.open').forEach(function(d){d.classList.remove('open');});
+        if(!open)dd.classList.add('open');return;}
+      var opt=e.target.closest&&e.target.closest('.sla-dd-opt');
+      if(opt){setPmObj(opt.getAttribute('data-val'));opt.closest('.sla-dd').classList.remove('open');refresh();return;}
+      if(e.target.closest&&e.target.closest('.sla-dd-panel'))return;  // keep open while interacting
+      document.querySelectorAll('.sla-dd.open').forEach(function(d){d.classList.remove('open');});
+    });
+  }
+
+  function loadSanBruno(){
+    setVal('slaops-industry','Municipality / Government');
+    setVal('slaops-criticality','Public Meeting Critical');
+    applyFilters();
+    setPmObj('Meeting Readiness');
+    setMs('slaops-opreq',['Scheduled Public Meetings','City Council / Board Meetings','Planning Commission Meetings']);
+    refresh();
+    setVal('slaops-meeting-include','Yes \u2013 Hybrid Remote / Onsite Support');
+    setVal('slaops-meeting-source','Customer-provided annual calendar');
+    setMs('slaops-meeting-types',['City Council Meetings','Planning Commission Meetings']);
+    setVal('slaops-meeting-freq','2 meetings per month');setVal('slaops-meeting-duration','3 hours');
+    setVal('slaops-meeting-window','Full meeting duration');setVal('slaops-meeting-remoteresp','30 minutes');
+    setVal('slaops-meeting-onsite','Immediate dispatch');setVal('slaops-meeting-remotehands','Yes \u2013 Customer IT');
+    setMs('slaops-meeting-method',['Phone support','Microsoft Teams','Crestron remote access']);
+    setVal('slaops-wf-setup','Customer IT');setVal('slaops-wf-check','Customer IT');setVal('slaops-wf-role','Remote escalation support');
+    setMs('slaops-custresp',['Provide meeting calendar','Provide remote access','Provide onsite contact','Provide access to equipment rooms','Maintain hot spare inventory onsite','Contact Point 1 when support is needed','Provide network / IT support when required']);
+    setVal('slaops-material','Customer-owned hot spare inventory');refresh();
+    setVal('slaops-audit','During PM visits');
+    setMs('slaops-hotspare-opts',['Recommended hot spare list included','Inventory tracking included','Replacement recommendations included','Customer purchase responsibility']);
+    refresh();
+  }
+
+  window.slaOpsGather=gather;window.slaOpsRestore=restore;window.slaOpsProposalHTML=proposalHTML;
+  window.slaOpsRefresh=applyFilters;window.slaLoadSanBruno=loadSanBruno;
+  if(document.readyState!=='loading')init();else document.addEventListener('DOMContentLoaded',init);
+})();
+</script>
+<script>
+/* ── PM Builder: manufacturer-driven preventive maintenance scope ── */
+(function(){
+  // task helpers keep the data compact
+  function C(name,purpose,q,a){return {name:name,purpose:purpose,q:q,a:a};}
+  var PM_SYS={
+    av:{name:'A/V System',
+      mfr:[['Crestron','control'],['Extron','control'],['AMX','control'],['Utelogy','control'],['QSC Q-SYS','control'],
+           ['Biamp','dsp'],['QSC','dsp'],['BSS','dsp'],['Symetrix','dsp'],['ClearOne','dsp'],
+           ['Shure','wireless'],['Sennheiser','wireless'],['Audio-Technica','wireless'],
+           ['Listen Technologies','assist'],['Williams AV','assist'],
+           ['Crown','amp'],['Lab.gruppen','amp'],['Powersoft','amp'],
+           ['JBL','speaker'],['Community','speaker'],['Atlas','speaker'],['Bose','speaker'],['Tannoy','speaker'],
+           ['Epson','display'],['NEC','display'],['Sony','display'],['Samsung','display'],['LG','display'],['Christie','display'],['Planar','display'],['BenQ','display'],
+           ['Barco ClickShare','present'],['Mersive Solstice','present'],['Kramer','present'],
+           ['Cisco','vc'],['Poly','vc'],['Logitech','vc'],['Microsoft Teams Rooms','vc'],['Zoom Rooms','vc'],
+           ['Other / Unlisted','general']],
+      cat:{
+        control:C('Control & Switching System','Provides room control, source switching, display and projector control, audio control, and user interfaces throughout the facility.',
+          ['Verify all processors are online and communicating','Verify touch panel responsiveness','Test source selection functionality','Test display and projector controls','Test room audio controls','Verify programmed room presets','Verify communication between control devices','Verify network connectivity','Document operational deficiencies'],
+          ['Review firmware versions','Review available manufacturer firmware updates','Backup control processor programs','Backup touch panel projects','Verify system configuration integrity','Archive current programming files for disaster recovery']),
+        dsp:C('DSP / Audio Processing','Serves as the audio processing engine controlling microphone routing, audio levels, speaker zones, assisted listening feeds, and room audio.',
+          ['Verify DSP operation','Verify microphone inputs','Verify audio outputs','Verify room audio routing','Verify speaker zone operation','Verify assisted listening audio feeds','Verify audio quality and speech intelligibility'],
+          ['Backup DSP configuration files','Verify DSP firmware versions','Review firmware updates','Verify programmed audio presets','Verify equalization and audio processing settings']),
+        wireless:C('Wireless Microphone System','Provides wireless speech reinforcement for instructors, presenters, staff, and public events.',
+          ['Verify microphone operation','Verify transmitter operation','Verify receiver operation','Verify audio quality','Verify RF signal levels','Verify antenna system operation','Verify battery performance','Inspect microphone accessories and connectors'],
+          ['Verify firmware versions','Review available firmware updates','Verify wireless frequency coordination','Review RF environment for interference','Verify antenna distribution system performance']),
+        assist:C('Assisted Listening System','Provides ADA-compliant hearing assistance for facility users.',
+          ['Verify transmitter operation','Verify receiver operation','Verify charging stations','Verify antenna connections','Verify audio transmission quality','Verify ADA signage remains installed'],
+          ['Inspect receiver battery condition','Verify charging system performance','Review manufacturer firmware/software updates where applicable']),
+        amp:C('Amplifier System','Provides audio power to the speaker systems throughout the facility.',
+          ['Verify amplifier operation','Verify output channels','Verify audio levels','Check fault indicators','Verify cooling operation','Verify speaker zone functionality'],
+          ['Review amplifier configuration settings','Inspect cooling systems','Clean ventilation openings','Review firmware updates where applicable']),
+        speaker:C('Loudspeaker System','Provides speech, music, paging, and event audio throughout the facility.',
+          ['Verify speaker operation','Verify audio clarity','Verify paging intelligibility','Verify zone coverage','Inspect mounting hardware','Identify damaged speakers'],
+          ['Perform detailed speaker coverage review','Inspect outdoor speaker condition','Evaluate long-term performance trends']),
+        display:C('Projector & Display System','Provides video presentation and display capabilities for meetings, events, and training.',
+          ['Verify projector operation','Verify display operation','Verify image quality','Verify source switching','Verify control functionality','Verify network communication'],
+          ['Review projector operational hours','Clean projector filters where applicable','Verify firmware versions','Review available firmware updates','Evaluate projector lifecycle condition']),
+        present:C('Presentation Connectivity','Allows facility users to connect laptops and presentation devices to the A/V system.',
+          ['Verify HDMI connectivity','Verify USB connectivity','Verify wireless presentation','Verify source switching','Verify audio/video synchronization','Verify presentation functionality'],
+          ['Review configuration settings','Verify compatibility with current presentation standards']),
+        vc:C('Video Conferencing','Provides audio/video conferencing for meetings and remote participation.',
+          ['Verify camera operation','Verify microphone pickup','Verify speaker output','Verify call connectivity','Verify screen sharing','Verify platform sign-in'],
+          ['Verify firmware/software versions','Review available updates','Verify room/account configuration','Verify peripheral integration']),
+        general:C('Additional A/V Equipment','Other covered A/V equipment within this system.',
+          ['Verify operation','Verify configuration','Inspect connections and mounting','Document deficiencies'],
+          ['Review firmware/updates where applicable','Document configuration'])
+      },
+      std:[
+        C('Network Communication Verification','Provides communication between A/V devices throughout the facility.',
+          ['Verify devices are online','Verify network communication','Identify communication failures','Verify device connectivity'],
+          ['Verify network inventory','Document IP addressing','Review communication settings','Update network documentation']),
+        C('Configuration Backup & Disaster Recovery','Protects system programming and configuration for rapid recovery.',
+          [],
+          ['Backup control processor programs','Backup DSP configurations','Backup touch panel projects','Document firmware versions','Document network settings','Update system inventory records']),
+        C('Documentation & Reporting','Provides a documented record of system health and maintenance history following each visit.',
+          ['Document equipment inventory and operational status','Document firmware versions','Document deficiencies identified','Document recommended repairs and upgrades','Document backup verification status','Capture photographs of deficiencies when applicable'],
+          [])
+      ]
+    },
+    ac:{name:'Access Control',
+      mfr:[['Software House C\u2022CURE','controller'],['Lenel OnGuard','controller'],['Genetec','controller'],['Avigilon Alta / Openpath','controller'],['Brivo','controller'],['Honeywell Pro-Watch','controller'],['AMAG','controller'],['Gallagher','controller'],['Kantech','controller'],['RS2','controller'],['Feenics','controller'],['ProdataKey','controller'],['Alarm.com Access','controller'],['DMP','controller'],
+           ['HID','reader'],['Allegion / Schlage','reader'],['STid','reader'],['Farpointe','reader'],
+           ['ASSA ABLOY','lock'],['ASSA ABLOY Aperio','lock'],['dormakaba','lock'],['Von Duprin','lock'],['SDC','lock'],['Securitron','lock'],['HES','lock'],
+           ['Altronix','power'],['LifeSafety Power','power'],
+           ['Other / Unlisted','general']],
+      cat:{
+        controller:C('Access Control Panels & Software','Provides door control, credential management, scheduling, event reporting, and integration for the access control system.',
+          ['Verify controllers/panels are online and communicating','Verify software/server or cloud connectivity','Test door lock/unlock commands','Verify schedules and access levels','Verify event logging and reporting','Verify forced-door and held-door alarms','Verify integration with intrusion/video where applicable','Document deficiencies'],
+          ['Review firmware/software versions','Review available updates','Backup access control database and configuration','Verify user/credential database integrity','Review system health and storage','Document configuration for disaster recovery']),
+        reader:C('Readers & Credentials','Reader hardware and credential technology used to grant access at controlled openings.',
+          ['Verify reader operation at each opening','Verify LED/audible feedback','Verify credential read range and reliability','Test card, fob, and mobile credential operation','Inspect reader mounting and wiring','Clean reader surfaces'],
+          ['Review reader firmware where applicable','Verify credential technology and encryption settings','Review credential inventory and issuance','Evaluate reader lifecycle condition']),
+        lock:C('Locking Hardware & Door Devices','Electric locks, strikes, mag-locks, exit devices, and request-to-exit hardware at controlled doors.',
+          ['Verify electric lock/strike operation','Verify mag-lock hold and release','Verify request-to-exit (REX) operation','Verify door position switches','Verify door closer and alignment','Verify fail-safe/fail-secure behavior','Verify auxiliary egress and fire-alarm release'],
+          ['Inspect locking hardware for wear','Verify power supply and battery backup','Verify life-safety egress compliance','Lubricate and adjust hardware as needed']),
+        power:C('Power & Infrastructure','Power supplies, battery backup, and infrastructure supporting the access control system.',
+          ['Verify power supply output','Verify battery backup condition','Verify enclosure and connections','Verify UPS where present'],
+          ['Load-test backup batteries','Replace batteries per lifecycle','Document power inventory']),
+        general:C('Additional Access Equipment','Other covered access control equipment within this system.',
+          ['Verify operation','Verify configuration','Inspect connections and mounting','Document deficiencies'],
+          ['Review firmware/updates where applicable','Document configuration'])
+      },
+      std:[
+        C('Network & Communication Verification','Provides communication between access control devices, controllers, and the management platform.',
+          ['Verify panels and devices are online','Verify communication to host/cloud platform','Identify communication failures','Verify time synchronization'],
+          ['Document IP addressing and network settings','Review communication and integration settings','Update system documentation']),
+        C('Configuration Backup & Disaster Recovery','Protects the access control database and configuration for rapid recovery.',
+          [],
+          ['Backup access control database','Backup panel/controller configuration','Document firmware/software versions','Document credential and access-level configuration','Update system inventory records'])
+      ]
+    },
+    ba:{name:'Burglar Alarm',
+      mfr:[['Bosch','panel'],['DMP','panel'],['Honeywell / Resideo Vista','panel'],['DSC PowerSeries','panel'],['Napco','panel'],['ELK','panel'],['Qolsys','panel'],['Alarm.com','panel'],['Alula','panel'],['Interlogix','panel'],
+           ['Optex','sensors'],['Inovonics','sensors'],['Pyronix','sensors'],['Risco','sensors'],['Honeywell Sensors','sensors'],['DSC Sensors','sensors'],
+           ['Telguard','comm'],['Honeywell AlarmNet','comm'],['Alarm.com Communicator','comm'],['DMP Communicator','comm'],
+           ['Altronix','power'],
+           ['Other / Unlisted','general']],
+      cat:{
+        panel:C('Intrusion Panel & Keypads','Central alarm panel, keypads, and user interface for the intrusion detection system.',
+          ['Verify panel operation and status','Verify keypad operation and display','Verify arming and disarming','Verify zone status and trouble conditions','Verify user codes and partitions','Verify event log','Walk-test reporting to the panel'],
+          ['Review panel firmware','Backup panel programming','Verify user and zone configuration','Document programming for disaster recovery']),
+        sensors:C('Detection Devices','Motion detectors, door/window contacts, glass-break, and environmental sensors.',
+          ['Test motion detectors','Test door/window contacts','Test glass-break detectors','Verify detector coverage and sensitivity','Verify tamper operation','Inspect mounting and wiring','Replace device batteries as needed'],
+          ['Evaluate detector coverage for facility changes','Review false-alarm history','Recommend sensor replacements per lifecycle']),
+        comm:C('Alarm Communication & Monitoring','Communication path from the alarm panel to the central station / monitoring platform.',
+          ['Verify communicator signal and connectivity','Test signal transmission to central station','Verify cellular/IP path','Verify supervision and check-in','Verify trouble and low-battery reporting'],
+          ['Verify communicator firmware','Review path and account configuration','Verify monitoring account and contacts','Test full signal path with central station']),
+        power:C('Power & Battery Backup','Panel power supply and standby battery backup for the intrusion system.',
+          ['Verify panel power and charging','Verify standby battery condition','Verify AC-loss reporting'],
+          ['Load-test standby batteries','Replace batteries per lifecycle','Document power inventory']),
+        general:C('Additional Intrusion Equipment','Other covered intrusion equipment within this system.',
+          ['Verify operation','Verify configuration','Inspect connections and mounting','Document deficiencies'],
+          ['Review firmware/updates where applicable','Document configuration'])
+      },
+      std:[
+        C('System Test & Documentation','Provides a full functional test and documented record of the intrusion system.',
+          ['Perform full system walk-test','Verify all zones report correctly','Verify central station receives signals','Document deficiencies and corrective actions'],
+          ['Update zone list and as-built documentation','Document firmware and account configuration','Update system inventory'])
+      ]
+    },
+    cc:{name:'CCTV / Cameras',
+      mfr:[['Axis','camera'],['Hanwha / Wisenet','camera'],['Bosch','camera'],['Avigilon','camera'],['Verkada','camera'],['Pelco','camera'],['Vivotek','camera'],['Honeywell','camera'],['Panasonic i-PRO','camera'],['Hikvision','camera'],['Dahua','camera'],['Alarm.com Video','camera'],
+           ['Milestone','recorder'],['Genetec','recorder'],['Avigilon ACC','recorder'],['exacqVision','recorder'],['Hanwha WAVE','recorder'],['Bosch BVMS','recorder'],['Digital Watchdog','recorder'],['Eagle Eye','recorder'],['Salient','recorder'],['Verkada Command','recorder'],
+           ['Seagate / WD Surveillance','storage'],
+           ['Other / Unlisted','general']],
+      cat:{
+        camera:C('Cameras / Imaging Devices','IP and analog cameras providing surveillance coverage throughout the facility.',
+          ['Verify each camera is online and recording','Verify image quality and focus','Verify field of view and coverage','Verify day/night and IR operation','Clean camera housings and lenses','Inspect mounting and weather seals','Verify PTZ operation where applicable'],
+          ['Review camera firmware','Review available firmware updates','Evaluate camera coverage for facility changes','Recommend camera replacements per lifecycle']),
+        recorder:C('NVR / DVR / VMS','Recording servers and video management software that store and manage video.',
+          ['Verify recorder/server operation','Verify all cameras are recording','Verify recording schedules and motion settings','Verify retention period meets requirement','Verify storage health and capacity','Verify remote access and playback','Verify user accounts and permissions'],
+          ['Review VMS/recorder firmware and software versions','Review available updates','Backup VMS configuration and database','Verify licensing','Document configuration for disaster recovery']),
+        storage:C('Storage & Retention','Storage subsystem ensuring required video retention and evidence integrity.',
+          ['Verify storage capacity and health','Verify retention meets the required number of days','Verify RAID/disk status where applicable','Verify failover/redundancy'],
+          ['Review drive health and SMART status','Recommend drive replacements per lifecycle','Document storage configuration']),
+        general:C('Additional Video Equipment','Other covered video equipment within this system.',
+          ['Verify operation','Verify configuration','Inspect connections and mounting','Document deficiencies'],
+          ['Review firmware/updates where applicable','Document configuration'])
+      },
+      std:[
+        C('Network & Communication Verification','Provides network communication between cameras, recorders, and viewing stations.',
+          ['Verify cameras and recorders are online','Verify network communication and bandwidth','Identify communication failures','Verify time synchronization across devices'],
+          ['Document IP addressing','Review network and VLAN configuration','Update network documentation']),
+        C('Documentation & Evidence Integrity','Provides documented system health, retention verification, and evidence-export readiness.',
+          ['Document camera inventory and status','Verify retention period','Verify video export process','Document deficiencies'],
+          ['Update camera and system documentation','Document firmware and configuration','Update system inventory'])
+      ]
+    }
+  };
+  var SYS_ORDER=['av','ac','ba','cc'];
+  var CAT_ORDER={av:['control','dsp','wireless','assist','amp','speaker','display','present','vc','general'],
+                 ac:['controller','reader','lock','power','general'],
+                 ba:['panel','sensors','comm','power','general'],
+                 cc:['camera','recorder','storage','general']};
+
+  function $id(id){return document.getElementById(id);}
+  function esc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  function curSystems(){return [].slice.call(document.querySelectorAll('.sla-sys-card.active')).map(function(c){return c.getAttribute('data-sys');});}
+  function msVals(id){var c=$id(id);return c?[].slice.call(c.querySelectorAll('input:checked')).map(function(i){return i.value;}):[];}
+  function setMs(id,arr){var c=$id(id);if(!c)return;arr=arr||[];[].slice.call(c.querySelectorAll('input')).forEach(function(i){i.checked=arr.indexOf(i.value)>=0;});summary(id);}
+  function summary(id){var b=document.querySelector('.sla-dd-btn[data-for="'+id+'"]');if(!b)return;var n=msVals(id).length;b.innerHTML=n?('<span>'+n+' selected</span>'):'<span class="sla-dd-ph">Select manufacturers\u2026</span>';}
+
+  var _saved={}; // persists selections across show/hide rebuilds {sys:[brands]}
+
+  function buildSystems(){
+    var wrap=$id('slapm-systems'); if(!wrap) return;
+    var sys=curSystems();
+    // capture current selections before rebuild
+    SYS_ORDER.forEach(function(k){ if($id('slapm-'+k)) _saved[k]=msVals('slapm-'+k); });
+    var covered=SYS_ORDER.filter(function(k){return sys.indexOf(k)>=0;});
+    $id('slapm-empty').style.display=covered.length?'none':'';
+    wrap.innerHTML=covered.map(function(k){
+      var s=PM_SYS[k];
+      var opts=s.mfr.map(function(m){var v=esc(m[0]);return '<label><input type="checkbox" value="'+v+'"><span>'+v+'</span></label>';}).join('');
+      return '<div class="slapm-sys"><div class="slapm-sys-name">'+esc(s.name)+' \u2014 Manufacturers</div>'+
+        '<div class="sla-dd" data-ms="1"><button type="button" class="sla-dd-btn" data-for="slapm-'+k+'"><span class="sla-dd-ph">Select manufacturers\u2026</span></button>'+
+        '<div class="sla-dd-panel"><div class="sla-ms-list slapm-ms" id="slapm-'+k+'">'+opts+'</div></div></div></div>';
+    }).join('');
+    covered.forEach(function(k){ setMs('slapm-'+k,_saved[k]||[]); });
+  }
+
+  function gather(){
+    var out={annual:!!($id('slapm-annual')&&$id('slapm-annual').checked), systems:{}};
+    SYS_ORDER.forEach(function(k){ var v=$id('slapm-'+k)?msVals('slapm-'+k):(_saved[k]||[]); if(v&&v.length)out.systems[k]=v; });
+    return out;
+  }
+  function restore(d){
+    if(!d)return; _saved=(d.systems)||{};
+    if($id('slapm-annual'))$id('slapm-annual').checked=d.annual!==false;
+    setTimeout(function(){ buildSystems(); },0); // after systems restored
+  }
+
+  function bullets(a){return (a&&a.length)?'<ul style="margin:4px 0 0 0;padding-left:18px;">'+a.map(function(x){return '<li>'+esc(x)+'</li>';}).join('')+'</ul>':'';}
+  function block(name,equip,purpose,q,a,annual){
+    var intro='<div style="font-weight:600;color:#1c1c1c;">'+esc(name)+'</div>';
+    if(equip)intro+='<div style="font-size:11px;color:#666;margin-top:1px;"><strong>Equipment:</strong> '+esc(equip)+'</div>';
+    if(purpose)intro+='<div style="font-size:12px;color:#444;margin-top:2px;">'+esc(purpose)+'</div>';
+    var hasQ=q&&q.length, hasA=annual&&a&&a.length;
+    var qp=hasQ?'<div style="margin-top:4px;font-size:12px;"><strong>Quarterly Services</strong></div>'+bullets(q):'';
+    var ap=hasA?'<div style="margin-top:4px;font-size:12px;"><strong>Annual Manufacturer-Recommended Services</strong></div>'+bullets(a):'';
+    var inner = hasQ ? ('<div class="pm-keep">'+intro+qp+'</div>'+(hasA?'<div class="pm-keep">'+ap+'</div>':''))
+                     : ('<div class="pm-keep">'+intro+ap+'</div>');
+    return '<div style="margin-top:10px;">'+inner+'</div>';
+  }
+  function proposalHTML(){
+    var d=gather(), out='';
+    SYS_ORDER.forEach(function(k){
+      var brands=d.systems[k]; if(!brands||!brands.length)return;
+      var s=PM_SYS[k];
+      // group selected brands by category
+      var byCat={}; s.mfr.forEach(function(m){ if(brands.indexOf(m[0])>=0){ (byCat[m[1]]=byCat[m[1]]||[]).push(m[0]); } });
+      var body='';
+      (CAT_ORDER[k]||[]).forEach(function(ck){
+        if(!byCat[ck])return; var c=s.cat[ck];
+        body+=block(c.name, byCat[ck].join(', '), c.purpose, c.q, c.a, d.annual);
+      });
+      (s.std||[]).forEach(function(c){ body+=block(c.name,'',c.purpose,c.q,c.a,d.annual); });
+      out+='<div class="q-section q-flow"><div class="q-section-title">Preventive Maintenance \u2014 '+esc(s.name)+'</div>'+
+           '<div style="font-size:12px;color:#444;line-height:1.6;">'+body+'</div></div>';
+    });
+    return out;
+  }
+
+  function init(){
+    if(!$id('slapm-sec'))return;
+    buildSystems();
+    document.addEventListener('click',function(e){ if(e.target.closest&&e.target.closest('.sla-sys-card'))setTimeout(buildSystems,0); });
+    // bulletproof: rebuild whenever a system card's active state changes, however it was toggled
+    try{
+      var _cards=document.querySelectorAll('.sla-sys-card');
+      if(window.MutationObserver && _cards.length){
+        var _mo=new MutationObserver(function(){ buildSystems(); });
+        _cards.forEach(function(c){ _mo.observe(c,{attributes:true,attributeFilter:['class']}); });
+      }
+    }catch(e){}
+    // keep manufacturer dropdown summaries current
+    document.addEventListener('change',function(e){
+      var list=e.target.closest&&e.target.closest('.slapm-ms');
+      if(list)summary(list.id);
+    });
+  }
+  window.slaPmGather=gather; window.slaPmRestore=restore; window.slaPmProposalHTML=proposalHTML; window.slaPmRefresh=buildSystems;
+  if(document.readyState!=='loading')init();else document.addEventListener('DOMContentLoaded',init);
+})();
+</script>
+<script>
+/* ── Custom Call-Outs: named response commitments that price into the SLA ── */
+(function(){
+  var TRIAGE=['15 minutes','30 minutes','45 minutes','1 hour','2 hours','4 hours','Same day','Custom\u2026'];
+  var ONSITE=['Not included','Immediate dispatch','30 minutes','45 minutes','60 minutes','Same day','Quoted separately','Custom\u2026'];
+  var TRIGGER=['During pre-scheduled customer-designated critical meetings or events on the Customer-provided calendar',
+               'During scheduled public meetings (council, commission, hearings)',
+               'During emergency or life-safety events',
+               'During after-hours and weekend coverage',
+               'During production / operational hours',
+               'System-down or critical failure conditions',
+               'Custom\u2026'];
+  var INCL=['Included','Optional add-on','Quoted separately'];
+  function esc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  function opts(arr,sel){return arr.map(function(o){return '<option'+(o===sel?' selected':'')+'>'+esc(o)+'</option>';}).join('');}
+  function fmt(n){return '$'+(n||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
+
+  // Build rate <option>s from the selected tier (read at runtime from the budget rate dropdown's optgroups)
+  function rateOptions(){
+    var src=document.getElementById('sla-bud-reg-rate'); if(!src)return'';
+    var tierCard=document.querySelector('.sla-tier-card.active');
+    var tier=tierCard?(tierCard.querySelector('.sla-tier-name')||{}).textContent:'';
+    tier=(tier||'').trim().toLowerCase();
+    var groups=src.querySelectorAll('optgroup'), out='';
+    if(groups.length){
+      [].slice.call(groups).forEach(function(g){
+        var lbl=(g.getAttribute('label')||'').toLowerCase();
+        if(!tier || lbl.indexOf(tier)>=0 || tier.indexOf(lbl)>=0){
+          [].slice.call(g.querySelectorAll('option')).forEach(function(o){ if(o.value)out+='<option value="'+o.value+'">'+esc(o.textContent)+'</option>'; });
+        }
+      });
+    }
+    if(!out){ // no optgroups (e.g. flat list) — take all options
+      [].slice.call(src.querySelectorAll('option')).forEach(function(o){ if(o.value)out+='<option value="'+o.value+'">'+esc(o.textContent)+'</option>'; });
+    }
+    return out;
+  }
+  function fillRates(sel,rate,custom){
+    var card=sel.closest('.sla-co-card'), cInput=card.querySelector('.sla-co-rate-c');
+    sel.innerHTML='<option value="">\u2014 Select rate \u2014</option>'+rateOptions()+'<option value="__custom">Custom rate\u2026</option>';
+    if(custom){ sel.value='__custom'; cInput.style.display='block'; if(rate!=null&&rate!=='')cInput.value=rate; return; }
+    if(rate!=null&&rate!==''){
+      sel.value=String(rate);
+      if(sel.value!==String(rate)){ sel.value='__custom'; cInput.style.display='block'; cInput.value=rate; }
+      else cInput.style.display='none';
+    }
+  }
+  function refillAllRates(){
+    document.querySelectorAll('#sla-co-list .sla-co-card').forEach(function(card){
+      var sel=card.querySelector('.sla-co-rate-sel'), cInput=card.querySelector('.sla-co-rate-c');
+      var custom=sel.value==='__custom', rate=custom?cInput.value:sel.value;
+      fillRates(sel,rate,custom);
+    });
+    recalc();
+  }
+  window.slaCoRateChange=function(sel){
+    var card=sel.closest('.sla-co-card'), cInput=card.querySelector('.sla-co-rate-c');
+    cInput.style.display=(sel.value==='__custom')?'block':'none';
+    recalc();
+  };
+
+  function cardHTML(d){
+    d=d||{};
+    return '<div class="sla-co-card">'+
+      '<div class="sla-co-head">'+
+        '<input class="sla-co-name" placeholder="Call-out name \u2014 e.g., City Council Meeting Support" value="'+esc(d.name||'')+'">'+
+        '<select class="sla-co-incl" onchange="slaCoCalc()">'+opts(INCL,d.incl||'Included')+'</select>'+
+        '<button type="button" class="sla-co-rm" title="Remove" onclick="slaCoRemove(this)">\u00d7</button>'+
+      '</div>'+
+      '<div class="sla-co-grid">'+
+        '<div><label>Triage (Acknowledgment)</label><select class="sla-co-triage" onchange="slaCoToggle(this)">'+opts(TRIAGE,d.triage||'30 minutes')+'</select>'+
+          '<input class="sla-co-triage-c" placeholder="Custom triage\u2026" style="margin-top:5px;display:'+(d.triage==='Custom\u2026'?'block':'none')+';" value="'+esc(d.triageC||'')+'"></div>'+
+        '<div><label>Onsite Deployment</label><select class="sla-co-onsite" onchange="slaCoToggle(this)">'+opts(ONSITE,d.onsite||'Immediate dispatch')+'</select>'+
+          '<input class="sla-co-onsite-c" placeholder="Custom onsite\u2026" style="margin-top:5px;display:'+(d.onsite==='Custom\u2026'?'block':'none')+';" value="'+esc(d.onsiteC||'')+'"></div>'+
+        '<div><label>Trigger Condition / Coverage</label><select class="sla-co-trigger" onchange="slaCoToggle(this)">'+opts(TRIGGER,d.trigger||TRIGGER[0])+'</select>'+
+          '<input class="sla-co-trigger-c" placeholder="Type condition\u2026" style="margin-top:5px;display:'+(d.trigger==='Custom\u2026'?'block':'none')+';" value="'+esc(d.triggerC||'')+'"></div>'+
+      '</div>'+
+      '<div class="sla-co-grid g4">'+
+        '<div><label>Rate ($/hr)</label><select class="sla-co-rate-sel" onchange="slaCoRateChange(this)"></select>'+
+          '<input type="number" class="sla-co-rate-c" min="0" step="0.01" placeholder="Custom $/hr" style="margin-top:5px;display:none;" oninput="slaCoCalc()"></div>'+
+        '<div><label>Hours (annual)</label><input type="number" class="sla-co-hrs" min="0" step="0.5" placeholder="0" value="'+(d.hrs||'')+'" oninput="slaCoCalc()"></div>'+
+        '<div><label>Annual Amount</label><div class="sla-co-amt">\u2014</div></div>'+
+        '<div style="font-size:10px;color:var(--text3);align-self:end;padding-bottom:6px;">spreads into the SLA rate</div>'+
+      '</div></div>';
+  }
+
+  window.slaCoAdd=function(d){
+    d=d||{};
+    var list=document.getElementById('sla-co-list'); if(!list)return;
+    var wrap=document.createElement('div'); wrap.innerHTML=cardHTML(d);
+    var card=wrap.firstChild; list.appendChild(card);
+    fillRates(card.querySelector('.sla-co-rate-sel'), d.rate, !!d.rateCustom);
+    recalc();
+  };
+  window.slaCoRemove=function(btn){ var card=btn.closest('.sla-co-card'); if(card)card.remove(); recalc(); };
+  window.slaCoToggle=function(sel){ var c=sel.parentElement.querySelector('input'); if(c)c.style.display=(sel.value==='Custom\u2026')?'block':'none'; };
+
+  function coRate(card){
+    var sel=card.querySelector('.sla-co-rate-sel');
+    if(!sel)return 0;
+    if(sel.value==='__custom')return parseFloat(card.querySelector('.sla-co-rate-c').value)||0;
+    return parseFloat(sel.value)||0;
+  }
+  function rowAmt(card){ return coRate(card)*(parseFloat(card.querySelector('.sla-co-hrs').value)||0); }
+  function recalc(){
+    document.querySelectorAll('#sla-co-list .sla-co-card').forEach(function(card){ card.querySelector('.sla-co-amt').textContent=fmt(rowAmt(card)); });
+    if(typeof slaBudgetCalc==='function')slaBudgetCalc();
+  }
+  window.slaCoCalc=recalc;
+  window.slaCalloutTotal=function(){
+    var t=0;
+    document.querySelectorAll('#sla-co-list .sla-co-card').forEach(function(card){ if(card.querySelector('.sla-co-incl').value==='Included')t+=rowAmt(card); });
+    return t;
+  };
+
+  function eff(card,base){var sel=card.querySelector('.sla-co-'+base),v=sel?sel.value:'';
+    if(v==='Custom\u2026'){var c=card.querySelector('.sla-co-'+base+'-c');return c?(c.value||''):'';}return v;}
+  window.slaCoGather=function(){
+    return [].slice.call(document.querySelectorAll('#sla-co-list .sla-co-card')).map(function(card){
+      function v(c){var e=card.querySelector(c);return e?e.value:'';}
+      var sel=card.querySelector('.sla-co-rate-sel'); var custom=sel&&sel.value==='__custom';
+      return {name:v('.sla-co-name'),incl:v('.sla-co-incl'),
+        triage:v('.sla-co-triage'),triageC:v('.sla-co-triage-c'),
+        onsite:v('.sla-co-onsite'),onsiteC:v('.sla-co-onsite-c'),
+        trigger:v('.sla-co-trigger'),triggerC:v('.sla-co-trigger-c'),
+        rate:String(coRate(card)),rateCustom:!!custom,hrs:v('.sla-co-hrs')};
+    });
+  };
+  window.slaCoRestore=function(arr){
+    var list=document.getElementById('sla-co-list'); if(!list)return; list.innerHTML='';
+    (arr||[]).forEach(function(d){slaCoAdd(d);});
+    recalc();
+  };
+
+  // refresh call-out rate dropdowns when the tier changes
+  document.addEventListener('click',function(e){ if(e.target.closest&&e.target.closest('.sla-tier-card'))setTimeout(refillAllRates,60); });
+
+  // Proposal/agreement output
+  window.slaCoRespRows=function(){
+    var out='';
+    document.querySelectorAll('#sla-co-list .sla-co-card').forEach(function(card){
+      var name=(card.querySelector('.sla-co-name').value||'').trim(); if(!name)return;
+      var incl=card.querySelector('.sla-co-incl').value;
+      var tag=incl==='Included'?'':' <span style="color:#888;font-size:10px;">('+esc(incl.toLowerCase())+')</span>';
+      var tri=eff(card,'triage'),on=eff(card,'onsite'),trg=eff(card,'trigger'),bits=[];
+      if(tri)bits.push('<span style="color:#888;">Triage:</span> '+esc(tri));
+      if(on && on!=='Not included')bits.push('<span style="color:#888;">Onsite:</span> '+esc(on));
+      out+='<div class="q-service-row"><div class="q-service-name">'+esc(name)+tag+'</div>'+
+           '<div class="q-service-price" style="font-size:10px;color:#666;font-weight:500;text-align:right;">'+bits.join(' <span style="color:#bbb;">|</span> ')+'</div></div>';
+      if(trg)out+='<div class="q-service-row" style="border-top:none;padding-top:0;"><div class="q-service-name" style="font-size:10px;color:#888;font-weight:400;">'+esc(trg)+'</div><div></div></div>';
+    });
+    return out;
+  };
+  function coHrs(card){return parseFloat(card.querySelector('.sla-co-hrs').value)||0;}
+  window.slaCoBudgetRows=function(){
+    var out='';
+    document.querySelectorAll('#sla-co-list .sla-co-card').forEach(function(card){
+      var name=(card.querySelector('.sla-co-name').value||'').trim(); if(!name)return;
+      var amt=rowAmt(card); if(amt<=0)return;
+      var hrs=coHrs(card), hl=hrs>0?' <span style="color:#888;font-size:10px;">('+hrs+' hrs)</span>':'';
+      var incl=card.querySelector('.sla-co-incl').value;
+      if(incl==='Included') out+='<div class="q-service-row"><div class="q-service-name">'+esc(name)+hl+'</div><div class="q-service-price">'+fmt(amt)+'</div></div>';
+      else out+='<div class="q-service-row"><div class="q-service-name" style="color:#888;">'+esc(name)+hl+' <span style="font-size:10px;">('+esc(incl.toLowerCase())+')</span></div><div class="q-service-price" style="color:#888;">'+fmt(amt)+'</div></div>';
+    });
+    return out;
+  };
+  // Agreement budget table row (3 columns incl. Hours Allotted) — included call-outs only, so rows reconcile with the contracted total
+  window.slaCoBudgetRowsTr=function(){
+    var out='';
+    document.querySelectorAll('#sla-co-list .sla-co-card').forEach(function(card){
+      if(card.querySelector('.sla-co-incl').value!=='Included')return;
+      var name=(card.querySelector('.sla-co-name').value||'').trim(); if(!name)return;
+      var amt=rowAmt(card); if(amt<=0)return;
+      var hrs=coHrs(card);
+      out+='<tr><td><span class="fa-bcat-dot" style="background:#e8620a;"></span>'+esc(name)+'</td><td style="text-align:center;">'+(hrs>0?hrs:'\u2014')+'</td><td style="text-align:right;">'+fmt(amt)+'</td></tr>';
+    });
+    return out;
+  };
+  // rate-schedule rows for the custom call-outs (two formats)
+  window.slaCoRateRowsQ=function(){
+    var out='';
+    window.slaCoGather().forEach(function(c){var r=parseFloat(c.rate)||0; if(c.name&&r>0)
+      out+='<div class="q-service-row"><div class="q-service-name">'+esc(c.name)+' <span style="color:#888;font-size:10px;">(custom call-out)</span></div><div class="q-service-price">$'+r.toFixed(2)+' / hr</div></div>';});
+    return out;
+  };
+  window.slaCoRateRowsTr=function(){
+    var out='';
+    window.slaCoGather().forEach(function(c){var r=parseFloat(c.rate)||0; if(c.name&&r>0)
+      out+='<tr><td>'+esc(c.name)+' (custom call-out)</td><td style="text-align:right;">$'+r.toFixed(2)+' / hr</td></tr>';});
+    return out;
+  };
+})();
+</script>
+<script>
+/* Progressive disclosure — the SLA creator grows as each section gets a chosen value */
+(function(){
+  function init(){
+    var anchor=document.getElementById('slapm-sec'); if(!anchor)return;
+    var body=anchor.closest('.sla-body'); if(!body)return;
+    var opreq=document.getElementById('slaops-sec-opreq');
+    var configIds=['slaops-sec-meeting','slaops-sec-workflow','slaops-sec-hotspare'];
+    var configMods=configIds.map(function(id){return document.getElementById(id);}).filter(Boolean);
+    var steps=[].slice.call(body.querySelectorAll(':scope > .sla-section')).filter(function(s){
+      return !s.classList.contains('slaops-module') && configIds.indexOf(s.id)<0;
+    });
+    if(steps.length<3)return;
+    var ALWAYS=2, revealed=ALWAYS;
+    function complete(s){
+      var cards=s.querySelectorAll('.sla-sys-card,.sla-tier-card');
+      if(cards.length) return !!s.querySelector('.sla-sys-card.active,.sla-tier-card.active'); // card section needs a pick
+      var c=s.querySelectorAll('input,select,textarea,[contenteditable="true"]');
+      if(!c.length) return true; // static section (e.g. Exclusions) — nothing to choose
+      for(var i=0;i<c.length;i++){var e=c[i];
+        if(e.type==='checkbox'||e.type==='radio'){ if(e.checked) return true; }
+        else if(e.isContentEditable){ if((e.textContent||'').trim()) return true; }
+        else if((e.value||'').trim()) return true;
+      }
+      return false;
+    }
+    function apply(){
+      steps.forEach(function(s,i){ s.style.display = (i<revealed) ? '' : 'none'; });
+      var opIdx=opreq?steps.indexOf(opreq):-1;
+      var opVisible = opIdx>=0 && opIdx<revealed;
+      configMods.forEach(function(m){
+        if(!opVisible) m.style.display='none';                    // hide configurator until op-req is reached
+        else if(m.id==='slaops-sec-hotspare') m.style.display=''; // hot spare rides with op-req
+        // meeting / workflow remain governed by the Phase-1 logic
+      });
+    }
+    function recompute(){
+      var firstIncomplete=steps.length;
+      for(var i=1;i<steps.length;i++){ if(!complete(steps[i])){ firstIncomplete=i; break; } }
+      var target=Math.max(ALWAYS, firstIncomplete+1);
+      if(target>revealed){ revealed=target; apply(); }
+    }
+    body.addEventListener('click', function(){setTimeout(recompute,0);}, true);
+    body.addEventListener('change', recompute, true);
+    body.addEventListener('input',  recompute, true);
+    window.slaRevealAll=function(){ revealed=steps.length; apply(); };
+    window.slaRevealReset=function(){ revealed=ALWAYS; apply(); setTimeout(recompute,0); };
+    apply(); recompute();
+  }
+  if(document.readyState!=='loading')init();else document.addEventListener('DOMContentLoaded',init);
 })();
 </script>
 </body>
