@@ -6172,7 +6172,7 @@ function gatherEstimateData() {
     'estimatorName','estimatorEmail','estimateNum','notes',
     'inspHours','annualSub','avMaintenance',
     'overheadRate','ohMethod',
-    'svcGMSlider','subMarkupSlider','laborRateSlider','avMaintGMSlider','matMarkupSlider','instLaborGMSlider','tmSubRate','tmSubGMSlider','tmSubDesc','customMonDesc','customMonCost','matTaxRate',
+    'svcGMSlider','subMarkupSlider','laborRateSlider','avMaintGMSlider','matMarkupSlider','instLaborGMSlider','tmSubRate','tmSubGMSlider','tmSubDesc','customMonDesc','customMonCost','matTaxRate','matShippingCost','shMarkupSlider',
     // Alarm.com package builder selects + number inputs
     'adc-base','adc-video','adc-camera-count','adc-cv-intercom-devices',
     'adc-cv-intercom-users','adc-expansions','adc-svrs','adc-intercom',
@@ -6643,6 +6643,22 @@ function restoreEstimateData(data) {
       if (typeof updateMatTotal === 'function') updateMatTotal();
     }
   }
+
+  // Re-hydrate Sales Tax & S&H (Quote Summary) after import:
+  // sync the visible tax input from the restored hidden value, and re-show the
+  // S&H markup slider row / label if an S&H cost was saved.
+  (function restoreTaxSH(){
+    var taxTop = document.getElementById('matTaxRateTop');
+    var taxHid = document.getElementById('matTaxRate');
+    if (taxTop && taxHid && taxHid.value) taxTop.value = taxHid.value;
+    var shCost   = document.getElementById('matShippingCost');
+    var shRow    = document.getElementById('sh-markup-row');
+    if (shRow) shRow.style.display = (shCost && (parseFloat(shCost.value) || 0) > 0) ? '' : 'none';
+    var shSlider = document.getElementById('shMarkupSlider');
+    var shLbl    = document.getElementById('shMarkupLabel');
+    if (shSlider && shLbl) shLbl.textContent = shSlider.value + '%';
+    if (typeof updateMatTotal === 'function') updateMatTotal();
+  })();
 
   // Restore T&M subcontractor rows
   if (data.tmSubPanelOpen || (data.tmSubRows && data.tmSubRows.length > 0)) {
