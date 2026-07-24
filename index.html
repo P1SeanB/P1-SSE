@@ -2465,12 +2465,12 @@
       <div id="section-combined-totals">
       <div style="font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#e8620a;margin-bottom:8px;">Combined Recurring Totals</div>
       <div class="metric-row">
-        <span class="metric-label">Total annual costs</span>
-        <span class="metric-value" id="s-totalCosts">$0.00</span>
+        <span class="metric-label">Total annual revenue</span>
+        <span class="metric-value" id="s-totalRev">$0.00</span>
       </div>
       <div class="metric-row">
-        <span class="metric-label">Overhead (<span id="s-ohPct">28%</span>)</span>
-        <span class="metric-value" id="s-oh">$0.00</span>
+        <span class="metric-label">Total annual costs</span>
+        <span class="metric-value" id="s-totalCosts">$0.00</span>
       </div>
       <div class="metric-row">
         <span class="metric-label">Gross profit</span>
@@ -2479,6 +2479,10 @@
       <div class="metric-row">
         <span class="metric-label">Combined gross margin %</span>
         <span class="metric-value" id="s-combined-gm" style="font-weight:600;">—</span>
+      </div>
+      <div class="metric-row">
+        <span class="metric-label">Overhead (<span id="s-ohPct">28%</span>)</span>
+        <span class="metric-value" id="s-oh">$0.00</span>
       </div>
       <div class="metric-row">
         <span class="metric-label">Net profit</span>
@@ -4595,6 +4599,7 @@ function calc() {
   }
 
   // Combined totals
+  var sTotRevEl = document.getElementById('s-totalRev'); if(sTotRevEl) sTotRevEl.textContent = money(annRev);
   $('s-totalCosts').textContent = money(totalCosts);
   $('s-oh').textContent = hasAny ? money(annOH) : '$0.00';
   $('s-ohPct').textContent = Math.round(ohRate * 100) + '% of ' + (ohMethod === 'cost' ? 'costs' : 'rev');
