@@ -2144,6 +2144,30 @@
   <!-- RIGHT: Summary -->
   <div class="summary-col">
     <div class="card">
+      <!-- KPI STRIP — at-a-glance deal summary -->
+      <div style="margin-bottom:14px;">
+        <div style="background:#1c1c1c;border-radius:var(--radius-sm);padding:10px 12px;border-left:3px solid #e8620a;margin-bottom:8px;">
+          <div style="font-size:9px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:rgba(255,255,255,0.5);" id="kpi-rmr-label">Recommended RMR</div>
+          <div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px;">
+            <span style="font-family:'DM Mono',monospace;font-size:20px;font-weight:600;color:#e8620a;" id="kpi-rmr">—</span>
+            <span style="font-size:10px;color:rgba(255,255,255,0.5);" id="kpi-arr">—</span>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
+          <div style="background:var(--surface2);border-radius:var(--radius-sm);padding:7px 8px;">
+            <div style="font-size:9px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;color:var(--text3);">One-Time</div>
+            <div style="font-family:'DM Mono',monospace;font-size:14px;font-weight:700;color:var(--text);" id="kpi-onetime">—</div>
+          </div>
+          <div style="background:var(--surface2);border-radius:var(--radius-sm);padding:7px 8px;">
+            <div style="font-size:9px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;color:var(--text3);">Blended GM</div>
+            <div style="font-family:'DM Mono',monospace;font-size:14px;font-weight:700;color:var(--text);" id="kpi-gm">—</div>
+          </div>
+          <div style="background:var(--surface2);border-radius:var(--radius-sm);padding:7px 8px;">
+            <div style="font-size:9px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;color:var(--text3);">Net Margin</div>
+            <div style="font-family:'DM Mono',monospace;font-size:14px;font-weight:700;color:var(--text);" id="kpi-nm">—</div>
+          </div>
+        </div>
+      </div>
       <div class="card-title">Margin &amp; RMR Analysis</div>
 
       <!-- Overhead rate at top -->
@@ -2160,6 +2184,8 @@
         <input type="hidden" id="ohMethod" value="revenue">
       </div>      <hr class="divider">
 
+      <button type="button" id="margin-detail-toggle" onclick="toggleMarginDetail()" style="width:100%;background:transparent;border:1px solid var(--border2);border-radius:var(--radius-sm);padding:6px 12px;font-size:11px;font-weight:600;color:var(--text2);cursor:pointer;font-family:'DM Sans',sans-serif;margin-bottom:10px;">Hide margin detail &#9650;</button>
+      <div id="margin-detail-wrap">
       <!-- MONITORING / OTHER MONTHLY SECTION -->
       <div id="section-monitoring">
         <div style="font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#e8620a;margin-bottom:8px;">Monitoring &amp; services</div>
@@ -2497,6 +2523,7 @@
           <span class="metric-value" id="s-tm-nm" style="font-weight:600;">—</span>
         </div>
       </div>
+      </div><!-- /margin-detail-wrap -->
 
       <hr class="divider">
 
@@ -4569,6 +4596,7 @@ function calc() {
   $('s-np').textContent = hasAny ? money(annNP) : '—';
   $('s-np').style.color = annNP < 0 ? 'var(--red)' : 'var(--text)';
   $('s-nm-pct').textContent = nm !== null ? pct(nm) : '—';
+  updateKpiStrip();
 
   // Custom target
   const sTgt = document.getElementById('s-targetRMR'); if(sTgt) sTgt.textContent = hasAny ? money(rmrCustom) + '/mo' : '—';
@@ -5649,6 +5677,30 @@ function p1ClearImage(wrapper) {
   if (r.preview) r.preview.style.display = 'none';
   if (r.btn)     r.btn.textContent = '📷 Add Image';
   if (typeof calc === 'function') calc();
+}
+
+function updateKpiStrip() {
+  var g = function(id){ var e=document.getElementById(id); return e ? e.textContent : '—'; };
+  var s = function(id,v){ var e=document.getElementById(id); if(e) e.textContent = v; };
+  var tmEl = document.getElementById('section-tm-combined');
+  var tmVisible = tmEl && tmEl.style.display !== 'none';
+  s('kpi-rmr', g('rmr53'));
+  s('kpi-arr', g('s-annRev'));
+  s('kpi-onetime', g('s-onetime'));
+  s('kpi-gm', tmVisible ? g('s-tm-gm') : g('s-combined-gm'));
+  s('kpi-nm', tmVisible ? g('s-tm-nm') : g('s-nm-pct'));
+  var rl = document.getElementById('rmr53-label');
+  var kl = document.getElementById('kpi-rmr-label');
+  if (rl && kl) kl.textContent = rl.textContent;
+}
+
+function toggleMarginDetail() {
+  var w = document.getElementById('margin-detail-wrap');
+  var b = document.getElementById('margin-detail-toggle');
+  if (!w || !b) return;
+  var hidden = w.style.display === 'none';
+  w.style.display = hidden ? '' : 'none';
+  b.innerHTML = hidden ? 'Hide margin detail &#9650;' : 'Show margin detail &#9660;';
 }
 
 function updateMatTotal() {
