@@ -2088,34 +2088,7 @@
           <!-- Column headers — dynamic, shown per row type via JS -->
           <div id="mat-rows"></div>
           <button type="button" onclick="addMatRow()" style="margin-top:6px;background:transparent;border:1px dashed var(--border2);border-radius:var(--radius-sm);padding:5px 12px;font-size:11px;color:var(--text2);cursor:pointer;font-family:'DM Sans',sans-serif;width:100%;">+ Add line</button>
-          <!-- Tax rate and S&H fields — above totals so always visible -->
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;">
-            <div style="display:flex;align-items:center;gap:6px;">
-              <span style="font-size:11px;font-weight:600;color:var(--text2);white-space:nowrap;">Sales Tax %</span>
-              <input type="number" id="matTaxRateTop" min="0" max="20" step="0.01" value="10.25" placeholder="0.00"
-                style="width:62px;font-size:12px;padding:4px 6px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface);color:var(--text);font-family:monospace;text-align:right;"
-                oninput="syncTaxRate(this.value);">
-              <span style="font-size:11px;color:var(--text3);">%</span>
-            </div>
-            <div style="display:flex;align-items:center;gap:6px;">
-              <span style="font-size:11px;font-weight:600;color:var(--text2);white-space:nowrap;">S&amp;H Cost $</span>
-              <input type="number" id="matShippingCost" min="0" step="0.01" value="" placeholder="0.00"
-                style="width:72px;font-size:12px;padding:4px 6px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface);color:var(--text);font-family:monospace;text-align:right;"
-                oninput="var r=document.getElementById('sh-markup-row'); if(r) r.style.display=(parseFloat(this.value)||0)>0?'':'none'; updateMatTotal(); calc();">
-            </div>
-          </div>
-          <!-- S&H Markup slider -->
-          <div id="sh-markup-row" style="display:none;margin-top:6px;background:var(--surface);border-radius:var(--radius-sm);padding:6px 10px;border:1px solid var(--border);">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;">
-              <span style="font-size:11px;font-weight:600;color:var(--text2);">S&amp;H Markup</span>
-              <span style="font-family:'DM Mono',monospace;font-size:12px;font-weight:600;color:#e8620a;" id="shMarkupLabel">15%</span>
-            </div>
-            <input type="range" id="shMarkupSlider" min="0" max="50" step="1" value="15"
-              style="width:100%;accent-color:#e8620a;"
-              oninput="document.getElementById('shMarkupLabel').textContent=this.value+'%'; updateMatTotal(); calc();">
-            <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text3);margin-top:1px;"><span>0%</span><span>50%</span></div>
-          </div>
-          <!-- Totals footer -->
+          <!-- Totals footer — Sales Tax & S&H controls moved to Quote Summary (right column) -->
           <div style="margin-top:10px;padding-top:8px;border-top:1px solid var(--border);display:grid;grid-template-columns:1fr auto auto;gap:4px 10px;font-size:12px;">
             <span style="font-weight:600;color:var(--text2);">Labor cost</span>
             <span style="font-family:'DM Mono',monospace;font-weight:600;color:var(--text2);text-align:right;" id="mat-labor-cost-display">$0.00</span>
@@ -2126,20 +2099,7 @@
             <span style="font-weight:700;color:var(--text);border-top:1px solid var(--border);padding-top:4px;margin-top:2px;">Total sell</span>
             <span></span>
             <span style="font-family:'DM Mono',monospace;font-size:13px;font-weight:700;color:#e8620a;text-align:right;border-top:1px solid var(--border);padding-top:4px;margin-top:2px;" id="mat-grand-sell-display">$0.00</span>
-            <!-- Sales Tax row — hidden when 0 -->
-            <span id="mat-tax-label" style="font-weight:600;color:var(--text2);display:none;">Sales Tax</span>
-            <span id="mat-tax-display" style="font-family:'DM Mono',monospace;font-weight:600;color:var(--text2);text-align:right;display:none;"></span>
-            <span id="mat-tax-amount" style="font-family:'DM Mono',monospace;font-weight:700;color:var(--text);text-align:right;display:none;"></span>
-            <!-- S&H row — hidden when 0 -->
-            <span id="mat-sh-label" style="font-weight:600;color:var(--text2);display:none;">S&amp;H</span>
-            <span id="mat-sh-markup-display" style="font-family:'DM Mono',monospace;font-weight:600;color:var(--text2);text-align:right;display:none;"></span>
-            <span id="mat-sh-amount" style="font-family:'DM Mono',monospace;font-weight:700;color:var(--text);text-align:right;display:none;"></span>
-            <!-- Total with S&H & Tax -->
-            <span id="mat-total-with-tax-label" style="font-weight:700;color:var(--text);border-top:1px solid var(--border);padding-top:4px;margin-top:2px;display:none;">Total with S&amp;H &amp; Tax</span>
-            <span></span>
-            <span id="mat-total-with-tax" style="font-family:'DM Mono',monospace;font-size:13px;font-weight:700;color:#e8620a;text-align:right;border-top:1px solid var(--border);padding-top:4px;margin-top:2px;display:none;"></span>
           </div>
-          <input type="hidden" id="matTaxRate" value="10.25">
         </div>
       </div>
     </div>
@@ -2542,6 +2502,53 @@
 
       <!-- QUOTE SUMMARY -->
       <div style="font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#e8620a;margin-bottom:8px;">Quote summary</div>
+
+      <!-- Sales Tax & S&H — moved here from Installation Labor/Materials; shown only when installation labor/material present -->
+      <div id="qs-tax-sh" style="display:none;background:var(--surface2);border-radius:var(--radius-sm);padding:10px 12px;margin-bottom:10px;">
+        <div style="font-size:10px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--text3);margin-bottom:8px;">Sales Tax &amp; S&amp;H</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          <div style="display:flex;align-items:center;gap:6px;">
+            <span style="font-size:11px;font-weight:600;color:var(--text2);white-space:nowrap;">Sales Tax %</span>
+            <input type="number" id="matTaxRateTop" min="0" max="20" step="0.01" value="10.25" placeholder="0.00"
+              style="width:62px;font-size:12px;padding:4px 6px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface);color:var(--text);font-family:monospace;text-align:right;"
+              oninput="syncTaxRate(this.value);">
+            <span style="font-size:11px;color:var(--text3);">%</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <span style="font-size:11px;font-weight:600;color:var(--text2);white-space:nowrap;">S&amp;H Cost $</span>
+            <input type="number" id="matShippingCost" min="0" step="0.01" value="" placeholder="0.00"
+              style="width:72px;font-size:12px;padding:4px 6px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface);color:var(--text);font-family:monospace;text-align:right;"
+              oninput="var r=document.getElementById('sh-markup-row'); if(r) r.style.display=(parseFloat(this.value)||0)>0?'':'none'; updateMatTotal(); calc();">
+          </div>
+        </div>
+        <!-- S&H Markup slider -->
+        <div id="sh-markup-row" style="display:none;margin-top:6px;background:var(--surface);border-radius:var(--radius-sm);padding:6px 10px;border:1px solid var(--border);">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;">
+            <span style="font-size:11px;font-weight:600;color:var(--text2);">S&amp;H Markup</span>
+            <span style="font-family:'DM Mono',monospace;font-size:12px;font-weight:600;color:#e8620a;" id="shMarkupLabel">15%</span>
+          </div>
+          <input type="range" id="shMarkupSlider" min="0" max="50" step="1" value="15"
+            style="width:100%;accent-color:#e8620a;"
+            oninput="document.getElementById('shMarkupLabel').textContent=this.value+'%'; updateMatTotal(); calc();">
+          <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text3);margin-top:1px;"><span>0%</span><span>50%</span></div>
+        </div>
+        <!-- Tax / S&H breakdown -->
+        <div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border);display:grid;grid-template-columns:1fr auto auto;gap:4px 10px;font-size:12px;">
+          <!-- Sales Tax row — hidden when 0 -->
+          <span id="mat-tax-label" style="font-weight:600;color:var(--text2);display:none;">Sales Tax</span>
+          <span id="mat-tax-display" style="font-family:'DM Mono',monospace;font-weight:600;color:var(--text2);text-align:right;display:none;"></span>
+          <span id="mat-tax-amount" style="font-family:'DM Mono',monospace;font-weight:700;color:var(--text);text-align:right;display:none;"></span>
+          <!-- S&H row — hidden when 0 -->
+          <span id="mat-sh-label" style="font-weight:600;color:var(--text2);display:none;">S&amp;H</span>
+          <span id="mat-sh-markup-display" style="font-family:'DM Mono',monospace;font-weight:600;color:var(--text2);text-align:right;display:none;"></span>
+          <span id="mat-sh-amount" style="font-family:'DM Mono',monospace;font-weight:700;color:var(--text);text-align:right;display:none;"></span>
+          <!-- Total with S&H & Tax -->
+          <span id="mat-total-with-tax-label" style="font-weight:700;color:var(--text);border-top:1px solid var(--border);padding-top:4px;margin-top:2px;display:none;">Total with S&amp;H &amp; Tax</span>
+          <span></span>
+          <span id="mat-total-with-tax" style="font-family:'DM Mono',monospace;font-size:13px;font-weight:700;color:#e8620a;text-align:right;border-top:1px solid var(--border);padding-top:4px;margin-top:2px;display:none;"></span>
+        </div>
+        <input type="hidden" id="matTaxRate" value="10.25">
+      </div>
 
       <div style="margin-bottom:10px;">
         <div style="background:#1c1c1c;border-radius:var(--radius);padding:12px;border-left:4px solid #e8620a;">
@@ -5672,6 +5679,10 @@ function updateMatTotal() {
   var taxRate   = taxRateEl ? (parseFloat(taxRateEl.value) || 0) / 100 : 0;
   var taxAmt    = totalMatSell * taxRate;
   var grandSellTotal = totalLaborSell + totalMatSell;
+
+  // Show the Quote Summary Sales Tax & S&H block only when there is installation labor/material
+  var qsTaxSh = document.getElementById('qs-tax-sh');
+  if (qsTaxSh) qsTaxSh.style.display = grandSellTotal > 0 ? '' : 'none';
 
   // S&H — billed = cost × (1 + markup); not taxed (matches one-time total + quote output)
   var shCostEl   = document.getElementById('matShippingCost');
