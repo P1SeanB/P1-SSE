@@ -2463,7 +2463,7 @@
 
       <!-- COMBINED TOTALS -->
       <div id="section-combined-totals">
-      <div style="font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#e8620a;margin-bottom:8px;">Combined totals</div>
+      <div style="font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#e8620a;margin-bottom:8px;">Combined Recurring Totals</div>
       <div class="metric-row">
         <span class="metric-label">Total annual costs</span>
         <span class="metric-value" id="s-totalCosts">$0.00</span>
@@ -2494,7 +2494,7 @@
       <!-- T&M COMBINED TOTALS — shown only for T&M -->
       <div id="section-tm-combined" style="display:none;">
         <hr class="divider">
-        <div id="s-tm-combined-title" style="font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#e8620a;margin-bottom:8px;">T&amp;M Combined Totals</div>
+        <div id="s-tm-combined-title" style="font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#e8620a;margin-bottom:8px;">One-Time / T&amp;M Totals</div>
         <div class="metric-row">
           <span class="metric-label">Total cost</span>
           <span class="metric-value" id="s-tm-total-cost">—</span>
@@ -4554,7 +4554,7 @@ function calc() {
   const secTMCombined = document.getElementById('section-tm-combined');
   if (secTMCombined) secTMCombined.style.display = isTMCalc ? '' : 'none';
   var sTMCombinedTitle = document.getElementById('s-tm-combined-title');
-  if (sTMCombinedTitle) sTMCombinedTitle.textContent = (sysType === 'Material Only') ? 'Material Combined Totals' : 'T&M Combined Totals';
+  if (sTMCombinedTitle) sTMCombinedTitle.textContent = (sysType === 'Material Only') ? 'One-Time / Material Totals' : 'One-Time / T&M Totals';
   const secCombined = document.getElementById('section-combined-totals');
   if (secCombined) secCombined.style.display = isTMCalc ? 'none' : '';
   if (isTMCalc) {
