@@ -2184,8 +2184,6 @@
         <input type="hidden" id="ohMethod" value="revenue">
       </div>      <hr class="divider">
 
-      <button type="button" id="margin-detail-toggle" onclick="toggleMarginDetail()" style="width:100%;background:transparent;border:1px solid var(--border2);border-radius:var(--radius-sm);padding:6px 12px;font-size:11px;font-weight:600;color:var(--text2);cursor:pointer;font-family:'DM Sans',sans-serif;margin-bottom:10px;">Hide margin detail &#9650;</button>
-      <div id="margin-detail-wrap">
       <!-- MONITORING / OTHER MONTHLY SECTION -->
       <div id="section-monitoring">
         <div style="font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#e8620a;margin-bottom:8px;">Monitoring &amp; services</div>
@@ -2213,6 +2211,8 @@
           </div>
         </div>
 
+        <button type="button" id="mon-cost-toggle" onclick="toggleMonCostDetail()" style="background:none;border:none;padding:0 0 4px;font-size:10px;font-weight:600;letter-spacing:0.02em;color:var(--text3);cursor:pointer;font-family:'DM Sans',sans-serif;">Show cost detail &#9662;</button>
+        <div id="mon-cost-detail" style="display:none;">
         <div class="metric-row">
           <span class="metric-label">Monthly monitoring costs</span>
           <span class="metric-value" id="s-mMonitoring">$0.00</span>
@@ -2220,6 +2220,7 @@
         <div class="metric-row">
           <span class="metric-label">Monthly monitoring billed</span>
           <span class="metric-value" id="s-mMonitoringBilled">$0.00</span>
+        </div>
         </div>
         <div class="metric-row">
           <span class="metric-label">Annual monitoring billed</span>
@@ -2523,7 +2524,6 @@
           <span class="metric-value" id="s-tm-nm" style="font-weight:600;">—</span>
         </div>
       </div>
-      </div><!-- /margin-detail-wrap -->
 
       <hr class="divider">
 
@@ -5694,13 +5694,13 @@ function updateKpiStrip() {
   if (rl && kl) kl.textContent = rl.textContent;
 }
 
-function toggleMarginDetail() {
-  var w = document.getElementById('margin-detail-wrap');
-  var b = document.getElementById('margin-detail-toggle');
+function toggleMonCostDetail() {
+  var w = document.getElementById('mon-cost-detail');
+  var b = document.getElementById('mon-cost-toggle');
   if (!w || !b) return;
   var hidden = w.style.display === 'none';
   w.style.display = hidden ? '' : 'none';
-  b.innerHTML = hidden ? 'Hide margin detail &#9650;' : 'Show margin detail &#9660;';
+  b.innerHTML = hidden ? 'Hide cost detail &#9652;' : 'Show cost detail &#9662;';
 }
 
 function updateMatTotal() {
