@@ -73,7 +73,9 @@
     position: sticky;
     top: 0;
     z-index: 100;
+    white-space: nowrap;
   }
+  .header-right { flex-shrink: 0; }
 
   .logo {
     font-family: 'DM Mono', monospace;
@@ -4356,7 +4358,7 @@ function calc() {
   const monRMR53 = Math.max(minRMR, calcRMR(monOnlyCosts, svcGM));
   const laborRMR  = inspBilledMonthly;
   const rmr53Raw  = Math.max(minRMR, monRMR53 + subRMR + laborRMR + avMaintRMR);
-  const rmr53     = rmr53Raw > 0 ? Math.ceil(rmr53Raw / 5) * 5 : rmr53Raw;
+  const rmr53     = rmr53Raw > 0 ? Math.ceil(rmr53Raw) : rmr53Raw;
   const rmrCustom = Math.max(minRMR, calcRMR(monOnlyCosts, customGM) + subRMR + laborRMR + avMaintRMR);
 
   // Manual monthly override — per-site rates entered by the user replace the
@@ -4881,7 +4883,7 @@ function copyQuote() {
   const minRMRCopy = isFireOrBurglarCopy ? (isCommercialCopy ? P1_RATES.minRMRCommercial : P1_RATES.minRMRResidential) : (qSystem === 'Two-Way Monitoring & Services' ? P1_RATES.minRMRTwoWay : 0);
   const monRMR53   = Math.max(minRMRCopy, monOnlyCosts > 0 ? monOnlyCosts / (12 * (1 - svcGMcopy)) : 0);
   const rmr53Raw   = Math.max(minRMRCopy, monRMR53 + subRMR + (inspBilledCopy/12) + avMaintRMR);
-  const rmrCalcCopy = rmr53Raw > 0 ? Math.ceil(rmr53Raw / 5) * 5 : rmr53Raw;
+  const rmrCalcCopy = rmr53Raw > 0 ? Math.ceil(rmr53Raw) : rmr53Raw;
   const quotedCopy  = (typeof qbQuotedMonthlyTotal === 'function') ? qbQuotedMonthlyTotal() : 0;
   const rmr        = quotedCopy > 0 ? quotedCopy : rmrCalcCopy;
   const annRev     = rmr * 12;
