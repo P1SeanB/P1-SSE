@@ -11042,7 +11042,7 @@ function mcBuildAgreementDoc(d, cust, logo){
     '</div></div><div class="fa-stripe"></div>';
 
   // Parties
-  var p1='Point 1 Electrical Systems, Inc.<br>6751 Southfront Rd., Livermore, CA 94551<br>CA Lic #745827 &middot; ACO #6506 &middot; 925-667-2906'+(cust.estimator?'<br>Representative: '+mcEsc(cust.estimator):'');
+  var p1='Point 1 Electrical Systems, Inc.<br>6751 Southfront Rd., Livermore, CA 94551<br>CA Lic #745827 &middot; ACO #6506 &middot; 925-667-2950'+(cust.estimator?'<br>Representative: '+mcEsc(cust.estimator):'');
   var primarySite=d.sites[0];
   var bill=(cust.billing && cust.billing.addr) ? cust.billing : (primarySite||{});
   var custAddr = bill.addr ? (mcEsc(bill.addr)+(bill.city?', '+mcEsc(bill.city):'')+(bill.state?', '+mcEsc(bill.state):'')+(bill.zip?' '+mcEsc(bill.zip):'')) : '';
@@ -11109,7 +11109,7 @@ function mcBuildAgreementDoc(d, cust, logo){
   } else {
     pricingTable=
       '<table class="fa-budget-table"><tbody>'+
-        '<tr><td style="width:48%">Total Sale &amp; Installation Price</td><td>'+mcMoneyOrBlank(d.price)+' <span style="font-family:\'DM Sans\',sans-serif;font-weight:400;color:#777;">(plus applicable taxes, billed)</span></td></tr>'+
+        '<tr><td style="width:48%">Total Sale &amp; Installation Price</td><td>'+mcMoneyOrBlank(d.price)+' <span style="font-family:\'DM Sans\',sans-serif;font-weight:400;color:#777;">(including estimated sales tax)</span></td></tr>'+
         '<tr><td>Service Charge</td><td>'+mcMoneyOrBlank(d.charge)+' &nbsp;<span style="font-family:\'DM Sans\',sans-serif;font-weight:400;color:#777;">billed '+freq.toLowerCase()+'</span></td></tr>'+
         '<tr><td>Initial Term</td><td>'+mcEsc(b(d.term))+'</td></tr>'+
       '</tbody></table>';
@@ -11135,7 +11135,7 @@ function mcBuildAgreementDoc(d, cust, logo){
     '</div></div>';
 
   // Footer (screen preview)
-  html+='<div class="fa-footer"><div class="fa-footer-left">Point 1 Electrical Systems, Inc. &nbsp;&middot;&nbsp; 6751 Southfront Rd, Livermore CA 94551 &nbsp;&middot;&nbsp; CA Lic #745827 &middot; ACO #6506 &nbsp;&middot;&nbsp; 925-667-2906</div><div class="fa-footer-right">Agreement # '+mcEsc(agrNum)+' &nbsp;&middot;&nbsp; '+mcTypeShort(d.type)+'</div></div>';
+  html+='<div class="fa-footer"><div class="fa-footer-left">Point 1 Electrical Systems, Inc. &nbsp;&middot;&nbsp; 6751 Southfront Rd, Livermore CA 94551 &nbsp;&middot;&nbsp; CA Lic #745827 &middot; ACO #6506 &nbsp;&middot;&nbsp; 925-667-2950</div><div class="fa-footer-right">Agreement # '+mcEsc(agrNum)+' &nbsp;&middot;&nbsp; '+mcTypeShort(d.type)+'</div></div>';
 
   return { html:html, agrNum:agrNum };
 }
@@ -11223,7 +11223,7 @@ function mcBuildCombinedDoc(agrs, cust, logo){
       '<div class="fa-meta-row"><span class="fa-meta-lbl">Date</span><span class="fa-meta-val">'+mcEsc(agrDate)+'</span></div>'+
       '<div class="fa-meta-row"><span class="fa-meta-lbl">Initial Term</span><span class="fa-meta-val">'+mcEsc(b(first.term))+'</span></div>'+
     '</div></div><div class="fa-stripe"></div>';
-  var p1='Point 1 Electrical Systems, Inc.<br>6751 Southfront Rd., Livermore, CA 94551<br>CA Lic #745827 &middot; ACO #6506 &middot; 925-667-2906'+(cust.estimator?'<br>Representative: '+mcEsc(cust.estimator):'');
+  var p1='Point 1 Electrical Systems, Inc.<br>6751 Southfront Rd., Livermore, CA 94551<br>CA Lic #745827 &middot; ACO #6506 &middot; 925-667-2950'+(cust.estimator?'<br>Representative: '+mcEsc(cust.estimator):'');
   var primarySite=first.sites[0];
   var bill=(cust.billing && cust.billing.addr) ? cust.billing : (primarySite||{});
   var custAddr = bill.addr ? (mcEsc(bill.addr)+(bill.city?', '+mcEsc(bill.city):'')+(bill.state?', '+mcEsc(bill.state):'')+(bill.zip?' '+mcEsc(bill.zip):'')) : '';
@@ -11278,7 +11278,7 @@ function mcBuildCombinedDoc(agrs, cust, logo){
   html+='</div>';
   html+='<div class="fa-section fa-sig-section"><div class="fa-section-head"><span class="fa-section-num">&sect;5</span><span class="fa-section-title">Pricing &amp; Signatures</span></div>'+
     '<table class="fa-budget-table" style="margin-bottom:9px;"><tbody>'+
-      '<tr><td style="width:48%">Total Sale &amp; Installation Price</td><td>'+mcMoneyOrBlank(first.price)+' <span style="font-family:\'DM Sans\',sans-serif;font-weight:400;color:#777;">(plus applicable taxes, billed)</span></td></tr>'+
+      '<tr><td style="width:48%">Total Sale &amp; Installation Price</td><td>'+mcMoneyOrBlank(first.price)+' <span style="font-family:\'DM Sans\',sans-serif;font-weight:400;color:#777;">(including estimated sales tax)</span></td></tr>'+
       '<tr><td>Service Charge</td><td>'+mcMoneyOrBlank(first.charge)+' &nbsp;<span style="font-family:\'DM Sans\',sans-serif;font-weight:400;color:#777;">billed '+mcFreqLabel(first.freq).toLowerCase()+'</span></td></tr>'+
       '<tr><td>Initial Term</td><td>'+mcEsc(b(first.term))+'</td></tr></tbody></table>'+
     '<p class="fa-body">This Agreement is not effective until approved by a Point 1 manager or until Point 1 begins installation or initiates service. By signing below, the parties agree to all terms of this '+typeNameCombined+' Agreement. Each signatory warrants full authority to execute on behalf of the respective party. Please read the entire Agreement before signing.</p>'+
@@ -11293,7 +11293,7 @@ function mcBuildCombinedDoc(agrs, cust, logo){
         '<div class="fa-sig-line"></div><span class="fa-sig-lbl">Date</span></div>'+
     '</div></div>';
   var footShort = single ? mcTypeShort(first.type) : 'MULTI-SERVICE';
-  html+='<div class="fa-footer"><div class="fa-footer-left">Point 1 Electrical Systems, Inc. &nbsp;&middot;&nbsp; 6751 Southfront Rd, Livermore CA 94551 &nbsp;&middot;&nbsp; CA Lic #745827 &middot; ACO #6506 &nbsp;&middot;&nbsp; 925-667-2906</div><div class="fa-footer-right">Agreement # '+mcEsc(agrNum)+' &nbsp;&middot;&nbsp; '+footShort+'</div></div>';
+  html+='<div class="fa-footer"><div class="fa-footer-left">Point 1 Electrical Systems, Inc. &nbsp;&middot;&nbsp; 6751 Southfront Rd, Livermore CA 94551 &nbsp;&middot;&nbsp; CA Lic #745827 &middot; ACO #6506 &nbsp;&middot;&nbsp; 925-667-2950</div><div class="fa-footer-right">Agreement # '+mcEsc(agrNum)+' &nbsp;&middot;&nbsp; '+footShort+'</div></div>';
   return { html:html, agrNum:agrNum };
 }
 
