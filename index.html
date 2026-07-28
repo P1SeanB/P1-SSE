@@ -9370,6 +9370,7 @@ function slaClearNonCustomer() {
     .fa-section-head { break-after: avoid; page-break-after: avoid; }
     .fa-body { orphans: 3; widows: 3; }
     .fa-tc-list li { break-inside: avoid; page-break-inside: avoid; }
+    .fa-scope-box { break-inside: avoid; page-break-inside: avoid; }
     .fa-pm-scope tr { break-inside: avoid; page-break-inside: avoid; }
     .fa-resp-table tr { break-inside: avoid; page-break-inside: avoid; }
     .fa-parties { break-inside: avoid; page-break-inside: avoid; }
@@ -10595,15 +10596,16 @@ function mcRenumberAgreements(){
 function mcAgreementHTML(id){
   return ''+
   '<div class="mc-card-head">'+
-    '<div class="mc-card-title"><span class="mc-card-badge" data-role="badge">AGREEMENT</span><span class="mc-agr-label" data-role="label">Select a service type</span></div>'+
+    '<div class="mc-card-title"><span class="mc-card-badge" data-role="badge">AGREEMENT</span><span class="mc-agr-label" data-role="label">Select one or more systems</span></div>'+
     '<button class="mc-remove-btn" onclick="mcRemoveAgreement(\''+id+'\')">Remove</button>'+
   '</div>'+
   '<div class="mc-type-row">'+
-    '<button type="button" class="mc-type-pill" data-type="burglar" onclick="mcSetType(\''+id+'\',\'burglar\')"><div class="mc-tp-name">Burglar Monitoring</div><div class="mc-tp-sub">Commercial or Residential</div></button>'+
-    '<button type="button" class="mc-type-pill" data-type="fire" onclick="mcSetType(\''+id+'\',\'fire\')"><div class="mc-tp-name">Fire Monitoring</div><div class="mc-tp-sub">Commercial only</div></button>'+
-    '<button type="button" class="mc-type-pill" data-type="ac" onclick="mcSetType(\''+id+'\',\'ac\')"><div class="mc-tp-name">Access Control Hosting</div><div class="mc-tp-sub">Hosted credential mgmt</div></button>'+
-    '<button type="button" class="mc-type-pill" data-type="video" onclick="mcSetType(\''+id+'\',\'video\')"><div class="mc-tp-name">Video Surveillance</div><div class="mc-tp-sub">Recording &amp; monitoring</div></button>'+
+    '<button type="button" class="mc-type-pill" data-type="burglar" onclick="mcToggleType(\''+id+'\',\'burglar\')"><div class="mc-tp-name">Burglar Monitoring</div><div class="mc-tp-sub">Commercial or Residential</div></button>'+
+    '<button type="button" class="mc-type-pill" data-type="video" onclick="mcToggleType(\''+id+'\',\'video\')"><div class="mc-tp-name">Video Surveillance</div><div class="mc-tp-sub">Recording &amp; monitoring</div></button>'+
+    '<button type="button" class="mc-type-pill" data-type="ac" onclick="mcToggleType(\''+id+'\',\'ac\')"><div class="mc-tp-name">Access Control Hosting</div><div class="mc-tp-sub">Hosted credential mgmt</div></button>'+
+    '<button type="button" class="mc-type-pill" data-type="fire" onclick="mcToggleType(\''+id+'\',\'fire\')"><div class="mc-tp-name">Fire Monitoring</div><div class="mc-tp-sub">Separate agreement</div></button>'+
   '</div>'+
+  '<div style="font-size:11px;color:var(--text3);margin:2px 0 8px;">Select any combination of Burglar, Video, and Access Control to combine into one agreement. Fire generates as its own separate agreement.</div>'+
   '<div class="sla-grid3" style="margin-bottom:10px;">'+
     '<div class="sla-field"><label>Occupancy</label><select data-f="occupancy" onchange="mcOnOccupancyChange(\''+id+'\')"><option>Commercial</option><option>Residential</option></select></div>'+
     '<div class="sla-field"><label>Agreement Type</label><select data-f="txn"><option>New System or Takeover</option><option>New Owner</option><option>Addendum — Alteration / Addition</option><option>Cancel Former Agreement</option></select></div>'+
@@ -10620,22 +10622,26 @@ function mcAgreementHTML(id){
   '</div>'+
   '<div class="mc-sub-label">Covered Sites</div>'+
   '<div class="mc-chip-row" data-role="sites"></div>'+
-  '<div class="mc-sub-label">Services Included</div>'+
-  '<div class="mc-svc-grid" data-role="svc"><span style="font-size:11px;color:var(--text3);font-style:italic;grid-column:1/-1;">Select a service type above to choose services</span></div>'+
-  '<div class="mc-sub-label">Pricing &amp; Billing</div>'+
-  '<label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2);cursor:pointer;margin-bottom:8px;"><input type="checkbox" data-role="ps-toggle" onchange="mcTogglePerSite(this)" style="accent-color:#e8620a;cursor:pointer;"> Price per site (separate sale price &amp; service charge for each covered site)</label>'+
-  '<div data-role="price-single" class="sla-grid3" style="margin-bottom:6px;">'+
-    '<div class="sla-field"><label>Total Sale &amp; Installation Price ($)</label><input type="text" data-f="price" placeholder="0.00"></div>'+
-    '<div class="sla-field"><label>Service Charge ($)</label><input type="text" data-f="charge" placeholder="0.00"></div>'+
-    '<div></div>'+
-  '</div>'+
-  '<div data-role="price-persite" style="display:none;margin-bottom:6px;"><div data-role="ps-rows"></div></div>'+
-  '<div class="sla-grid3" style="margin-bottom:6px;">'+
-    '<div class="sla-field"><label>Billing Frequency</label><select data-f="freq"><option value="monthly" selected>Monthly</option><option value="quarterly">Quarterly</option><option value="annual">Annual (prepaid)</option></select></div>'+
-    '<div></div><div></div>'+
-  '</div>'+
-  '<div class="mc-sub-label">Scope / Continuation Page — what Point 1 will install, take over, or provide</div>'+
-  '<div class="sla-field"><textarea data-f="scope" rows="5" placeholder="e.g.&#10;Point 1 to install and connect (1) DMP XR550 control panel with cellular communicator.&#10;Connect to and monitor (8) existing door contacts and (2) motion detectors.&#10;Provide central station burglar monitoring with mobile app access."></textarea></div>';
+  '<div data-role="systems"><div class="mc-sys-empty" style="font-size:11px;color:var(--text3);font-style:italic;">Select one or more systems above to configure services, scope, and pricing.</div></div>';
+}
+
+// One collapsible panel per selected system (services + pricing + scope)
+function mcSystemPanelHTML(type, occ){
+  var list=mcServiceSet(type, occ);
+  var svc=list.map(function(s){ return '<label class="mc-svc-item"><input type="checkbox" data-svc="'+mcEsc(s.l)+'"'+(s.d?' checked':'')+'>'+mcEsc(s.l)+'</label>'; }).join('');
+  return '<div class="mc-sys-panel" data-sys="'+type+'" style="border:1px solid var(--border);border-left:3px solid #e8620a;border-radius:var(--radius-sm);padding:10px 12px;margin-bottom:10px;">'+
+    '<div class="mc-sub-label" style="margin-top:0;font-weight:600;color:var(--text2);">'+mcEsc(mcTypeName(type))+'</div>'+
+    '<div class="mc-sub-label">Services Included</div>'+
+    '<div class="mc-svc-grid" data-role="svc">'+svc+'</div>'+
+    '<div class="mc-sub-label">Pricing &amp; Billing</div>'+
+    '<div class="sla-grid3" style="margin-bottom:6px;">'+
+      '<div class="sla-field"><label>Sale &amp; Install Price ($)</label><input type="text" data-f="price" placeholder="0.00"></div>'+
+      '<div class="sla-field"><label>Service Charge ($)</label><input type="text" data-f="charge" placeholder="0.00"></div>'+
+      '<div class="sla-field"><label>Billing Frequency</label><select data-f="freq"><option value="monthly" selected>Monthly</option><option value="quarterly">Quarterly</option><option value="annual">Annual (prepaid)</option></select></div>'+
+    '</div>'+
+    '<div class="mc-sub-label">Scope / Continuation Page — what Point 1 will install, take over, or provide</div>'+
+    '<div class="sla-field"><textarea data-f="scope" rows="4" placeholder="e.g. Point 1 to install and connect (1) control panel; connect to and monitor existing devices; provide central station monitoring with mobile app access."></textarea></div>'+
+  '</div>';
 }
 
 var MC_SERVICES = {
@@ -10701,32 +10707,61 @@ function mcRenderServices(card){
     return '<label class="mc-svc-item"><input type="checkbox" data-svc="'+mcEsc(s.l)+'"'+(checked?' checked':'')+'>'+mcEsc(s.l)+'</label>';
   }).join('');
 }
-function mcSetType(id,type){
+// Multi-select: Burglar/Video/AC can combine; Fire is exclusive (its own separate agreement).
+function mcToggleType(id,type){
   var card=document.querySelector('#mc-agreements-list .mc-card[data-agrid="'+id+'"]'); if(!card) return;
-  card.setAttribute('data-type',type);
-  card.querySelectorAll('.mc-type-pill').forEach(function(p){ p.classList.toggle('active', p.getAttribute('data-type')===type); });
-  // Fire is Commercial-only; burglar supports Commercial or Residential; access-control hosting ignores occupancy
+  var container=card.querySelector('[data-role="systems"]');
   var occ=card.querySelector('[data-f="occupancy"]');
-  if(type==='fire'){ occ.value='Commercial'; occ.disabled=true; } else { occ.disabled=false; }
-  // services (occupancy-aware for burglar)
-  mcRenderServices(card);
-  // comm hidden for access control hosting
-  var commwrap=card.querySelector('[data-role="commwrap"]');
-  commwrap.style.display = (type==='ac') ? 'none' : '';
+  var existing=container.querySelector('.mc-sys-panel[data-sys="'+type+'"]');
+  if(existing){
+    existing.remove();
+  } else {
+    if(type==='fire'){
+      // Fire is standalone: clear any other systems
+      container.querySelectorAll('.mc-sys-panel').forEach(function(p){ p.remove(); });
+    } else {
+      // adding a combinable system removes Fire (Fire can't share a card)
+      var fp=container.querySelector('.mc-sys-panel[data-sys="fire"]'); if(fp) fp.remove();
+    }
+    var empty=container.querySelector('.mc-sys-empty'); if(empty) empty.remove();
+    container.insertAdjacentHTML('beforeend', mcSystemPanelHTML(type, occ?occ.value:'Commercial'));
+  }
+  // Fire forces Commercial occupancy
+  if(container.querySelector('.mc-sys-panel[data-sys="fire"]')){ if(occ){ occ.value='Commercial'; occ.disabled=true; } }
+  else if(occ){ occ.disabled=false; }
+  // Communication row hidden only when the sole system is Access Control
+  var panels=container.querySelectorAll('.mc-sys-panel');
+  var onlyAC = panels.length===1 && panels[0].getAttribute('data-sys')==='ac';
+  var commwrap=card.querySelector('[data-role="commwrap"]'); if(commwrap) commwrap.style.display = onlyAC?'none':'';
+  // Reflect selection on the pills
+  card.querySelectorAll('.mc-type-pill').forEach(function(p){ var t=p.getAttribute('data-type'); p.classList.toggle('active', !!container.querySelector('.mc-sys-panel[data-sys="'+t+'"]')); });
+  // Restore placeholder if nothing selected
+  if(!container.querySelector('.mc-sys-panel')){ container.innerHTML='<div class="mc-sys-empty" style="font-size:11px;color:var(--text3);font-style:italic;">Select one or more systems above to configure services, scope, and pricing.</div>'; }
   mcRenumberAgrLabel(id);
+  mcUpdateHeaderRevenue();
 }
 function mcOnOccupancyChange(id){
   var card=document.querySelector('#mc-agreements-list .mc-card[data-agrid="'+id+'"]'); if(!card) return;
-  // Burglar service options differ by occupancy (residential adds the fire add-on), so re-render
-  if(card.getAttribute('data-type')==='burglar') mcRenderServices(card);
+  var occ=card.querySelector('[data-f="occupancy"]').value;
+  // Burglar service options differ by occupancy (residential adds the fire add-on), so re-render that panel
+  var bpanel=card.querySelector('.mc-sys-panel[data-sys="burglar"]');
+  if(bpanel){
+    var svc=bpanel.querySelector('[data-role="svc"]');
+    var prev={}; svc.querySelectorAll('input[data-svc]').forEach(function(cb){ prev[cb.getAttribute('data-svc')]=cb.checked; });
+    svc.innerHTML=mcServiceSet('burglar', occ).map(function(s){ var checked=(s.l in prev)?prev[s.l]:!!s.d; return '<label class="mc-svc-item"><input type="checkbox" data-svc="'+mcEsc(s.l)+'"'+(checked?' checked':'')+'>'+mcEsc(s.l)+'</label>'; }).join('');
+  }
   mcRenumberAgrLabel(id);
+  mcUpdateHeaderRevenue();
 }
 function mcRenumberAgrLabel(id){
   var card=document.querySelector('#mc-agreements-list .mc-card[data-agrid="'+id+'"]'); if(!card) return;
-  var type=card.getAttribute('data-type');
   var occ=card.querySelector('[data-f="occupancy"]').value;
-  var lbl = type ? (mcTypeName(type)+(type==='ac'?'':' · '+occ)) : 'Select a service type';
-  card.querySelector('[data-role="label"]').textContent=lbl;
+  var panels=card.querySelectorAll('[data-role="systems"] .mc-sys-panel');
+  var lblEl=card.querySelector('[data-role="label"]');
+  if(!panels.length){ lblEl.textContent='Select one or more systems'; return; }
+  var names=Array.prototype.map.call(panels,function(p){ return mcTypeName(p.getAttribute('data-sys')); });
+  var onlyAC = panels.length===1 && panels[0].getAttribute('data-sys')==='ac';
+  lblEl.textContent = names.join(' · ') + (onlyAC?'':(' · '+occ));
 }
 
 function mcResetFields(){
@@ -10745,11 +10780,12 @@ function mcUpdateHeaderRevenue(){
   var num=function(x){ return parseFloat(String(x==null?'':x).replace(/[^0-9.]/g,''))||0; };
   var annual=0;
   document.querySelectorAll('#mc-agreements-list .mc-card').forEach(function(card){
-    var d=mcReadAgreement(card);
-    var charge=d.perSite ? d.chargeTotal : num(d.charge);
-    if(charge<=0) return;
-    var periods=d.freq==='quarterly'?4:d.freq==='annual'?1:12;
-    annual+=charge*periods;
+    mcReadCard(card).forEach(function(d){
+      var charge=num(d.charge);
+      if(charge<=0) return;
+      var periods=d.freq==='quarterly'?4:d.freq==='annual'?1:12;
+      annual+=charge*periods;
+    });
   });
   var monthly=annual/12;
   function f(n){ return '$'+(n||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); }
@@ -10758,6 +10794,23 @@ function mcUpdateHeaderRevenue(){
 }
 document.addEventListener('input',function(e){ if(e.target&&e.target.closest&&e.target.closest('#mc-view')) mcUpdateHeaderRevenue(); });
 document.addEventListener('change',function(e){ if(e.target&&e.target.closest&&e.target.closest('#mc-view')) mcUpdateHeaderRevenue(); });
+
+// Read a card into an array of system objects that share the card's header (occupancy, term, comm, sites, etc.)
+function mcReadCard(card){
+  function v(f){ var e=card.querySelector('[data-f="'+f+'"]'); return e?(e.value||'').trim():''; }
+  var occupancy=v('occupancy'), txn=v('txn'), term=v('term'), agrNum=v('agrNum'), agrDate=v('agrDate');
+  var comm=Array.prototype.slice.call(card.querySelectorAll('[data-role="commwrap"] .mc-chip.active')).map(function(c){return c.getAttribute('data-comm');});
+  var siteIds=(card.getAttribute('data-sites')||'').split(',').filter(Boolean);
+  var sites=siteIds.map(function(sid){ var s=document.querySelector('#mc-sites-list .mc-card[data-siteid="'+sid+'"]'); return s?mcSiteData(s):null; }).filter(Boolean);
+  var systems=[];
+  card.querySelectorAll('[data-role="systems"] .mc-sys-panel').forEach(function(p){
+    var type=p.getAttribute('data-sys');
+    function pv(f){ var e=p.querySelector('[data-f="'+f+'"]'); return e?(e.value||'').trim():''; }
+    var services=Array.prototype.slice.call(p.querySelectorAll('[data-role="svc"] input:checked')).map(function(c){return c.getAttribute('data-svc');});
+    systems.push({ type:type, typeName:mcTypeName(type), occupancy:occupancy, txn:txn, term:term, agrNum:agrNum, agrDate:agrDate, comm:comm, services:services, sites:sites, perSite:null, priceTotal:0, chargeTotal:0, price:pv('price'), charge:pv('charge'), freq:pv('freq')||'monthly', scope:pv('scope') });
+  });
+  return systems;
+}
 
 function mcReadAgreement(card){
   function v(f){ var e=card.querySelector('[data-f="'+f+'"]'); return e?(e.value||'').trim():''; }
@@ -11223,7 +11276,7 @@ function mcBuildCombinedDoc(agrs, cust, logo){
     var chargeNum = (d.perSite&&d.perSite.length) ? d.chargeTotal : (parseFloat(String(d.charge).replace(/[^0-9.]/g,''))||0);
     var per = d.freq==='quarterly'?(1/3):d.freq==='annual'?(1/12):1;
     totalMonthly += chargeNum*per;
-    html+='<div style="border:1px solid #e0e0e0;border-radius:3px;background:#fafaf8;padding:11px 14px;font-size:10.5px;color:#333;line-height:1.7;margin-bottom:10px;min-height:60px;">'+scopeHtml+'</div>'+pricingTable;
+    html+='<div class="fa-scope-box" style="border:1px solid #e0e0e0;border-radius:3px;background:#fafaf8;padding:11px 14px;font-size:10.5px;color:#333;line-height:1.7;margin-bottom:10px;min-height:60px;">'+scopeHtml+'</div>'+pricingTable;
   });
   if(!single){
     html+='<table class="fa-budget-table" style="margin-top:10px;"><tbody><tr><td style="width:48%;font-weight:700;">Combined Monthly Service Charge — All Services</td><td style="font-weight:700;">'+(totalMonthly>0?('$'+totalMonthly.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})):'$____________')+' <span style="font-family:\'DM Sans\',sans-serif;font-weight:400;color:#777;">/ month (see each service above for billing frequency and term)</span></td></tr></tbody></table>'+
@@ -11260,18 +11313,17 @@ function mcGenerate(){
   var cards=Array.from(document.querySelectorAll('#mc-agreements-list .mc-card'));
   if(cards.length===0){ alert('Add at least one agreement first.'); return; }
 
-  var typed=[], untyped=0;
-  cards.forEach(function(card){ var d=mcReadAgreement(card); if(!d.type){ untyped++; return; } typed.push(d); });
-  if(typed.length===0){ alert('Select a service type for at least one agreement before generating.'); return; }
-  if(untyped>0 && !confirm(untyped+' agreement(s) have no service type selected and will be skipped. Continue?')) return;
-
-  // Fire Alarm Monitoring always generates as its own separate agreement.
-  // Burglar Alarm, Video Surveillance, and Access Control Hosting combine into one agreement.
-  var comboAgrs=typed.filter(function(d){ return d.type!=='fire'; });
-  var fireAgrs=typed.filter(function(d){ return d.type==='fire'; });
-  var docs=[], agrNums=[];
-  if(comboAgrs.length){ var cb=mcBuildCombinedDoc(comboAgrs, cust, logo); docs.push(cb.html); agrNums.push(cb.agrNum); }
-  fireAgrs.forEach(function(f){ var fb=mcBuildCombinedDoc([f], cust, logo); docs.push(fb.html); agrNums.push(fb.agrNum); });
+  // Each card = one agreement. Its selected systems (Burglar/Video/AC) combine into one deduped
+  // document; a Fire card is its own system and prints as its own agreement.
+  var docs=[], agrNums=[], emptyCards=0;
+  cards.forEach(function(card){
+    var systems=mcReadCard(card);
+    if(systems.length===0){ emptyCards++; return; }
+    var built=mcBuildCombinedDoc(systems, cust, logo);
+    docs.push(built.html); agrNums.push(built.agrNum);
+  });
+  if(docs.length===0){ alert('Select at least one system in an agreement before generating.'); return; }
+  if(emptyCards>0 && !confirm(emptyCards+' agreement card(s) have no systems selected and will be skipped. Continue?')) return;
   var combined=docs.map(function(h,i){ return (i>0?'<div class="mc-page-break"></div>':'')+h; }).join('');
 
   var overlay=document.getElementById('sla-print-overlay');
@@ -11301,22 +11353,15 @@ function mcSerialize(){
     var selIds=(card.getAttribute('data-sites')||'').split(',').filter(Boolean);
     var siteIdx=selIds.map(function(id){ return siteIdOrder.indexOf(id); }).filter(function(i){ return i>=0; });
     var comm=Array.prototype.slice.call(card.querySelectorAll('[data-role="commwrap"] .mc-chip.active')).map(function(c){ return c.getAttribute('data-comm'); });
-    var services=Array.prototype.slice.call(card.querySelectorAll('[data-role="svc"] input:checked')).map(function(c){ return c.getAttribute('data-svc'); });
-    var psTog=card.querySelector('[data-role="ps-toggle"]');
-    var perSite = psTog ? psTog.checked : false;
-    var perSitePricing=[];
-    if(perSite){
-      Array.prototype.slice.call(card.querySelectorAll('[data-psprice]')).forEach(function(pe){
-        var sid=pe.getAttribute('data-psprice'); var idx=siteIdOrder.indexOf(sid); if(idx<0) return;
-        var ce=card.querySelector('[data-pscharge="'+sid+'"]');
-        perSitePricing.push({ idx:idx, price:pe.value||'', charge:ce?(ce.value||''):'' });
-      });
-    }
+    var systems=Array.prototype.slice.call(card.querySelectorAll('[data-role="systems"] .mc-sys-panel')).map(function(p){
+      function pv(f){ var e=p.querySelector('[data-f="'+f+'"]'); return e?(e.value||''):''; }
+      var services=Array.prototype.slice.call(p.querySelectorAll('[data-role="svc"] input:checked')).map(function(c){ return c.getAttribute('data-svc'); });
+      return { type:p.getAttribute('data-sys'), services:services, price:pv('price'), charge:pv('charge'), freq:pv('freq'), scope:pv('scope') };
+    });
     return {
-      type:card.getAttribute('data-type')||'', occupancy:v('occupancy'), txn:v('txn'), term:v('term'),
-      agrNum:v('agrNum'), agrDate:v('agrDate'), comm:comm, services:services, siteIdx:siteIdx,
-      perSite:perSite, perSitePricing:perSitePricing,
-      price:v('price'), charge:v('charge'), freq:v('freq'), scope:v('scope')
+      occupancy:v('occupancy'), txn:v('txn'), term:v('term'),
+      agrNum:v('agrNum'), agrDate:v('agrDate'), comm:comm, siteIdx:siteIdx,
+      systems:systems
     };
   });
   function bv(id){ var e=document.getElementById(id); return e?e.value:''; }
@@ -11347,37 +11392,35 @@ function mcRestore(mc){
     var card=cards[cards.length-1];
     var aid=card.getAttribute('data-agrid');
     function set(f,val){ var e=card.querySelector('[data-f="'+f+'"]'); if(e && val!=null) e.value=val; }
-    set('occupancy',a.occupancy); // set first so fire renders the occupancy-correct service list
-    if(a.type) mcSetType(aid, a.type); // renders services (occupancy-aware) + comm visibility
+    set('occupancy',a.occupancy); // set first so burglar renders the occupancy-correct service list
     set('txn',a.txn); set('term',a.term);
     set('agrNum',a.agrNum); set('agrDate',mcToISODate(a.agrDate));
-    set('price',a.price); set('charge',a.charge); set('freq',a.freq); set('scope',a.scope);
     // Communication chips
     if(a.comm && a.comm.length){
       card.querySelectorAll('[data-role="commwrap"] .mc-chip').forEach(function(chip){
         chip.classList.toggle('active', a.comm.indexOf(chip.getAttribute('data-comm'))>=0);
       });
     }
-    // Service checkboxes (override defaults applied by mcSetType)
-    if(a.services){
-      card.querySelectorAll('[data-role="svc"] input[type="checkbox"]').forEach(function(cb){
-        cb.checked = a.services.indexOf(cb.getAttribute('data-svc'))>=0;
-      });
-    }
     // Covered sites mapped by saved index → new site IDs
     var sel=(a.siteIdx||[]).map(function(i){ return siteIds[i]; }).filter(Boolean);
     card.setAttribute('data-sites', sel.join(','));
-    if(a.type) mcRenumberAgrLabel(aid);
-    // Per-site pricing
-    if(a.perSite){
-      var tog=card.querySelector('[data-role="ps-toggle"]'); if(tog) tog.checked=true;
-      if(typeof mcTogglePerSite==='function' && tog) mcTogglePerSite(tog); // renders rows for covered sites
-      (a.perSitePricing||[]).forEach(function(item){
-        var sid=siteIds[item.idx]; if(!sid) return;
-        var pe=card.querySelector('[data-psprice="'+sid+'"]'); if(pe) pe.value=item.price||'';
-        var ce=card.querySelector('[data-pscharge="'+sid+'"]'); if(ce) ce.value=item.charge||'';
-      });
-    }
+    // Systems — new multi-system format, or backward-compat with old single-type saves
+    var systems = (a.systems && a.systems.length) ? a.systems
+      : (a.type ? [{ type:a.type, services:a.services, price:a.price, charge:a.charge, freq:a.freq, scope:a.scope }] : []);
+    systems.forEach(function(sys){
+      if(!sys.type) return;
+      mcToggleType(aid, sys.type); // adds the system's panel (occupancy-aware for burglar)
+      var panel=card.querySelector('[data-role="systems"] .mc-sys-panel[data-sys="'+sys.type+'"]');
+      if(!panel) return;
+      function sp(f,val){ var e=panel.querySelector('[data-f="'+f+'"]'); if(e && val!=null) e.value=val; }
+      sp('price',sys.price); sp('charge',sys.charge); sp('freq',sys.freq); sp('scope',sys.scope);
+      if(sys.services){
+        panel.querySelectorAll('[data-role="svc"] input[type="checkbox"]').forEach(function(cb){
+          cb.checked = sys.services.indexOf(cb.getAttribute('data-svc'))>=0;
+        });
+      }
+    });
+    mcRenumberAgrLabel(aid);
   });
 
   mcRefreshSiteChips();  // renders covered-site chips honoring data-sites
