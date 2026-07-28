@@ -10583,6 +10583,7 @@ function mcAddAgreement(){
   card.innerHTML = mcAgreementHTML(id);
   document.getElementById('mc-agreements-list').appendChild(card);
   mcRenumberAgreements(); mcRefreshSiteChips(); mcUpdateCount();
+  if(typeof mcPullFromQB==='function') mcPullFromQB(id); // prefill pricing from the Quote Builder
 }
 function mcRemoveAgreement(id){
   var c=document.querySelector('#mc-agreements-list .mc-card[data-agrid="'+id+'"]'); if(c) c.remove();
@@ -10622,7 +10623,14 @@ function mcAgreementHTML(id){
   '</div>'+
   '<div class="mc-sub-label">Covered Sites</div>'+
   '<div class="mc-chip-row" data-role="sites"></div>'+
-  '<div data-role="systems"><div class="mc-sys-empty" style="font-size:11px;color:var(--text3);font-style:italic;">Select one or more systems above to configure services, scope, and pricing.</div></div>';
+  '<div class="mc-sub-label">Pricing &amp; Billing <span style="font-weight:400;color:var(--text3);">— autofilled from Quote Builder, editable</span> <button type="button" onclick="mcPullFromQB(\''+id+'\')" style="margin-left:6px;font-size:10px;padding:2px 8px;border:1px solid var(--border);border-radius:4px;background:var(--surface2);cursor:pointer;">&#8615; Pull from Quote Builder</button></div>'+
+  '<div class="sla-grid3" style="margin-bottom:10px;">'+
+    '<div class="sla-field"><label>Total Sale &amp; Install Price ($)</label><input type="text" data-f="price" placeholder="0.00"></div>'+
+    '<div class="sla-field"><label>Service Charge ($)</label><input type="text" data-f="charge" placeholder="0.00"></div>'+
+    '<div class="sla-field"><label>Billing Frequency</label><select data-f="freq"><option value="monthly" selected>Monthly</option><option value="quarterly">Quarterly</option><option value="annual">Annual (prepaid)</option></select></div>'+
+  '</div>'+
+  '<div class="mc-sub-label">Systems Covered</div>'+
+  '<div data-role="systems"><div class="mc-sys-empty" style="font-size:11px;color:var(--text3);font-style:italic;">Select one or more systems above to configure services and scope.</div></div>';
 }
 
 // One collapsible panel per selected system (services + pricing + scope)
@@ -10633,12 +10641,6 @@ function mcSystemPanelHTML(type, occ){
     '<div class="mc-sub-label" style="margin-top:0;font-weight:600;color:var(--text2);">'+mcEsc(mcTypeName(type))+'</div>'+
     '<div class="mc-sub-label">Services Included</div>'+
     '<div class="mc-svc-grid" data-role="svc">'+svc+'</div>'+
-    '<div class="mc-sub-label">Pricing &amp; Billing</div>'+
-    '<div class="sla-grid3" style="margin-bottom:6px;">'+
-      '<div class="sla-field"><label>Sale &amp; Install Price ($)</label><input type="text" data-f="price" placeholder="0.00"></div>'+
-      '<div class="sla-field"><label>Service Charge ($)</label><input type="text" data-f="charge" placeholder="0.00"></div>'+
-      '<div class="sla-field"><label>Billing Frequency</label><select data-f="freq"><option value="monthly" selected>Monthly</option><option value="quarterly">Quarterly</option><option value="annual">Annual (prepaid)</option></select></div>'+
-    '</div>'+
     '<div class="mc-sub-label">Scope / Continuation Page — what Point 1 will install, take over, or provide</div>'+
     '<div class="sla-field"><textarea data-f="scope" rows="4" placeholder="e.g. Point 1 to install and connect (1) control panel; connect to and monitor existing devices; provide central station monitoring with mobile app access."></textarea></div>'+
   '</div>';
@@ -10707,6 +10709,16 @@ function mcRenderServices(card){
     return '<label class="mc-svc-item"><input type="checkbox" data-svc="'+mcEsc(s.l)+'"'+(checked?' checked':'')+'>'+mcEsc(s.l)+'</label>';
   }).join('');
 }
+// Autofill the agreement pricing from the Quote Builder header totals (editable afterward)
+function mcPullFromQB(id){
+  var card=document.querySelector('#mc-agreements-list .mc-card[data-agrid="'+id+'"]'); if(!card) return;
+  function num(elId){ var e=document.getElementById(elId); if(!e) return ''; var t=(e.textContent||'').replace(/[^0-9.]/g,''); return t; }
+  var rmr=num('h-rmr'), ot=num('h-onetime');
+  var pe=card.querySelector('[data-f="price"]'); if(pe && ot) pe.value=ot;
+  var ce=card.querySelector('[data-f="charge"]'); if(ce && rmr) ce.value=rmr;
+  if(typeof mcUpdateHeaderRevenue==='function') mcUpdateHeaderRevenue();
+}
+
 // Multi-select: Burglar/Video/AC can combine; Fire is exclusive (its own separate agreement).
 function mcToggleType(id,type){
   var card=document.querySelector('#mc-agreements-list .mc-card[data-agrid="'+id+'"]'); if(!card) return;
@@ -10736,7 +10748,7 @@ function mcToggleType(id,type){
   // Reflect selection on the pills
   card.querySelectorAll('.mc-type-pill').forEach(function(p){ var t=p.getAttribute('data-type'); p.classList.toggle('active', !!container.querySelector('.mc-sys-panel[data-sys="'+t+'"]')); });
   // Restore placeholder if nothing selected
-  if(!container.querySelector('.mc-sys-panel')){ container.innerHTML='<div class="mc-sys-empty" style="font-size:11px;color:var(--text3);font-style:italic;">Select one or more systems above to configure services, scope, and pricing.</div>'; }
+  if(!container.querySelector('.mc-sys-panel')){ container.innerHTML='<div class="mc-sys-empty" style="font-size:11px;color:var(--text3);font-style:italic;">Select one or more systems above to configure services and scope.</div>'; }
   mcRenumberAgrLabel(id);
   mcUpdateHeaderRevenue();
 }
@@ -10780,12 +10792,12 @@ function mcUpdateHeaderRevenue(){
   var num=function(x){ return parseFloat(String(x==null?'':x).replace(/[^0-9.]/g,''))||0; };
   var annual=0;
   document.querySelectorAll('#mc-agreements-list .mc-card').forEach(function(card){
-    mcReadCard(card).forEach(function(d){
-      var charge=num(d.charge);
-      if(charge<=0) return;
-      var periods=d.freq==='quarterly'?4:d.freq==='annual'?1:12;
-      annual+=charge*periods;
-    });
+    if(!card.querySelector('[data-role="systems"] .mc-sys-panel')) return; // skip cards with no systems
+    var ce=card.querySelector('[data-f="charge"]'); var charge=num(ce?ce.value:'');
+    if(charge<=0) return;
+    var fe=card.querySelector('[data-f="freq"]'); var freq=fe?fe.value:'monthly';
+    var periods=freq==='quarterly'?4:freq==='annual'?1:12;
+    annual+=charge*periods;
   });
   var monthly=annual/12;
   function f(n){ return '$'+(n||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); }
@@ -10799,15 +10811,16 @@ document.addEventListener('change',function(e){ if(e.target&&e.target.closest&&e
 function mcReadCard(card){
   function v(f){ var e=card.querySelector('[data-f="'+f+'"]'); return e?(e.value||'').trim():''; }
   var occupancy=v('occupancy'), txn=v('txn'), term=v('term'), agrNum=v('agrNum'), agrDate=v('agrDate');
+  var price=v('price'), charge=v('charge'), freq=v('freq')||'monthly'; // agreement-level pricing (shared)
   var comm=Array.prototype.slice.call(card.querySelectorAll('[data-role="commwrap"] .mc-chip.active')).map(function(c){return c.getAttribute('data-comm');});
   var siteIds=(card.getAttribute('data-sites')||'').split(',').filter(Boolean);
   var sites=siteIds.map(function(sid){ var s=document.querySelector('#mc-sites-list .mc-card[data-siteid="'+sid+'"]'); return s?mcSiteData(s):null; }).filter(Boolean);
   var systems=[];
   card.querySelectorAll('[data-role="systems"] .mc-sys-panel').forEach(function(p){
     var type=p.getAttribute('data-sys');
-    function pv(f){ var e=p.querySelector('[data-f="'+f+'"]'); return e?(e.value||'').trim():''; }
+    var scopeEl=p.querySelector('[data-f="scope"]'); var scope=scopeEl?(scopeEl.value||'').trim():'';
     var services=Array.prototype.slice.call(p.querySelectorAll('[data-role="svc"] input:checked')).map(function(c){return c.getAttribute('data-svc');});
-    systems.push({ type:type, typeName:mcTypeName(type), occupancy:occupancy, txn:txn, term:term, agrNum:agrNum, agrDate:agrDate, comm:comm, services:services, sites:sites, perSite:null, priceTotal:0, chargeTotal:0, price:pv('price'), charge:pv('charge'), freq:pv('freq')||'monthly', scope:pv('scope') });
+    systems.push({ type:type, typeName:mcTypeName(type), occupancy:occupancy, txn:txn, term:term, agrNum:agrNum, agrDate:agrDate, comm:comm, services:services, sites:sites, perSite:null, priceTotal:0, chargeTotal:0, price:price, charge:charge, freq:freq, scope:scope });
   });
   return systems;
 }
@@ -11207,7 +11220,7 @@ function mcBuildCombinedDoc(agrs, cust, logo){
     '<div class="fa-header-meta">'+
       '<div class="fa-meta-row"><span class="fa-meta-lbl">Agreement #</span><span class="fa-meta-val">'+mcEsc(agrNum)+'</span></div>'+
       '<div class="fa-meta-row"><span class="fa-meta-lbl">Date</span><span class="fa-meta-val">'+mcEsc(agrDate)+'</span></div>'+
-      '<div class="fa-meta-row"><span class="fa-meta-lbl">Initial Term</span><span class="fa-meta-val">'+mcEsc(b(first.term))+(single?'':' *')+'</span></div>'+
+      '<div class="fa-meta-row"><span class="fa-meta-lbl">Initial Term</span><span class="fa-meta-val">'+mcEsc(b(first.term))+'</span></div>'+
     '</div></div><div class="fa-stripe"></div>';
   var p1='Point 1 Electrical Systems, Inc.<br>6751 Southfront Rd., Livermore, CA 94551<br>CA Lic #745827 &middot; ACO #6506 &middot; 925-667-2906'+(cust.estimator?'<br>Representative: '+mcEsc(cust.estimator):'');
   var primarySite=first.sites[0];
@@ -11256,32 +11269,17 @@ function mcBuildCombinedDoc(agrs, cust, logo){
   html+='</ul></div></div>';
   html+='<div class="fa-section"><div class="fa-section-head"><span class="fa-section-num">&sect;4</span><span class="fa-section-title">Scope of Work / Continuation</span></div>'+
     '<p class="fa-body">The following describes the equipment Point 1 will install, the equipment Point 1 will take over and connect to, and/or the services Point 1 will provide under this Agreement:</p>';
-  var totalMonthly=0;
   agrs.forEach(function(d,ai){
     if(!single) html+='<div class="fa-body" style="font-weight:600;margin-top:10px;">Service '+(ai+1)+' &mdash; '+mcTypeName(d.type)+'</div>';
-    var freq=mcFreqLabel(d.freq);
     var scopeHtml = d.scope ? mcEsc(d.scope).replace(/\n/g,'<br>') : '<span style="color:#999;font-style:italic;">Scope of work to be specified.</span>';
-    var pricingTable;
-    if(d.perSite && d.perSite.length){
-      var psRows=d.perSite.map(function(ps){ var lbl=ps.site?(ps.site.name?(ps.site.name+(ps.site.addr?' — '+ps.site.addr:'')):(ps.site.addr+(ps.site.city?', '+ps.site.city:''))):'Site'; return '<tr><td>'+mcEsc(lbl||'Site')+'</td><td style="text-align:right;">'+mcMoneyOrBlank(ps.price)+'</td><td style="text-align:right;">'+mcMoneyOrBlank(ps.charge)+'</td></tr>'; }).join('');
-      pricingTable='<table class="fa-budget-table"><thead><tr><th style="width:48%">Site</th><th style="text-align:right;">Sale &amp; Install Price</th><th style="text-align:right;">Service Charge (billed '+freq.toLowerCase()+')</th></tr></thead><tbody>'+psRows+
-        '<tr><td style="font-weight:700;">Total — All Sites</td><td style="text-align:right;font-weight:700;">'+(mcFmtMoney(d.priceTotal)||'$0.00')+' <span style="font-family:\'DM Sans\',sans-serif;font-weight:400;color:#777;">(plus tax)</span></td><td style="text-align:right;font-weight:700;">'+(mcFmtMoney(d.chargeTotal)||'$0.00')+'</td></tr>'+
-        '<tr><td>Initial Term</td><td colspan="2">'+mcEsc(b(d.term))+'</td></tr></tbody></table>';
-    } else {
-      pricingTable='<table class="fa-budget-table"><tbody>'+
-        '<tr><td style="width:48%">Total Sale &amp; Installation Price</td><td>'+mcMoneyOrBlank(d.price)+' <span style="font-family:\'DM Sans\',sans-serif;font-weight:400;color:#777;">(plus applicable taxes, billed)</span></td></tr>'+
-        '<tr><td>Service Charge</td><td>'+mcMoneyOrBlank(d.charge)+' &nbsp;<span style="font-family:\'DM Sans\',sans-serif;font-weight:400;color:#777;">billed '+freq.toLowerCase()+'</span></td></tr>'+
-        '<tr><td>Initial Term</td><td>'+mcEsc(b(d.term))+'</td></tr></tbody></table>';
-    }
-    var chargeNum = (d.perSite&&d.perSite.length) ? d.chargeTotal : (parseFloat(String(d.charge).replace(/[^0-9.]/g,''))||0);
-    var per = d.freq==='quarterly'?(1/3):d.freq==='annual'?(1/12):1;
-    totalMonthly += chargeNum*per;
-    html+='<div class="fa-scope-box" style="border:1px solid #e0e0e0;border-radius:3px;background:#fafaf8;padding:11px 14px;font-size:10.5px;color:#333;line-height:1.7;margin-bottom:10px;min-height:60px;">'+scopeHtml+'</div>'+pricingTable;
+    html+='<div class="fa-scope-box" style="border:1px solid #e0e0e0;border-radius:3px;background:#fafaf8;padding:11px 14px;font-size:10.5px;color:#333;line-height:1.7;margin-bottom:10px;min-height:60px;">'+scopeHtml+'</div>';
   });
-  if(!single){
-    html+='<table class="fa-budget-table" style="margin-top:10px;"><tbody><tr><td style="width:48%;font-weight:700;">Combined Monthly Service Charge — All Services</td><td style="font-weight:700;">'+(totalMonthly>0?('$'+totalMonthly.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})):'$____________')+' <span style="font-family:\'DM Sans\',sans-serif;font-weight:400;color:#777;">/ month (see each service above for billing frequency and term)</span></td></tr></tbody></table>'+
-      '<p class="fa-body" style="font-size:9.5px;color:#777;margin-top:4px;">* Initial term may vary by service; see each service in this section.</p>';
-  }
+  // One agreement-level pricing table (shared across all systems on this agreement)
+  var freq=mcFreqLabel(first.freq);
+  html+='<table class="fa-budget-table"><tbody>'+
+    '<tr><td style="width:48%">Total Sale &amp; Installation Price</td><td>'+mcMoneyOrBlank(first.price)+' <span style="font-family:\'DM Sans\',sans-serif;font-weight:400;color:#777;">(plus applicable taxes, billed)</span></td></tr>'+
+    '<tr><td>Service Charge</td><td>'+mcMoneyOrBlank(first.charge)+' &nbsp;<span style="font-family:\'DM Sans\',sans-serif;font-weight:400;color:#777;">billed '+freq.toLowerCase()+'</span></td></tr>'+
+    '<tr><td>Initial Term</td><td>'+mcEsc(b(first.term))+'</td></tr></tbody></table>';
   html+='</div>';
   html+='<div class="fa-section"><div class="fa-section-head"><span class="fa-section-num">&sect;5</span><span class="fa-section-title">Pricing &amp; Signatures</span></div>'+
     '<p class="fa-body">This Agreement is not effective until approved by a Point 1 manager or until Point 1 begins installation or initiates service. By signing below, the parties agree to all terms of this '+typeNameCombined+' Agreement. Each signatory warrants full authority to execute on behalf of the respective party. Please read the entire Agreement before signing.</p>'+
@@ -11354,13 +11352,14 @@ function mcSerialize(){
     var siteIdx=selIds.map(function(id){ return siteIdOrder.indexOf(id); }).filter(function(i){ return i>=0; });
     var comm=Array.prototype.slice.call(card.querySelectorAll('[data-role="commwrap"] .mc-chip.active')).map(function(c){ return c.getAttribute('data-comm'); });
     var systems=Array.prototype.slice.call(card.querySelectorAll('[data-role="systems"] .mc-sys-panel')).map(function(p){
-      function pv(f){ var e=p.querySelector('[data-f="'+f+'"]'); return e?(e.value||''):''; }
+      var se=p.querySelector('[data-f="scope"]');
       var services=Array.prototype.slice.call(p.querySelectorAll('[data-role="svc"] input:checked')).map(function(c){ return c.getAttribute('data-svc'); });
-      return { type:p.getAttribute('data-sys'), services:services, price:pv('price'), charge:pv('charge'), freq:pv('freq'), scope:pv('scope') };
+      return { type:p.getAttribute('data-sys'), services:services, scope:se?(se.value||''):'' };
     });
     return {
       occupancy:v('occupancy'), txn:v('txn'), term:v('term'),
       agrNum:v('agrNum'), agrDate:v('agrDate'), comm:comm, siteIdx:siteIdx,
+      price:v('price'), charge:v('charge'), freq:v('freq'),
       systems:systems
     };
   });
@@ -11395,6 +11394,11 @@ function mcRestore(mc){
     set('occupancy',a.occupancy); // set first so burglar renders the occupancy-correct service list
     set('txn',a.txn); set('term',a.term);
     set('agrNum',a.agrNum); set('agrDate',mcToISODate(a.agrDate));
+    // Agreement-level pricing (new format); fall back to old single-type or intermediate per-system saves
+    var priceVal = (a.price!=null&&a.price!=='') ? a.price : (a.systems&&a.systems[0]&&a.systems[0].price)||'';
+    var chargeVal = (a.charge!=null&&a.charge!=='') ? a.charge : (a.systems&&a.systems[0]&&a.systems[0].charge)||'';
+    var freqVal = a.freq || (a.systems&&a.systems[0]&&a.systems[0].freq) || 'monthly';
+    set('price',priceVal); set('charge',chargeVal); set('freq',freqVal);
     // Communication chips
     if(a.comm && a.comm.length){
       card.querySelectorAll('[data-role="commwrap"] .mc-chip').forEach(function(chip){
@@ -11406,14 +11410,13 @@ function mcRestore(mc){
     card.setAttribute('data-sites', sel.join(','));
     // Systems — new multi-system format, or backward-compat with old single-type saves
     var systems = (a.systems && a.systems.length) ? a.systems
-      : (a.type ? [{ type:a.type, services:a.services, price:a.price, charge:a.charge, freq:a.freq, scope:a.scope }] : []);
+      : (a.type ? [{ type:a.type, services:a.services, scope:a.scope }] : []);
     systems.forEach(function(sys){
       if(!sys.type) return;
       mcToggleType(aid, sys.type); // adds the system's panel (occupancy-aware for burglar)
       var panel=card.querySelector('[data-role="systems"] .mc-sys-panel[data-sys="'+sys.type+'"]');
       if(!panel) return;
-      function sp(f,val){ var e=panel.querySelector('[data-f="'+f+'"]'); if(e && val!=null) e.value=val; }
-      sp('price',sys.price); sp('charge',sys.charge); sp('freq',sys.freq); sp('scope',sys.scope);
+      var se=panel.querySelector('[data-f="scope"]'); if(se && sys.scope!=null) se.value=sys.scope;
       if(sys.services){
         panel.querySelectorAll('[data-role="svc"] input[type="checkbox"]').forEach(function(cb){
           cb.checked = sys.services.indexOf(cb.getAttribute('data-svc'))>=0;
