@@ -8299,6 +8299,10 @@ function doIOSPrint() {
        can't be stranded at the bottom of a page; long sections may flow across pages. */
     .q-section { break-inside: avoid; page-break-inside: avoid; }
     .q-flow { break-inside: auto; page-break-inside: auto; }
+    /* Additional Information / notes can be long: allow it to flow across pages instead of jumping whole to the next page */
+    #q-notes-section { break-inside: auto; page-break-inside: auto; }
+    /* ...but keep each individual note line/paragraph/list item from splitting mid-line */
+    #q-notes-content p, #q-notes-content li { break-inside: avoid; page-break-inside: avoid; }
     .q-section-title { break-after: avoid; page-break-after: avoid; }
     .q-section-title + * { break-before: avoid; page-break-before: avoid; }
     .q-service-row { break-inside: avoid; page-break-inside: avoid; }
