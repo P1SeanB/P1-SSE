@@ -9299,20 +9299,20 @@ function slaClearNonCustomer() {
   .fa-party-detail { font-size: 10px; color: #555; line-height: 1.5; }
 
   /* Recitals / intro */
-  .fa-recital { font-size: 10.5px; color: #333; line-height: 1.7; margin-bottom: 14px; padding: 10px 14px; background: #fafaf8; border-left: 3px solid #e8620a; border-radius: 0 4px 4px 0; }
+  .fa-recital { font-size: 10.5px; color: #333; line-height: 1.55; margin-bottom: 9px; padding: 8px 12px; background: #fafaf8; border-left: 3px solid #e8620a; border-radius: 0 4px 4px 0; }
 
   /* Section headings */
-  .fa-section { margin-bottom: 14px; }
+  .fa-section { margin-bottom: 9px; }
   .fa-section-head {
     display: flex; align-items: center; gap: 8px;
     background: #1c1c1c; border-radius: 3px;
-    padding: 6px 12px; margin-bottom: 8px;
+    padding: 5px 12px; margin-bottom: 6px;
   }
   .fa-section-num { font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 600; color: #e8620a; }
   .fa-section-title { font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500; color: #fff; letter-spacing: 0.06em; text-transform: uppercase; }
 
   /* Body text */
-  .fa-body { font-size: 10.5px; color: #333; line-height: 1.7; margin-bottom: 8px; }
+  .fa-body { font-size: 10.5px; color: #333; line-height: 1.55; margin-bottom: 6px; }
   .fa-body strong { color: #1c1c1c; font-weight: 600; }
 
   /* Subsection */
@@ -9345,9 +9345,9 @@ function slaClearNonCustomer() {
   .fa-tc-list { margin: 0; padding: 0; list-style: none; }
   .fa-tc-list li {
     margin-bottom: 0;
-    padding: 8px 12px;
+    padding: 5px 11px;
     border-bottom: 1px solid #eeece8;
-    font-size: 10px; color: #333; line-height: 1.65;
+    font-size: 10px; color: #333; line-height: 1.5;
     background: #fff;
     break-inside: avoid;
     page-break-inside: avoid;
@@ -9367,6 +9367,7 @@ function slaClearNonCustomer() {
   /* Keep section heads with their content — if wrapping exceeds ~3 lines push to next page */
   @media print {
     .fa-section { break-inside: auto; page-break-inside: auto; }
+    .fa-sig-section { break-inside: avoid; page-break-inside: avoid; }
     .fa-section-head { break-after: avoid; page-break-after: avoid; }
     .fa-body { orphans: 3; widows: 3; }
     .fa-tc-list li { break-inside: avoid; page-break-inside: avoid; }
@@ -11281,7 +11282,7 @@ function mcBuildCombinedDoc(agrs, cust, logo){
     '<tr><td>Service Charge</td><td>'+mcMoneyOrBlank(first.charge)+' &nbsp;<span style="font-family:\'DM Sans\',sans-serif;font-weight:400;color:#777;">billed '+freq.toLowerCase()+'</span></td></tr>'+
     '<tr><td>Initial Term</td><td>'+mcEsc(b(first.term))+'</td></tr></tbody></table>';
   html+='</div>';
-  html+='<div class="fa-section"><div class="fa-section-head"><span class="fa-section-num">&sect;5</span><span class="fa-section-title">Pricing &amp; Signatures</span></div>'+
+  html+='<div class="fa-section fa-sig-section"><div class="fa-section-head"><span class="fa-section-num">&sect;5</span><span class="fa-section-title">Pricing &amp; Signatures</span></div>'+
     '<p class="fa-body">This Agreement is not effective until approved by a Point 1 manager or until Point 1 begins installation or initiates service. By signing below, the parties agree to all terms of this '+typeNameCombined+' Agreement. Each signatory warrants full authority to execute on behalf of the respective party. Please read the entire Agreement before signing.</p>'+
     '<div class="fa-sig-grid">'+
       '<div><div class="fa-sig-party">Point 1 Electrical Systems, Inc.</div>'+
