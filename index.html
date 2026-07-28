@@ -9371,7 +9371,7 @@ function slaClearNonCustomer() {
     .fa-section-head { break-after: avoid; page-break-after: avoid; }
     .fa-body { orphans: 3; widows: 3; }
     .fa-tc-list li { break-inside: avoid; page-break-inside: avoid; }
-    .fa-scope-box { break-inside: avoid; page-break-inside: avoid; }
+    .fa-scope-box { break-inside: avoid; page-break-inside: avoid; break-before: avoid; page-break-before: avoid; }
     .fa-pm-scope tr { break-inside: avoid; page-break-inside: avoid; }
     .fa-resp-table tr { break-inside: avoid; page-break-inside: avoid; }
     .fa-parties { break-inside: avoid; page-break-inside: avoid; }
@@ -11275,14 +11275,12 @@ function mcBuildCombinedDoc(agrs, cust, logo){
     var scopeHtml = d.scope ? mcEsc(d.scope).replace(/\n/g,'<br>') : '<span style="color:#999;font-style:italic;">Scope of work to be specified.</span>';
     html+='<div class="fa-scope-box" style="border:1px solid #e0e0e0;border-radius:3px;background:#fafaf8;padding:11px 14px;font-size:10.5px;color:#333;line-height:1.7;margin-bottom:10px;min-height:60px;">'+scopeHtml+'</div>';
   });
-  // One agreement-level pricing table (shared across all systems on this agreement)
-  var freq=mcFreqLabel(first.freq);
-  html+='<table class="fa-budget-table"><tbody>'+
-    '<tr><td style="width:48%">Total Sale &amp; Installation Price</td><td>'+mcMoneyOrBlank(first.price)+' <span style="font-family:\'DM Sans\',sans-serif;font-weight:400;color:#777;">(plus applicable taxes, billed)</span></td></tr>'+
-    '<tr><td>Service Charge</td><td>'+mcMoneyOrBlank(first.charge)+' &nbsp;<span style="font-family:\'DM Sans\',sans-serif;font-weight:400;color:#777;">billed '+freq.toLowerCase()+'</span></td></tr>'+
-    '<tr><td>Initial Term</td><td>'+mcEsc(b(first.term))+'</td></tr></tbody></table>';
   html+='</div>';
   html+='<div class="fa-section fa-sig-section"><div class="fa-section-head"><span class="fa-section-num">&sect;5</span><span class="fa-section-title">Pricing &amp; Signatures</span></div>'+
+    '<table class="fa-budget-table" style="margin-bottom:9px;"><tbody>'+
+      '<tr><td style="width:48%">Total Sale &amp; Installation Price</td><td>'+mcMoneyOrBlank(first.price)+' <span style="font-family:\'DM Sans\',sans-serif;font-weight:400;color:#777;">(plus applicable taxes, billed)</span></td></tr>'+
+      '<tr><td>Service Charge</td><td>'+mcMoneyOrBlank(first.charge)+' &nbsp;<span style="font-family:\'DM Sans\',sans-serif;font-weight:400;color:#777;">billed '+mcFreqLabel(first.freq).toLowerCase()+'</span></td></tr>'+
+      '<tr><td>Initial Term</td><td>'+mcEsc(b(first.term))+'</td></tr></tbody></table>'+
     '<p class="fa-body">This Agreement is not effective until approved by a Point 1 manager or until Point 1 begins installation or initiates service. By signing below, the parties agree to all terms of this '+typeNameCombined+' Agreement. Each signatory warrants full authority to execute on behalf of the respective party. Please read the entire Agreement before signing.</p>'+
     '<div class="fa-sig-grid">'+
       '<div><div class="fa-sig-party">Point 1 Electrical Systems, Inc.</div>'+
