@@ -3352,7 +3352,7 @@
       </div>
       <div class="sla-header-title">
         <div class="sla-doc-title">Monitoring Contract Creator</div>
-        <div class="sla-doc-subtitle">Burglar &middot; Fire &middot; Access Control Hosting — individual service agreements</div>
+        <div class="sla-doc-subtitle">Burglar &middot; Video &middot; Access Control combine into one agreement &middot; Fire generates separately</div>
       </div>
       <div class="sla-header-meta">
         <div class="sla-meta-row">
@@ -10361,10 +10361,10 @@ var _mcSiteSeq = 0, _mcAgrSeq = 0;
 
 function mcEsc(s){ return (s==null?'':String(s)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
-function mcTypeName(t){ return t==='burglar' ? 'Burglar Alarm Monitoring' : t==='fire' ? 'Fire Alarm Monitoring' : t==='ac' ? 'Access Control Hosting' : ''; }
-function mcTypeShort(t){ return t==='burglar' ? 'BURGLAR' : t==='fire' ? 'FIRE' : t==='ac' ? 'ACCESS CTRL' : ''; }
-function mcDocTitle(t){ return t==='burglar' ? 'Burglar Alarm Monitoring &amp; Service Agreement' : t==='fire' ? 'Fire Alarm Monitoring &amp; Service Agreement' : 'Access Control Hosting Services Agreement'; }
-function mcDocSub(t){ return t==='burglar' ? 'Central Station Intrusion Monitoring' : t==='fire' ? 'Central Station Fire Monitoring' : 'Cloud-Hosted Access Control Management'; }
+function mcTypeName(t){ return t==='burglar' ? 'Burglar Alarm Monitoring' : t==='fire' ? 'Fire Alarm Monitoring' : t==='ac' ? 'Access Control Hosting' : t==='video' ? 'Video Surveillance Monitoring' : ''; }
+function mcTypeShort(t){ return t==='burglar' ? 'BURGLAR' : t==='fire' ? 'FIRE' : t==='ac' ? 'ACCESS CTRL' : t==='video' ? 'VIDEO' : ''; }
+function mcDocTitle(t){ return t==='burglar' ? 'Burglar Alarm Monitoring &amp; Service Agreement' : t==='fire' ? 'Fire Alarm Monitoring &amp; Service Agreement' : t==='video' ? 'Video Surveillance Monitoring &amp; Service Agreement' : 'Access Control Hosting Services Agreement'; }
+function mcDocSub(t){ return t==='burglar' ? 'Central Station Intrusion Monitoring' : t==='fire' ? 'Central Station Fire Monitoring' : t==='video' ? 'Cloud Video Recording &amp; Monitoring' : 'Cloud-Hosted Access Control Management'; }
 
 // ── Customer sync ──
 function mcSyncCustomer(){
@@ -10602,6 +10602,7 @@ function mcAgreementHTML(id){
     '<button type="button" class="mc-type-pill" data-type="burglar" onclick="mcSetType(\''+id+'\',\'burglar\')"><div class="mc-tp-name">Burglar Monitoring</div><div class="mc-tp-sub">Commercial or Residential</div></button>'+
     '<button type="button" class="mc-type-pill" data-type="fire" onclick="mcSetType(\''+id+'\',\'fire\')"><div class="mc-tp-name">Fire Monitoring</div><div class="mc-tp-sub">Commercial only</div></button>'+
     '<button type="button" class="mc-type-pill" data-type="ac" onclick="mcSetType(\''+id+'\',\'ac\')"><div class="mc-tp-name">Access Control Hosting</div><div class="mc-tp-sub">Hosted credential mgmt</div></button>'+
+    '<button type="button" class="mc-type-pill" data-type="video" onclick="mcSetType(\''+id+'\',\'video\')"><div class="mc-tp-name">Video Surveillance</div><div class="mc-tp-sub">Recording &amp; monitoring</div></button>'+
   '</div>'+
   '<div class="sla-grid3" style="margin-bottom:10px;">'+
     '<div class="sla-field"><label>Occupancy</label><select data-f="occupancy" onchange="mcOnOccupancyChange(\''+id+'\')"><option>Commercial</option><option>Residential</option></select></div>'+
@@ -10660,6 +10661,7 @@ var MC_SERVICES = {
     {l:'NFPA 72 Inspections (Semi-Annual & Annual)'},
     {l:'NFPA 25 Inspections (Quarterly & Annual)'},
     {l:'UL Certificate'},
+    {l:'Emergency Responder Comms — ERCES / ERRCS (BDA)'},
     {l:'Full Service (parts & labor)'},
     {l:'Service — Time & Material Basis'}
   ],
@@ -10667,6 +10669,15 @@ var MC_SERVICES = {
     {l:'Cloud Hosting / Credential Management', d:true},
     {l:'User Mobile Application & Portal'},
     {l:'Remote Administration by Point 1'},
+    {l:'Full Service (parts & labor)'},
+    {l:'Service — Time & Material Basis'}
+  ],
+  video: [
+    {l:'Cloud Video Recording / Storage', d:true},
+    {l:'Central Station Video Monitoring / Verification'},
+    {l:'Video Analytics & Event Notifications'},
+    {l:'User Mobile Application & Portal'},
+    {l:'Remote Interactive Video Access'},
     {l:'Full Service (parts & labor)'},
     {l:'Service — Time & Material Basis'}
   ]
@@ -10852,6 +10863,10 @@ function mcSpecialConditions(type,d){
       s.push(['INTERACTIVE CREDENTIALS &amp; AUTHORIZED USERS','Customer is responsible for safeguarding all usernames, passwords, and credentials for the interactive platform and for managing which users are authorized to access it. Although protected by appropriate safeguards, remote access carries some risk of unauthorized access, and Customer assumes responsibility for keeping credentials secure. Any action taken through Customer&rsquo;s credentials is deemed authorized by Customer.']);
       s.push(['INTERACTIVE PLATFORM FEES','The service charge includes recurring platform / subscription fees charged to Point 1 by the interactive services provider. If the provider increases such fees, changes its service tiers, or imposes new fees, Point 1 may pass those increases through to Customer in addition to any other rate adjustment permitted under this Agreement. Interactive services terminate upon termination or expiration of this Agreement or suspension for non-payment.']);
     }
+    if(mcHas(d.services,'Emergency Responder') || mcHas(d.services,'ERCES') || mcHas(d.services,'ERRCS')){
+      s.push(['ERCES / ERRCS (EMERGENCY RESPONDER COMMUNICATIONS ENHANCEMENT)','Where an Emergency Responder Communications Enhancement System (ERCES) &mdash; also referred to as an Emergency Responder Radio Coverage System (ERRCS) or Bi-Directional Amplifier (BDA) system &mdash; is included, Point 1 will install, connect to, and/or monitor the system as set forth in the Scope of Work. System design, required signal-strength thresholds, and coverage grids are determined by the Authority Having Jurisdiction (AHJ) under applicable codes (e.g., NFPA 1225, NFPA 72, and the International Fire Code) and may require additional donor antennas, amplifiers, or battery capacity at Customer&rsquo;s expense at Point 1&rsquo;s then-prevailing rates. Point 1 does not warrant radio coverage that depends on the public-safety radio network, building construction, or subsequent changes to either. AHJ-required testing and inspection is performed during normal business hours; after-hours testing is available at a premium rate.']);
+    }
+    s.push(['FIRE DETECTION LIMITATIONS','Automatic fire detection devices have sensing limitations. Smoke detectors sense products of combustion within their immediate area and may not detect smoldering fires, fires within walls, roofs, or concealed spaces, or fires on a level of the premises where smoke or heat does not reach the device in time. Heat detectors respond only to a rise in temperature at the detector and are not a substitute for smoke detection. Detection depends on proper device selection, placement, and unobstructed access; Customer shall not paint, cover, or obstruct any device. No fire alarm system guarantees detection of every fire or prevention of loss of life or property.']);
     s.push(MC_C.network); s.push(MC_C.voip); s.push(MC_C.progress);
   } else if(type==='ac'){
     s.push(['HOSTED ACCESS CONTROL','Point 1 provides cloud-hosted access control services, including hosting of the access control software platform and management of credentials as set forth in the Scope of Work. The hosted platform is provided by the manufacturer / software provider.']);
@@ -10862,6 +10877,37 @@ function mcSpecialConditions(type,d){
     s.push(MC_C.network);
     s.push(['DEACTIVATION ON TERMINATION','Upon termination or expiration of this Agreement, Point 1 is authorized to remotely deactivate the hosted service and remove all Point 1-owned equipment from the premises. Customer-owned devices remain on-site in their installed condition.']);
     s.push(['SERVICE COMMENCEMENT','The contract term begins on the date the System and/or hosted Service is online. Any signs and decals provided remain the property of Point 1.']);
+  } else if(type==='video'){
+    // Base video conditions (always)
+    s.push(['VIDEO SURVEILLANCE SERVICES','Point 1 provides cloud-managed video services for the cameras identified in the Scope of Work, as further specified by the Covered Services selected. The system is provided for observation and recording only and does not prevent, and is not represented to prevent, any incident, entry, theft, or loss.']);
+    s.push(['CAMERA COVERAGE &amp; FIELD OF VIEW','Cameras capture only the area within their configured field of view and are affected by obstructions, lighting, weather, camera position, and lens condition. Point 1 does not warrant that any given area, event, or subject will be within view or identifiable. Adjustment or re-aiming of camera field of view after installation is Customer&rsquo;s responsibility and is billable at Point 1&rsquo;s then-prevailing rates unless otherwise stated.']);
+    s.push(['PRIVACY &amp; LAWFUL USE','Customer is solely responsible for ensuring that the placement and use of cameras comply with all applicable federal, state, and local laws, including laws governing recording, notice, and consent, and for not recording areas where a reasonable expectation of privacy exists. Customer shall indemnify, defend, and hold Point 1 harmless from any claim arising out of Customer&rsquo;s use of the video system.']);
+    s.push(['AUDIO RECORDING','If audio capture is enabled on any device, Customer is solely responsible for compliance with all applicable wiretap and eavesdropping laws, including California Penal Code &sect;632, which generally requires the consent of all parties to record confidential communications. Point 1 recommends audio recording remain disabled unless Customer has confirmed its lawful use.']);
+    s.push(['THIRD-PARTY VIDEO PLATFORM','The hosted video platform, mobile application, and cloud storage are provided by a third-party service provider and are subject to that provider&rsquo;s terms of service and privacy policy. Point 1 is not responsible for changes to, discontinuation of, or interruptions in the hosted platform, application, analytics, or push / email / text notification services outside its control.']);
+    s.push(['VIDEO CREDENTIALS &amp; REMOTE ACCESS','Customer is responsible for safeguarding all usernames, passwords, and credentials for the video platform and for managing authorized users. Although protected by appropriate safeguards, remote access carries some risk of unauthorized access, and Customer assumes responsibility for keeping credentials secure. Any action taken through Customer&rsquo;s credentials is deemed authorized by Customer.']);
+    // Video Hosting / Recording (conditional)
+    if(mcHas(d.services,'Cloud Video Recording') || mcHas(d.services,'Recording / Storage')){
+      s.push(['RECORDED VIDEO IS SUPPLEMENTAL','Recorded video is stored and made available for Customer&rsquo;s review but, absent Central Station Video Monitoring, is not watched live or reviewed by any person. Recording services are SUPPLEMENTAL to, and not a substitute for, alarm monitoring, on-site security personnel, or property / life insurance.']);
+      s.push(['VIDEO STORAGE &amp; RETENTION','The length of time recorded video is retained depends on storage capacity, recording mode, resolution, frame rate, and camera activity, and video is automatically overwritten as storage fills. Point 1 does not guarantee any specific retention period, that any particular event will be captured or retained, or that recorded video will be of usable quality. Customer is responsible for exporting and preserving any footage it wishes to keep.']);
+      s.push(['VIDEO PLATFORM / SUBSCRIPTION FEES','The service charge includes recurring video platform, storage, and subscription fees charged to Point 1 by the video services provider. If the provider increases such fees, changes its service tiers, or imposes new fees, Point 1 may pass those increases through to Customer in addition to any other rate adjustment permitted under this Agreement. Video services terminate upon termination or expiration of this Agreement or suspension for non-payment.']);
+      s.push(['VIDEO DEACTIVATION ON TERMINATION','Upon termination or expiration of this Agreement, or suspension for non-payment, Point 1 is authorized to remotely deactivate the hosted video service, after which recorded video stored in the cloud may become permanently inaccessible. Customer is responsible for exporting any needed footage before service ends.']);
+    }
+    // Video Monitoring / Verification (conditional)
+    if(mcHas(d.services,'Central Station Video') || mcHas(d.services,'Video Monitoring') || mcHas(d.services,'Verification')){
+      s.push(['CENTRAL STATION VIDEO MONITORING','Where video monitoring is expressly contracted, the monitoring center reviews video only upon triggered events (e.g., motion, analytics, or alarm conditions) according to the rules configured for the System. This is event-based review, not continuous live surveillance of the premises. Point 1 does not guarantee that every event will trigger, be transmitted, or be reviewed, and response depends on event triggers, camera performance, and network availability.']);
+      s.push(['VIDEO MONITORING IS SUPPLEMENTAL','Video monitoring and verification are provided to assist in assessing events and are SUPPLEMENTAL to, and not a substitute for, alarm monitoring, law-enforcement or guard response, or on-site security. Delivery of video-triggered notifications depends on the hosted platform, cellular and internet networks, and Customer&rsquo;s device settings, and is not guaranteed.']);
+    }
+    s.push(MC_C.network); s.push(MC_C.progress);
+  }
+  // Transaction-type conditions (apply to all service types, based on the Agreement Type)
+  if(d.txn && d.txn.indexOf('New Owner')>=0){
+    s.push(['NEW OWNER &mdash; TESTING &amp; INSPECTION','Under a new-owner agreement, Point 1 will test and inspect the existing System for up to one (1) hour. Any additional work not separately contracted will be performed on a time-and-materials basis at Point 1&rsquo;s then-prevailing rates.']);
+  } else if(d.txn && d.txn.indexOf('Takeover')>=0){
+    s.push(['TAKEOVER OF USER-OWNED EQUIPMENT','Where Point 1 connects to and monitors or controls Customer-owned equipment, any work on that equipment exceeding one (1) hour &mdash; including any repairs or modifications required to make the System operational &mdash; will be performed on a time-and-materials basis at Point 1&rsquo;s then-prevailing rates.']);
+  } else if(d.txn && d.txn.indexOf('Addendum')>=0){
+    s.push(['ADDENDUM &mdash; ALTERATION / ADDITION','This Agreement is an addendum to a prior agreement between the parties. Except as expressly modified herein, Point 1 will leave the balance of the System as listed under the previous agreement, and the terms of the prior agreement otherwise remain in effect.']);
+  } else if(d.txn && d.txn.indexOf('Cancel')>=0){
+    s.push(['CANCELLATION OF FORMER AGREEMENT','This Agreement cancels and supersedes the former agreement between the parties. The contract term begins on the date the System and/or Service is online. Any signs and decals provided remain the property of Point 1.']);
   }
   return s;
 }
@@ -11027,6 +11073,180 @@ function mcBuildAgreementDoc(d, cust, logo){
   return { html:html, agrNum:agrNum };
 }
 
+// ── Combined general terms (merged flags across all selected service types, printed once) ──
+function mcGeneralTermsCtx(ctx){
+  var anyFire=ctx.anyFire, anyAC=ctx.anyAC, anyVideo=ctx.anyVideo;
+  var anyAlarm=ctx.anyBurglar||ctx.anyFire;
+  var anyMon=ctx.anyBurglar||ctx.anyFire||ctx.anyVideoMon;
+  var hosted=anyAC||anyVideo;
+  var warranty = anyFire
+    ? ((ctx.anyBurglar||anyAC||anyVideo) ? 'one (1) year parts and labor (ninety (90) days labor on the fire alarm portion of the System)' : 'one (1) year parts and ninety (90) days labor')
+    : 'one (1) year parts and labor';
+  var t=[];
+  t.push(['LIMITED WARRANTY','For '+warranty+' after Point 1 completes the installation, Point 1 will repair or replace any defective part of the System without charge, using new or used parts of equal quality. To obtain service, call 925-667-2950. This warranty does not cover batteries or labor to replace batteries, nor damage from accident, acts of God, power surges, misuse, or repairs attempted by anyone other than Point 1. POINT 1 MAKES NO OTHER EXPRESS WARRANTY, AND ANY IMPLIED WARRANTY OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE IS LIMITED TO THE DURATION OF THIS EXPRESS WARRANTY. Point 1 cannot guarantee the System will not be defeated or compromised or that it will always operate. Point 1 is not liable for consequential or incidental damages.']);
+  if(anyMon){
+    var dispatch=(ctx.anyBurglar||ctx.anyVideoMon)?'police, fire department, or other emergency personnel':'fire department or other emergency personnel';
+    t.push(['MONITORING SERVICE','When a signal is received at Point 1&rsquo;s designated monitoring station, Point 1 will attempt to notify the appropriate '+dispatch+' and the first available person on the Emergency Notification List Customer provides. Customer shall notify Point 1 in writing of any changes to that list. To reduce false alarms, Point 1 may first attempt to verify an actual emergency. If governing authorities require verification (e.g., two-call or enhanced verification) before responding, Customer agrees to subscribe to and pay for such service. Customer consents to recording of telephonic communications with the monitoring station. If wireless transmission becomes inoperative or is impaired by atmospheric conditions, power failures, or other causes beyond Point 1&rsquo;s control, signals may not be received.']);
+  }
+  if(anyAC){
+    t.push(['HOSTED SERVICE','When properly licensed and online, Point 1 will host and maintain the access control platform so that authorized credentials function as configured. Point 1 may remotely access the hosted environment to perform diagnostics, apply updates, change configuration, or disconnect service upon termination or expiration of this Agreement. Hosted service availability depends on the manufacturer&rsquo;s cloud platform, Customer&rsquo;s network, and other factors beyond Point 1&rsquo;s control.']);
+  }
+  if(anyVideo){
+    t.push(['HOSTED VIDEO SERVICE','When properly licensed and online, Point 1 will host and maintain the video platform so that recorded video and any configured video services function as provided. Point 1 may remotely access the hosted environment to perform diagnostics, apply updates, change configuration, or disconnect service upon termination or expiration of this Agreement. Hosted video availability depends on the third-party cloud platform, Customer&rsquo;s network, internet bandwidth, and other factors beyond Point 1&rsquo;s control.']);
+  }
+  t.push(['POINT 1 IS NOT AN INSURER; LIQUIDATED DAMAGES; LIMITATION OF LIABILITY','Customer acknowledges that it is impractical and extremely difficult to fix the actual damages, if any, that may result from Point 1&rsquo;s failure to perform or from a failure of the System to operate. If Point 1 is found liable for any loss or damage, ITS LIABILITY SHALL BE LIMITED TO THE LESSER OF ONE-HALF THE ANNUAL PAYMENT OR FIFTEEN HUNDRED DOLLARS ($1,500.00) AS LIQUIDATED DAMAGES AND NOT AS A PENALTY, AND THIS LIABILITY SHALL BE EXCLUSIVE. Customer may obtain a higher limit by paying an additional fee under a rider. Agreeing to this limitation does not make Point 1 an insurer.']);
+  t.push(['THIRD-PARTY INDEMNIFICATION','Where Customer has the property of others in its custody or the System extends to protect the property of others, Customer shall indemnify, defend, and hold harmless Point 1, its employees, and agents against all claims brought by parties other than the parties to this Agreement, regardless of cause, except claims for loss or damage occurring while a Point 1 employee or agent is on Customer&rsquo;s premises and caused solely and directly by such employee or agent.']);
+  t.push(['SUBROGATION','To the extent permitted by Customer&rsquo;s property insurance, Customer releases and agrees to hold Point 1 harmless from all claims arising from any hazard covered by insurance on Customer&rsquo;s premises, whether made by Customer, its agents, or its insurer, and shall indemnify Point 1 against any subrogation action, including damages, costs, and attorney fees. Customer shall notify its insurance carrier of this provision.']);
+  t.push(['CUSTOMER DUTIES','Customer will instruct all users in the proper use of the System and will promptly notify Point 1 of any problem. Customer is responsible for obtaining all permits and licenses required to use the System; authorities may not respond and fines may apply without them. Point 1 may disclose user instructions to any governmental agency with jurisdiction over the System.']);
+  t.push(['INSTALLATION','Customer will permit Point 1 to install during normal business hours and provide uninterrupted access. Customer must inform Point 1 in advance of any concealed obstructions or hazards (e.g., pipes, wires, asbestos). If hazardous materials are encountered, Point 1 will cease work until Customer obtains clearance at Customer&rsquo;s expense. Customer agrees to compensate Point 1 for additional visits required due to cancellation or unavailability. After completion, Customer will inspect the System and notify Point 1 of any deficiency within ten (10) days; otherwise the System is deemed accepted.']);
+  t.push(['ADDITIONAL COSTS','Customer agrees to pay carrying charges and collection costs on past-due amounts. A reconnect charge applies if the System is disconnected for non-payment and Customer later requests reconnection. No credit is issued for periods the System is temporarily out of service. If legal proceedings are required to collect amounts due, the unsuccessful party shall pay the successful party&rsquo;s reasonable attorney fees and court costs where permitted by law.']);
+  t.push(['CHARGES, TAXES &amp; RATE INCREASES','Customer shall pay all taxes, permits, fees, and utility charges relating to the System. Point 1 may increase charges to reflect additional taxes or fees imposed by any utility or governmental agency. After the first year, and not more than once every twelve (12) months, Point 1 may increase the service charge by up to 1.5 times the change in the Consumer Price Index for urban consumers. Customer may terminate within ten (10) days of the effective date of an increase if unwilling to accept it; failure to do so constitutes consent.']);
+  var svcWords = (anyMon && hosted) ? 'monitoring, or hosting service' : hosted ? 'or hosting service' : 'or monitoring service';
+  t.push(['ASSIGNEES / SUBCONTRACTORS','Point 1 may transfer or assign this Agreement to any person or entity and may use subcontractors to perform installation, repair, '+svcWords+'. Customer may not transfer this Agreement without Point 1&rsquo;s written approval. The liability, indemnification, and subrogation provisions protect Point 1&rsquo;s assignees and subcontractors to the same extent they protect Point 1.']);
+  if(anyAlarm){
+    t.push(['EXCESSIVE ALARMS','If an excessive number of false alarms or service calls are caused by Customer, or if Customer abuses the System, Point 1 may treat it as a material breach and, at its option, be excused from further performance on ten (10) days&rsquo; written notice without affecting its right to recover damages. Customer is responsible for any fine, penalty, or fee assessed by a governmental agency as a result of an alarm from Customer&rsquo;s premises, and for service charges arising from Customer&rsquo;s inadvertence or negligence.']);
+    t.push(['DISCONNECT POLICY','Customer authorizes Point 1 to disconnect the System if ordered by a public official or regulation, for nuisance or electrical reasons, or if Point 1 is unable to reach Customer at the listed emergency numbers. Customer holds Point 1 harmless for any loss resulting from such disconnection.']);
+    t.push(['CONTROL COMMUNICATOR','The control communicator is owned by Customer. Customer agrees that Point 1 may access the digital communicator by remote programming to perform diagnostics, change or update information, or disconnect service upon termination or expiration of this Agreement.']);
+  }
+  t.push(['RENEWAL; ENTIRE AGREEMENT','This Agreement runs for the initial term selected from the date the System is operational. For Month-to-Month agreements, either party may terminate on thirty (30) days&rsquo; written notice. For all other terms, this Agreement automatically renews for successive one (1) year periods unless either party gives at least thirty (30) days&rsquo; written notice prior to expiration. If Customer cancels before installation begins, Customer agrees to pay an administrative charge of 50% of the installation charge. Point 1 retains ownership of the System until the sale price is paid in full.']);
+  t.push(['GOVERNING LAW','This Agreement is the final and exclusive statement of the parties&rsquo; agreement and supersedes all prior understandings. It may be modified only in writing signed by both parties. This Agreement is performed in and governed by the laws of the State of California, with Alameda County as the exclusive venue.']);
+  t.push(['LEGAL WAIVERS; JUDICIAL REFERENCE','No suit relating to this Agreement may be brought more than one (1) year after the cause of action accrues. Any dispute (other than small-claims collection actions by Point 1) will be resolved by reference proceedings in Alameda County under California Code of Civil Procedure &sect;&sect;638 et seq. and 641&ndash;645.1, which shall be the exclusive remedy. If that legislation is repealed without a successor, disputes will be resolved by binding arbitration before a retired Superior Court judge.']);
+  t.push(['IMAGING','Customer agrees that Point 1 may store all executed documents in electronic media, and such records shall have the same force and effect as paper originals.']);
+  var termDev = (anyAlarm && hosted) ? 'control communicator and/or hosted service' : hosted ? 'hosted service and communicator' : 'control communicator';
+  var termDest = (anyMon && hosted) ? 'monitoring station and/or platform' : hosted ? 'platform' : 'monitoring station';
+  t.push(['DEFAULT; EXPIRATION; TERMINATION','If Customer defaults, cancels, or this Agreement is terminated for any reason other than Point 1&rsquo;s default, Customer shall pay all amounts due for services performed and equipment provided through the termination date, plus all amounts to which Point 1 is entitled by law for the unexpired term, including lost profits. Thirty (30) days&rsquo; written cancellation is required. Upon expiration or termination, Point 1 may enter the premises to remove its signs, decals, and equipment and to reprogram or modify the '+termDev+' so it no longer communicates with Point 1&rsquo;s designated '+termDest+'.']);
+  t.push(['CONTRACTOR&rsquo;S LICENSE NOTICE','Contractors are required to be licensed and regulated by the Contractors State License Board, which has jurisdiction to investigate complaints. A complaint regarding a patent act or omission must be filed within four (4) years of the alleged violation; a latent act or omission pertaining to structural defects within ten (10) years. Inquiries may be referred to: Registrar, Contractors State License Board, P.O. Box 26000, Sacramento, CA 95826. Point 1 Electrical Systems &mdash; ACO #6506 &middot; CSL #745827.']);
+  return t;
+}
+
+// ── Build one combined agreement document across all selected service types ──
+function mcBuildCombinedDoc(agrs, cust, logo){
+  function b(s){ return mcBlank(s); }
+  var single = agrs.length===1;
+  var ctx={ anyBurglar:false, anyFire:false, anyAC:false, anyVideo:false, anyVideoMon:false };
+  agrs.forEach(function(d){
+    if(d.type==='burglar'){ ctx.anyBurglar=true; if(mcHasFireAddon(d)) ctx.anyFire=true; }
+    else if(d.type==='fire') ctx.anyFire=true;
+    else if(d.type==='ac') ctx.anyAC=true;
+    else if(d.type==='video'){ ctx.anyVideo=true; if(mcHas(d.services,'Central Station Video')||mcHas(d.services,'Video Monitoring')||mcHas(d.services,'Verification')) ctx.anyVideoMon=true; }
+  });
+  var first=agrs[0];
+  var agrNum=first.agrNum;
+  if(!agrNum){
+    var slug=(cust.name||'P1').replace(/[^A-Za-z0-9]/g,'').toUpperCase().slice(0,4)||'P1';
+    var shortCode = single ? (mcTypeShort(first.type).replace(/[^A-Z]/g,'').slice(0,2)||'MS') : 'MS';
+    agrNum='MON-'+(new Date().getFullYear())+'-'+slug+'-'+shortCode+'-'+Math.floor(Math.random()*900+100);
+  }
+  var agrDate = mcNormDate(first.agrDate) || (function(){ var x=new Date(); return (x.getMonth()+1+'').padStart(2,'0')+'/'+(x.getDate()+'').padStart(2,'0')+'/'+x.getFullYear(); })();
+  var docTitle, docSub;
+  if(single){
+    var hasFireAddon0=mcHasFireAddon(first);
+    docTitle=(first.type==='burglar'&&hasFireAddon0)?'Burglar &amp; Fire Alarm Monitoring &amp; Service Agreement':mcDocTitle(first.type);
+    docSub=(first.type==='burglar'&&hasFireAddon0)?'Central Station Intrusion &amp; Residential Fire Monitoring':(mcDocSub(first.type)+(first.type==='ac'?'':' &middot; '+first.occupancy));
+  } else {
+    docTitle='Monitoring &amp; Services Agreement';
+    docSub=agrs.map(function(d){ return mcTypeName(d.type); }).join(' &middot; ');
+  }
+  var typeNameCombined = single ? (first.typeName||'Monitoring') : 'Monitoring &amp; Services';
+  var html='<div class="fa-header">'+
+    '<div class="fa-brand"><img src="'+logo+'" alt="Point 1 Electrical Systems" class="fa-brand-logo"></div>'+
+    '<div class="fa-header-title"><div class="fa-doc-title">'+docTitle+'</div><div class="fa-doc-sub">'+docSub+'</div></div>'+
+    '<div class="fa-header-meta">'+
+      '<div class="fa-meta-row"><span class="fa-meta-lbl">Agreement #</span><span class="fa-meta-val">'+mcEsc(agrNum)+'</span></div>'+
+      '<div class="fa-meta-row"><span class="fa-meta-lbl">Date</span><span class="fa-meta-val">'+mcEsc(agrDate)+'</span></div>'+
+      '<div class="fa-meta-row"><span class="fa-meta-lbl">Initial Term</span><span class="fa-meta-val">'+mcEsc(b(first.term))+(single?'':' *')+'</span></div>'+
+    '</div></div><div class="fa-stripe"></div>';
+  var p1='Point 1 Electrical Systems, Inc.<br>6751 Southfront Rd., Livermore, CA 94551<br>CA Lic #745827 &middot; ACO #6506 &middot; 925-667-2906'+(cust.estimator?'<br>Representative: '+mcEsc(cust.estimator):'');
+  var primarySite=first.sites[0];
+  var bill=(cust.billing && cust.billing.addr) ? cust.billing : (primarySite||{});
+  var custAddr = bill.addr ? (mcEsc(bill.addr)+(bill.city?', '+mcEsc(bill.city):'')+(bill.state?', '+mcEsc(bill.state):'')+(bill.zip?' '+mcEsc(bill.zip):'')) : '';
+  var custDetail=(cust.contact?'Attn: '+mcEsc(cust.contact)+'<br>':'')+(custAddr?custAddr+'<br>':'')+(cust.phone?mcEsc(cust.phone)+'<br>':'')+(cust.email?mcEsc(cust.email):'');
+  html+='<div class="fa-parties">'+
+    '<div class="fa-party-box"><div class="fa-party-role">Service Provider (&ldquo;Point 1&rdquo;)</div><div class="fa-party-name">Point 1 Electrical Systems, Inc.</div><div class="fa-party-detail">'+p1+'</div></div>'+
+    '<div class="fa-party-box"><div class="fa-party-role">Customer (&ldquo;Customer&rdquo;)</div><div class="fa-party-name">'+mcEsc(cust.name||'____________')+'</div><div class="fa-party-detail">'+(custDetail||'&mdash;')+'</div></div>'+
+  '</div>';
+  function recFor(d){
+    if(d.type==='burglar') return 'central station burglar / intrusion alarm monitoring'+(mcHasFireAddon(d)?' and residential fire alarm monitoring':'');
+    if(d.type==='fire') return 'central station fire alarm monitoring';
+    if(d.type==='ac') return 'cloud-hosted access control management';
+    if(d.type==='video') return 'cloud-managed video recording'+((mcHas(d.services,'Central Station Video')||mcHas(d.services,'Video Monitoring')||mcHas(d.services,'Verification'))?' and video monitoring':'');
+    return 'monitoring';
+  }
+  var recList=agrs.map(recFor);
+  var recJoin = recList.length>1 ? (recList.slice(0,-1).join('; ')+'; and '+recList[recList.length-1]) : recList[0];
+  html+='<div class="fa-recital">This '+typeNameCombined+' Agreement (&ldquo;<strong>Agreement</strong>&rdquo;) is entered into as of <strong>'+mcEsc(agrDate)+'</strong> by and between <strong>Point 1 Electrical Systems, Inc.</strong> (&ldquo;<strong>Point 1</strong>&rdquo;) and <strong>'+mcEsc(cust.name||'Customer')+'</strong> (&ldquo;<strong>Customer</strong>&rdquo;). Point 1 agrees to provide '+recJoin+' and related service for the Covered System(s) at the site(s) identified below, on the terms set forth in this Agreement.</div>';
+  html+='<div class="fa-section"><div class="fa-section-head"><span class="fa-section-num">&sect;1</span><span class="fa-section-title">Scope of Services &amp; Covered Sites</span></div>'+
+    '<p class="fa-body">Point 1 agrees to provide the following services (&ldquo;<strong>Covered Services</strong>&rdquo;) for the system(s) at the site(s) listed below. Detailed equipment and scope are set forth in &sect;4 (Scope of Work / Continuation).</p>';
+  agrs.forEach(function(d,ai){
+    if(!single) html+='<div class="fa-body" style="font-weight:600;margin-top:8px;">Service '+(ai+1)+' &mdash; '+mcTypeName(d.type)+'</div>';
+    var sysPills=(d.services.length?d.services:['(services to be specified)']).map(function(s){ return '<span class="fa-sys-pill">'+mcEsc(s)+'</span>'; }).join('');
+    var sitesRows = d.sites.length
+      ? d.sites.map(function(s,i){ var line1=(s.name?mcEsc(s.name)+' — ':'')+mcEsc(s.addr||'____________'); var line2=mcEsc(s.city)+(s.state?', '+mcEsc(s.state):'')+(s.zip?' '+mcEsc(s.zip):''); return '<tr><td>Site '+(i+1)+'</td><td>'+line1+(line2.trim()?'<br>'+line2:'')+'</td></tr>'; }).join('')
+      : '<tr><td>Site 1</td><td>____________</td></tr>';
+    var commLine = d.type==='ac'
+      ? '<p class="fa-body" style="margin-top:6px;"><strong>Service Type:</strong> Hosted &nbsp;|&nbsp; <strong>Agreement Type:</strong> '+mcEsc(d.txn)+'</p>'
+      : '<p class="fa-body" style="margin-top:6px;"><strong>Communication Type:</strong> '+(d.comm.length?mcEsc(d.comm.join(', ')):'____________')+' &nbsp;|&nbsp; <strong>Occupancy:</strong> '+mcEsc(d.occupancy)+' &nbsp;|&nbsp; <strong>Agreement Type:</strong> '+mcEsc(d.txn)+'</p>';
+    html+='<div class="fa-sys-list">'+sysPills+'</div>'+commLine+
+      '<table class="fa-pm-scope" style="margin-top:8px;"><thead><tr><th style="width:18%">Site</th><th>Service Address</th></tr></thead><tbody>'+sitesRows+'</tbody></table>';
+  });
+  html+='</div>';
+  var seen={}, sc=[];
+  agrs.forEach(function(d){ mcSpecialConditions(d.type,d).forEach(function(it){ var k=it[0]; if(!seen[k]){ seen[k]=true; sc.push(it); } }); });
+  html+='<div class="fa-section"><div class="fa-section-head"><span class="fa-section-num">&sect;2</span><span class="fa-section-title">Special Conditions'+(single?(' &mdash; '+(first.typeName||'')):'')+'</span></div>'+
+    '<div style="border:1px solid #e0e0e0;border-radius:3px;overflow:hidden;"><ul class="fa-tc-list">';
+  sc.forEach(function(it){ html+='<li><span class="fa-tc-num">'+it[0]+'</span><span>'+it[1]+'</span></li>'; });
+  html+='</ul></div></div>';
+  var gt=mcGeneralTermsCtx(ctx);
+  html+='<div class="fa-section"><div class="fa-section-head"><span class="fa-section-num">&sect;3</span><span class="fa-section-title">General Terms &amp; Conditions</span></div>'+
+    '<div style="border:1px solid #e0e0e0;border-radius:3px;overflow:hidden;"><ul class="fa-tc-list">';
+  gt.forEach(function(it){ html+='<li><span class="fa-tc-num">'+it[0]+'</span><span>'+it[1]+'</span></li>'; });
+  html+='</ul></div></div>';
+  html+='<div class="fa-section"><div class="fa-section-head"><span class="fa-section-num">&sect;4</span><span class="fa-section-title">Scope of Work / Continuation</span></div>'+
+    '<p class="fa-body">The following describes the equipment Point 1 will install, the equipment Point 1 will take over and connect to, and/or the services Point 1 will provide under this Agreement:</p>';
+  var totalMonthly=0;
+  agrs.forEach(function(d,ai){
+    if(!single) html+='<div class="fa-body" style="font-weight:600;margin-top:10px;">Service '+(ai+1)+' &mdash; '+mcTypeName(d.type)+'</div>';
+    var freq=mcFreqLabel(d.freq);
+    var scopeHtml = d.scope ? mcEsc(d.scope).replace(/\n/g,'<br>') : '<span style="color:#999;font-style:italic;">Scope of work to be specified.</span>';
+    var pricingTable;
+    if(d.perSite && d.perSite.length){
+      var psRows=d.perSite.map(function(ps){ var lbl=ps.site?(ps.site.name?(ps.site.name+(ps.site.addr?' — '+ps.site.addr:'')):(ps.site.addr+(ps.site.city?', '+ps.site.city:''))):'Site'; return '<tr><td>'+mcEsc(lbl||'Site')+'</td><td style="text-align:right;">'+mcMoneyOrBlank(ps.price)+'</td><td style="text-align:right;">'+mcMoneyOrBlank(ps.charge)+'</td></tr>'; }).join('');
+      pricingTable='<table class="fa-budget-table"><thead><tr><th style="width:48%">Site</th><th style="text-align:right;">Sale &amp; Install Price</th><th style="text-align:right;">Service Charge (billed '+freq.toLowerCase()+')</th></tr></thead><tbody>'+psRows+
+        '<tr><td style="font-weight:700;">Total — All Sites</td><td style="text-align:right;font-weight:700;">'+(mcFmtMoney(d.priceTotal)||'$0.00')+' <span style="font-family:\'DM Sans\',sans-serif;font-weight:400;color:#777;">(plus tax)</span></td><td style="text-align:right;font-weight:700;">'+(mcFmtMoney(d.chargeTotal)||'$0.00')+'</td></tr>'+
+        '<tr><td>Initial Term</td><td colspan="2">'+mcEsc(b(d.term))+'</td></tr></tbody></table>';
+    } else {
+      pricingTable='<table class="fa-budget-table"><tbody>'+
+        '<tr><td style="width:48%">Total Sale &amp; Installation Price</td><td>'+mcMoneyOrBlank(d.price)+' <span style="font-family:\'DM Sans\',sans-serif;font-weight:400;color:#777;">(plus applicable taxes, billed)</span></td></tr>'+
+        '<tr><td>Service Charge</td><td>'+mcMoneyOrBlank(d.charge)+' &nbsp;<span style="font-family:\'DM Sans\',sans-serif;font-weight:400;color:#777;">billed '+freq.toLowerCase()+'</span></td></tr>'+
+        '<tr><td>Initial Term</td><td>'+mcEsc(b(d.term))+'</td></tr></tbody></table>';
+    }
+    var chargeNum = (d.perSite&&d.perSite.length) ? d.chargeTotal : (parseFloat(String(d.charge).replace(/[^0-9.]/g,''))||0);
+    var per = d.freq==='quarterly'?(1/3):d.freq==='annual'?(1/12):1;
+    totalMonthly += chargeNum*per;
+    html+='<div style="border:1px solid #e0e0e0;border-radius:3px;background:#fafaf8;padding:11px 14px;font-size:10.5px;color:#333;line-height:1.7;margin-bottom:10px;min-height:60px;">'+scopeHtml+'</div>'+pricingTable;
+  });
+  if(!single){
+    html+='<table class="fa-budget-table" style="margin-top:10px;"><tbody><tr><td style="width:48%;font-weight:700;">Combined Monthly Service Charge — All Services</td><td style="font-weight:700;">'+(totalMonthly>0?('$'+totalMonthly.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})):'$____________')+' <span style="font-family:\'DM Sans\',sans-serif;font-weight:400;color:#777;">/ month (see each service above for billing frequency and term)</span></td></tr></tbody></table>'+
+      '<p class="fa-body" style="font-size:9.5px;color:#777;margin-top:4px;">* Initial term may vary by service; see each service in this section.</p>';
+  }
+  html+='</div>';
+  html+='<div class="fa-section"><div class="fa-section-head"><span class="fa-section-num">&sect;5</span><span class="fa-section-title">Pricing &amp; Signatures</span></div>'+
+    '<p class="fa-body">This Agreement is not effective until approved by a Point 1 manager or until Point 1 begins installation or initiates service. By signing below, the parties agree to all terms of this '+typeNameCombined+' Agreement. Each signatory warrants full authority to execute on behalf of the respective party. Please read the entire Agreement before signing.</p>'+
+    '<div class="fa-sig-grid">'+
+      '<div><div class="fa-sig-party">Point 1 Electrical Systems, Inc.</div>'+
+        '<div class="fa-sig-line"></div><span class="fa-sig-lbl">Authorized Signature</span>'+
+        '<div class="fa-sig-line"></div><span class="fa-sig-lbl">Printed Name &amp; Title'+(cust.estimator?' ('+mcEsc(cust.estimator)+')':'')+'</span>'+
+        '<div class="fa-sig-line"></div><span class="fa-sig-lbl">Date</span></div>'+
+      '<div><div class="fa-sig-party">'+mcEsc(cust.name||'Customer')+'</div>'+
+        '<div class="fa-sig-line"></div><span class="fa-sig-lbl">Authorized Signature</span>'+
+        '<div class="fa-sig-line"></div><span class="fa-sig-lbl">Printed Name &amp; Title</span>'+
+        '<div class="fa-sig-line"></div><span class="fa-sig-lbl">Date</span></div>'+
+    '</div></div>';
+  var footShort = single ? mcTypeShort(first.type) : 'MULTI-SERVICE';
+  html+='<div class="fa-footer"><div class="fa-footer-left">Point 1 Electrical Systems, Inc. &nbsp;&middot;&nbsp; 6751 Southfront Rd, Livermore CA 94551 &nbsp;&middot;&nbsp; CA Lic #745827 &middot; ACO #6506 &nbsp;&middot;&nbsp; 925-667-2906</div><div class="fa-footer-right">Agreement # '+mcEsc(agrNum)+' &nbsp;&middot;&nbsp; '+footShort+'</div></div>';
+  return { html:html, agrNum:agrNum };
+}
+
 // ── Generate all agreements ──
 function mcGenerate(){
   mcSyncCustomer();
@@ -11040,17 +11260,18 @@ function mcGenerate(){
   var cards=Array.from(document.querySelectorAll('#mc-agreements-list .mc-card'));
   if(cards.length===0){ alert('Add at least one agreement first.'); return; }
 
-  var docs=[], untyped=0, agrNums=[];
-  cards.forEach(function(card){
-    var d=mcReadAgreement(card);
-    if(!d.type){ untyped++; return; }
-    var built=mcBuildAgreementDoc(d,cust,logo);
-    docs.push(built.html);
-    agrNums.push(built.agrNum);
-  });
-  if(docs.length===0){ alert('Select a service type for at least one agreement before generating.'); return; }
+  var typed=[], untyped=0;
+  cards.forEach(function(card){ var d=mcReadAgreement(card); if(!d.type){ untyped++; return; } typed.push(d); });
+  if(typed.length===0){ alert('Select a service type for at least one agreement before generating.'); return; }
   if(untyped>0 && !confirm(untyped+' agreement(s) have no service type selected and will be skipped. Continue?')) return;
 
+  // Fire Alarm Monitoring always generates as its own separate agreement.
+  // Burglar Alarm, Video Surveillance, and Access Control Hosting combine into one agreement.
+  var comboAgrs=typed.filter(function(d){ return d.type!=='fire'; });
+  var fireAgrs=typed.filter(function(d){ return d.type==='fire'; });
+  var docs=[], agrNums=[];
+  if(comboAgrs.length){ var cb=mcBuildCombinedDoc(comboAgrs, cust, logo); docs.push(cb.html); agrNums.push(cb.agrNum); }
+  fireAgrs.forEach(function(f){ var fb=mcBuildCombinedDoc([f], cust, logo); docs.push(fb.html); agrNums.push(fb.agrNum); });
   var combined=docs.map(function(h,i){ return (i>0?'<div class="mc-page-break"></div>':'')+h; }).join('');
 
   var overlay=document.getElementById('sla-print-overlay');
