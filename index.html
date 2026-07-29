@@ -2463,6 +2463,28 @@
         <hr class="divider">
       </div>
 
+      <!-- COMBINED ONE-TIME (INSTALL) TOTALS -->
+      <div id="section-onetime-combined" style="display:none;">
+      <div style="font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#1a4a8a;margin-bottom:8px;">Combined One-Time (Install)</div>
+      <div class="metric-row">
+        <span class="metric-label">One-time cost (labor + material)</span>
+        <span class="metric-value" id="s-onetime-cost">$0.00</span>
+      </div>
+      <div class="metric-row">
+        <span class="metric-label">Billed to customer (pre-tax)</span>
+        <span class="metric-value" id="s-onetime-billed">$0.00</span>
+      </div>
+      <div class="metric-row">
+        <span class="metric-label">Combined gross profit</span>
+        <span class="metric-value" id="s-onetime-gp">$0.00</span>
+      </div>
+      <div class="metric-row total">
+        <span class="metric-label">Combined one-time margin %</span>
+        <span class="metric-value" id="s-onetime-margin" style="font-weight:600;">—</span>
+      </div>
+      <hr class="divider">
+      </div><!-- /section-onetime-combined -->
+
       <!-- COMBINED TOTALS -->
       <div id="section-combined-totals">
       <div style="font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#e8620a;margin-bottom:8px;">Combined Recurring Totals</div>
@@ -4600,6 +4622,33 @@ function calc() {
     const sTMNM     = document.getElementById('s-tm-nm');           if(sTMNM)   { sTMNM.textContent     = tmNM !== null ? pct(tmNM) : '—'; sTMNM.style.color = tmNM !== null && tmNM > 0 ? 'var(--green)' : tmNM < 0 ? 'var(--red)' : 'var(--text)'; }
   }
 
+  // Combined One-Time (Install) totals — labor + material rollup, shown for
+  // standard (non-T&M) quotes that include installation labor and/or material.
+  // T&M / Material-Only quotes already have their own combined card above.
+  (function(){
+    var sec = document.getElementById('section-onetime-combined');
+    var show = !isTMCalc && (laborCostTotal > 0 || matCostTotal > 0);
+    if (sec) sec.style.display = show ? '' : 'none';
+    if (!show) return;
+    var otCost   = laborCostTotal + matCostTotal;
+    var otBilled = instLaborBilledAmt + matBilled;    // pre-tax — exactly the two source cards' "Billed to customer"
+    var otGP     = otBilled - otCost;
+    var otMargin = otBilled > 0 ? otGP / otBilled : null;
+    var elCost = document.getElementById('s-onetime-cost');   if (elCost) elCost.textContent = money(otCost);
+    var elBill = document.getElementById('s-onetime-billed'); if (elBill) elBill.textContent = money(otBilled);
+    var elGP   = document.getElementById('s-onetime-gp');     if (elGP) { elGP.textContent = money(otGP); elGP.style.color = otGP > 0 ? 'var(--green)' : 'var(--text)'; }
+    var elMar  = document.getElementById('s-onetime-margin');
+    if (elMar) {
+      elMar.textContent = otMargin !== null ? pct(otMargin) : '—';
+      // Install-appropriate thresholds (labor+material run lower than recurring):
+      // green >= 40%, amber 30–40%, red < 30%.
+      elMar.style.color = otMargin === null ? 'var(--text)'
+        : otMargin >= 0.40 ? 'var(--green)'
+        : otMargin >= 0.30 ? '#d97706'
+        : 'var(--red)';
+    }
+  })();
+
   // Combined totals
   var sTotRevEl = document.getElementById('s-totalRev'); if(sTotRevEl) sTotRevEl.textContent = money(annRev);
   $('s-totalCosts').textContent = money(totalCosts);
@@ -6057,13 +6106,19 @@ function closeImportModal() {
 }
 
 function importEstimate(event) {
-  var files = event.target.files;
-  if (!files || !files.length) return;
-  
+  // Snapshot the selected files into a real array BEFORE anything can clear the
+  // input. event.target.files is a *live* FileList — resetting event.target.value
+  // (which we do below so the same file can be re-selected) empties it. The File
+  // objects captured here stay readable after that reset.
+  var fileArr = Array.prototype.slice.call(event.target.files || []);
+  var total   = fileArr.length;
+  event.target.value = '';
+  if (!total) return;
+
   var loaded = 0;
   var allEstimates = [];
-  
-  Array.from(files).forEach(function(file) {
+
+  fileArr.forEach(function(file) {
     var reader = new FileReader();
     reader.onload = function(e) {
       try {
@@ -6078,7 +6133,7 @@ function importEstimate(event) {
         showToast('Error reading ' + file.name + ': ' + err.message);
       }
       loaded++;
-      if (loaded === files.length) {
+      if (loaded === total) {
         if (allEstimates.length === 1) {
           // Single estimate — load directly
           restoreEstimateData(allEstimates[0]);
@@ -6086,12 +6141,13 @@ function importEstimate(event) {
         } else if (allEstimates.length > 1) {
           // Multiple estimates — show picker
           showEstimatePicker(allEstimates);
+        } else {
+          showToast('No valid estimate found in the selected file(s).');
         }
       }
     };
     reader.readAsText(file);
   });
-  event.target.value = '';
 }
 
 var _pickerEstimates = [];
@@ -6311,22 +6367,11 @@ function gatherEstimateData() {
 
 // exportEstimate defined above
 
-function importEstimate(event) {
-  var file = event.target.files[0];
-  if (!file) return;
-  var reader = new FileReader();
-  reader.onload = function(e) {
-    try {
-      var data = JSON.parse(e.target.result);
-      restoreEstimateData(data);
-      showToast('Estimate loaded: ' + file.name);
-    } catch(err) {
-      showToast('Error reading file: ' + err.message);
-    }
-    event.target.value = '';
-  };
-  reader.readAsText(file);
-}
+// NOTE: The single-file importEstimate() that used to live here has been
+// removed. Being defined second, it silently shadowed the multi-file version
+// defined above, which disabled the multi-file import picker. The version
+// above handles BOTH a single file (loads it directly) and multiple files
+// (shows the picker modal so you can choose which estimate to load).
 
 function restoreEstimateData(data) {
   window._importing = true; // suppress resetAllMonthlyServices for entire import
@@ -8508,6 +8553,7 @@ function switchView(view) {
     tabMC.classList.add('active');
     setHdr(false);
     if (typeof mcSyncCustomer === 'function') mcSyncCustomer();
+    if (typeof mcAutoSeedFromQB === 'function') mcAutoSeedFromQB();
   } else {
     sseView.classList.remove('hidden');
     tabSSE.classList.add('active');
@@ -9627,6 +9673,16 @@ if (document.readyState !== 'loading') estTypeBuild();
 // proposal (uses .q-... classes). Renders into the same overlay
 // (#sla-print-overlay) and uses closeSLAPrint() / window.print().
 // ═══════════════════════════════════════════════════════════════
+
+// Shared by both SLA generators (generateSLAProposal + generateSLAPrint).
+// Previously this identical helper was defined separately inside each one.
+function parseDollar(s) {
+  if (!s||s==='—'||s==='___________') return 0;
+  var m=s.match(/\$[\d,]+\.?\d*/g);
+  if (m) return parseFloat(m[m.length-1].replace(/[$,]/g,''))||0;
+  return parseFloat(s.replace(/[$,]/g,''))||0;
+}
+
 function generateSLAProposal() {
   slaSyncCustomer();
 
@@ -9635,12 +9691,6 @@ function generateSLAProposal() {
   function iv(id) { var e=document.getElementById(id); return e?(e.value||'').trim():''; }
   function fmt(n) { return '$'+n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); }
   function blk(n) { return n||'—'; }
-  function parseDollar(s) {
-    if (!s||s==='—'||s==='___________') return 0;
-    var m=s.match(/\$[\d,]+\.?\d*/g);
-    if (m) return parseFloat(m[m.length-1].replace(/[$,]/g,''))||0;
-    return parseFloat(s.replace(/[$,]/g,''))||0;
-  }
 
   // ── Form values ──
   var agrNum     = iv('sla-agr-num');
@@ -10048,12 +10098,6 @@ function generateSLAPrint() {
   })();
 
   // ── Financial calculations ──
-  function parseDollar(s) {
-    if (!s||s==='—'||s==='___________') return 0;
-    var m=s.match(/\$[\d,]+\.?\d*/g);
-    if (m) return parseFloat(m[m.length-1].replace(/[$,]/g,''))||0;
-    return parseFloat(s.replace(/[$,]/g,''))||0;
-  }
   var laborBudget  = parseDollar(regAmt) + parseDollar(ahAmt) + parseDollar(emAmt);
   var matBudget    = parseDollar(matAmt);
   var annualBudget = pmTotal + laborBudget + matBudget + (typeof slaCalloutTotal==='function'?slaCalloutTotal():0);
@@ -10717,6 +10761,24 @@ function mcPullFromQB(id){
   var rmr=num('h-rmr'), ot=num('h-onetime');
   var pe=card.querySelector('[data-f="price"]'); if(pe && ot) pe.value=ot;
   var ce=card.querySelector('[data-f="charge"]'); if(ce && rmr) ce.value=rmr;
+  if(typeof mcUpdateHeaderRevenue==='function') mcUpdateHeaderRevenue();
+}
+
+// Auto-seed each agreement's pricing from the Quote Builder header totals, but
+// ONLY into blank/zero fields — it never overwrites a value you've typed. Runs
+// on entering the Monitoring Contracts tab, so restored or pre-existing
+// agreements pick up the quote's RMR without clobbering manual edits. The
+// "Pull from Quote Builder" button (mcPullFromQB) still force-fills on demand.
+function mcAutoSeedFromQB(){
+  var raw=function(elId){ var e=document.getElementById(elId); if(!e) return ''; return (e.textContent||'').replace(/[^0-9.]/g,''); };
+  var rmr=raw('h-rmr'), ot=raw('h-onetime');
+  var isBlank=function(v){ v=String(v||'').replace(/[^0-9.]/g,''); return v==='' || parseFloat(v)===0; };
+  document.querySelectorAll('#mc-agreements-list .mc-card').forEach(function(card){
+    var ce=card.querySelector('[data-f="charge"]');
+    if(ce && rmr && isBlank(ce.value)) ce.value=rmr;
+    var pe=card.querySelector('[data-f="price"]');
+    if(pe && ot && isBlank(pe.value)) pe.value=ot;
+  });
   if(typeof mcUpdateHeaderRevenue==='function') mcUpdateHeaderRevenue();
 }
 
