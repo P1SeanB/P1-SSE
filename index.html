@@ -4329,7 +4329,10 @@ function calc() {
   const avMaintGM    = document.getElementById('avMaintGMSlider') ? parseInt($('avMaintGMSlider').value) / 100 : P1_RATES.avMaintGM / 100;
   const matMarkup      = document.getElementById('matMarkupSlider')   ? parseInt($('matMarkupSlider').value)   / 100 : 0.69;
   const matCostTotal   = getTotalMatCost();
-  const matBilled      = matCostTotal * (1 + matMarkup);
+  // Billed = sum of actual per-line sell. With package/manual costing the job
+  // cost can differ from prorated usage, but the customer's price must not —
+  // so billed is summed from line sells, never derived as cost × markup.
+  const matBilled      = getTotalMatSell();
   const matGP          = matBilled - matCostTotal;
   const matMarginPct   = matBilled > 0 ? matGP / matBilled : null;
   const laborCostTotal = getTotalLaborCost();
@@ -4918,7 +4921,7 @@ function copyQuote() {
   const avMaintGM     = document.getElementById('avMaintGMSlider') ? parseInt($('avMaintGMSlider').value)/100 : 0.53;
   const matMarkup     = document.getElementById('matMarkupSlider') ? parseInt($('matMarkupSlider').value)/100 : 0.69;
   const matCostTotal  = getTotalMatCost();
-  const matBilled     = matCostTotal * (1 + matMarkup);
+  const matBilled     = getTotalMatSell();
   const laborCostTotal = getTotalLaborCost();
   const subMarkup     = parseInt($('subMarkupSlider').value)/100;
   const svcGMcopy     = parseInt($('svcGMSlider').value)/100;
@@ -5229,8 +5232,9 @@ function copyQuote() {
       if (matItems2.length > 0) {
         lines.push('  Installation Materials:');
         matItems2.forEach(function(item){
-          const qtyStr = item.qty > 1 ? ' × ' + item.qty : '';
-          lines.push('    ' + item.desc + qtyStr + ' @ ' + money(item.unitSell) + '/ea  →  ' + money(item.totalSell));
+          const iUnit  = item.unit || 'ea';
+          const qtyStr = iUnit !== 'ea' ? ' — ' + item.qty + ' ft' : (item.qty > 1 ? ' × ' + item.qty : '');
+          lines.push('    ' + item.desc + qtyStr + ' @ ' + money(item.unitSell) + '/' + p1UnitLabel(iUnit) + '  →  ' + money(item.totalSell));
         });
       }
       const grandTotal = allItems.reduce(function(s,i){ return s+i.totalSell; },0);
@@ -5520,6 +5524,10 @@ function addMatRow() {
     matFieldsEl.style.display  = type === 'material' ? 'grid' : 'none';
     laborLabels.style.display  = type === 'labor'    ? 'grid' : 'none';
     laborFieldsEl.style.display= type === 'labor'    ? 'grid' : 'none';
+    lpWrap.style.display       = (type === 'material' && !isMatOnly && wrapper._lpOpen) ? 'block' : 'none';
+    lpBtn.style.display        = (type === 'material' && !isMatOnly) ? '' : 'none';
+    pkgWrap.style.display      = (type === 'material' && wrapper._pkgOpen) ? 'block' : 'none';
+    pkgBtn.style.display       = (type === 'material') ? '' : 'none';
     updateMatTotal(); calc();
   }
 
@@ -5544,17 +5552,19 @@ function addMatRow() {
 
   // Material labels
   const matLabels = document.createElement('div');
-  matLabels.style.cssText = 'display:grid;grid-template-columns:80px 44px 1fr 1fr;gap:5px;margin-bottom:2px;';
-  ['Unit Cost','Qty','Unit Sell','Total Sell'].forEach(function(t,i) {
+  matLabels.style.cssText = 'display:grid;grid-template-columns:64px 132px 80px 1fr 1fr;gap:5px;margin-bottom:2px;';
+  const matLabelEls = [];
+  // Takeoff order: count it, say how it's priced, price it, extend it.
+  ['Qty','Priced Per','Unit Cost','Unit Sell','Total Sell'].forEach(function(t,i) {
     const s = document.createElement('span');
     s.textContent = t;
-    s.style.cssText = 'font-size:9px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;color:var(--text3);text-align:'+(i===1?'center':'right')+';';
-    matLabels.appendChild(s);
+    s.style.cssText = 'font-size:9px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;color:var(--text3);text-align:'+((i===0||i===1)?'center':'right')+';';
+    matLabels.appendChild(s); matLabelEls.push(s);
   });
 
   // Material fields
   const matFieldsEl = document.createElement('div');
-  matFieldsEl.style.cssText = 'display:grid;grid-template-columns:80px 44px 1fr 1fr;gap:5px;align-items:center;';
+  matFieldsEl.style.cssText = 'display:grid;grid-template-columns:64px 132px 80px 1fr 1fr;gap:5px;align-items:center;';
 
   const costEl = document.createElement('input');
   costEl.type='number'; costEl.id=id+'-cost'; costEl.min='0'; costEl.step='0.01'; costEl.placeholder='0.00';
@@ -5574,8 +5584,188 @@ function addMatRow() {
   sellEl.id=id+'-sell';
   sellEl.style.cssText='font-size:12px;font-family:monospace;font-weight:700;color:#e8620a;text-align:right;';
 
-  matFieldsEl.appendChild(costEl); matFieldsEl.appendChild(qtyEl);
+  // Unit toggle: segmented ea|ft switch (affects display + per-unit labor meaning).
+  // A hidden input carries the value under the same id the data layer reads.
+  const unitHidden = document.createElement('input');
+  unitHidden.type='hidden'; unitHidden.id=id+'-unit'; unitHidden.value='ea';
+  const unitWrap = document.createElement('div');
+  unitWrap.style.cssText='display:flex;border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;height:27px;';
+  // Bases follow estimating convention: wire/cable is priced and labored per
+  // 100 ft or per 1,000 ft (NECA "per C" / "per M"). Qty is ALWAYS the actual
+  // footage; the basis sets what Unit Cost and Lab hrs mean.
+  const P1_UNITS = ['ea','ft','100ft','1000ft'];
+  var pkgRefs = {}; // filled in when the package panel is built below
+  const unitBtns = {};
+  P1_UNITS.forEach(function(u){
+    const ub=document.createElement('button');
+    ub.type='button'; ub.textContent=u;
+    ub.style.cssText='flex:1;border:none;background:var(--surface2);color:var(--text3);font-size:9px;font-weight:700;cursor:pointer;padding:0;font-family:\'DM Sans\',sans-serif;transition:all .12s;white-space:nowrap;';
+    ub.onclick=function(){ setUnit(u); updateMatTotal(); calc(); };
+    unitBtns[u]=ub; unitWrap.appendChild(ub);
+  });
+  function setUnit(u){
+    unitHidden.value = u;
+    P1_UNITS.forEach(function(k){
+      unitBtns[k].style.background = k===u ? '#1c1c1c' : 'var(--surface2)';
+      unitBtns[k].style.color      = k===u ? '#fff'    : 'var(--text3)';
+    });
+    var ftBased = u!=='ea';
+    qtyEl.step = ftBased ? 'any' : '1';
+    qtyEl.min  = ftBased ? '0'   : '1';
+    qtyEl.placeholder = ftBased ? 'ft' : '1';
+    lpHrsLabel.textContent = 'Lab hrs/'+u;
+    // Labels say exactly what each number means under the chosen basis
+    matLabelEls[0].textContent = ftBased ? 'Qty (ft)' : 'Qty';
+    matLabelEls[2].textContent = u==='ea' ? 'Unit Cost' : 'Cost/'+u;
+    matLabelEls[3].textContent = u==='ea' ? 'Unit Sell' : 'Sell/'+u;
+    if (pkgRefs.sizeLabel) pkgRefs.sizeLabel.textContent = 'Pkg Size ('+(ftBased?'ft':'ea')+')';
+  }
+  unitHidden.onchange = function(){ setUnit(unitHidden.value); }; // import/restore path
+  unitWrap.appendChild(unitHidden);
+
+  // Plain-English translation of the basis math, shown for ft-based rows
+  const basisHint = document.createElement('div');
+  basisHint.id = id+'-basis-hint';
+  basisHint.style.cssText='display:none;font-size:10px;color:var(--text3);margin-top:3px;font-family:\'DM Mono\',monospace;';
+
+  matFieldsEl.appendChild(qtyEl); matFieldsEl.appendChild(unitWrap); matFieldsEl.appendChild(costEl);
   matFieldsEl.appendChild(unitSellEl); matFieldsEl.appendChild(sellEl);
+
+  // ── Attached labor per unit of material (optional; scales with Qty) ──
+  const lpWrap = document.createElement('div');
+  lpWrap.id = id+'-lprow';
+  lpWrap.style.cssText = 'margin-top:5px;padding:5px 8px;background:var(--surface);border:1px solid var(--border);border-left:3px solid #e8620a;border-radius:var(--radius-sm);';
+  const lpLabels = document.createElement('div');
+  lpLabels.style.cssText = 'display:grid;grid-template-columns:80px 70px 70px 1fr;gap:5px;margin-bottom:2px;';
+  const lpHrsLabel = document.createElement('span');
+  lpHrsLabel.textContent = 'Lab hrs/ea';
+  const lpLabelStyle = 'font-size:9px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;color:var(--text3);text-align:right;';
+  lpHrsLabel.style.cssText = lpLabelStyle;
+  lpLabels.appendChild(lpHrsLabel);
+  ['Cost/hr','Sell/hr','Labor Total'].forEach(function(t){
+    const s=document.createElement('span'); s.textContent=t; s.style.cssText=lpLabelStyle; lpLabels.appendChild(s);
+  });
+  const lpFields = document.createElement('div');
+  lpFields.style.cssText='display:grid;grid-template-columns:80px 70px 70px 1fr;gap:5px;align-items:center;';
+  const lpInputStyle='font-size:12px;padding:4px 6px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface2);color:var(--text);font-family:monospace;text-align:right;width:100%;';
+  const lpHrsEl = document.createElement('input');
+  lpHrsEl.type='number'; lpHrsEl.id=id+'-lphrs'; lpHrsEl.min='0'; lpHrsEl.step='0.25'; lpHrsEl.placeholder='0';
+  lpHrsEl.style.cssText=lpInputStyle;
+  lpHrsEl.oninput=function(){ updateMatTotal(); calc(); };
+  const lpRateEl = document.createElement('input');
+  lpRateEl.type='number'; lpRateEl.id=id+'-lprate'; lpRateEl.min='0'; lpRateEl.step='0.01';
+  lpRateEl.value=(P1_RATES.laborCostPerHr||120);
+  lpRateEl.style.cssText=lpInputStyle;
+  lpRateEl.oninput=function(){ updateMatTotal(); calc(); };
+  const lpSellEl = document.createElement('input');
+  lpSellEl.type='number'; lpSellEl.id=id+'-lpsellrate'; lpSellEl.min='0'; lpSellEl.step='0.01';
+  lpSellEl.value=(P1_RATES.laborSellDefault||180);
+  lpSellEl.style.cssText=lpInputStyle+'color:#e8620a;font-weight:700;';
+  lpSellEl.oninput=function(){ updateMatTotal(); calc(); };
+  const lpTotalEl = document.createElement('span');
+  lpTotalEl.id=id+'-lp-total';
+  lpTotalEl.style.cssText='font-size:12px;font-family:monospace;font-weight:700;color:#e8620a;text-align:right;';
+  lpFields.appendChild(lpHrsEl); lpFields.appendChild(lpRateEl);
+  lpFields.appendChild(lpSellEl); lpFields.appendChild(lpTotalEl);
+  lpWrap.appendChild(lpLabels); lpWrap.appendChild(lpFields);
+  // Collapsed by default — revealed by the "+ Labor" button below. Collapsing
+  // never clears values; only zeroing the hours removes the labor.
+  lpWrap.style.display='none';
+  wrapper._lpOpen = false;
+
+  // "+ Labor" toggle button (lives in the bottom action bar, material rows only).
+  // Turns into an orange summary chip whenever labor hours are set, so a
+  // collapsed row still shows it carries labor. Styled by updateMatTotal.
+  const lpBtn = document.createElement('button');
+  lpBtn.type='button'; lpBtn.id=id+'-lpbtn'; lpBtn.textContent='+ Labor';
+  lpBtn.style.cssText='background:transparent;border:1px dashed var(--border2);color:var(--text2);cursor:pointer;font-size:11px;padding:3px 8px;border-radius:var(--radius-sm);transition:all .12s;';
+  lpBtn.onclick=function(){
+    wrapper._lpOpen = !wrapper._lpOpen;
+    lpWrap.style.display = wrapper._lpOpen ? 'block' : 'none';
+    if (wrapper._lpOpen) lpHrsEl.focus();
+  };
+  if (isMatOnly) lpBtn.style.display='none';
+
+  // ── Package / waste costing (optional; hidden behind "+ Package") ──
+  const pkgWrap = document.createElement('div');
+  pkgWrap.id = id+'-pkgrow';
+  pkgWrap.style.cssText = 'display:none;margin-top:5px;padding:5px 8px;background:var(--surface);border:1px solid var(--border);border-left:3px solid #1a4a8a;border-radius:var(--radius-sm);';
+  const pkgLabels = document.createElement('div');
+  pkgLabels.style.cssText='display:grid;grid-template-columns:80px 90px 70px 1fr;gap:5px;margin-bottom:2px;';
+  const pkgSizeLabel=document.createElement('span'); pkgSizeLabel.textContent='Pkg Size (ea)'; pkgSizeLabel.style.cssText=lpLabelStyle;
+  pkgLabels.appendChild(pkgSizeLabel);
+  ['Purchase Unit','Waste %','Cost Job By'].forEach(function(t){
+    const s=document.createElement('span'); s.textContent=t; s.style.cssText=lpLabelStyle; pkgLabels.appendChild(s);
+  });
+  pkgRefs.sizeLabel = pkgSizeLabel;
+  const pkgFields=document.createElement('div');
+  pkgFields.style.cssText='display:grid;grid-template-columns:80px 90px 70px 1fr;gap:5px;align-items:center;';
+  const pkgSizeEl=document.createElement('input');
+  pkgSizeEl.type='number'; pkgSizeEl.id=id+'-pkgsize'; pkgSizeEl.min='0'; pkgSizeEl.step='any'; pkgSizeEl.placeholder='1000';
+  pkgSizeEl.style.cssText=lpInputStyle;
+  pkgSizeEl.oninput=function(){ updateMatTotal(); calc(); };
+  const pkgUnitEl=document.createElement('input');
+  pkgUnitEl.type='text'; pkgUnitEl.id=id+'-pkgunit'; pkgUnitEl.placeholder='roll / box';
+  pkgUnitEl.style.cssText='font-size:11px;padding:4px 6px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface2);color:var(--text);width:100%;';
+  pkgUnitEl.oninput=function(){ updateMatTotal(); };
+  const wasteEl=document.createElement('input');
+  wasteEl.type='number'; wasteEl.id=id+'-waste'; wasteEl.min='0'; wasteEl.max='100'; wasteEl.step='any'; wasteEl.placeholder='0';
+  wasteEl.style.cssText=lpInputStyle;
+  wasteEl.oninput=function(){ updateMatTotal(); calc(); };
+  // Cost Job By segmented control (Actual Usage | Full Package | Manual)
+  const costByHidden=document.createElement('input');
+  costByHidden.type='hidden'; costByHidden.id=id+'-costby'; costByHidden.value='actual';
+  const cbWrap=document.createElement('div');
+  cbWrap.style.cssText='display:flex;border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;height:27px;';
+  const CB_OPTS=[['actual','Actual'],['package','Full Pkg'],['manual','Manual']];
+  const cbBtns={};
+  CB_OPTS.forEach(function(o){
+    const cb=document.createElement('button');
+    cb.type='button'; cb.textContent=o[1];
+    cb.style.cssText='flex:1;border:none;background:var(--surface2);color:var(--text3);font-size:9px;font-weight:700;cursor:pointer;padding:0;font-family:\'DM Sans\',sans-serif;transition:all .12s;white-space:nowrap;';
+    cb.onclick=function(){ setCostBy(o[0]); updateMatTotal(); calc(); };
+    cbBtns[o[0]]=cb; cbWrap.appendChild(cb);
+  });
+  function setCostBy(v){
+    costByHidden.value=v;
+    CB_OPTS.forEach(function(o){
+      cbBtns[o[0]].style.background = o[0]===v ? '#1a4a8a' : 'var(--surface2)';
+      cbBtns[o[0]].style.color      = o[0]===v ? '#fff'    : 'var(--text3)';
+    });
+    manualRow.style.display = v==='manual' ? 'grid' : 'none';
+  }
+  costByHidden.onchange=function(){ setCostBy(costByHidden.value); }; // import/restore path
+  cbWrap.appendChild(costByHidden);
+  // Manual job cost (shown only when Cost Job By = Manual)
+  const manualRow=document.createElement('div');
+  manualRow.style.cssText='display:none;grid-template-columns:130px 110px;gap:5px;align-items:center;margin-top:4px;';
+  const manLbl=document.createElement('span'); manLbl.textContent='Manual Job Cost ($)';
+  manLbl.style.cssText=lpLabelStyle+'text-align:left;';
+  const manEl=document.createElement('input');
+  manEl.type='number'; manEl.id=id+'-manualcost'; manEl.min='0'; manEl.step='0.01'; manEl.placeholder='0.00';
+  manEl.style.cssText=lpInputStyle;
+  manEl.oninput=function(){ updateMatTotal(); calc(); };
+  manualRow.appendChild(manLbl); manualRow.appendChild(manEl);
+  // Inline validation message
+  const pkgMsg=document.createElement('div');
+  pkgMsg.id=id+'-pkg-msg';
+  pkgMsg.style.cssText='display:none;font-size:10px;color:var(--red);margin-top:3px;';
+  pkgFields.appendChild(pkgSizeEl); pkgFields.appendChild(pkgUnitEl);
+  pkgFields.appendChild(wasteEl); pkgFields.appendChild(cbWrap);
+  pkgWrap.appendChild(pkgLabels); pkgWrap.appendChild(pkgFields);
+  pkgWrap.appendChild(manualRow); pkgWrap.appendChild(pkgMsg);
+  setCostBy('actual'); // paint initial state
+  wrapper._pkgOpen = false;
+  const pkgBtn=document.createElement('button');
+  pkgBtn.type='button'; pkgBtn.id=id+'-pkgbtn'; pkgBtn.textContent='+ Package';
+  pkgBtn.style.cssText='background:transparent;border:1px dashed var(--border2);color:var(--text2);cursor:pointer;font-size:11px;padding:3px 8px;border-radius:var(--radius-sm);transition:all .12s;';
+  pkgBtn.onclick=function(){
+    wrapper._pkgOpen = !wrapper._pkgOpen;
+    pkgWrap.style.display = wrapper._pkgOpen ? 'block' : 'none';
+    if (wrapper._pkgOpen) pkgSizeEl.focus();
+  };
+
+  setUnit('ea'); // paint the initial segmented-toggle state
 
   // Labor labels
   const laborLabels = document.createElement('div');
@@ -5679,7 +5869,12 @@ function addMatRow() {
 
   const bottomBar = document.createElement('div');
   bottomBar.style.cssText='display:flex;justify-content:space-between;align-items:center;margin-top:6px;';
-  bottomBar.appendChild(imgBtn);
+  const leftBtns = document.createElement('div');
+  leftBtns.style.cssText='display:flex;gap:6px;align-items:center;';
+  leftBtns.appendChild(imgBtn);
+  leftBtns.appendChild(lpBtn);
+  leftBtns.appendChild(pkgBtn);
+  bottomBar.appendChild(leftBtns);
   bottomBar.appendChild(rmBtn);
 
   // Store element refs so helpers can update this row's image UI
@@ -5690,6 +5885,9 @@ function addMatRow() {
   wrapper.appendChild(descEl);
   wrapper.appendChild(matLabels);
   wrapper.appendChild(matFieldsEl);
+  wrapper.appendChild(basisHint);
+  wrapper.appendChild(lpWrap);
+  wrapper.appendChild(pkgWrap);
   wrapper.appendChild(laborLabels);
   wrapper.appendChild(laborFieldsEl);
   wrapper.appendChild(imgInput);
@@ -5783,11 +5981,72 @@ function updateMatTotal() {
     const base = rowEl.id.replace('mat-row-','mat-');
     if (type==='material') {
       const cost = parseFloat((document.getElementById(base+'-cost')||{}).value)||0;
-      const qty  = parseInt((document.getElementById(base+'-qty')||{}).value)||1;
-      const unitSell = cost*(1+matMarkup), totalSell = unitSell*qty;
-      totalMatCost += cost*qty; totalMatSell += totalSell;
-      const uEl=document.getElementById(base+'-unitsell'); if(uEl) uEl.textContent = cost>0 ? '$'+unitSell.toFixed(2)+'/ea' : '';
-      const sEl=document.getElementById(base+'-sell');     if(sEl) sEl.textContent = totalSell>0 ? '$'+totalSell.toFixed(2) : '';
+      const qty  = parseFloat((document.getElementById(base+'-qty')||{}).value)||1;
+      const unit = (document.getElementById(base+'-unit')||{}).value || 'ea';
+      const lpHrs  = parseFloat((document.getElementById(base+'-lphrs')||{}).value)||0;
+      const lpRate = parseFloat((document.getElementById(base+'-lprate')||{}).value)||(P1_RATES.laborCostPerHr||120);
+      const lpSell = parseFloat((document.getElementById(base+'-lpsellrate')||{}).value)||(P1_RATES.laborSellDefault||180);
+      const pkg = p1ReadPkg(base);
+      const mc = p1MatCompute({ cost:cost, qty:qty, unit:unit, matMarkup:matMarkup, lpHrs:lpHrs,
+                                waste:pkg.waste, pkgSize:pkg.pkgSize, costBy:pkg.costBy, manualCost:pkg.manualCost });
+      totalMatCost += mc.jobCost; totalMatSell += mc.totalSell;
+      const uEl=document.getElementById(base+'-unitsell'); if(uEl) uEl.textContent = cost>0 ? '$'+mc.unitSellVal.toFixed(2)+'/'+p1UnitLabel(unit) : '';
+      const sEl=document.getElementById(base+'-sell');     if(sEl) sEl.textContent = mc.totalSell>0 ? '$'+mc.totalSell.toFixed(2) : '';
+      // Attached labor (from adjusted usage) — counts as installation labor
+      const lpTotEl = document.getElementById(base+'-lp-total');
+      if (lpHrs > 0) {
+        totalLaborCost += lpRate*mc.labHrs; totalLaborSell += lpSell*mc.labHrs;
+        if (lpTotEl) lpTotEl.textContent = (+mc.labHrs.toFixed(2))+' hrs · $'+(lpSell*mc.labHrs).toFixed(2);
+      } else if (lpTotEl) lpTotEl.textContent = '';
+      // "+ Labor" button doubles as a summary chip when labor is set
+      const lpBtnEl = document.getElementById(base+'-lpbtn');
+      if (lpBtnEl) {
+        if (lpHrs > 0) {
+          lpBtnEl.textContent = 'Labor: '+(+mc.labHrs.toFixed(2))+' hrs · $'+(lpSell*mc.labHrs).toFixed(2);
+          lpBtnEl.style.background='var(--orange-light)'; lpBtnEl.style.borderStyle='solid';
+          lpBtnEl.style.borderColor='#e8620a'; lpBtnEl.style.color='#e8620a'; lpBtnEl.style.fontWeight='700';
+        } else {
+          lpBtnEl.textContent = '+ Labor';
+          lpBtnEl.style.background='transparent'; lpBtnEl.style.borderStyle='dashed';
+          lpBtnEl.style.borderColor='var(--border2)'; lpBtnEl.style.color='var(--text2)'; lpBtnEl.style.fontWeight='';
+        }
+      }
+      // "+ Package" button doubles as a summary chip when package/waste is set
+      const pkgBtnEl = document.getElementById(base+'-pkgbtn');
+      if (pkgBtnEl) {
+        if (pkg.active) {
+          var pParts=[];
+          if (pkg.pkgSize>0) pParts.push('Pkg '+pkg.pkgSize.toLocaleString('en-US')+' '+(unit==='ea'?'ea':'ft'));
+          if (pkg.costBy==='package') pParts.push('Full Pkg');
+          else if (pkg.costBy==='manual') pParts.push('Manual');
+          if (pkg.waste>0) pParts.push(pkg.waste+'% waste');
+          pkgBtnEl.textContent = 'Pkg: '+(pParts.join(' · ')||'on');
+          pkgBtnEl.style.background='var(--blue-bg)'; pkgBtnEl.style.borderStyle='solid';
+          pkgBtnEl.style.borderColor='#1a4a8a'; pkgBtnEl.style.color='#1a4a8a'; pkgBtnEl.style.fontWeight='700';
+        } else {
+          pkgBtnEl.textContent = '+ Package';
+          pkgBtnEl.style.background='transparent'; pkgBtnEl.style.borderStyle='dashed';
+          pkgBtnEl.style.borderColor='var(--border2)'; pkgBtnEl.style.color='var(--text2)'; pkgBtnEl.style.fontWeight='';
+        }
+      }
+      // Inline validation message (package panel)
+      const msgEl = document.getElementById(base+'-pkg-msg');
+      if (msgEl) { msgEl.textContent = mc.err||''; msgEl.style.display = mc.err ? 'block' : 'none'; }
+      // Summary line — spells out usage, waste, package purchase, cost vs sell, labor
+      const hintEl = document.getElementById(base+'-basis-hint');
+      if (hintEl) {
+        var showHint = (cost>0 || lpHrs>0) && (unit!=='ea' || pkg.active);
+        if (showHint) {
+          var uWord = unit==='ea' ? 'ea' : 'ft';
+          var hTxt = qty.toLocaleString('en-US')+' '+uWord+' required';
+          if (pkg.waste>0) hTxt += ' + '+pkg.waste+'% waste = '+(+mc.adjQty.toFixed(2)).toLocaleString('en-US')+' '+uWord+' usage';
+          if (mc.effMode==='package' && mc.packages>0) hTxt += '  ·  buy '+mc.packages+' × '+pkg.pkgSize.toLocaleString('en-US')+'-'+uWord+' '+(pkg.pkgUnit||'pkg');
+          if (cost>0 || mc.effMode==='manual') hTxt += '  ·  cost $'+mc.jobCost.toFixed(2)+(mc.effMode==='manual'?' (manual)':mc.effMode==='package'?' (full pkg)':' (usage)');
+          if (cost>0) hTxt += '  ·  sell $'+mc.totalSell.toFixed(2);
+          if (lpHrs>0) hTxt += '  ·  labor '+(+mc.labHrs.toFixed(2))+' hrs';
+          hintEl.textContent = hTxt; hintEl.style.display='block';
+        } else hintEl.style.display='none';
+      }
     } else {
       const hrs      = parseFloat((document.getElementById(base+'-hrs')     ||{}).value)||0;
       const rate     = parseFloat((document.getElementById(base+'-rate')    ||{}).value)||P1_RATES.laborCostPerHr;
@@ -5795,6 +6054,7 @@ function updateMatTotal() {
       const totalSell = sellRate * hrs;
       totalLaborCost += rate * hrs; totalLaborSell += totalSell;
       const sEl=document.getElementById(base+'-labor-sell'); if(sEl) sEl.textContent = totalSell>0 ? '$'+totalSell.toFixed(2) : '';
+      const hHintEl=document.getElementById(base+'-basis-hint'); if(hHintEl) hHintEl.style.display='none';
     }
   });
 
@@ -5854,6 +6114,59 @@ function updateMatTotal() {
   if (totalWithTaxEl) totalWithTaxEl.textContent = '$' + totalWithTax.toFixed(2);
 }
 
+// Unit-basis helpers. Qty is always each/feet; the basis divides cost & labor:
+// 'ea'/'ft' → per 1, '100ft' → per 100 ft (NECA "C"), '1000ft' → per 1,000 ft ("M").
+function p1UnitDiv(u){ return u==='100ft' ? 100 : u==='1000ft' ? 1000 : 1; }
+function p1UnitLabel(u){ return u==='100ft' ? '100 ft' : u==='1000ft' ? '1,000 ft' : (u||'ea'); }
+
+// Read a material row's package/waste settings from the DOM (safe defaults).
+function p1ReadPkg(base){
+  var v=function(id){ var e=document.getElementById(id); return e?e.value:''; };
+  var pkgSize=parseFloat(v(base+'-pkgsize'))||0;
+  var waste=Math.min(100,Math.max(0,parseFloat(v(base+'-waste'))||0));
+  var costBy=v(base+'-costby')||'actual';
+  var manualCost=v(base+'-manualcost');
+  var pkgUnit=(v(base+'-pkgunit')||'').trim();
+  return { pkgSize:pkgSize, waste:waste, costBy:costBy, manualCost:manualCost, pkgUnit:pkgUnit,
+           active:(pkgSize>0||waste>0||costBy!=='actual'||!!pkgUnit) };
+}
+
+// Single source of truth for material-line math (spec order: waste → adjusted
+// qty → labor & sell from adjusted qty → job cost by costing mode).
+// SELL is always prorated from adjusted usage; the costing mode changes only
+// the internal job cost (and therefore margins), never the customer's price.
+function p1MatCompute(o){
+  var uDiv=p1UnitDiv(o.unit||'ea');
+  var adjQty=(o.qty||0)*(1+(o.waste||0)/100);
+  var units=adjQty/uDiv;
+  var unitSellVal=(o.cost||0)*(1+(o.matMarkup||0));
+  var totalSell=unitSellVal*units;
+  var usageCost=(o.cost||0)*units;
+  var jobCost=usageCost, packages=0, err='', effMode=o.costBy||'actual';
+  if(effMode==='package'){
+    if(!(o.pkgSize>0)){ err='Package size is required for Full Package costing.'; effMode='actual'; }
+    else if(!(o.cost>0)){ err='Package cost is required for Full Package costing.'; effMode='actual'; }
+    else {
+      packages=Math.ceil(+((adjQty/o.pkgSize).toFixed(9)));   // waste applied BEFORE rounding
+      jobCost=packages*(o.cost*(o.pkgSize/uDiv));             // cost per package from per-basis cost
+    }
+  } else if(effMode==='manual'){
+    var mc=parseFloat(o.manualCost);
+    if(isNaN(mc)){ err='Manual Job Cost is required.'; effMode='actual'; }
+    else jobCost=mc;
+  }
+  if(effMode==='actual') jobCost=usageCost;
+  var labHrs=(o.lpHrs||0)*units;
+  return { adjQty:adjQty, units:units, unitSellVal:unitSellVal, totalSell:totalSell,
+           usageCost:usageCost, jobCost:jobCost, packages:packages, labHrs:labHrs,
+           err:err, effMode:effMode };
+}
+
+// Sum of material line sells — the customer-facing material total.
+function getTotalMatSell(){
+  return getMatData().filter(function(i){ return i.type==='material'; }).reduce(function(s,r){ return s+(r.totalSell||0); },0);
+}
+
 function getMatData() {
   const rows = document.getElementById('mat-rows');
   if (!rows) return [];
@@ -5866,8 +6179,28 @@ function getMatData() {
     const desc = ((document.getElementById(base+'-desc')||{}).value||'').trim();
     if (type==='material') {
       const cost = parseFloat((document.getElementById(base+'-cost')||{}).value)||0;
-      const qty  = parseInt((document.getElementById(base+'-qty')||{}).value)||1;
-      if (desc||cost>0) items.push({ type:'material', base:base, desc:desc||'Material', cost:cost, qty:qty, lineTotal:cost*qty, unitSell:cost*(1+matMarkup), totalSell:cost*qty*(1+matMarkup), image: rowEl._imageData || null });
+      const qty  = parseFloat((document.getElementById(base+'-qty')||{}).value)||1;
+      const unit = (document.getElementById(base+'-unit')||{}).value || 'ea';
+      const lpHrs  = parseFloat((document.getElementById(base+'-lphrs')||{}).value)||0;
+      const lpRate = parseFloat((document.getElementById(base+'-lprate')||{}).value)||(P1_RATES.laborCostPerHr||120);
+      const lpSell = parseFloat((document.getElementById(base+'-lpsellrate')||{}).value)||(P1_RATES.laborSellDefault||180);
+      if (desc||cost>0) {
+        const pkg = p1ReadPkg(base);
+        const mc = p1MatCompute({ cost:cost, qty:qty, unit:unit, matMarkup:matMarkup, lpHrs:lpHrs,
+                                  waste:pkg.waste, pkgSize:pkg.pkgSize, costBy:pkg.costBy, manualCost:pkg.manualCost });
+        items.push({ type:'material', base:base, desc:desc||'Material', cost:cost, qty:qty, unit:unit,
+                     laborHrs:lpHrs, laborRate:lpRate, laborSellRate:lpSell,
+                     pkgSize:pkg.pkgSize, pkgUnit:pkg.pkgUnit, waste:pkg.waste, costBy:pkg.costBy, manualCost:pkg.manualCost,
+                     adjQty:mc.adjQty, packages:mc.packages,
+                     lineTotal:mc.jobCost, unitSell:mc.unitSellVal, totalSell:mc.totalSell, image: rowEl._imageData || null });
+        // Synthesize the attached labor as a labor item so every consumer
+        // (labor totals, labor card, quote labor section, copy summary)
+        // picks it up with no special-casing. Flagged `attached` so export
+        // skips it — it round-trips via the material row's labor fields.
+        if (lpHrs > 0) {
+          items.push({ type:'labor', attached:true, base:base, desc:(desc||'Material')+' — Installation Labor', hrs:+mc.labHrs.toFixed(2), rate:lpRate, sellPerHr:lpSell, lineTotal:lpRate*mc.labHrs, totalSell:lpSell*mc.labHrs, image:null });
+        }
+      }
     } else {
       const hrs      = parseFloat((document.getElementById(base+'-hrs')     ||{}).value)||0;
       const rate     = parseFloat((document.getElementById(base+'-rate')    ||{}).value)||P1_RATES.laborCostPerHr;
@@ -6287,9 +6620,20 @@ function gatherEstimateData() {
     document.getElementById('tm-sub-panel').style.display !== 'none' : false;
 
   // Mat rows
-  data.matRows = getMatData().map(function(m) {
+  data.matRows = getMatData().filter(function(m){ return !m.attached; }).map(function(m) {
     var r = { type: m.type, desc: m.desc };
-    if (m.type === 'material') { r.cost = m.cost; r.qty = m.qty; }
+    if (m.type === 'material') {
+      r.cost = m.cost; r.qty = m.qty;
+      if (m.unit && m.unit !== 'ea') r.unit = m.unit;
+      if (m.laborHrs > 0) { r.laborHrs = m.laborHrs; r.laborRate = m.laborRate; r.laborSellRate = m.laborSellRate; }
+      if (m.pkgSize > 0) r.pkgSize = m.pkgSize;
+      if (m.pkgUnit) r.pkgUnit = m.pkgUnit;
+      if (m.waste > 0) r.waste = m.waste;
+      if (m.costBy && m.costBy !== 'actual') r.costBy = m.costBy;
+      if (m.costBy === 'manual' && m.manualCost !== '' && m.manualCost != null) r.manualCost = m.manualCost;
+      if (m.adjQty && m.adjQty !== m.qty) r.adjQty = +m.adjQty.toFixed(4);
+      if (m.packages > 0) r.packages = m.packages;
+    }
     else { r.hrs = m.hrs; r.rate = m.rate; r.sellRate = m.sellPerHr; }
     if (m.image) r.image = m.image;
     return r;
@@ -6666,6 +7010,28 @@ function restoreEstimateData(data) {
           if (m.type === 'material') {
             var cEl = document.getElementById(base+'-cost'); if(cEl) cEl.value = m.cost || '';
             var qEl = document.getElementById(base+'-qty');  if(qEl) qEl.value = m.qty  || 1;
+            var uSel = document.getElementById(base+'-unit');
+            if (uSel && m.unit) { uSel.value = m.unit; if (uSel.onchange) uSel.onchange(); }
+            if (m.laborHrs > 0) {
+              var lhEl = document.getElementById(base+'-lphrs');     if(lhEl) lhEl.value = m.laborHrs;
+              var lrEl = document.getElementById(base+'-lprate');    if(lrEl && m.laborRate)     lrEl.value = m.laborRate;
+              var lsEl = document.getElementById(base+'-lpsellrate');if(lsEl && m.laborSellRate) lsEl.value = m.laborSellRate;
+              // auto-expand the labor panel so imported labor is visible
+              var lpRowEl = document.getElementById(base+'-lprow');
+              if (lpRowEl) { lpRowEl.style.display='block'; rowEl._lpOpen = true; }
+            }
+            // Package / waste settings (absent on older files → safe defaults)
+            if (m.pkgSize > 0 || m.waste > 0 || (m.costBy && m.costBy !== 'actual') || m.pkgUnit) {
+              var psEl = document.getElementById(base+'-pkgsize');   if(psEl && m.pkgSize) psEl.value = m.pkgSize;
+              var puEl = document.getElementById(base+'-pkgunit');   if(puEl && m.pkgUnit) puEl.value = m.pkgUnit;
+              var waEl = document.getElementById(base+'-waste');     if(waEl && m.waste)   waEl.value = m.waste;
+              var cbEl = document.getElementById(base+'-costby');
+              if (cbEl && m.costBy) { cbEl.value = m.costBy; if (cbEl.onchange) cbEl.onchange(); }
+              var mcEl = document.getElementById(base+'-manualcost');
+              if (mcEl && m.manualCost !== '' && m.manualCost != null) mcEl.value = m.manualCost;
+              var pkRowEl = document.getElementById(base+'-pkgrow');
+              if (pkRowEl) { pkRowEl.style.display='block'; rowEl._pkgOpen = true; }
+            }
             rowEl.querySelectorAll('button[data-row-type]').forEach(function(b) {
               var active = b.dataset.rowType === 'material';
               b.style.background  = active ? '#1c1c1c' : 'var(--surface2)';
@@ -8056,8 +8422,9 @@ function generateCustomerQuote() {
         grandTotal += lineBilled;
         const row = document.createElement('div');
         row.style.cssText = 'display:grid;grid-template-columns:1fr auto auto;gap:12px;align-items:baseline;padding:3px 0;border-bottom:1px solid #eee;font-size:12px;';
-        const n=document.createElement('span'); n.style.color='#444'; n.textContent=item.desc+' (Qty: '+item.qty+')';
-        const u=document.createElement('span'); u.style.cssText='font-family:monospace;font-size:11px;color:#888;white-space:nowrap;'; u.textContent=money(item.unitSell)+'/ea';
+        const itemUnit = item.unit || 'ea';
+        const n=document.createElement('span'); n.style.color='#444'; n.textContent=item.desc+(itemUnit!=='ea' ? ' ('+item.qty+' ft)' : ' (Qty: '+item.qty+')');
+        const u=document.createElement('span'); u.style.cssText='font-family:monospace;font-size:11px;color:#888;white-space:nowrap;'; u.textContent=money(item.unitSell)+'/'+p1UnitLabel(itemUnit);
         const t=document.createElement('span'); t.style.cssText='font-family:monospace;font-weight:700;white-space:nowrap;'; t.textContent=money(lineBilled);
         row.appendChild(n); row.appendChild(u); row.appendChild(t);
         if (matLinesEl) matLinesEl.appendChild(row);
