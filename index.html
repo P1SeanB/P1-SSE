@@ -23,12 +23,6 @@
   .p1-login-btn:hover{background:#fa6f14;}
   .p1-login-btn:disabled{background:#7a5536;cursor:default;}
   .p1-login-err{font-size:13px;color:#ffb4a6;background:#2c1512;border:1px solid #5a2620;border-radius:8px;padding:8px 11px;margin:0 0 14px;}
-  .p1-login-preview{width:100%;margin-top:10px;padding:9px;border:1px dashed rgba(255,255,255,.28);
-    background:transparent;color:#9a948a;border-radius:9px;font-family:'DM Sans',sans-serif;font-size:12px;cursor:pointer}
-  .p1-login-preview:hover{border-color:#e8620a;color:#e8620a}
-  #p1-concept-ribbon{position:fixed;left:0;right:0;bottom:0;z-index:9999;background:#7a2d00;color:#ffd9c2;
-    font-family:'DM Sans',sans-serif;font-size:11px;padding:6px 14px;text-align:center}
-  #p1-concept-ribbon b{color:#fff}
   .p1-login-foot{font-size:11px;color:#6f6a5f;text-align:center;margin:16px 0 2px;}
   /* secondary tier: flat with a 1px edge — hierarchy over uniformity */
   .btn-ghost, .sla-rate-btn, .mc-add-btn {
@@ -1393,7 +1387,6 @@
         <div id="p1-login-err" class="p1-login-err" style="display:none;"></div>
         <button id="p1-login-btn" class="p1-login-btn" type="submit">Sign in</button>
       </form>
-      <button id="p1-preview-btn" type="button" class="p1-login-preview">Preview without signing in &mdash; concept mode</button>
       <p class="p1-login-foot">Point 1 Electrical Systems · authorized users only</p>
     </div>
   </div>
@@ -12504,28 +12497,7 @@ function qbRenderQuoteSites(){
   }
 
   form.addEventListener('submit', doLogin);
-  var pv = document.getElementById('p1-preview-btn');
-  if (pv) pv.addEventListener('click', function(){
-    P1_RATES = {
-      laborBillDefault:145, laborCostPerHr:68, laborSellDefault:145, pmVisitRate:118,
-      svcStraight:145, svcTimeAndHalf:217.5, svcDoubleTime:290,
-      svcGM:42, subMarkup:15, matMarkup:22, avMaintGM:38, tmSubGM:20, instLaborGM:45,
-      overheadRate:12.5, shMarkup:15, ulCerts:0,
-      monBase:14, monAddon:4, gcsBurg:14, gcsFire:22, gcsResidential:11, gcsTwoWay:26,
-      minRMRCommercial:35, minRMRResidential:25, minRMRTwoWay:45,
-      sfBurgCommercial:6, sfBurgResidential:4,
-      doorRateStd:9, doorRateSACP:12, doorBundlesStd:5, doorBundlesSACP:5,
-      videoExpansionBase:12, videoSvr:45,
-      priorityMultiplier:1.6, premierMultiplier:2.45,
-      tierRates:{essential:385, priority:610, premier:940},
-      tierRatesLabel:'Placeholder rates \u2014 concept preview', dropdownsHTML:{}
-    };
-    if (!appInitialized){ if (typeof window.initAppAfterRates === 'function') window.initAppAfterRates(); appInitialized = true; }
-    hide();
-    var r=document.createElement('div'); r.id='p1-concept-ribbon';
-    r.innerHTML='<b>CONCEPT PREVIEW</b> \u2014 presentation layer only. Every calculation, rule and export is the deployed code, untouched. Rates are placeholders.';
-    document.body.appendChild(r);
-  });
+  
 
   // Boot: resume a still-valid session, otherwise require sign-in.
   show();
