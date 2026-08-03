@@ -14733,13 +14733,14 @@ document.addEventListener('click', function(e){
     // Vendor / Source / Quote# sit on the main row just right of Unit Cost, in the
     // space Unit Sell and Total Sell were not using. They are the only three the BOM
     // groups by, so they must not be behind a click.
-    var GRID='64px 124px 76px 122px 132px 78px 1fr 1fr';
+    var GRID='64px 118px 74px 118px 104px 126px 74px 1fr 1fr';
     labels.style.gridTemplateColumns=GRID; fields.style.gridTemplateColumns=GRID;
     var lS='font-size:9px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;color:var(--text3);text-align:center;';
     function lab(t,id){ var e=document.createElement('span'); e.id=id; e.textContent=t; e.style.cssText=lS; return e; }
-    var anchor=labels.children[2];
-    labels.insertBefore(lab('Quote #',base+'-lq'), anchor.nextSibling);
+    var anchor=labels.children[2];                 // each goes straight after Unit Cost,
+    labels.insertBefore(lab('Quote #',base+'-lq'), anchor.nextSibling);   // so insert backwards
     labels.insertBefore(lab('Source', base+'-ls'), anchor.nextSibling);
+    labels.insertBefore(lab('Part #', base+'-lpn'),anchor.nextSibling);
     labels.insertBefore(lab('Vendor', base+'-lv'), anchor.nextSibling);
 
     var iS='font-size:11px;padding:4px 5px;border:1px solid var(--border);border-radius:var(--radius-sm);'
@@ -14749,8 +14750,14 @@ document.addEventListener('click', function(e){
     srcS.innerHTML='<option value="">&mdash;</option><option value="portal">Website/Portal</option><option value="quote">Formal Quote</option>';
     var qno=document.createElement('input'); qno.id=base+'-quoteno'; qno.placeholder='Quote #';
     qno.style.cssText=iS+'display:none;';
+    // Part # is typed on nearly every line, so it sits on the row rather than
+    // behind + Details. Manufacturer stays inside -- most people put it in the
+    // description anyway.
+    var pno=document.createElement('input'); pno.id=base+'-partno'; pno.placeholder='optional';
+    pno.style.cssText=iS;
     fields.insertBefore(qno, costEl.nextSibling);
     fields.insertBefore(srcS, costEl.nextSibling);
+    fields.insertBefore(pno, costEl.nextSibling);
     fields.insertBefore(vend, costEl.nextSibling);
 
     // manufacturer / part number and the rest are optional, tucked behind + Details
@@ -14759,11 +14766,10 @@ document.addEventListener('click', function(e){
        '<div id="'+base+'-otherwrap" style="display:none">'
       +'<div class="p1-plabels"><span>Other Vendor Name <b style="color:#c0392b">*</b></span></div>'
       +'<input id="'+base+'-vendorother" placeholder="e.g. Graybar"></div>'
-      +'<div class="p1-plabels" style="grid-template-columns:1fr 1fr 1fr 1fr;margin-top:4px">'
-      +'<span>Manufacturer</span><span>Part #</span><span>Price verified</span><span>Lead time</span></div>'
-      +'<div class="p1-pfields" style="grid-template-columns:1fr 1fr 1fr 1fr">'
+      +'<div class="p1-plabels" style="grid-template-columns:1fr 1fr 1fr;margin-top:4px">'
+      +'<span>Manufacturer</span><span>Price verified</span><span>Lead time</span></div>'
+      +'<div class="p1-pfields" style="grid-template-columns:1fr 1fr 1fr">'
       +'<input id="'+base+'-mfg" list="p1-mfg-list" placeholder="optional" autocomplete="off">'
-      +'<input id="'+base+'-partno" placeholder="optional">'
       +'<input type="date" id="'+base+'-verified">'
       +'<input id="'+base+'-leadtime" placeholder="optional"></div>'
       +'<div id="'+base+'-qextra" style="display:none">'
@@ -14842,7 +14848,7 @@ document.addEventListener('click', function(e){
 
     var btn=document.getElementById(base+'-pbtn'); if(!btn) return;
     var open = extra.style.display!=='none';
-    var det  = ['mfg','partno','leadtime','contact','pnotes','quotedate','quoteexp']
+    var det  = ['mfg','leadtime','contact','pnotes','quotedate','quoteexp']
                  .some(function(k){ return !!val(base,k); }) || vid===OTHER || msgs.length>0;
     btn.textContent=(open?'− ':'+ ')+'Details'+(det?' •':'');
     btn.style.borderStyle = det?'solid':'dashed';
@@ -14856,7 +14862,7 @@ document.addEventListener('click', function(e){
       var b=(rows[i].id||'').replace('mat-row-','mat-');
       var labor = rows[i].dataset.type==='labor';
       if(!labor) buildRow(rows[i]);
-      ['-vendor','-srcsel','-lv','-ls','-pbtn'].forEach(function(sfx){
+      ['-vendor','-srcsel','-partno','-lv','-ls','-lpn','-pbtn'].forEach(function(sfx){
         var e=document.getElementById(b+sfx); if(e) e.style.display = labor ? 'none' : '';
       });
       var q=document.getElementById(b+'-quoteno');
@@ -14888,7 +14894,7 @@ document.addEventListener('click', function(e){
     if(ss && o.srctype) ss.value=o.srctype;
     // open Details only if it actually carries something
     var pr=document.getElementById(base+'-pricerow');
-    var hasDetail=['mfg','partno','leadtime','contact','pnotes','quotedate','quoteexp','vendorother']
+    var hasDetail=['mfg','leadtime','contact','pnotes','quotedate','quoteexp','vendorother']
                     .some(function(k){ return !!o[k]; });
     if(pr && hasDetail) pr.style.display='block';
     paintRow(base);
