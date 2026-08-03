@@ -14949,8 +14949,30 @@ document.addEventListener('click', function(e){
              date:new Date().toLocaleDateString() };
   }
 
+  /* ── which columns actually carry data ───────────────────────────────
+     A column nobody filled in is noise on a purchasing document, so every
+     optional column is emitted only when at least one line in THIS export
+     fills it. Judged on the exported set, not on the estimate as a whole. */
+  function presence(items){
+    function any(f){ for(var i=0;i<items.length;i++){ if(f(items[i])) return true; } return false; }
+    return {
+      vendor:    any(function(i){ return !!i.vendorId; }),
+      src:       any(function(i){ return !!i.src; }),
+      quoteNo:   any(function(i){ return !!i.quoteNo; }),
+      quoteDate: any(function(i){ return !!i.quoteDate; }),
+      quoteExp:  any(function(i){ return !!i.quoteExp; }),
+      mfg:       any(function(i){ return !!i.mfg; }),
+      part:      any(function(i){ return !!i.part; }),
+      purchase:  any(function(i){ return (i.packages||0)>0; }),
+      pkgSize:   any(function(i){ return (i.pkgSize||0)>0; }),
+      pkgUnit:   any(function(i){ return !!i.pkgUnit; }),
+      leadTime:  any(function(i){ return !!i.leadTime; }),
+      notes:     any(function(i){ return !!i.notes; })
+    };
+  }
+
   function render(costs){
-    var groups=group(collect()), p=proj();
+    var items=collect(), groups=group(items), has=presence(items), p=proj();
     var h='<h1>Bill of Materials</h1><div class="meta">'
       +'<b>'+esc(p.customer)+'</b>'+(p.name?' &middot; '+esc(p.name):'')+'<br>'
       +(p.num?('Quote #: '+esc(p.num)+'<br>'):'')
@@ -14959,27 +14981,41 @@ document.addEventListener('click', function(e){
     if(!groups.length) h+='<p>No material line items in Installation Labor &amp; Materials.</p>';
     var ta=0, tp=0;
     groups.forEach(function(gp){
-      h+='<h2>'+esc(gp.vendor)+'</h2>';
+      // with no vendor set anywhere there is only ever one group, so its heading
+      // and its subtotal would just restate the grand total
+      if(has.vendor) h+='<h2>'+esc(gp.vendor)+'</h2>';
       gp.sections.forEach(function(sec){
         var first=sec.items[0];
-        h+='<h3>'+esc(sec.title);
-        if(first.src==='quote'&&first.quoteExp){
-          var exp=first.quoteExp<today();
-          h+=' <span class="'+(exp?'exp':'')+'">&middot; expires '+esc(first.quoteExp)+(exp?' — MAY BE EXPIRED':'')+'</span>';
+        if(has.src){                                  // likewise for "source not set"
+          h+='<h3>'+esc(sec.title);
+          if(first.src==='quote'&&first.quoteExp){
+            var exp=first.quoteExp<today();
+            h+=' <span class="'+(exp?'exp':'')+'">&middot; expires '+esc(first.quoteExp)+(exp?' — MAY BE EXPIRED':'')+'</span>';
+          }
+          h+='</h3>';
         }
-        h+='</h3><table><tr><th>Mfg</th><th>Part #</th><th>Description</th><th>Job qty</th><th>Purchase</th>'
-          +(costs?'<th>Unit cost</th><th>Allocated</th><th>Purchasing</th>':'')+'<th>Lead time</th><th>Notes</th></tr>';
+        h+='<table><tr>'
+          +(has.mfg?'<th>Mfg</th>':'')+(has.part?'<th>Part #</th>':'')
+          +'<th>Description</th><th>Job qty</th>'
+          +(has.purchase?'<th>Purchase</th>':'')
+          +(costs?'<th>Unit cost</th><th>Allocated</th><th>Purchasing</th>':'')
+          +(has.leadTime?'<th>Lead time</th>':'')+(has.notes?'<th>Notes</th>':'')+'</tr>';
         sec.items.forEach(function(it){
           var pq = it.packages>0 ? (it.packages+' × '+it.pkgSize.toLocaleString('en-US')+(it.unit==='ea'?' ea':' ft')+(it.pkgUnit?(' '+it.pkgUnit):'')) : '—';
-          h+='<tr><td>'+esc(it.mfg)+'</td><td>'+esc(it.part)+'</td><td>'+esc(it.desc)+'</td>'
+          h+='<tr>'
+            +(has.mfg?('<td>'+esc(it.mfg)+'</td>'):'')
+            +(has.part?('<td>'+esc(it.part)+'</td>'):'')
+            +'<td>'+esc(it.desc)+'</td>'
             +'<td class="n">'+(+it.adjQty.toFixed(2)).toLocaleString('en-US')+' '+esc(it.unit==='ea'?'ea':'ft')+'</td>'
-            +'<td class="n">'+esc(pq)+'</td>'
+            +(has.purchase?('<td class="n">'+esc(pq)+'</td>'):'')
             +(costs?('<td class="n">'+money(it.cost)+'</td><td class="n">'+money(it.allocated)+'</td><td class="n">'+money(it.purchasing)+'</td>'):'')
-            +'<td>'+esc(it.leadTime)+'</td><td>'+esc(it.notes)+'</td></tr>';
+            +(has.leadTime?('<td>'+esc(it.leadTime)+'</td>'):'')
+            +(has.notes?('<td>'+esc(it.notes)+'</td>'):'')
+            +'</tr>';
         });
         h+='</table>';
       });
-      if(costs) h+='<div class="sub">'+esc(gp.vendor)+' subtotal &mdash; allocated '+money(gp.subtotalAlloc)+' &middot; purchasing '+money(gp.subtotalPurch)+'</div>';
+      if(costs&&has.vendor) h+='<div class="sub">'+esc(gp.vendor)+' subtotal &mdash; allocated '+money(gp.subtotalAlloc)+' &middot; purchasing '+money(gp.subtotalPurch)+'</div>';
       ta+=gp.subtotalAlloc; tp+=gp.subtotalPurch;
     });
     if(costs&&groups.length) h+='<div class="grand"><div><span>Total allocated project material cost</span><b>'+money(ta)+'</b></div>'
@@ -14988,41 +15024,61 @@ document.addEventListener('click', function(e){
   }
 
   function textFor(costs){
-    var groups=group(collect()), p=proj(), L=[];
+    var items=collect(), groups=group(items), has=presence(items), p=proj(), L=[];
     L.push('BILL OF MATERIALS'); L.push(p.customer+(p.name?(' - '+p.name):''));
     if(p.num) L.push('Quote #: '+p.num);
     L.push('Exported '+p.date+(p.estimator?(' by '+p.estimator):'')); L.push('');
     var ta=0,tp=0;
     groups.forEach(function(gp){
-      L.push(gp.vendor.toUpperCase());
+      if(has.vendor) L.push(gp.vendor.toUpperCase());
       gp.sections.forEach(function(sec){
         var f=sec.items[0];
         if(f.src==='quote'){ L.push('  Formal Quote: '+(f.quoteNo||'(no number)')); if(f.quoteExp) L.push('  Expiration: '+f.quoteExp); }
         else if(f.src==='portal'){ L.push('  Pricing Source: Website/Dealer Portal'); }
         sec.items.forEach(function(it){
           var pq = it.packages>0 ? ('  [buy '+it.packages+' x '+it.pkgSize+(it.unit==='ea'?'ea':'ft')+']') : '';
-          L.push('  Qty '+(+it.adjQty.toFixed(2))+' '+(it.unit==='ea'?'ea':'ft')+' - '+(it.mfg||'-')+' - '+(it.part||'-')+' - '+it.desc
-            + (costs?(' - '+money(it.cost)+' each - '+money(it.allocated)):'') + pq);
+          var seg=['Qty '+(+it.adjQty.toFixed(2))+' '+(it.unit==='ea'?'ea':'ft')];
+          if(has.mfg && it.mfg)   seg.push(it.mfg);      // per line, not per column:
+          if(has.part && it.part) seg.push(it.part);     // plain text has nothing to align
+          seg.push(it.desc);
+          if(costs) seg.push(money(it.cost)+' each - '+money(it.allocated));
+          if(has.leadTime && it.leadTime) seg.push('lead '+it.leadTime);
+          if(has.notes && it.notes) seg.push(it.notes);
+          L.push('  '+seg.join(' - ')+pq);
         });
       });
-      if(costs) L.push('  '+gp.vendor+' Subtotal: '+money(gp.subtotalAlloc)+' (purchasing '+money(gp.subtotalPurch)+')');
-      L.push(''); ta+=gp.subtotalAlloc; tp+=gp.subtotalPurch;
+      if(costs&&has.vendor) L.push('  '+gp.vendor+' Subtotal: '+money(gp.subtotalAlloc)+' (purchasing '+money(gp.subtotalPurch)+')');
+      if(has.vendor) L.push('');
+      ta+=gp.subtotalAlloc; tp+=gp.subtotalPurch;
     });
-    if(costs){ L.push('TOTAL ALLOCATED: '+money(ta)); L.push('TOTAL PURCHASING: '+money(tp)); }
+    if(costs){ L.push(''); L.push('TOTAL ALLOCATED: '+money(ta)); L.push('TOTAL PURCHASING: '+money(tp)); }
     return L.join('\n');
   }
 
   function csvFor(costs){
-    var rows=[['Vendor','Pricing Source','Quote #','Quote Date','Quote Expires','Manufacturer','Part #',
-               'Description','Job Qty','Unit','Purchase Qty','Package Size','Package Unit']
-              .concat(costs?['Unit Cost','Allocated Cost','Purchasing Cost']:[])
-              .concat(['Lead Time','Purchasing Notes'])];
-    group(collect()).forEach(function(gp){ gp.sections.forEach(function(sec){ sec.items.forEach(function(it){
-      rows.push([gp.vendor, it.src==='quote'?'Formal Vendor Quote':it.src==='portal'?'Website/Dealer Portal':'',
-                 it.quoteNo,it.quoteDate,it.quoteExp,it.mfg,it.part,it.desc,
-                 +it.adjQty.toFixed(2), it.unit, it.packages||'', it.pkgSize||'', it.pkgUnit]
-        .concat(costs?[it.cost.toFixed(2), it.allocated.toFixed(2), it.purchasing.toFixed(2)]:[])
-        .concat([it.leadTime, it.notes]));
+    var items=collect(), has=presence(items), head=[], pick=[];
+    function col(on,label,fn){ if(on){ head.push(label); pick.push(fn); } }
+    col(has.vendor,   'Vendor',           function(it,gp){ return gp.vendor; });
+    col(has.src,      'Pricing Source',   function(it){ return it.src==='quote'?'Formal Vendor Quote':it.src==='portal'?'Website/Dealer Portal':''; });
+    col(has.quoteNo,  'Quote #',          function(it){ return it.quoteNo; });
+    col(has.quoteDate,'Quote Date',       function(it){ return it.quoteDate; });
+    col(has.quoteExp, 'Quote Expires',    function(it){ return it.quoteExp; });
+    col(has.mfg,      'Manufacturer',     function(it){ return it.mfg; });
+    col(has.part,     'Part #',           function(it){ return it.part; });
+    col(true,         'Description',      function(it){ return it.desc; });
+    col(true,         'Job Qty',          function(it){ return +it.adjQty.toFixed(2); });
+    col(true,         'Unit',             function(it){ return it.unit; });
+    col(has.purchase, 'Purchase Qty',     function(it){ return it.packages||''; });
+    col(has.pkgSize,  'Package Size',     function(it){ return it.pkgSize||''; });
+    col(has.pkgUnit,  'Package Unit',     function(it){ return it.pkgUnit; });
+    col(costs,        'Unit Cost',        function(it){ return it.cost.toFixed(2); });
+    col(costs,        'Allocated Cost',   function(it){ return it.allocated.toFixed(2); });
+    col(costs,        'Purchasing Cost',  function(it){ return it.purchasing.toFixed(2); });
+    col(has.leadTime, 'Lead Time',        function(it){ return it.leadTime; });
+    col(has.notes,    'Purchasing Notes', function(it){ return it.notes; });
+    var rows=[head];
+    group(items).forEach(function(gp){ gp.sections.forEach(function(sec){ sec.items.forEach(function(it){
+      rows.push(pick.map(function(f){ return f(it,gp); }));
     }); }); });
     return rows.map(function(r){ return r.map(function(c){
       c=String(c==null?'':c); return /[",\n]/.test(c) ? '"'+c.replace(/"/g,'""')+'"' : c; }).join(','); }).join('\r\n');
