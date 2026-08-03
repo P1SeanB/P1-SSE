@@ -14586,6 +14586,7 @@ document.addEventListener('click', function(e){
   .sla-brand .p1-brand-mark{max-width:150px;width:100%;height:auto;object-fit:contain;}
 </style>
 
+
 <style id="p1-bom-css">
   /* ── Material price-source tracking + vendor-grouped BOM (phase 1) ──
      Additive: no existing calculation, gating rule or export field is altered.
@@ -14681,110 +14682,108 @@ document.addEventListener('click', function(e){
 
   function buildRow(rowEl){
     if(rowEl.dataset.p1bom) return;
-    var descEl=rowEl.querySelector('[id$="-desc"]'); if(!descEl) return;
+    var costEl=rowEl.querySelector('[id$="-cost"]'); if(!costEl) return;
     var base=(rowEl.id||'').replace('mat-row-','mat-'); if(!base) return;
+    var fields=costEl.parentNode, labels=fields.previousElementSibling;
+    if(!labels||!labels.children||labels.children.length<3) return;
     rowEl.dataset.p1bom='1';
 
-    // Manufacturer + part number sit with the description, not on the numeric row
-    var idr=document.createElement('div'); idr.className='p1-idrow';
-    idr.innerHTML='<input id="'+base+'-mfg" list="p1-mfg-list" placeholder="Manufacturer" autocomplete="off">'
-                 +'<input id="'+base+'-partno" placeholder="Manufacturer part #">';
-    descEl.parentNode.insertBefore(idr, descEl.nextSibling);
+    // Vendor / Source / Quote# sit on the main row just right of Unit Cost, in the
+    // space Unit Sell and Total Sell were not using. They are the only three the BOM
+    // groups by, so they must not be behind a click.
+    var GRID='64px 124px 76px 122px 132px 78px 1fr 1fr';
+    labels.style.gridTemplateColumns=GRID; fields.style.gridTemplateColumns=GRID;
+    var lS='font-size:9px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;color:var(--text3);text-align:center;';
+    function lab(t,id){ var e=document.createElement('span'); e.id=id; e.textContent=t; e.style.cssText=lS; return e; }
+    var anchor=labels.children[2];
+    labels.insertBefore(lab('Quote #',base+'-lq'), anchor.nextSibling);
+    labels.insertBefore(lab('Source', base+'-ls'), anchor.nextSibling);
+    labels.insertBefore(lab('Vendor', base+'-lv'), anchor.nextSibling);
 
-    // pricing panel
-    var pr=document.createElement('div'); pr.id=base+'-pricerow'; pr.style.display='none';
-    pr.innerHTML =
-      '<div class="p1-plabels" style="grid-template-columns:1.4fr 1.1fr"><span>Vendor / Price Source <i style="font-weight:400;text-transform:none;letter-spacing:0">(who we buy from)</i></span><span>Pricing Source Type</span></div>'
-     +'<div class="p1-pfields" style="grid-template-columns:1.4fr 1.1fr">'
-     +  '<select id="'+base+'-vendor"></select>'
-     +  '<div class="p1-seg" id="'+base+'-segwrap">'
-     +    '<button type="button" data-v="portal">Website/Portal</button>'
-     +    '<button type="button" data-v="quote">Formal Quote</button>'
-     +  '</div>'
-     +'</div>'
-     +'<div id="'+base+'-otherwrap" style="display:none;margin-top:5px">'
-     +  '<div class="p1-plabels"><span>Other Vendor Name <b style="color:#c0392b">*</b></span></div>'
-     +  '<input id="'+base+'-vendorother" placeholder="e.g. Graybar">'
-     +'</div>'
-     +'<div id="'+base+'-portalwrap" style="display:none;margin-top:5px">'
-     +  '<div class="p1-plabels" style="grid-template-columns:150px"><span>Price Verified Date</span></div>'
-     +  '<div class="p1-pfields" style="grid-template-columns:150px"><input type="date" id="'+base+'-verified"></div>'
-     +'</div>'
-     +'<div id="'+base+'-quotewrap" style="display:none;margin-top:5px">'
-     +  '<div class="p1-plabels" style="grid-template-columns:1fr 1fr 1fr"><span>Vendor Quote # <b style="color:#c0392b">*</b></span><span>Quote Date</span><span>Expires</span></div>'
-     +  '<div class="p1-pfields" style="grid-template-columns:1fr 1fr 1fr">'
-     +    '<input id="'+base+'-quoteno" placeholder="123456">'
-     +    '<input type="date" id="'+base+'-quotedate">'
-     +    '<input type="date" id="'+base+'-quoteexp">'
-     +  '</div>'
-     +  '<div class="p1-plabels" style="grid-template-columns:1fr 1fr;margin-top:5px"><span>Vendor contact</span><span>Lead time / availability</span></div>'
-     +  '<div class="p1-pfields" style="grid-template-columns:1fr 1fr">'
-     +    '<input id="'+base+'-contact" placeholder="optional">'
-     +    '<input id="'+base+'-leadtime" placeholder="optional">'
-     +  '</div>'
-     +'</div>'
-     +'<div class="p1-plabels" style="margin-top:5px"><span>Purchasing notes</span></div>'
-     +'<input id="'+base+'-pnotes" placeholder="optional">'
-     +'<div id="'+base+'-pmsg"></div>'
-     +'<button type="button" class="p1-rm" id="'+base+'-prm">× Remove pricing source</button>';
+    var iS='font-size:11px;padding:4px 5px;border:1px solid var(--border);border-radius:var(--radius-sm);'
+          +'background:var(--surface2);color:var(--text);width:100%;';
+    var vend=document.createElement('select'); vend.id=base+'-vendor'; vend.style.cssText=iS;
+    var srcS=document.createElement('select'); srcS.id=base+'-srcsel'; srcS.style.cssText=iS;
+    srcS.innerHTML='<option value="">&mdash;</option><option value="portal">Website/Portal</option><option value="quote">Formal Quote</option>';
+    var qno=document.createElement('input'); qno.id=base+'-quoteno'; qno.placeholder='Quote #';
+    qno.style.cssText=iS+'display:none;';
+    fields.insertBefore(qno, costEl.nextSibling);
+    fields.insertBefore(srcS, costEl.nextSibling);
+    fields.insertBefore(vend, costEl.nextSibling);
 
+    // manufacturer / part number and the rest are optional, tucked behind + Details
+    var extra=document.createElement('div'); extra.id=base+'-pricerow'; extra.style.display='none';
+    extra.innerHTML=
+       '<div id="'+base+'-otherwrap" style="display:none">'
+      +'<div class="p1-plabels"><span>Other Vendor Name <b style="color:#c0392b">*</b></span></div>'
+      +'<input id="'+base+'-vendorother" placeholder="e.g. Graybar"></div>'
+      +'<div class="p1-plabels" style="grid-template-columns:1fr 1fr 1fr 1fr;margin-top:4px">'
+      +'<span>Manufacturer</span><span>Part #</span><span>Price verified</span><span>Lead time</span></div>'
+      +'<div class="p1-pfields" style="grid-template-columns:1fr 1fr 1fr 1fr">'
+      +'<input id="'+base+'-mfg" list="p1-mfg-list" placeholder="optional" autocomplete="off">'
+      +'<input id="'+base+'-partno" placeholder="optional">'
+      +'<input type="date" id="'+base+'-verified">'
+      +'<input id="'+base+'-leadtime" placeholder="optional"></div>'
+      +'<div id="'+base+'-qextra" style="display:none">'
+      +'<div class="p1-plabels" style="grid-template-columns:1fr 1fr 1fr;margin-top:4px">'
+      +'<span>Quote date</span><span>Expires</span><span>Vendor contact</span></div>'
+      +'<div class="p1-pfields" style="grid-template-columns:1fr 1fr 1fr">'
+      +'<input type="date" id="'+base+'-quotedate"><input type="date" id="'+base+'-quoteexp">'
+      +'<input id="'+base+'-contact" placeholder="optional"></div></div>'
+      +'<div class="p1-plabels" style="margin-top:4px"><span>Purchasing notes</span></div>'
+      +'<input id="'+base+'-pnotes" placeholder="optional">'
+      +'<div id="'+base+'-pmsg"></div>';
     var lp=document.getElementById(base+'-lprow');
-    (lp&&lp.parentNode ? lp.parentNode : rowEl).insertBefore(pr, lp||null);
-    if(!lp) rowEl.appendChild(pr);
+    if(lp&&lp.parentNode) lp.parentNode.insertBefore(extra, lp); else rowEl.appendChild(extra);
 
     var btn=document.createElement('button');
-    btn.type='button'; btn.id=base+'-pbtn'; btn.textContent='+ Pricing';
+    btn.type='button'; btn.id=base+'-pbtn'; btn.textContent='+ Details';
     btn.style.cssText='background:transparent;border:1px dashed var(--border2);color:var(--text2);'
       +'cursor:pointer;font-size:11px;padding:3px 8px;border-radius:var(--radius-sm)';
     var pkgBtn=document.getElementById(base+'-pkgbtn');
     if(pkgBtn&&pkgBtn.parentNode) pkgBtn.parentNode.insertBefore(btn, pkgBtn.nextSibling);
     btn.addEventListener('click',function(){
-      pr.style.display = pr.style.display==='none' ? 'block' : 'none'; paintRow(base);
-    });
-    document.getElementById(base+'-prm').addEventListener('click',function(){
-      FIELDS.forEach(function(k){ var e=g(base,k); if(e) e.value=''; });
-      pr.dataset.src=''; pr.style.display='none'; paintRow(base);
-    });
+      extra.style.display = extra.style.display==='none' ? 'block' : 'none'; paintRow(base); });
 
-    // vendor list
-    var sel=g(base,'vendor');
     function fillVendors(){
-      var cur=sel.value;
-      sel.innerHTML='<option value="">— Select vendor —</option>'
+      var cur=vend.value;
+      vend.innerHTML='<option value="">&mdash; Vendor &mdash;</option>'
         + vendors().map(function(v){ return '<option value="'+esc(v.id)+'">'+esc(v.display)+'</option>'; }).join('')
-        + '<option value="'+OTHER+'">Other…</option>';   // always last
-      if(cur) sel.value=cur;
+        + '<option value="'+OTHER+'">Other&hellip;</option>';
+      if(cur) vend.value=cur;
     }
-    fillVendors(); sel._fill=fillVendors;
-    sel.addEventListener('change',function(){ paintRow(base); });
-    pr.querySelectorAll('.p1-seg button').forEach(function(b){
-      b.addEventListener('click',function(){ pr.dataset.src=b.dataset.v; paintRow(base); });
-    });
-    FIELDS.forEach(function(k){ var e=g(base,k); if(e) e.addEventListener('input',function(){ paintRow(base); }); });
+    fillVendors(); vend._fill=fillVendors;
+    vend.addEventListener('change',function(){
+      if(vend.value===OTHER) extra.style.display='block'; paintRow(base); });
+    srcS.addEventListener('change',function(){ paintRow(base); });
+    ['quoteno','vendorother','mfg','partno','verified','leadtime','quotedate','quoteexp','contact','pnotes']
+      .forEach(function(k){ var e=g(base,k); if(e) e.addEventListener('input',function(){ paintRow(base); }); });
     paintRow(base);
   }
 
-  // Suggestions only -- any manufacturer can still be typed. A closed list would
-  // block the estimator the first time a brand is not on it.
+  // Suggestions only -- a closed list would block the first brand that is not on it.
   function mfgList(){
-    var dl=document.getElementById('p1-mfg-list');
     var src=(typeof P1_RATES==='object'&&P1_RATES)?P1_RATES.manufacturers:null;
     if(!Array.isArray(src)||!src.length) return;
+    var dl=document.getElementById('p1-mfg-list');
     if(!dl){ dl=document.createElement('datalist'); dl.id='p1-mfg-list'; document.body.appendChild(dl); }
     if(dl.dataset.n===String(src.length)) return;
     dl.dataset.n=String(src.length);
     dl.innerHTML=src.map(function(m){ return '<option value="'+esc(m)+'"></option>'; }).join('');
   }
 
-  function srcOf(base){ var pr=document.getElementById(base+'-pricerow'); return pr?(pr.dataset.src||''):''; }
+  function srcOf(base){ var e=document.getElementById(base+'-srcsel'); return e?(e.value||''):''; }
 
   function paintRow(base){
-    var pr=document.getElementById(base+'-pricerow'); if(!pr) return;
-    var src=pr.dataset.src||'', vid=val(base,'vendor');
-    pr.querySelectorAll('.p1-seg button').forEach(function(b){ b.classList.toggle('on', b.dataset.v===src); });
-    document.getElementById(base+'-otherwrap').style.display = vid===OTHER ? 'block' : 'none';
-    document.getElementById(base+'-portalwrap').style.display = src==='portal' ? 'block' : 'none';
-    document.getElementById(base+'-quotewrap').style.display  = src==='quote'  ? 'block' : 'none';
+    var extra=document.getElementById(base+'-pricerow'); if(!extra) return;
+    var src=srcOf(base), vid=val(base,'vendor');
+    var qno=document.getElementById(base+'-quoteno'), lq=document.getElementById(base+'-lq');
+    if(qno) qno.style.display = src==='quote' ? '' : 'none';           // only when needed
+    if(lq)  lq.style.visibility = src==='quote' ? '' : 'hidden';
+    var ow=document.getElementById(base+'-otherwrap');
+    if(ow) ow.style.display = vid===OTHER ? 'block' : 'none';
+    var qx=document.getElementById(base+'-qextra');
+    if(qx) qx.style.display = src==='quote' ? 'block' : 'none';
     if(src==='portal' && !val(base,'verified')){ var v=g(base,'verified'); if(v) v.value=today(); }
 
     var msgs=[];
@@ -14796,39 +14795,39 @@ document.addEventListener('click', function(e){
       if(qe && qe < today()) msgs.push('Vendor quote pricing may be expired.');
     }
     var m=document.getElementById(base+'-pmsg');
-    m.className = msgs.length?'p1-warn':''; m.innerHTML = msgs.map(esc).join('<br>');
+    if(m){ m.className=msgs.length?'p1-warn':''; m.innerHTML=msgs.map(esc).join('<br>'); }
+    if(qno) qno.style.borderColor = (src==='quote' && !val(base,'quoteno').trim()) ? '#c0392b' : '';
 
-    // the toggle doubles as a summary chip, matching + Labor / + Package
     var btn=document.getElementById(base+'-pbtn'); if(!btn) return;
-    var open = pr.style.display!=='none';
-    var set = !!(vid || src);
-    var name = set ? displayOf(vid, val(base,'vendorother')) : '';
-    var txt  = set ? ('Src: '+name+(src==='quote'?(' · Q'+(val(base,'quoteno')||'?')):src==='portal'?' · portal':'')) : 'Pricing';
-    btn.textContent = (open?'− ':(set?'':'+ '))+txt;
-    if(set){ btn.style.background='var(--blue-bg,#eaf1fb)'; btn.style.borderStyle='solid';
-             btn.style.borderColor='#1a4a8a'; btn.style.color='#1a4a8a'; btn.style.fontWeight='700'; }
-    else   { btn.style.background='transparent'; btn.style.borderStyle='dashed';
-             btn.style.borderColor='var(--border2)'; btn.style.color='var(--text2)'; btn.style.fontWeight=''; }
+    var open = extra.style.display!=='none';
+    var det  = ['mfg','partno','leadtime','contact','pnotes','quotedate','quoteexp']
+                 .some(function(k){ return !!val(base,k); }) || vid===OTHER || msgs.length>0;
+    btn.textContent=(open?'− ':'+ ')+'Details'+(det?' •':'');
+    btn.style.borderStyle = det?'solid':'dashed';
+    btn.style.borderColor = det?'#1a4a8a':'var(--border2)';
+    btn.style.color       = det?'#1a4a8a':'var(--text2)';
   }
 
   function sweep(){
     var rows=document.querySelectorAll('#mat-rows [id^="mat-row-"]');
     for(var i=0;i<rows.length;i++){
-      if(rows[i].dataset.type==='labor'){        // vendor data is material-only
-        var b=(rows[i].id||'').replace('mat-row-','mat-');
-        var pr=document.getElementById(b+'-pricerow'), pb=document.getElementById(b+'-pbtn');
-        var ir=rows[i].querySelector('.p1-idrow');
-        if(pr) pr.style.display='none'; if(pb) pb.style.display='none'; if(ir) ir.style.display='none';
-        continue;
-      }
-      buildRow(rows[i]);
-      var b2=(rows[i].id||'').replace('mat-row-','mat-');
-      var pb2=document.getElementById(b2+'-pbtn'); if(pb2) pb2.style.display='';
-      var ir2=rows[i].querySelector('.p1-idrow'); if(ir2) ir2.style.display='';
-      var sel=document.getElementById(b2+'-vendor');
+      var b=(rows[i].id||'').replace('mat-row-','mat-');
+      var labor = rows[i].dataset.type==='labor';
+      if(!labor) buildRow(rows[i]);
+      ['-vendor','-srcsel','-lv','-ls','-pbtn'].forEach(function(sfx){
+        var e=document.getElementById(b+sfx); if(e) e.style.display = labor ? 'none' : '';
+      });
+      var q=document.getElementById(b+'-quoteno');
+      if(q) q.style.display = (!labor && srcOf(b)==='quote') ? '' : 'none';
+      var lq=document.getElementById(b+'-lq');
+      if(lq) lq.style.display = labor ? 'none' : '';
+      var pr=document.getElementById(b+'-pricerow');
+      if(pr && labor) pr.style.display='none';
+      var sel=document.getElementById(b+'-vendor');
       if(sel && sel._fill && sel.options.length<=2 && vendors().length) sel._fill();
     }
   }
+
 
   /* ── read / write the extra fields ──────────────────────────────────── */
   function readRow(base){
@@ -14842,8 +14841,14 @@ document.addEventListener('click', function(e){
     FIELDS.forEach(function(k){ if(o[k]!=null){ var e=g(base,k); if(e) e.value=o[k]; } });
     var vs=g(base,'vendor');
     if(vs && o.vendor){ var r=resolve(o.vendor); if(r){ vs.value=r; } }   // alias-tolerant
+    // the source type lives on the inline select, not a field named srctype
+    var ss=document.getElementById(base+'-srcsel');
+    if(ss && o.srctype) ss.value=o.srctype;
+    // open Details only if it actually carries something
     var pr=document.getElementById(base+'-pricerow');
-    if(pr){ pr.dataset.src=o.srctype||''; if(o.srctype||o.vendor) pr.style.display='block'; }
+    var hasDetail=['mfg','partno','leadtime','contact','pnotes','quotedate','quoteexp','vendorother']
+                    .some(function(k){ return !!o[k]; });
+    if(pr && hasDetail) pr.style.display='block';
     paintRow(base);
   }
 
