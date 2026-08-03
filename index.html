@@ -1779,20 +1779,20 @@
               </div>
               <div id="adc-energy-fields" style="display:none;padding:6px 0 6px 16px;">
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:2px;font-size:11px;">
-                  <label class="adc-cb"><input type="checkbox" value="2.00" onchange="adcCalc()"> Lights &amp; Thermostat Bundle ($2.00)</label>
-                  <label class="adc-cb"><input type="checkbox" value="1.25" onchange="adcCalc()"> Lights ($1.25)</label>
-                  <label class="adc-cb"><input type="checkbox" value="1.25" onchange="adcCalc()"> Shades ($1.25)</label>
-                  <label class="adc-cb"><input type="checkbox" value="1.25" onchange="adcCalc()"> Thermostats ($1.25)</label>
-                  <label class="adc-cb"><input type="checkbox" value="1.25" onchange="adcCalc()"> Locks ($1.25)</label>
-                  <label class="adc-cb"><input type="checkbox" value="2.50" onchange="adcCalc()"> Energy Monitoring ($2.50)</label>
-                  <label class="adc-cb"><input type="checkbox" value="1.00" onchange="adcCalc()"> Lutron Integration ($1.00)</label>
-                  <label class="adc-cb"><input type="checkbox" value="0.50" onchange="adcCalc()"> Audio Integration ($0.50)</label>
-                  <label class="adc-cb"><input type="checkbox" value="0.35" onchange="adcCalc()"> Garage Door &amp; Gate ($0.35)</label>
-                  <label class="adc-cb"><input type="checkbox" value="0.65" onchange="adcCalc()"> LiftMaster Integration ($0.65)</label>
-                  <label class="adc-cb"><input type="checkbox" value="1.25" onchange="adcCalc()"> Water Management ($1.25)</label>
-                  <label class="adc-cb"><input type="checkbox" value="2.50" onchange="adcCalc()"> Solar Integration ($2.50)</label>
-                  <label class="adc-cb"><input type="checkbox" value="1.00" onchange="adcCalc()"> Enphase Integration ($1.00)</label>
-                  <label class="adc-cb"><input type="checkbox" value="0.50" onchange="adcCalc()"> Irrigation Control ($0.50)</label>
+                  <label class="adc-cb"><input id="adc-x-lights-and-thermostat-bundle" type="checkbox" value="2.00" onchange="adcCalc()"> Lights &amp; Thermostat Bundle ($2.00)</label>
+                  <label class="adc-cb"><input id="adc-x-lights" type="checkbox" value="1.25" onchange="adcCalc()"> Lights ($1.25)</label>
+                  <label class="adc-cb"><input id="adc-x-shades" type="checkbox" value="1.25" onchange="adcCalc()"> Shades ($1.25)</label>
+                  <label class="adc-cb"><input id="adc-x-thermostats" type="checkbox" value="1.25" onchange="adcCalc()"> Thermostats ($1.25)</label>
+                  <label class="adc-cb"><input id="adc-x-locks" type="checkbox" value="1.25" onchange="adcCalc()"> Locks ($1.25)</label>
+                  <label class="adc-cb"><input id="adc-x-energy-monitoring" type="checkbox" value="2.50" onchange="adcCalc()"> Energy Monitoring ($2.50)</label>
+                  <label class="adc-cb"><input id="adc-x-lutron-integration" type="checkbox" value="1.00" onchange="adcCalc()"> Lutron Integration ($1.00)</label>
+                  <label class="adc-cb"><input id="adc-x-audio-integration" type="checkbox" value="0.50" onchange="adcCalc()"> Audio Integration ($0.50)</label>
+                  <label class="adc-cb"><input id="adc-x-garage-door-and-gate" type="checkbox" value="0.35" onchange="adcCalc()"> Garage Door &amp; Gate ($0.35)</label>
+                  <label class="adc-cb"><input id="adc-x-liftmaster-integration" type="checkbox" value="0.65" onchange="adcCalc()"> LiftMaster Integration ($0.65)</label>
+                  <label class="adc-cb"><input id="adc-x-water-management" type="checkbox" value="1.25" onchange="adcCalc()"> Water Management ($1.25)</label>
+                  <label class="adc-cb"><input id="adc-x-solar-integration" type="checkbox" value="2.50" onchange="adcCalc()"> Solar Integration ($2.50)</label>
+                  <label class="adc-cb"><input id="adc-x-enphase-integration" type="checkbox" value="1.00" onchange="adcCalc()"> Enphase Integration ($1.00)</label>
+                  <label class="adc-cb"><input id="adc-x-irrigation-control" type="checkbox" value="0.50" onchange="adcCalc()"> Irrigation Control ($0.50)</label>
                 </div>
               </div>
 
@@ -1804,10 +1804,10 @@
               </div>
               <div id="adc-alerts-fields" style="display:none;padding:6px 0 6px 16px;">
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:2px;font-size:11px;">
-                  <label class="adc-cb"><input type="checkbox" value="1.00" onchange="adcCalc()"> Voice Notifications — Alarms ($1.00)</label>
-                  <label class="adc-cb"><input type="checkbox" value="3.00" onchange="adcCalc()"> Voice Notifications — Non-Alarms ($3.00)</label>
-                  <label class="adc-cb"><input type="checkbox" value="0.25" onchange="adcCalc()"> Weather to Panel ($0.25)</label>
-                  <label class="adc-cb"><input type="checkbox" value="0.25" onchange="adcCalc()"> Severe Weather Alerts ($0.25)</label>
+                  <label class="adc-cb"><input id="adc-x-voice-notifications-alarms" type="checkbox" value="1.00" onchange="adcCalc()"> Voice Notifications — Alarms ($1.00)</label>
+                  <label class="adc-cb"><input id="adc-x-voice-notifications-non-alarms" type="checkbox" value="3.00" onchange="adcCalc()"> Voice Notifications — Non-Alarms ($3.00)</label>
+                  <label class="adc-cb"><input id="adc-x-weather-to-panel" type="checkbox" value="0.25" onchange="adcCalc()"> Weather to Panel ($0.25)</label>
+                  <label class="adc-cb"><input id="adc-x-severe-weather-alerts" type="checkbox" value="0.25" onchange="adcCalc()"> Severe Weather Alerts ($0.25)</label>
                 </div>
               </div>
 
@@ -1831,8 +1831,8 @@
                   <div style="display:grid;gap:3px;font-size:11px;">
                     <label class="adc-cb"><input type="checkbox" id="adc-esc-cb" value="0" onchange="adcCalc()" title="• Enterprise-level security management&#10;• Multi-site visibility and control&#10;• Included at no extra cost"> Enterprise Security Console ($0.00)</label>
                     <label class="adc-cb"><input type="checkbox" id="adc-mlesc-cb" value="0" onchange="adcCalc()" title="• All Enterprise Security Console features&#10;• Multi-level hierarchy management&#10;• Included at no extra cost"> Multi Level Enterprise Security Console ($0.00)</label>
-                    <label class="adc-cb"><input type="checkbox" value="10.00" onchange="adcCalc()" title="• Complies with UL-1610/ULC-S304&#10;• Required for UL-listed commercial accounts"> Commercial Supervision UL ($10.00)</label>
-                    <label class="adc-cb"><input type="checkbox" value="1.75" onchange="adcCalc()" title="• Central Station Two-Way Voice&#10;• Not available for UL/ULC installations"> Wireless Two-Way Voice ($1.75)</label>
+                    <label class="adc-cb"><input id="adc-x-commercial-supervision-ul" type="checkbox" value="10.00" onchange="adcCalc()" title="• Complies with UL-1610/ULC-S304&#10;• Required for UL-listed commercial accounts"> Commercial Supervision UL ($10.00)</label>
+                    <label class="adc-cb"><input id="adc-x-wireless-two-way-voice" type="checkbox" value="1.75" onchange="adcCalc()" title="• Central Station Two-Way Voice&#10;• Not available for UL/ULC installations"> Wireless Two-Way Voice ($1.75)</label>
                   </div>
                 </div>
               </div>
@@ -6386,30 +6386,13 @@ function getPartsData() {
 }
 
 
-const ESTIMATORS = [
-  { name: 'Jordan Stoltenberg',    email: 'jordan.stoltenberg@point1.com' },
-  { name: 'Ariadnne Stamatelaky',  email: 'ariadnne.stamatelaky@point1.com' },
-  { name: 'Pablo Chavez',          email: 'pablo.chavez@point1.com' },
-  { name: 'Austin Twitchell',      email: 'austin.twitchell@point1.com' },
-  { name: 'Virgil Loera',          email: 'virgil.loera@point1.com' },
-  { name: 'Tom Freitas',           email: 'tom.freitas@point1.com' },
-  { name: 'Sean Bithell',          email: 'sean.bithell@point1.com' },
-  { name: 'Vandael Victory',       email: 'vandael.victory@point1.com' },
-  { name: 'Rachel Martin',         email: 'rachel.martin@point1.com' },
-  { name: 'Vince Welch',           email: 'vince.welch@point1.com' },
-  { name: 'Don Jones',             email: 'don.jones@point1.com' },
-  { name: 'Blake Swain',           email: 'blake.swain@point1.com' },
-  { name: 'David Rivera',          email: 'david.rivera@point1.com' },
-  { name: 'Mike Curran',           email: 'mike.curran@teamredtop.com' },
-  { name: 'Mike Muniz',            email: 'mike.muniz@point1.com' },
-  { name: 'Ashley Munoz',          email: 'ashley.munoz@point1.com' },
-  { name: 'Kevin Phelan',          email: 'kevin.phelan@point1.com' },
-  { name: 'Shane Stoltenberg',     email: 'shane.stoltenberg@point1.com' },
-  { name: 'Daniel Olivera',        email: 'daniel.olivera@point1.com' },
-  { name: 'Dan Doan',              email: 'dan.doan@point1.com' },
-  { name: 'Kasandra Costen',       email: 'kasandra.costen@point1.com' },
-  { name: 'Will Olivera',           email: 'Will.Olivera@Point1.com' },
-];
+// Staff directory is loaded from Supabase after sign-in (P1_RATES.estimators), so
+// employee names and addresses are not readable in this public file. Falls back to an
+// empty list if the config has not been populated yet -- the field stays typeable.
+function ESTIMATOR_LIST(){
+  var r = (typeof P1_RATES === 'object' && P1_RATES) ? P1_RATES.estimators : null;
+  return Array.isArray(r) ? r : [];
+}
 
 var estimatorDropdownIdx = -1;
 
@@ -6418,9 +6401,10 @@ function estimatorSearch(val) {
   if (!dd) return;
   const q = val.trim().toLowerCase();
   estimatorDropdownIdx = -1;
+  var _EST = ESTIMATOR_LIST();
   const matches = q.length === 0
-    ? ESTIMATORS
-    : ESTIMATORS.filter(function(e) {
+    ? _EST
+    : _EST.filter(function(e) {
         return e.name.toLowerCase().indexOf(q) !== -1 || e.email.toLowerCase().indexOf(q) !== -1;
       });
   if (matches.length === 0) { dd.style.display = 'none'; return; }
@@ -6683,7 +6667,28 @@ function gatherEstimateData() {
              'adc-toggle-energy','adc-toggle-alerts','adc-toggle-remote',
              'adc-toggle-fleet','adc-toggle-openeye','adc-toggle-wellness','adc-toggle-comms',
              'adc-mobile-creds-cb','adc-wellness-cb','adc-enterprise-wellness-cb','adc-scheduled-arm-cb',
-             'adc-esc-cb','adc-mlesc-cb','adc-openeye-cb'];
+             'adc-esc-cb','adc-mlesc-cb','adc-openeye-cb',
+      // priced Alarm.com add-ons - previously summed into the total but never saved
+      'adc-x-lights-and-thermostat-bundle',
+      'adc-x-lights',
+      'adc-x-shades',
+      'adc-x-thermostats',
+      'adc-x-locks',
+      'adc-x-energy-monitoring',
+      'adc-x-lutron-integration',
+      'adc-x-audio-integration',
+      'adc-x-garage-door-and-gate',
+      'adc-x-liftmaster-integration',
+      'adc-x-water-management',
+      'adc-x-solar-integration',
+      'adc-x-enphase-integration',
+      'adc-x-irrigation-control',
+      'adc-x-voice-notifications-alarms',
+      'adc-x-voice-notifications-non-alarms',
+      'adc-x-weather-to-panel',
+      'adc-x-severe-weather-alerts',
+      'adc-x-commercial-supervision-ul',
+      'adc-x-wireless-two-way-voice'];
   data.checkboxes = {};
   cbs.forEach(function(id) {
     var el = document.getElementById(id);
