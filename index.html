@@ -14637,6 +14637,32 @@ document.addEventListener('click', function(e){
   #p1-bom-body .grand{margin-top:20px;border-top:3px solid #1c1c1c;padding-top:8px;font-size:13px}
   #p1-bom-body .grand div{display:flex;justify-content:space-between;padding:2px 0}
   #p1-bom-body .exp{color:#c0392b;font-weight:700}
+  /* ── "charge this BOM to" prompt ─────────────────────────────────── */
+  #p1-bom-job{position:fixed;inset:0;z-index:100002;display:none;background:rgba(0,0,0,.55);
+    align-items:center;justify-content:center;font-family:'DM Sans',sans-serif;padding:20px}
+  #p1-bom-job.on{display:flex}
+  .p1-jw{width:100%;max-width:440px;background:#1c1c1c;border:1px solid rgba(255,255,255,.16);
+    border-radius:10px;padding:20px 22px;box-shadow:0 24px 60px rgba(0,0,0,.55);color:#fff}
+  .p1-jw h3{margin:0 0 3px;font-size:15px;font-weight:600}
+  .p1-jn{margin:0 0 14px;font-size:11px;color:rgba(255,255,255,.55);line-height:1.5}
+  .p1-jg{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .p1-jg label{display:block;font-size:10px;font-weight:600;letter-spacing:.05em;
+    text-transform:uppercase;color:rgba(255,255,255,.55)}
+  .p1-jg input{display:block;width:100%;margin-top:4px;font-family:'DM Sans',sans-serif;font-size:13px;
+    color:#fff;background:#111;border:1px solid rgba(255,255,255,.18);border-radius:6px;
+    padding:8px 9px;outline:none;box-sizing:border-box}
+  .p1-jg input:focus{border-color:#e8620a}
+  .p1-jb{display:flex;justify-content:flex-end;gap:8px;margin-top:16px}
+  .p1-jb button{border:0;border-radius:6px;padding:8px 15px;font-size:12px;font-weight:600;
+    cursor:pointer;font-family:'DM Sans',sans-serif;background:rgba(255,255,255,.14);color:#fff}
+  .p1-jb button:hover{background:rgba(255,255,255,.24)}
+  .p1-jb button.p1-bp{background:#e8620a}
+  .p1-jb button.p1-bp:hover{background:#fa6f14}
+  #p1-bom-body .job{display:flex;flex-wrap:wrap;gap:3px 24px;border:1px solid #bbb;
+    border-left:3px solid #e8620a;padding:7px 10px;margin:0 0 14px;font-size:11px;color:#222}
+  #p1-bom-body .job b{font-size:9px;text-transform:uppercase;letter-spacing:.06em;color:#666;
+    margin-right:6px;font-weight:700}
+
   /* Only hide the app when the BOM itself is being printed. Without the body-class
      guard this also blanked the customer proposal, which prints the same way. */
   /* Mirrors the app's own body.sla-printing pattern. Gated on the body class so it
@@ -14655,6 +14681,10 @@ document.addEventListener('click', function(e){
 <script id="p1-bom">
 (function(){
   var OTHER='__other__', NONE='Vendor Not Assigned';
+  // What these materials get charged to. Asked for once per export, kept for the
+  // session and saved into the .p1est so a re-opened estimate still knows it.
+  var JOB={swo:'',seq:'',pm:'',phase:''};
+  var JOBF=[['swo','SWO #'],['seq','SEQ #'],['phase','Phase Code'],['pm','Project Manager']];
 
   function vendors(){
     var v = (typeof P1_RATES==='object' && P1_RATES) ? P1_RATES.vendors : null;
@@ -14877,6 +14907,8 @@ document.addEventListener('click', function(e){
           var o=readRow((rows[i].id||'').replace('mat-row-','mat-'));
           if(o) r.priceSrc=o;                       // optional key: old readers ignore it
         });
+        if(JOBF.some(function(f){ return JOB[f[0]]; }))
+          data.bomJob={swo:JOB.swo,seq:JOB.seq,pm:JOB.pm,phase:JOB.phase};
       }catch(e){}
       return data;
     };
@@ -14888,6 +14920,8 @@ document.addEventListener('click', function(e){
       try{
         setTimeout(function(){
           sweep();
+          if(data&&data.bomJob) JOBF.forEach(function(f){
+            if(data.bomJob[f[0]]!=null) JOB[f[0]]=String(data.bomJob[f[0]]); });
           var rows=[].slice.call(document.querySelectorAll('#mat-rows [id^="mat-row-"]'));
           ((data&&data.matRows)||[]).forEach(function(r,i){
             if(r&&r.priceSrc&&rows[i]) writeRow((rows[i].id||'').replace('mat-row-','mat-'), r.priceSrc);
@@ -14946,6 +14980,7 @@ document.addEventListener('click', function(e){
     function v(id){ var e=document.getElementById(id); return e?(e.value||''):''; }
     return { customer:v('custName')||'(no customer)', name:v('agreementName'),
              num:v('estimateNum'), estimator:v('estimatorName'),
+             swo:JOB.swo, seq:JOB.seq, pm:JOB.pm, phase:JOB.phase,
              date:new Date().toLocaleDateString() };
   }
 
@@ -14971,13 +15006,19 @@ document.addEventListener('click', function(e){
     };
   }
 
+  function jobBits(p){ return JOBF.filter(function(f){ return String(p[f[0]]||'').trim(); }); }
+  function jobBlock(p){
+    var out=jobBits(p).map(function(f){ return '<span><b>'+f[1]+'</b>'+esc(p[f[0]])+'</span>'; });
+    return out.length ? '<div class="job">'+out.join('')+'</div>' : '';
+  }
+
   function render(costs){
     var items=collect(), groups=group(items), has=presence(items), p=proj();
     var h='<h1>Bill of Materials</h1><div class="meta">'
       +'<b>'+esc(p.customer)+'</b>'+(p.name?' &middot; '+esc(p.name):'')+'<br>'
-      +(p.num?('Quote #: '+esc(p.num)+'<br>'):'')
       +'Exported: '+esc(p.date)+(p.estimator?(' by '+esc(p.estimator)):'')
-      +'<br><i>Internal purchasing document &mdash; costs shown are internal, not customer pricing.</i></div>';
+      +'<br><i>Internal purchasing document &mdash; costs shown are internal, not customer pricing.</i></div>'
+      +jobBlock(p);
     if(!groups.length) h+='<p>No material line items in Installation Labor &amp; Materials.</p>';
     var ta=0, tp=0;
     groups.forEach(function(gp){
@@ -15026,7 +15067,8 @@ document.addEventListener('click', function(e){
   function textFor(costs){
     var items=collect(), groups=group(items), has=presence(items), p=proj(), L=[];
     L.push('BILL OF MATERIALS'); L.push(p.customer+(p.name?(' - '+p.name):''));
-    if(p.num) L.push('Quote #: '+p.num);
+    var jb=jobBits(p).map(function(f){ return f[1]+': '+p[f[0]]; });
+    if(jb.length) L.push(jb.join('  |  '));
     L.push('Exported '+p.date+(p.estimator?(' by '+p.estimator):'')); L.push('');
     var ta=0,tp=0;
     groups.forEach(function(gp){
@@ -15058,6 +15100,9 @@ document.addEventListener('click', function(e){
   function csvFor(costs){
     var items=collect(), has=presence(items), head=[], pick=[];
     function col(on,label,fn){ if(on){ head.push(label); pick.push(fn); } }
+    // repeated on every row so purchasing can paste straight into a PO line
+    jobBits(proj()).forEach(function(f){ var v=String(JOB[f[0]]).trim();
+      col(true, f[1], function(){ return v; }); });
     col(has.vendor,   'Vendor',           function(it,gp){ return gp.vendor; });
     col(has.src,      'Pricing Source',   function(it){ return it.src==='quote'?'Formal Vendor Quote':it.src==='portal'?'Website/Dealer Portal':''; });
     col(has.quoteNo,  'Quote #',          function(it){ return it.quoteNo; });
@@ -15092,6 +15137,7 @@ document.addEventListener('click', function(e){
     o.innerHTML='<div id="p1-bom-win"><div id="p1-bom-bar"><b>Export BOM</b>'
       +'<label style="display:flex;align-items:center;gap:5px;font-size:11px">'
       +'<input type="checkbox" id="p1-bom-costs" checked> Include costs</label>'
+      +'<button class="p1-bb" id="p1-bom-job-btn">&#9998; Charge to&hellip;</button>'
       +'<button class="p1-bb" id="p1-bom-csv">Download CSV</button>'
       +'<button class="p1-bb" id="p1-bom-copy">Copy for email</button>'
       +'<button class="p1-bp" id="p1-bom-print">Print / Save PDF</button>'
@@ -15101,6 +15147,7 @@ document.addEventListener('click', function(e){
     function costs(){ return document.getElementById('p1-bom-costs').checked; }
     function draw(){ document.getElementById('p1-bom-body').innerHTML=render(costs()); }
     document.getElementById('p1-bom-costs').addEventListener('change',draw);
+    document.getElementById('p1-bom-job-btn').addEventListener('click',function(){ askJob(draw); });
     document.getElementById('p1-bom-close').addEventListener('click',function(){
       o.classList.remove('on'); document.body.classList.remove('p1-bom-printing'); });
     o.addEventListener('click',function(e){ if(e.target===o) o.classList.remove('on'); });
@@ -15123,13 +15170,64 @@ document.addEventListener('click', function(e){
       var p=proj();
       var blob=new Blob([csvFor(costs())],{type:'text/csv;charset=utf-8;'});
       var a=document.createElement('a'); a.href=URL.createObjectURL(blob);
-      a.download='BOM-'+(p.num||p.customer).replace(/[^a-zA-Z0-9-]/g,'-')+'.csv';
+      a.download='BOM-'+(p.swo?('SWO-'+p.swo+(p.seq?('-'+p.seq):'')):(p.num||p.customer))
+                   .replace(/[^a-zA-Z0-9-]/g,'-')+'.csv';
       document.body.appendChild(a); a.click(); a.remove();
     });
     o._draw=draw;
     return o;
   }
-  window.p1ExportBOM=function(){ var o=ov(); o._draw(); o.classList.add('on'); };
+  function pmList(){
+    var src=(typeof P1_RATES==='object'&&P1_RATES)?P1_RATES.estimators:null;
+    if(!Array.isArray(src)||!src.length) return;
+    var dl=document.getElementById('p1-pm-list');
+    if(!dl){ dl=document.createElement('datalist'); dl.id='p1-pm-list'; document.body.appendChild(dl); }
+    if(dl.dataset.n===String(src.length)) return;
+    dl.dataset.n=String(src.length);
+    dl.innerHTML=src.map(function(e){ var n=(e&&e.name)?e.name:e;
+      return '<option value="'+esc(n)+'"></option>'; }).join('');
+  }
+
+  function jobModal(){
+    var m=document.getElementById('p1-bom-job');
+    if(m) return m;
+    m=document.createElement('div'); m.id='p1-bom-job';
+    m.innerHTML='<div class="p1-jw"><h3>Charge this BOM to</h3>'
+      +'<p class="p1-jn">Printed at the top of the BOM and carried into the PDF, CSV and email copy. '
+      +'Leave anything you do not have blank &mdash; it is left off rather than printed empty.</p>'
+      +'<div class="p1-jg">'
+      +'<label>SWO #<input id="p1-job-swo" autocomplete="off"></label>'
+      +'<label>SEQ #<input id="p1-job-seq" autocomplete="off"></label>'
+      +'<label>Phase Code<input id="p1-job-phase" autocomplete="off"></label>'
+      +'<label>Project Manager<input id="p1-job-pm" list="p1-pm-list" autocomplete="off"></label>'
+      +'</div><div class="p1-jb"><button type="button" id="p1-job-cancel">Cancel</button>'
+      +'<button type="button" class="p1-bp" id="p1-job-go">Continue</button></div></div>';
+    document.body.appendChild(m);
+    function close(){ m.classList.remove('on'); }
+    function go(){
+      JOBF.forEach(function(f){ var e=document.getElementById('p1-job-'+f[0]);
+        JOB[f[0]] = e ? (e.value||'').trim() : ''; });
+      close(); if(typeof m._cb==='function') m._cb();
+    }
+    document.getElementById('p1-job-go').addEventListener('click',go);
+    document.getElementById('p1-job-cancel').addEventListener('click',close);
+    m.addEventListener('click',function(e){ if(e.target===m) close(); });
+    m.addEventListener('keydown',function(e){
+      if(e.key==='Enter'){ e.preventDefault(); go(); }
+      if(e.key==='Escape'){ e.preventDefault(); close(); }
+    });
+    return m;
+  }
+  function askJob(cb){
+    var m=jobModal(); pmList();
+    JOBF.forEach(function(f){ var e=document.getElementById('p1-job-'+f[0]);
+      if(e) e.value=JOB[f[0]]||''; });
+    m._cb=cb; m.classList.add('on');
+    setTimeout(function(){ var f=document.getElementById('p1-job-swo'); if(f) f.focus(); },40);
+  }
+  window.p1ExportBOM=function(){
+    askJob(function(){ var o=ov(); o._draw(); o.classList.add('on'); });
+  };
 
   /* ── menu item ──────────────────────────────────────────────────────── */
   function addMenuItem(){
