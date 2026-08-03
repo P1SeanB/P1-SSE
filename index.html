@@ -14637,8 +14637,20 @@ document.addEventListener('click', function(e){
   #p1-bom-body .grand{margin-top:20px;border-top:3px solid #1c1c1c;padding-top:8px;font-size:13px}
   #p1-bom-body .grand div{display:flex;justify-content:space-between;padding:2px 0}
   #p1-bom-body .exp{color:#c0392b;font-weight:700}
-  @media print{ #p1-bom-ov{position:static;background:#fff} #p1-bom-bar{display:none}
-    #p1-bom-win{position:static;inset:auto;box-shadow:none} body>*:not(#p1-bom-ov){display:none!important} }
+  /* Only hide the app when the BOM itself is being printed. Without the body-class
+     guard this also blanked the customer proposal, which prints the same way. */
+  /* Mirrors the app's own body.sla-printing pattern. Gated on the body class so it
+     cannot touch a customer-proposal print, and specific enough to beat the app's
+     blanket "body > * {display:none}" when the BOM is the thing being printed. */
+  @media print{
+    body.p1-bom-printing > *{display:none !important}
+    body.p1-bom-printing #p1-bom-ov{display:block !important;position:static;background:#fff}
+    body.p1-bom-printing #customer-quote-overlay{display:none !important}
+    body.p1-bom-printing #sla-print-overlay{display:none !important}
+    body.p1-bom-printing #p1-bom-bar{display:none !important}
+    body.p1-bom-printing #p1-bom-win{position:static;inset:auto;box-shadow:none}
+    @page{margin:0.5in;size:letter}
+  }
 </style>
 <script id="p1-bom">
 (function(){
@@ -15033,9 +15045,16 @@ document.addEventListener('click', function(e){
     function costs(){ return document.getElementById('p1-bom-costs').checked; }
     function draw(){ document.getElementById('p1-bom-body').innerHTML=render(costs()); }
     document.getElementById('p1-bom-costs').addEventListener('change',draw);
-    document.getElementById('p1-bom-close').addEventListener('click',function(){ o.classList.remove('on'); });
+    document.getElementById('p1-bom-close').addEventListener('click',function(){
+      o.classList.remove('on'); document.body.classList.remove('p1-bom-printing'); });
     o.addEventListener('click',function(e){ if(e.target===o) o.classList.remove('on'); });
-    document.getElementById('p1-bom-print').addEventListener('click',function(){ window.print(); });
+    document.getElementById('p1-bom-print').addEventListener('click',function(){
+      document.body.classList.add('p1-bom-printing');
+      var clear=function(){ document.body.classList.remove('p1-bom-printing'); };
+      window.addEventListener('afterprint', clear, {once:true});
+      setTimeout(clear, 4000);            // belt and braces if afterprint never fires
+      window.print();
+    });
     document.getElementById('p1-bom-copy').addEventListener('click',function(){
       var t=textFor(costs());
       (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject())
