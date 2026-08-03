@@ -14687,14 +14687,14 @@ document.addEventListener('click', function(e){
 
     // Manufacturer + part number sit with the description, not on the numeric row
     var idr=document.createElement('div'); idr.className='p1-idrow';
-    idr.innerHTML='<input id="'+base+'-mfg" placeholder="Manufacturer">'
+    idr.innerHTML='<input id="'+base+'-mfg" list="p1-mfg-list" placeholder="Manufacturer" autocomplete="off">'
                  +'<input id="'+base+'-partno" placeholder="Manufacturer part #">';
     descEl.parentNode.insertBefore(idr, descEl.nextSibling);
 
     // pricing panel
     var pr=document.createElement('div'); pr.id=base+'-pricerow'; pr.style.display='none';
     pr.innerHTML =
-      '<div class="p1-plabels" style="grid-template-columns:1.4fr 1.1fr"><span>Vendor / Price Source</span><span>Pricing Source Type</span></div>'
+      '<div class="p1-plabels" style="grid-template-columns:1.4fr 1.1fr"><span>Vendor / Price Source <i style="font-weight:400;text-transform:none;letter-spacing:0">(who we buy from)</i></span><span>Pricing Source Type</span></div>'
      +'<div class="p1-pfields" style="grid-template-columns:1.4fr 1.1fr">'
      +  '<select id="'+base+'-vendor"></select>'
      +  '<div class="p1-seg" id="'+base+'-segwrap">'
@@ -14762,6 +14762,18 @@ document.addEventListener('click', function(e){
     });
     FIELDS.forEach(function(k){ var e=g(base,k); if(e) e.addEventListener('input',function(){ paintRow(base); }); });
     paintRow(base);
+  }
+
+  // Suggestions only -- any manufacturer can still be typed. A closed list would
+  // block the estimator the first time a brand is not on it.
+  function mfgList(){
+    var dl=document.getElementById('p1-mfg-list');
+    var src=(typeof P1_RATES==='object'&&P1_RATES)?P1_RATES.manufacturers:null;
+    if(!Array.isArray(src)||!src.length) return;
+    if(!dl){ dl=document.createElement('datalist'); dl.id='p1-mfg-list'; document.body.appendChild(dl); }
+    if(dl.dataset.n===String(src.length)) return;
+    dl.dataset.n=String(src.length);
+    dl.innerHTML=src.map(function(m){ return '<option value="'+esc(m)+'"></option>'; }).join('');
   }
 
   function srcOf(base){ var pr=document.getElementById(base+'-pricerow'); return pr?(pr.dataset.src||''):''; }
@@ -15056,8 +15068,8 @@ document.addEventListener('click', function(e){
   }
 
   var t=setInterval(function(){ if(document.getElementById('mat-rows')){ clearInterval(t);
-    sweep(); addMenuItem();
-    setInterval(function(){ sweep(); addMenuItem(); },900);
+    sweep(); addMenuItem(); mfgList();
+    setInterval(function(){ sweep(); addMenuItem(); mfgList(); },900);
     ['input','change'].forEach(function(ev){ document.addEventListener(ev,function(e){
       if(e.target && /^mat-\d+-/.test(e.target.id||'')) setTimeout(function(){
         paintRow((e.target.id||'').replace(/^(mat-\d+)-.*$/,'$1')); },30);
