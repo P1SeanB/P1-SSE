@@ -14585,5 +14585,486 @@ document.addEventListener('click', function(e){
   /* the black brand panel on generated SLA / monitoring documents */
   .sla-brand .p1-brand-mark{max-width:150px;width:100%;height:auto;object-fit:contain;}
 </style>
+
+<style id="p1-bom-css">
+  /* ── Material price-source tracking + vendor-grouped BOM (phase 1) ──
+     Additive: no existing calculation, gating rule or export field is altered.
+     All money shown here is internal cost — never the customer sell price. */
+  .p1-idrow{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:4px}
+  .p1-idrow input{font-size:11px;padding:4px 6px;border:1px solid var(--border);
+    border-radius:var(--radius-sm);background:var(--surface2);color:var(--text);width:100%}
+  [id$="-pricerow"]{margin-top:5px;padding:6px 8px;background:var(--surface);
+    border:1px solid var(--border);border-left:3px solid #1a4a8a;border-radius:var(--radius-sm)}
+  .p1-plabels{display:grid;gap:5px;margin-bottom:2px}
+  .p1-plabels span{font-size:9px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;
+    color:var(--text3)}
+  .p1-pfields{display:grid;gap:5px;align-items:center}
+  .p1-pfields input,.p1-pfields select{font-size:11px;padding:4px 6px;border:1px solid var(--border);
+    border-radius:var(--radius-sm);background:var(--surface2);color:var(--text);width:100%}
+  .p1-seg{display:flex;border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;height:26px}
+  .p1-seg button{flex:1;border:none;background:var(--surface2);color:var(--text3);font-size:9px;
+    font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;padding:0}
+  .p1-seg button.on{background:#1a4a8a;color:#fff}
+  .p1-warn{font-size:10px;color:var(--red,#c0392b);margin-top:4px;font-weight:600}
+  .p1-note{font-size:10px;color:var(--text3);margin-top:4px}
+
+  #p1-bom-ov{position:fixed;inset:0;z-index:100001;display:none;background:rgba(0,0,0,.45)}
+  #p1-bom-ov.on{display:block}
+  #p1-bom-win{position:absolute;inset:24px;background:#fff;border-radius:10px;display:flex;
+    flex-direction:column;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.4)}
+  #p1-bom-bar{display:flex;align-items:center;gap:8px;padding:10px 14px;background:#1c1c1c;color:#fff;
+    font-family:'DM Sans',sans-serif;font-size:12px;flex:0 0 auto}
+  #p1-bom-bar b{font-size:13px;margin-right:auto}
+  #p1-bom-bar button{border:0;border-radius:5px;padding:6px 12px;font-size:12px;font-weight:600;
+    cursor:pointer;font-family:'DM Sans',sans-serif}
+  .p1-bb{background:rgba(255,255,255,.16);color:#fff}
+  .p1-bb:hover{background:rgba(255,255,255,.28)}
+  .p1-bp{background:#e8620a;color:#fff}
+  #p1-bom-body{flex:1 1 auto;overflow:auto;padding:22px 26px;color:#222;
+    font-family:Arial,Helvetica,sans-serif;font-size:12px}
+  #p1-bom-body h1{font-size:17px;margin:0 0 2px}
+  #p1-bom-body .meta{font-size:11px;color:#555;margin-bottom:14px;line-height:1.6}
+  #p1-bom-body h2{font-size:13px;margin:18px 0 2px;padding:5px 8px;background:#1c1c1c;color:#fff;
+    border-radius:3px}
+  #p1-bom-body h3{font-size:11px;margin:10px 0 3px;color:#1a4a8a;font-weight:700}
+  #p1-bom-body table{width:100%;border-collapse:collapse;margin-bottom:4px}
+  #p1-bom-body th{text-align:left;font-size:9px;text-transform:uppercase;letter-spacing:.06em;
+    color:#666;border-bottom:1px solid #ccc;padding:3px 5px}
+  #p1-bom-body td{padding:4px 5px;border-bottom:1px solid #eee;vertical-align:top}
+  #p1-bom-body td.n{text-align:right;white-space:nowrap;font-family:'DM Mono',monospace}
+  #p1-bom-body .sub{text-align:right;font-weight:700;padding:5px;border-top:2px solid #1c1c1c}
+  #p1-bom-body .grand{margin-top:20px;border-top:3px solid #1c1c1c;padding-top:8px;font-size:13px}
+  #p1-bom-body .grand div{display:flex;justify-content:space-between;padding:2px 0}
+  #p1-bom-body .exp{color:#c0392b;font-weight:700}
+  @media print{ #p1-bom-ov{position:static;background:#fff} #p1-bom-bar{display:none}
+    #p1-bom-win{position:static;inset:auto;box-shadow:none} body>*:not(#p1-bom-ov){display:none!important} }
+</style>
+<script id="p1-bom">
+(function(){
+  var OTHER='__other__', NONE='Vendor Not Assigned';
+
+  function vendors(){
+    var v = (typeof P1_RATES==='object' && P1_RATES) ? P1_RATES.vendors : null;
+    if(!Array.isArray(v)) return [];
+    return v.slice().sort(function(a,b){ return (a.display||'').localeCompare(b.display||''); });
+  }
+  // Wesco / Anixter / "Wesco Anixter" all resolve to the one vendor, as do any other
+  // aliases the config carries. Used on import so older or hand-typed values still group.
+  function resolve(val){
+    if(!val) return '';
+    var list=vendors(), lc=String(val).trim().toLowerCase();
+    for(var i=0;i<list.length;i++){
+      if(list[i].id===val) return list[i].id;
+      if((list[i].display||'').toLowerCase()===lc) return list[i].id;
+      var al=list[i].aliases||[];
+      for(var j=0;j<al.length;j++) if(String(al[j]).toLowerCase()===lc) return list[i].id;
+    }
+    return val===OTHER ? OTHER : '';
+  }
+  function displayOf(vid, other){
+    if(vid===OTHER) return (other||'').trim() || NONE;
+    var list=vendors();
+    for(var i=0;i<list.length;i++) if(list[i].id===vid) return list[i].display;
+    return NONE;
+  }
+  function today(){ var d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+  function money(n){ return '$'+(Number(n)||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+  function esc(t){ return String(t==null?'':t).replace(/[&<>"]/g,function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+  function uDiv(u){ return u==='100ft'?100:u==='1000ft'?1000:1; }
+
+  /* ── per-row UI ─────────────────────────────────────────────────────── */
+  var FIELDS=['mfg','partno','vendor','vendorother','srctype','verified','quoteno',
+              'quotedate','quoteexp','contact','leadtime','pnotes'];
+  function g(base,k){ return document.getElementById(base+'-'+k); }
+  function val(base,k){ var e=g(base,k); return e?e.value:''; }
+
+  function buildRow(rowEl){
+    if(rowEl.dataset.p1bom) return;
+    var descEl=rowEl.querySelector('[id$="-desc"]'); if(!descEl) return;
+    var base=(rowEl.id||'').replace('mat-row-','mat-'); if(!base) return;
+    rowEl.dataset.p1bom='1';
+
+    // Manufacturer + part number sit with the description, not on the numeric row
+    var idr=document.createElement('div'); idr.className='p1-idrow';
+    idr.innerHTML='<input id="'+base+'-mfg" placeholder="Manufacturer">'
+                 +'<input id="'+base+'-partno" placeholder="Manufacturer part #">';
+    descEl.parentNode.insertBefore(idr, descEl.nextSibling);
+
+    // pricing panel
+    var pr=document.createElement('div'); pr.id=base+'-pricerow'; pr.style.display='none';
+    pr.innerHTML =
+      '<div class="p1-plabels" style="grid-template-columns:1.4fr 1.1fr"><span>Vendor / Price Source</span><span>Pricing Source Type</span></div>'
+     +'<div class="p1-pfields" style="grid-template-columns:1.4fr 1.1fr">'
+     +  '<select id="'+base+'-vendor"></select>'
+     +  '<div class="p1-seg" id="'+base+'-segwrap">'
+     +    '<button type="button" data-v="portal">Website/Portal</button>'
+     +    '<button type="button" data-v="quote">Formal Quote</button>'
+     +  '</div>'
+     +'</div>'
+     +'<div id="'+base+'-otherwrap" style="display:none;margin-top:5px">'
+     +  '<div class="p1-plabels"><span>Other Vendor Name <b style="color:#c0392b">*</b></span></div>'
+     +  '<input id="'+base+'-vendorother" placeholder="e.g. Graybar">'
+     +'</div>'
+     +'<div id="'+base+'-portalwrap" style="display:none;margin-top:5px">'
+     +  '<div class="p1-plabels" style="grid-template-columns:150px"><span>Price Verified Date</span></div>'
+     +  '<div class="p1-pfields" style="grid-template-columns:150px"><input type="date" id="'+base+'-verified"></div>'
+     +'</div>'
+     +'<div id="'+base+'-quotewrap" style="display:none;margin-top:5px">'
+     +  '<div class="p1-plabels" style="grid-template-columns:1fr 1fr 1fr"><span>Vendor Quote # <b style="color:#c0392b">*</b></span><span>Quote Date</span><span>Expires</span></div>'
+     +  '<div class="p1-pfields" style="grid-template-columns:1fr 1fr 1fr">'
+     +    '<input id="'+base+'-quoteno" placeholder="123456">'
+     +    '<input type="date" id="'+base+'-quotedate">'
+     +    '<input type="date" id="'+base+'-quoteexp">'
+     +  '</div>'
+     +  '<div class="p1-plabels" style="grid-template-columns:1fr 1fr;margin-top:5px"><span>Vendor contact</span><span>Lead time / availability</span></div>'
+     +  '<div class="p1-pfields" style="grid-template-columns:1fr 1fr">'
+     +    '<input id="'+base+'-contact" placeholder="optional">'
+     +    '<input id="'+base+'-leadtime" placeholder="optional">'
+     +  '</div>'
+     +'</div>'
+     +'<div class="p1-plabels" style="margin-top:5px"><span>Purchasing notes</span></div>'
+     +'<input id="'+base+'-pnotes" placeholder="optional">'
+     +'<div id="'+base+'-pmsg"></div>'
+     +'<button type="button" class="p1-rm" id="'+base+'-prm">× Remove pricing source</button>';
+
+    var lp=document.getElementById(base+'-lprow');
+    (lp&&lp.parentNode ? lp.parentNode : rowEl).insertBefore(pr, lp||null);
+    if(!lp) rowEl.appendChild(pr);
+
+    var btn=document.createElement('button');
+    btn.type='button'; btn.id=base+'-pbtn'; btn.textContent='+ Pricing';
+    btn.style.cssText='background:transparent;border:1px dashed var(--border2);color:var(--text2);'
+      +'cursor:pointer;font-size:11px;padding:3px 8px;border-radius:var(--radius-sm)';
+    var pkgBtn=document.getElementById(base+'-pkgbtn');
+    if(pkgBtn&&pkgBtn.parentNode) pkgBtn.parentNode.insertBefore(btn, pkgBtn.nextSibling);
+    btn.addEventListener('click',function(){
+      pr.style.display = pr.style.display==='none' ? 'block' : 'none'; paintRow(base);
+    });
+    document.getElementById(base+'-prm').addEventListener('click',function(){
+      FIELDS.forEach(function(k){ var e=g(base,k); if(e) e.value=''; });
+      pr.dataset.src=''; pr.style.display='none'; paintRow(base);
+    });
+
+    // vendor list
+    var sel=g(base,'vendor');
+    function fillVendors(){
+      var cur=sel.value;
+      sel.innerHTML='<option value="">— Select vendor —</option>'
+        + vendors().map(function(v){ return '<option value="'+esc(v.id)+'">'+esc(v.display)+'</option>'; }).join('')
+        + '<option value="'+OTHER+'">Other…</option>';   // always last
+      if(cur) sel.value=cur;
+    }
+    fillVendors(); sel._fill=fillVendors;
+    sel.addEventListener('change',function(){ paintRow(base); });
+    pr.querySelectorAll('.p1-seg button').forEach(function(b){
+      b.addEventListener('click',function(){ pr.dataset.src=b.dataset.v; paintRow(base); });
+    });
+    FIELDS.forEach(function(k){ var e=g(base,k); if(e) e.addEventListener('input',function(){ paintRow(base); }); });
+    paintRow(base);
+  }
+
+  function srcOf(base){ var pr=document.getElementById(base+'-pricerow'); return pr?(pr.dataset.src||''):''; }
+
+  function paintRow(base){
+    var pr=document.getElementById(base+'-pricerow'); if(!pr) return;
+    var src=pr.dataset.src||'', vid=val(base,'vendor');
+    pr.querySelectorAll('.p1-seg button').forEach(function(b){ b.classList.toggle('on', b.dataset.v===src); });
+    document.getElementById(base+'-otherwrap').style.display = vid===OTHER ? 'block' : 'none';
+    document.getElementById(base+'-portalwrap').style.display = src==='portal' ? 'block' : 'none';
+    document.getElementById(base+'-quotewrap').style.display  = src==='quote'  ? 'block' : 'none';
+    if(src==='portal' && !val(base,'verified')){ var v=g(base,'verified'); if(v) v.value=today(); }
+
+    var msgs=[];
+    if(vid===OTHER && !val(base,'vendorother').trim()) msgs.push('Other Vendor Name is required.');
+    if(src==='quote'){
+      if(!val(base,'quoteno').trim()) msgs.push('Vendor Quote # is required for a formal quote.');
+      var qd=val(base,'quotedate'), qe=val(base,'quoteexp');
+      if(qd&&qe&&qe<qd) msgs.push('Quote expiration cannot be earlier than the quote date.');
+      if(qe && qe < today()) msgs.push('Vendor quote pricing may be expired.');
+    }
+    var m=document.getElementById(base+'-pmsg');
+    m.className = msgs.length?'p1-warn':''; m.innerHTML = msgs.map(esc).join('<br>');
+
+    // the toggle doubles as a summary chip, matching + Labor / + Package
+    var btn=document.getElementById(base+'-pbtn'); if(!btn) return;
+    var open = pr.style.display!=='none';
+    var set = !!(vid || src);
+    var name = set ? displayOf(vid, val(base,'vendorother')) : '';
+    var txt  = set ? ('Src: '+name+(src==='quote'?(' · Q'+(val(base,'quoteno')||'?')):src==='portal'?' · portal':'')) : 'Pricing';
+    btn.textContent = (open?'− ':(set?'':'+ '))+txt;
+    if(set){ btn.style.background='var(--blue-bg,#eaf1fb)'; btn.style.borderStyle='solid';
+             btn.style.borderColor='#1a4a8a'; btn.style.color='#1a4a8a'; btn.style.fontWeight='700'; }
+    else   { btn.style.background='transparent'; btn.style.borderStyle='dashed';
+             btn.style.borderColor='var(--border2)'; btn.style.color='var(--text2)'; btn.style.fontWeight=''; }
+  }
+
+  function sweep(){
+    var rows=document.querySelectorAll('#mat-rows [id^="mat-row-"]');
+    for(var i=0;i<rows.length;i++){
+      if(rows[i].dataset.type==='labor'){        // vendor data is material-only
+        var b=(rows[i].id||'').replace('mat-row-','mat-');
+        var pr=document.getElementById(b+'-pricerow'), pb=document.getElementById(b+'-pbtn');
+        var ir=rows[i].querySelector('.p1-idrow');
+        if(pr) pr.style.display='none'; if(pb) pb.style.display='none'; if(ir) ir.style.display='none';
+        continue;
+      }
+      buildRow(rows[i]);
+      var b2=(rows[i].id||'').replace('mat-row-','mat-');
+      var pb2=document.getElementById(b2+'-pbtn'); if(pb2) pb2.style.display='';
+      var ir2=rows[i].querySelector('.p1-idrow'); if(ir2) ir2.style.display='';
+      var sel=document.getElementById(b2+'-vendor');
+      if(sel && sel._fill && sel.options.length<=2 && vendors().length) sel._fill();
+    }
+  }
+
+  /* ── read / write the extra fields ──────────────────────────────────── */
+  function readRow(base){
+    var o={};
+    FIELDS.forEach(function(k){ var v=val(base,k); if(v) o[k]=v; });
+    var s=srcOf(base); if(s) o.srctype=s;
+    return Object.keys(o).length ? o : null;
+  }
+  function writeRow(base,o){
+    if(!o) return;
+    FIELDS.forEach(function(k){ if(o[k]!=null){ var e=g(base,k); if(e) e.value=o[k]; } });
+    var vs=g(base,'vendor');
+    if(vs && o.vendor){ var r=resolve(o.vendor); if(r){ vs.value=r; } }   // alias-tolerant
+    var pr=document.getElementById(base+'-pricerow');
+    if(pr){ pr.dataset.src=o.srctype||''; if(o.srctype||o.vendor) pr.style.display='block'; }
+    paintRow(base);
+  }
+
+  var _gather=window.gatherEstimateData;
+  if(typeof _gather==='function'){
+    window.gatherEstimateData=function(){
+      var data=_gather.apply(this,arguments);
+      try{
+        // data.matRows is DOM order (synthesised attached-labor rows are filtered out),
+        // so the Nth entry is the Nth material/labor row on screen.
+        var rows=[].slice.call(document.querySelectorAll('#mat-rows [id^="mat-row-"]'));
+        (data.matRows||[]).forEach(function(r,i){
+          if(r.type!=='material'||!rows[i]) return;
+          var o=readRow((rows[i].id||'').replace('mat-row-','mat-'));
+          if(o) r.priceSrc=o;                       // optional key: old readers ignore it
+        });
+      }catch(e){}
+      return data;
+    };
+  }
+  var _restore=window.restoreEstimateData;
+  if(typeof _restore==='function'){
+    window.restoreEstimateData=function(data){
+      var out=_restore.apply(this,arguments);
+      try{
+        setTimeout(function(){
+          sweep();
+          var rows=[].slice.call(document.querySelectorAll('#mat-rows [id^="mat-row-"]'));
+          ((data&&data.matRows)||[]).forEach(function(r,i){
+            if(r&&r.priceSrc&&rows[i]) writeRow((rows[i].id||'').replace('mat-row-','mat-'), r.priceSrc);
+          });
+        },300);
+      }catch(e){}
+      return out;
+    };
+  }
+
+  /* ── BOM assembly ───────────────────────────────────────────────────── */
+  function collect(){
+    var mats=(typeof getMatData==='function'?getMatData():[]).filter(function(m){ return m.type==='material'; });
+    return mats.map(function(m){
+      var o=readRow(m.base)||{};
+      var div=uDiv(m.unit||'ea');
+      var allocated=(m.cost||0)*((m.adjQty||m.qty||0)/div);   // usage cost, basis-aware
+      return {
+        vendorId:o.vendor||'', vendorName:displayOf(o.vendor||'', o.vendorother),
+        src:o.srctype||'', quoteNo:o.quoteno||'', quoteDate:o.quotedate||'', quoteExp:o.quoteexp||'',
+        contact:o.contact||'', leadTime:o.leadtime||'', notes:o.pnotes||'', verified:o.verified||'',
+        mfg:o.mfg||'', part:o.partno||'', desc:m.desc||'',
+        qty:m.qty||0, adjQty:m.adjQty||m.qty||0, unit:m.unit||'ea',
+        pkgSize:m.pkgSize||0, pkgUnit:m.pkgUnit||'', packages:m.packages||0,
+        cost:m.cost||0, allocated:allocated, purchasing:m.lineTotal||allocated
+      };
+    });
+  }
+  function group(items){
+    var by={};
+    items.forEach(function(it){
+      var v=it.vendorName||NONE;
+      (by[v]=by[v]||[]).push(it);
+    });
+    var names=Object.keys(by).sort(function(a,b){
+      if(a===NONE) return 1; if(b===NONE) return -1;      // unassigned always last
+      return a.localeCompare(b);
+    });
+    return names.map(function(v){
+      var subs={};
+      by[v].forEach(function(it){
+        var k = it.src==='quote' ? ('Formal Quote '+(it.quoteNo||'(no number)')) :
+                it.src==='portal' ? 'Website / Dealer Portal' : 'Pricing source not set';
+        (subs[k]=subs[k]||[]).push(it);
+      });
+      var keys=Object.keys(subs).sort();
+      keys.forEach(function(k){ subs[k].sort(function(a,b){
+        return (a.mfg||'').localeCompare(b.mfg||'') || (a.part||'').localeCompare(b.part||'')
+            || (a.desc||'').localeCompare(b.desc||''); }); });
+      return { vendor:v, sections:keys.map(function(k){ return {title:k, items:subs[k]}; }),
+               subtotalAlloc:by[v].reduce(function(s,i){return s+i.allocated;},0),
+               subtotalPurch:by[v].reduce(function(s,i){return s+i.purchasing;},0) };
+    });
+  }
+  function proj(){
+    function v(id){ var e=document.getElementById(id); return e?(e.value||''):''; }
+    return { customer:v('custName')||'(no customer)', name:v('agreementName'),
+             num:v('estimateNum'), estimator:v('estimatorName'),
+             date:new Date().toLocaleDateString() };
+  }
+
+  function render(costs){
+    var groups=group(collect()), p=proj();
+    var h='<h1>Bill of Materials</h1><div class="meta">'
+      +'<b>'+esc(p.customer)+'</b>'+(p.name?' &middot; '+esc(p.name):'')+'<br>'
+      +(p.num?('Quote #: '+esc(p.num)+'<br>'):'')
+      +'Exported: '+esc(p.date)+(p.estimator?(' by '+esc(p.estimator)):'')
+      +'<br><i>Internal purchasing document &mdash; costs shown are internal, not customer pricing.</i></div>';
+    if(!groups.length) h+='<p>No material line items in Installation Labor &amp; Materials.</p>';
+    var ta=0, tp=0;
+    groups.forEach(function(gp){
+      h+='<h2>'+esc(gp.vendor)+'</h2>';
+      gp.sections.forEach(function(sec){
+        var first=sec.items[0];
+        h+='<h3>'+esc(sec.title);
+        if(first.src==='quote'&&first.quoteExp){
+          var exp=first.quoteExp<today();
+          h+=' <span class="'+(exp?'exp':'')+'">&middot; expires '+esc(first.quoteExp)+(exp?' — MAY BE EXPIRED':'')+'</span>';
+        }
+        h+='</h3><table><tr><th>Mfg</th><th>Part #</th><th>Description</th><th>Job qty</th><th>Purchase</th>'
+          +(costs?'<th>Unit cost</th><th>Allocated</th><th>Purchasing</th>':'')+'<th>Lead time</th><th>Notes</th></tr>';
+        sec.items.forEach(function(it){
+          var pq = it.packages>0 ? (it.packages+' × '+it.pkgSize.toLocaleString('en-US')+(it.unit==='ea'?' ea':' ft')+(it.pkgUnit?(' '+it.pkgUnit):'')) : '—';
+          h+='<tr><td>'+esc(it.mfg)+'</td><td>'+esc(it.part)+'</td><td>'+esc(it.desc)+'</td>'
+            +'<td class="n">'+(+it.adjQty.toFixed(2)).toLocaleString('en-US')+' '+esc(it.unit==='ea'?'ea':'ft')+'</td>'
+            +'<td class="n">'+esc(pq)+'</td>'
+            +(costs?('<td class="n">'+money(it.cost)+'</td><td class="n">'+money(it.allocated)+'</td><td class="n">'+money(it.purchasing)+'</td>'):'')
+            +'<td>'+esc(it.leadTime)+'</td><td>'+esc(it.notes)+'</td></tr>';
+        });
+        h+='</table>';
+      });
+      if(costs) h+='<div class="sub">'+esc(gp.vendor)+' subtotal &mdash; allocated '+money(gp.subtotalAlloc)+' &middot; purchasing '+money(gp.subtotalPurch)+'</div>';
+      ta+=gp.subtotalAlloc; tp+=gp.subtotalPurch;
+    });
+    if(costs&&groups.length) h+='<div class="grand"><div><span>Total allocated project material cost</span><b>'+money(ta)+'</b></div>'
+      +'<div><span>Total purchasing cost</span><b>'+money(tp)+'</b></div></div>';
+    return h;
+  }
+
+  function textFor(costs){
+    var groups=group(collect()), p=proj(), L=[];
+    L.push('BILL OF MATERIALS'); L.push(p.customer+(p.name?(' - '+p.name):''));
+    if(p.num) L.push('Quote #: '+p.num);
+    L.push('Exported '+p.date+(p.estimator?(' by '+p.estimator):'')); L.push('');
+    var ta=0,tp=0;
+    groups.forEach(function(gp){
+      L.push(gp.vendor.toUpperCase());
+      gp.sections.forEach(function(sec){
+        var f=sec.items[0];
+        if(f.src==='quote'){ L.push('  Formal Quote: '+(f.quoteNo||'(no number)')); if(f.quoteExp) L.push('  Expiration: '+f.quoteExp); }
+        else if(f.src==='portal'){ L.push('  Pricing Source: Website/Dealer Portal'); }
+        sec.items.forEach(function(it){
+          var pq = it.packages>0 ? ('  [buy '+it.packages+' x '+it.pkgSize+(it.unit==='ea'?'ea':'ft')+']') : '';
+          L.push('  Qty '+(+it.adjQty.toFixed(2))+' '+(it.unit==='ea'?'ea':'ft')+' - '+(it.mfg||'-')+' - '+(it.part||'-')+' - '+it.desc
+            + (costs?(' - '+money(it.cost)+' each - '+money(it.allocated)):'') + pq);
+        });
+      });
+      if(costs) L.push('  '+gp.vendor+' Subtotal: '+money(gp.subtotalAlloc)+' (purchasing '+money(gp.subtotalPurch)+')');
+      L.push(''); ta+=gp.subtotalAlloc; tp+=gp.subtotalPurch;
+    });
+    if(costs){ L.push('TOTAL ALLOCATED: '+money(ta)); L.push('TOTAL PURCHASING: '+money(tp)); }
+    return L.join('\n');
+  }
+
+  function csvFor(costs){
+    var rows=[['Vendor','Pricing Source','Quote #','Quote Date','Quote Expires','Manufacturer','Part #',
+               'Description','Job Qty','Unit','Purchase Qty','Package Size','Package Unit']
+              .concat(costs?['Unit Cost','Allocated Cost','Purchasing Cost']:[])
+              .concat(['Lead Time','Purchasing Notes'])];
+    group(collect()).forEach(function(gp){ gp.sections.forEach(function(sec){ sec.items.forEach(function(it){
+      rows.push([gp.vendor, it.src==='quote'?'Formal Vendor Quote':it.src==='portal'?'Website/Dealer Portal':'',
+                 it.quoteNo,it.quoteDate,it.quoteExp,it.mfg,it.part,it.desc,
+                 +it.adjQty.toFixed(2), it.unit, it.packages||'', it.pkgSize||'', it.pkgUnit]
+        .concat(costs?[it.cost.toFixed(2), it.allocated.toFixed(2), it.purchasing.toFixed(2)]:[])
+        .concat([it.leadTime, it.notes]));
+    }); }); });
+    return rows.map(function(r){ return r.map(function(c){
+      c=String(c==null?'':c); return /[",\n]/.test(c) ? '"'+c.replace(/"/g,'""')+'"' : c; }).join(','); }).join('\r\n');
+  }
+
+  /* ── overlay ────────────────────────────────────────────────────────── */
+  function ov(){
+    var o=document.getElementById('p1-bom-ov');
+    if(o) return o;
+    o=document.createElement('div'); o.id='p1-bom-ov';
+    o.innerHTML='<div id="p1-bom-win"><div id="p1-bom-bar"><b>Export BOM</b>'
+      +'<label style="display:flex;align-items:center;gap:5px;font-size:11px">'
+      +'<input type="checkbox" id="p1-bom-costs" checked> Include costs</label>'
+      +'<button class="p1-bb" id="p1-bom-csv">Download CSV</button>'
+      +'<button class="p1-bb" id="p1-bom-copy">Copy for email</button>'
+      +'<button class="p1-bp" id="p1-bom-print">Print / Save PDF</button>'
+      +'<button class="p1-bb" id="p1-bom-close">✕ Close</button></div>'
+      +'<div id="p1-bom-body"></div></div>';
+    document.body.appendChild(o);
+    function costs(){ return document.getElementById('p1-bom-costs').checked; }
+    function draw(){ document.getElementById('p1-bom-body').innerHTML=render(costs()); }
+    document.getElementById('p1-bom-costs').addEventListener('change',draw);
+    document.getElementById('p1-bom-close').addEventListener('click',function(){ o.classList.remove('on'); });
+    o.addEventListener('click',function(e){ if(e.target===o) o.classList.remove('on'); });
+    document.getElementById('p1-bom-print').addEventListener('click',function(){ window.print(); });
+    document.getElementById('p1-bom-copy').addEventListener('click',function(){
+      var t=textFor(costs());
+      (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject())
+        .then(function(){ alert('BOM copied to clipboard.'); })
+        .catch(function(){ var ta=document.createElement('textarea'); ta.value=t; document.body.appendChild(ta);
+          ta.select(); try{ document.execCommand('copy'); alert('BOM copied to clipboard.'); }catch(e){}
+          ta.remove(); });
+    });
+    document.getElementById('p1-bom-csv').addEventListener('click',function(){
+      var p=proj();
+      var blob=new Blob([csvFor(costs())],{type:'text/csv;charset=utf-8;'});
+      var a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+      a.download='BOM-'+(p.num||p.customer).replace(/[^a-zA-Z0-9-]/g,'-')+'.csv';
+      document.body.appendChild(a); a.click(); a.remove();
+    });
+    o._draw=draw;
+    return o;
+  }
+  window.p1ExportBOM=function(){ var o=ov(); o._draw(); o.classList.add('on'); };
+
+  /* ── menu item ──────────────────────────────────────────────────────── */
+  function addMenuItem(){
+    var menu=document.querySelector('.p1-dt:not(#p1-rs) .p1-dt-menu');
+    if(!menu || document.getElementById('p1-bom-btn')) return !!menu;
+    var b=document.createElement('button');
+    b.type='button'; b.id='p1-bom-btn'; b.textContent='☷ Export BOM';
+    b.addEventListener('click',function(){
+      var w=document.getElementById('p1-dt');
+      var wrap=b.closest('.p1-dt'); if(wrap) wrap.classList.remove('on');
+      p1ExportBOM();
+    });
+    var sep=menu.querySelector('.p1-dt-sep');
+    menu.insertBefore(b, sep||null);
+    return true;
+  }
+
+  var t=setInterval(function(){ if(document.getElementById('mat-rows')){ clearInterval(t);
+    sweep(); addMenuItem();
+    setInterval(function(){ sweep(); addMenuItem(); },900);
+    ['input','change'].forEach(function(ev){ document.addEventListener(ev,function(e){
+      if(e.target && /^mat-\d+-/.test(e.target.id||'')) setTimeout(function(){
+        paintRow((e.target.id||'').replace(/^(mat-\d+)-.*$/,'$1')); },30);
+    },true); });
+  } },300);
+})();
+</script>
+
 </body>
 </html>
