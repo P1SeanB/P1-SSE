@@ -15590,5 +15590,47 @@ document.addEventListener('click', function(e){
 })();
 </script>
 
+
+<script id="p1-pdfname">
+(function(){
+  /* ── Name the generated PDF ───────────────────────────────────────────────
+     There is no print API for the filename -- Chrome, Edge, Firefox and Safari
+     all take the Save as PDF default from document.title. So swap the title in
+     just before printing and put it back afterwards.
+     Naming mirrors the .p1est export: estimate #, agreement name, then the date
+     it was generated, sanitised the same way so the PDF files sit alongside the
+     estimate they came from. */
+  function clean(v, keepDash){
+    return String(v||'').replace(keepDash ? /[^a-zA-Z0-9-]/g : /[^a-zA-Z0-9]/g, '-')
+                        .replace(/-+/g,'-').replace(/^-|-$/g,'');
+  }
+  function today(){
+    var d=new Date();
+    return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  }
+  function docName(){
+    var num = clean(((document.getElementById('estimateNum')||{}).value) || 'NoNum', true) || 'NoNum';
+    var agr = clean((document.getElementById('agreementName')||{}).value, false);
+    return [num, agr, today()].filter(function(s){ return s && s.length; }).join('_');
+  }
+  window.p1PdfName = docName;          // handy for testing and for future callers
+
+  var _print = window.print;
+  if(typeof _print !== 'function') return;
+  window.print = function(){
+    var prev = document.title, name;
+    try{ name = docName(); }catch(e){}
+    if(name) document.title = name;
+    // Restore late: some browsers only read the title when the file picker
+    // opens, which is after the preview is dismissed.
+    var restored = false;
+    function restore(){ if(restored) return; restored = true; document.title = prev; }
+    window.addEventListener('afterprint', function(){ setTimeout(restore, 1500); }, {once:true});
+    setTimeout(restore, 60000);
+    return _print.apply(window, arguments);
+  };
+})();
+</script>
+
 </body>
 </html>
