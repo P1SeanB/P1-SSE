@@ -5914,7 +5914,9 @@ function addMatRow() {
 
   // Labor labels
   const laborLabels = document.createElement('div');
-  laborLabels.style.cssText = 'display:none;grid-template-columns:80px 80px 1fr 1fr;gap:5px;margin-bottom:2px;';
+  // must match laborFieldsEl below, or Sell/hr floats out over its own input --
+  // the attached-labor panel already pairs these tracks correctly
+  laborLabels.style.cssText = 'display:none;grid-template-columns:80px 70px 70px 1fr;gap:5px;margin-bottom:2px;';
   ['Hours','Cost/hr','Sell/hr','Total Sell'].forEach(function(t) {
     const s = document.createElement('span');
     s.textContent = t;
@@ -14875,8 +14877,10 @@ document.addEventListener('click', function(e){
     var extra=document.getElementById(base+'-pricerow'); if(!extra) return;
     var src=srcOf(base), vid=val(base,'vendor');
     var qno=document.getElementById(base+'-quoteno'), lq=document.getElementById(base+'-lq');
-    if(qno) qno.style.display = src==='quote' ? '' : 'none';           // only when needed
-    if(lq)  lq.style.visibility = src==='quote' ? '' : 'hidden';
+    // visibility, not display: display:none drops the grid cell and slides Unit
+    // Sell and Total Sell one track left, out from under their own headers.
+    if(qno) qno.style.visibility = src==='quote' ? '' : 'hidden';
+    if(lq)  lq.style.visibility  = src==='quote' ? '' : 'hidden';
     var ow=document.getElementById(base+'-otherwrap');
     if(ow) ow.style.display = vid===OTHER ? 'block' : 'none';
     var qx=document.getElementById(base+'-qextra');
@@ -14915,7 +14919,8 @@ document.addEventListener('click', function(e){
         var e=document.getElementById(b+sfx); if(e) e.style.display = labor ? 'none' : '';
       });
       var q=document.getElementById(b+'-quoteno');
-      if(q) q.style.display = (!labor && srcOf(b)==='quote') ? '' : 'none';
+      if(q){ q.style.display = labor ? 'none' : '';
+             q.style.visibility = (!labor && srcOf(b)==='quote') ? '' : 'hidden'; }
       var lq=document.getElementById(b+'-lq');
       if(lq) lq.style.display = labor ? 'none' : '';
       var pr=document.getElementById(b+'-pricerow');
