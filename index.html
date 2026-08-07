@@ -234,6 +234,25 @@
   }
 
   input[type=number] { font-family: 'DM Mono', monospace; }
+  /* The base rule above only names text and number, so tel and email inputs --
+     Customer Phone, Customer Email, Estimator email -- rendered as bare
+     underlined text next to their boxed neighbours. Scoped to the app view on
+     purpose: input[type=email] would otherwise outrank .p1-login-input and
+     repaint the sign-in field in the light theme. */
+  #sse-view input[type=tel], #sse-view input[type=email] {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 8px 10px;
+    font-size: 13px;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--text);
+    width: 100%;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    outline: none;
+    appearance: none;
+  }
+
 
   select {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%236b6760'/%3E%3C/svg%3E");
