@@ -3613,7 +3613,7 @@ function applyRateDefaults(){
   function _fmtRate(n){ n = Number(n)||0; var s = n.toFixed(2); return s.replace(/\.00$/,''); }
   var gmNote = document.getElementById('instGMRateNote');
   if (gmNote && P1_RATES.laborCostPerHr != null && P1_RATES.laborBillDefault != null){
-    gmNote.textContent = 'cost $' + _fmtRate(P1_RATES.laborCostPerHr) + '/hr · sell $' + _fmtRate(P1_RATES.laborBillDefault) + '/hr';
+    gmNote.textContent = 'default cost $' + _fmtRate(P1_RATES.laborCostPerHr) + '/hr · sell $' + _fmtRate(P1_RATES.laborBillDefault) + '/hr';
   }
   var inspNote = document.getElementById('inspRateNote');
   if (inspNote && P1_RATES.laborCostPerHr != null && P1_RATES.laborBillDefault != null){
@@ -4608,6 +4608,29 @@ function calc() {
   const instLaborGMLblEl = document.getElementById('instLaborGMLabel'); if(instLaborGMLblEl) instLaborGMLblEl.textContent = laborCostTotal > 0 ? Math.round(instLaborGM*100)+'%' : '—';
   const sInstLaborTSub   = document.getElementById('s-inst-labor-total-sub'); if(sInstLaborTSub) sInstLaborTSub.textContent  = laborCostTotal > 0 ? 'billed @ ' + Math.round(instLaborGM*100) + '% GM' : 'billed to customer';
   const sInstLaborMSub   = document.getElementById('s-inst-labor-margin-sub'); if(sInstLaborMSub) sInstLaborMSub.textContent = instLaborMarginPct !== null ? money(instLaborGP) + ' gross profit' : '—';
+  // Rate note: every labor line carries its own cost/hr and sell/hr, so a single
+  // pair of rates can only be quoted when the lines agree -- otherwise a blended
+  // figure would name a rate that appears on no line. Falls back to the company
+  // default (labelled as such) until there is any labor to report on.
+  (function(){
+    const gmNoteLive = document.getElementById('instGMRateNote');
+    if (!gmNoteLive) return;
+    const labRows = getMatData().filter(function(i){ return i.type === 'labor' && (i.hrs || 0) > 0; });
+    if (!labRows.length) return;
+    function uniform(pick){
+      let v = null;
+      for (let i = 0; i < labRows.length; i++){
+        const x = Math.round((Number(pick(labRows[i])) || 0) * 100) / 100;
+        if (v === null) v = x; else if (x !== v) return null;
+      }
+      return v;
+    }
+    function rate(n){ return '$' + (Number(n) || 0).toFixed(2).replace(/\.00$/,'') + '/hr'; }
+    const cRate = uniform(function(r){ return r.rate; });
+    const sRate = uniform(function(r){ return r.sellPerHr; });
+    gmNoteLive.textContent = 'cost ' + (cRate === null ? 'mixed' : rate(cRate))
+                           + ' \u00B7 sell ' + (sRate === null ? 'mixed' : rate(sRate));
+  })();
   const nfpaChecked = document.getElementById('cb-nfpa') && document.getElementById('cb-nfpa').checked;
   const pmChecked   = document.getElementById('cb-pm') && document.getElementById('cb-pm').checked;
   if (secLab) secLab.style.display = (inspHours > 0 || nfpaChecked || pmChecked) ? '' : 'none';
