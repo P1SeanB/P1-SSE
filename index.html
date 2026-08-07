@@ -1477,6 +1477,16 @@
           <input type="text" id="contactName" placeholder="First Last">
         </div>
       </div>
+      <div class="grid-2" style="margin-bottom:12px;">
+        <div class="field">
+          <label>Customer Phone</label>
+          <input type="tel" id="phoneNumber" placeholder="(555) 555-5555">
+        </div>
+        <div class="field">
+          <label>Customer Email</label>
+          <input type="email" id="emailAddress" placeholder="contact@example.com">
+        </div>
+      </div>
       <div id="qb-site1-main-wrap">
       <div class="field" style="margin-bottom:12px;">
         <label>Site address</label>
@@ -1501,7 +1511,7 @@
 
       <!-- Billing Address (mirrors Monitoring Contracts) -->
       <div style="margin-bottom:12px;padding-top:10px;border-top:1px solid var(--border);">
-        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:8px;">
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:8px;">
           <span style="font-family:'DM Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.06em;color:var(--text2);text-transform:uppercase;">Billing Address</span>
           <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2);cursor:pointer;">
             <input type="checkbox" id="qb-bill-same" checked onchange="qbToggleBilling()" style="accent-color:#e8620a;cursor:pointer;">
@@ -1548,16 +1558,6 @@
         <button class="mc-add-btn" type="button" onclick="qbAddSite()">+ Add Site</button>
       </div>
 
-      <div class="grid-2" style="margin-bottom:12px;">
-        <div class="field">
-          <label>Phone number</label>
-          <input type="tel" id="phoneNumber" placeholder="(555) 555-5555">
-        </div>
-        <div class="field">
-          <label>Email</label>
-          <input type="email" id="emailAddress" placeholder="contact@example.com">
-        </div>
-      </div>
       <div class="grid-3">
         <div class="field">
           <label>Estimate type</label>
@@ -3510,7 +3510,7 @@
           <div class="sla-field"><label>Sales Rep</label><div class="sla-prefilled" id="mc-estimator">—</div></div>
         </div>
         <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--border);">
-          <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:8px;">
+          <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:8px;">
             <span style="font-family:'DM Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.06em;color:var(--text2);text-transform:uppercase;">Billing Address</span>
             <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2);cursor:pointer;">
               <input type="checkbox" id="mc-bill-same" checked onchange="mcToggleBilling(); if(typeof syncBillingToQB==='function') syncBillingToQB();" style="accent-color:#e8620a;cursor:pointer;">
@@ -15486,6 +15486,80 @@ document.addEventListener('click', function(e){
   else boot();
   setTimeout(boot,600); setTimeout(boot,1800);
   setInterval(function(){ buildAll(); syncAll(); }, 1200);   // panels appear as tabs change
+})();
+</script>
+
+
+<style id="p1-chip-css">
+  /* ── "Same as Site 1 address" as a toggle chip ──────────────────────────
+     Same family as + Add Site, but solid-bordered rather than dashed: in this
+     tool a dashed outline means "click to add something", and this adds
+     nothing -- it switches a setting. The tick carries the state as well as
+     the colour, so it still reads when colour does not. */
+  .p1-chip{display:inline-flex;align-items:center;gap:6px;border-radius:var(--radius-sm);
+    padding:6px 12px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;
+    cursor:pointer;transition:background .15s,border-color .15s,color .15s;
+    background:transparent;color:var(--text3);border:1px solid var(--border2);white-space:nowrap}
+  .p1-chip:hover{border-color:var(--text3);color:var(--text2)}
+  .p1-chip.on{background:var(--orange-light);color:var(--orange);border:1px solid var(--orange)}
+  .p1-chip.on:hover{background:#ffe0cc}
+  .p1-chip .tick{font-size:11px;line-height:1;width:9px;text-align:center}
+</style>
+<script id="p1-chip">
+(function(){
+  // The checkbox stays in the DOM and stays the source of truth: five different
+  // functions read or write it, and two carry inline onchange handlers. The chip
+  // only ever drives it and reflects it.
+  var TARGETS=['qb-bill-same','mc-bill-same'];
+
+  function paint(cb, btn){
+    var on = !!cb.checked;
+    btn.classList.toggle('on', on);
+    btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    btn.querySelector('.tick').textContent = on ? '✓' : '';
+  }
+
+  function build(id){
+    var cb=document.getElementById(id);
+    if(!cb || cb.dataset.p1chip) return false;
+    var label = cb.closest('label');
+    if(!label || !label.parentNode) return false;
+    cb.dataset.p1chip='1';
+
+    var btn=document.createElement('button');
+    btn.type='button'; btn.className='p1-chip'; btn.id=id+'-chip';
+    btn.setAttribute('aria-pressed','false');
+    var tick=document.createElement('span'); tick.className='tick';
+    var txt=document.createElement('span'); txt.textContent='Same as Site 1 address';
+    btn.appendChild(tick); btn.appendChild(txt);
+    btn.title='Bill to the Site 1 address rather than a separate address';
+
+    label.parentNode.insertBefore(btn, label);
+    // keep the checkbox live but out of sight -- hidden inputs still fire change
+    label.style.display='none';
+
+    btn.addEventListener('click', function(e){
+      e.preventDefault();
+      cb.checked = !cb.checked;
+      cb.dispatchEvent(new Event('change',{bubbles:true}));   // runs the inline handler
+      paint(cb, btn);
+    });
+    paint(cb, btn);
+    return true;
+  }
+
+  function sweep(){
+    TARGETS.forEach(function(id){
+      build(id);
+      var cb=document.getElementById(id), btn=document.getElementById(id+'-chip');
+      if(cb && btn) paint(cb, btn);      // the two tabs mirror each other without
+    });                                  // firing change, so re-read rather than trust
+  }
+
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',sweep);
+  else sweep();
+  setTimeout(sweep,400); setTimeout(sweep,1500);
+  setInterval(sweep, 700);
 })();
 </script>
 
