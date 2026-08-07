@@ -2295,7 +2295,7 @@
         <!-- Services GM slider -->
         <div style="background:var(--surface2);border-radius:var(--radius-sm);padding:8px 10px;margin-bottom:8px;">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
-            <label style="margin:0;font-size:11px;font-weight:600;color:var(--text2);">Gross margin target</label>
+            <label style="margin:0;font-size:11px;font-weight:600;color:var(--text2);">Margin target</label>
             <span style="font-family:'DM Mono',monospace;font-size:12px;font-weight:600;color:#e8620a;" id="svcGMLabel">53%</span>
           </div>
           <input type="range" id="svcGMSlider" min="30" max="80" step="1" style="width:100%;accent-color:#e8620a;">
@@ -2315,21 +2315,23 @@
           </div>
         </div>
 
-        <button type="button" id="mon-cost-toggle" onclick="toggleMonCostDetail()" style="background:none;border:none;padding:0 0 4px;font-size:10px;font-weight:600;letter-spacing:0.02em;color:var(--text3);cursor:pointer;font-family:'DM Sans',sans-serif;">Show cost detail &#9662;</button>
-        <div id="mon-cost-detail" style="display:none;">
-        <div class="metric-row">
-          <span class="metric-label">Monthly monitoring costs</span>
-          <span class="metric-value" id="s-mMonitoring">$0.00</span>
-        </div>
-        <div class="metric-row">
-          <span class="metric-label">Monthly monitoring billed</span>
-          <span class="metric-value" id="s-mMonitoringBilled">$0.00</span>
-        </div>
-        </div>
         <div class="metric-row">
           <span class="metric-label">Annual monitoring billed</span>
           <span class="metric-value" id="s-aMonitoring">$0.00</span>
         </div>
+
+        <button type="button" id="mon-cost-toggle" onclick="toggleMonCostDetail()" style="background:none;border:none;padding:0 0 4px;font-size:10px;font-weight:600;letter-spacing:0.02em;color:var(--text3);cursor:pointer;font-family:'DM Sans',sans-serif;">Show cost detail &#9662;</button>
+        <div id="mon-cost-detail" style="display:none;">
+        <div class="metric-row">
+          <span class="metric-label">Monthly monitoring billed</span>
+          <span class="metric-value" id="s-mMonitoringBilled">$0.00</span>
+        </div>
+        <div class="metric-row">
+          <span class="metric-label">Monthly monitoring costs</span>
+          <span class="metric-value" id="s-mMonitoring">$0.00</span>
+        </div>
+        </div>
+
 
         <div class="metric-row total">
           <span class="metric-label">Monitoring gross profit</span>
@@ -2340,7 +2342,7 @@
 
       <!-- LABOR SECTION -->
       <div id="section-labor" style="display:none;">
-        <div style="font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#e8620a;margin-bottom:8px;">Labor</div>
+        <div style="font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#e8620a;margin-bottom:8px;">Inspection &amp; PM Labor</div>
 
         <!-- Labor rate slider -->
         <div style="background:var(--surface2);border-radius:var(--radius-sm);padding:8px 10px;margin-bottom:8px;">
@@ -2366,12 +2368,12 @@
         </div>
 
         <div class="metric-row">
-          <span class="metric-label" id="s-insp-label">Annual labor cost</span>
-          <span class="metric-value" id="s-insp">$0.00</span>
-        </div>
-        <div class="metric-row">
           <span class="metric-label">Annual labor billed</span>
           <span class="metric-value" id="s-labor-billed">$0.00</span>
+        </div>
+        <div class="metric-row">
+          <span class="metric-label" id="s-insp-label">Annual labor cost</span>
+          <span class="metric-value" id="s-insp">$0.00</span>
         </div>
         <div class="metric-row total">
           <span class="metric-label">Labor gross profit</span>
@@ -2406,12 +2408,12 @@
           </div>
         </div>
         <div class="metric-row">
-          <span class="metric-label">Annual subcontractor cost</span>
-          <span class="metric-value" id="s-sub">$0.00</span>
-        </div>
-        <div class="metric-row">
           <span class="metric-label">Annual subcontractor billed</span>
           <span class="metric-value" id="s-sub-billed">$0.00</span>
+        </div>
+        <div class="metric-row">
+          <span class="metric-label">Annual subcontractor cost</span>
+          <span class="metric-value" id="s-sub">$0.00</span>
         </div>
         <div class="metric-row total">
           <span class="metric-label">Subcontractor gross profit</span>
@@ -2434,12 +2436,12 @@
           <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text3);margin-top:2px;"><span>25%</span><span>100%</span></div>
         </div>
         <div class="metric-row">
-          <span class="metric-label">Subcontractor cost</span>
-          <span class="metric-value" id="s-tm-sub-cost">—</span>
-        </div>
-        <div class="metric-row">
           <span class="metric-label">Billed to customer</span>
           <span class="metric-value" id="s-tm-sub-billed">—</span>
+        </div>
+        <div class="metric-row">
+          <span class="metric-label">Subcontractor cost</span>
+          <span class="metric-value" id="s-tm-sub-cost">—</span>
         </div>
         <div class="metric-row total">
           <span class="metric-label">Gross profit</span>
@@ -2455,7 +2457,7 @@
         <!-- Maintenance GM slider -->
         <div style="background:var(--surface2);border-radius:var(--radius-sm);padding:8px 10px;margin-bottom:8px;">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
-            <label style="margin:0;font-size:11px;font-weight:600;color:var(--text2);">Gross margin target</label>
+            <label style="margin:0;font-size:11px;font-weight:600;color:var(--text2);">Margin target</label>
             <span style="font-family:'DM Mono',monospace;font-size:12px;font-weight:600;color:#e8620a;" id="avMaintGMLabel">53%</span>
           </div>
           <input type="range" id="avMaintGMSlider" min="10" max="80" step="1" style="width:100%;accent-color:#e8620a;">
@@ -2476,12 +2478,12 @@
         </div>
 
         <div class="metric-row">
-          <span class="metric-label">Annual cost</span>
-          <span class="metric-value" id="s-av-maint-cost">$0.00</span>
-        </div>
-        <div class="metric-row">
           <span class="metric-label">Annual billed</span>
           <span class="metric-value" id="s-av-maint-billed">$0.00</span>
+        </div>
+        <div class="metric-row">
+          <span class="metric-label">Annual cost</span>
+          <span class="metric-value" id="s-av-maint-cost">$0.00</span>
         </div>
         <div class="metric-row total">
           <span class="metric-label">Gross profit</span>
@@ -2513,12 +2515,12 @@
           </div>
         </div>
         <div class="metric-row">
-          <span class="metric-label">Labor cost</span>
-          <span class="metric-value" id="s-inst-labor-cost">$0.00</span>
-        </div>
-        <div class="metric-row">
           <span class="metric-label">Billed to customer</span>
           <span class="metric-value" id="s-inst-labor-billed">$0.00</span>
+        </div>
+        <div class="metric-row">
+          <span class="metric-label">Labor cost</span>
+          <span class="metric-value" id="s-inst-labor-cost">$0.00</span>
         </div>
         <div class="metric-row total">
           <span class="metric-label">Labor gross profit</span>
@@ -2551,12 +2553,12 @@
           </div>
         </div>
         <div class="metric-row">
-          <span class="metric-label">Material cost</span>
-          <span class="metric-value" id="s-mat-cost">$0.00</span>
-        </div>
-        <div class="metric-row">
           <span class="metric-label">Billed to customer</span>
           <span class="metric-value" id="s-mat-billed">$0.00</span>
+        </div>
+        <div class="metric-row">
+          <span class="metric-label">Material cost</span>
+          <span class="metric-value" id="s-mat-cost">$0.00</span>
         </div>
         <div class="metric-row total">
           <span class="metric-label">Material gross profit</span>
@@ -2569,12 +2571,12 @@
       <div id="section-onetime-combined" style="display:none;">
       <div style="font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#1a4a8a;margin-bottom:8px;">Combined One-Time (Install)</div>
       <div class="metric-row">
-        <span class="metric-label">One-time cost (labor + material)</span>
-        <span class="metric-value" id="s-onetime-cost">$0.00</span>
-      </div>
-      <div class="metric-row">
         <span class="metric-label">Billed to customer (pre-tax)</span>
         <span class="metric-value" id="s-onetime-billed">$0.00</span>
+      </div>
+      <div class="metric-row">
+        <span class="metric-label">One-time cost (labor + material)</span>
+        <span class="metric-value" id="s-onetime-cost">$0.00</span>
       </div>
       <div class="metric-row">
         <span class="metric-label">Combined gross profit</span>
@@ -4915,14 +4917,35 @@ function clearForm() {
   if (maintPanel) maintPanel.style.display = 'none';
   const maintIcon = document.getElementById('btn-maint-icon'); if (maintIcon) maintIcon.textContent = '+';
   const maintBtn  = document.getElementById('btn-maint-toggle'); if (maintBtn) { maintBtn.style.borderColor=''; maintBtn.style.color=''; }
-  $('svcGMSlider').value = 53;
-  const cgs = document.getElementById('customGMSlider'); if(cgs) cgs.value = 53;
+  $('svcGMSlider').value = (P1_RATES && P1_RATES.svcGM != null) ? P1_RATES.svcGM : 53;
+  const cgs = document.getElementById('customGMSlider');
+  if(cgs) cgs.value = (P1_RATES && P1_RATES.svcGM != null) ? P1_RATES.svcGM : 53;
   updateCustomGMLabel();
   if (typeof adcReset === 'function') adcReset();
   const adcEnableCB = document.getElementById('cb-alarmcom-enable'); if(adcEnableCB) adcEnableCB.checked = false;
   $('subMarkupSlider').value = P1_RATES.subMarkup;
   $('laborRateSlider').value = P1_RATES.laborBillDefault;
   const avMSlider = document.getElementById('avMaintGMSlider'); if(avMSlider) avMSlider.value = P1_RATES.avMaintGM;
+  // Materials, T&M subcontractor and S&H were never reset here, so they carried
+  // the previous estimate's rates into the next one. Back to the Supabase
+  // defaults with the rest (S&H has no config key, so its own default stands).
+  const matMSlider = document.getElementById('matMarkupSlider');
+  if(matMSlider && P1_RATES.matMarkup != null) matMSlider.value = P1_RATES.matMarkup;
+  // Set the visible slider first and mirror what it actually accepted: its floor
+  // is 25%, so a lower config value would otherwise leave the hidden slider
+  // pricing at one number while the panel showed another.
+  const tmSubDef = (P1_RATES.tmSubGM != null) ? P1_RATES.tmSubGM : 42;
+  const tmSubR = document.getElementById('tmSubGMSliderR');
+  if(tmSubR) tmSubR.value = tmSubDef;
+  const tmSubEff = tmSubR ? tmSubR.value : tmSubDef;
+  const tmSubH = document.getElementById('tmSubGMSlider');
+  if(tmSubH) tmSubH.value = tmSubEff;
+  const tmSubLbl = document.getElementById('tmSubGMLabel');
+  if(tmSubLbl) tmSubLbl.textContent = tmSubEff + '%';
+  const shSlider = document.getElementById('shMarkupSlider');
+  if(shSlider){ shSlider.value = 15;
+    const shLbl = document.getElementById('shMarkupLabel'); if(shLbl) shLbl.textContent = '15%'; }
+  if (typeof syncTMSubRows === 'function') syncTMSubRows();
   const nfpaCB = document.getElementById('cb-nfpa');
   if (nfpaCB && nfpaCB.checked) { nfpaCB.checked = false; if(typeof toggleNFPA==='function') toggleNFPA(); }
   document.getElementById('lbl-nfpa').className = 'cb-name';
@@ -15259,6 +15282,187 @@ document.addEventListener('click', function(e){
         paintRow((e.target.id||'').replace(/^(mat-\d+)-.*$/,'$1')); },30);
     },true); });
   } },300);
+})();
+</script>
+
+
+<style id="p1-mm-css">
+  /* ── markup ⇄ margin entry ──────────────────────────────────────────────
+     Every rate panel now shows both numbers and accepts either one. The
+     slider keeps the unit it has always stored, so nothing in the .p1est
+     changes meaning -- these are two views of one value, not a new value. */
+  .p1-mm{display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+  .p1-mm input{width:44px;font-family:'DM Mono',monospace;font-size:12px;font-weight:600;
+    color:#e8620a;background:var(--surface);border:1px solid var(--border);
+    border-radius:var(--radius-sm);padding:1px 3px;text-align:right;outline:none;
+    -moz-appearance:textfield}
+  .p1-mm input::-webkit-outer-spin-button,.p1-mm input::-webkit-inner-spin-button{
+    -webkit-appearance:none;margin:0}
+  .p1-mm input:hover{border-color:var(--border2)}
+  .p1-mm input:focus{border-color:#e8620a;background:var(--surface2)}
+  .p1-mm b{font-size:8px;font-weight:700;letter-spacing:.06em;color:var(--text3);
+    text-transform:uppercase}
+  .p1-mm .sep{color:var(--text3);font-size:10px}
+  .p1-mm.wide input{width:58px}
+</style>
+<script id="p1-mm">
+(function(){
+  /* Each entry names the slider, the read-only label the app already writes to,
+     and which unit that slider stores. The label is kept (hidden) so calc()'s
+     existing writes keep landing somewhere harmless. */
+  var PANELS=[
+    {sl:'matMarkupSlider', lb:'matMarkupLabel', unit:'mu'},
+    {sl:'subMarkupSlider', lb:'subMarkupLabel', unit:'mu'},
+    {sl:'tmSubGMSliderR',  lb:'tmSubGMLabel',   unit:'mu'},   // named GM, stores markup
+    {sl:'svcGMSlider',     lb:'svcGMLabel',     unit:'gm'},
+    {sl:'avMaintGMSlider', lb:'avMaintGMLabel', unit:'gm'}
+  ];
+
+  function num(v){ var n=parseFloat(String(v).replace(/[^0-9.\-]/g,'')); return isFinite(n)?n:null; }
+  function clamp(v,lo,hi){ return Math.min(hi, Math.max(lo, v)); }
+  // percentages in, percentages out
+  function muToGm(m){ return m/(100+m)*100; }
+  function gmToMu(g){ return g>=100 ? Infinity : g/(100-g)*100; }
+  function show(n){ return (Math.round(n*10)/10).toString(); }
+
+  function fire(el){
+    el.dispatchEvent(new Event('input',{bubbles:true}));
+    el.dispatchEvent(new Event('change',{bubbles:true}));
+  }
+
+  function build(p){
+    var sl=document.getElementById(p.sl), lb=document.getElementById(p.lb);
+    if(!sl||!lb||lb.dataset.p1mm) return false;
+    lb.dataset.p1mm='1';
+    lb.style.display='none';                       // keep it: calc() still writes here
+
+    var wrap=document.createElement('span'); wrap.className='p1-mm';
+    var mu=document.createElement('input'); mu.type='text'; mu.inputMode='decimal';
+    var gm=document.createElement('input'); gm.type='text'; gm.inputMode='decimal';
+    mu.id=p.sl+'-mu'; gm.id=p.sl+'-gm';
+    mu.title='Markup on cost'; gm.title='Gross margin';
+    function tag(t){ var b=document.createElement('b'); b.textContent=t; return b; }
+    var sep=document.createElement('span'); sep.className='sep'; sep.textContent='·';
+    wrap.appendChild(mu); wrap.appendChild(tag('MU'));
+    wrap.appendChild(sep);
+    wrap.appendChild(gm); wrap.appendChild(tag('GM'));
+    lb.parentNode.insertBefore(wrap, lb.nextSibling);
+
+    p._sl=sl; p._mu=mu; p._gm=gm;
+
+    // Typing sets the slider, which is the single source of truth -- so what the
+    // panel shows afterwards is always what is actually being priced, even when
+    // the requested number does not land on a whole step.
+    function apply(kind, raw){
+      var v=num(raw); if(v===null) return;
+      var want = (kind===p.unit) ? v : (p.unit==='mu' ? gmToMu(v) : muToGm(v));
+      if(!isFinite(want)) want = Number(sl.max);
+      var lo=Number(sl.min), hi=Number(sl.max), step=Number(sl.step)||1;
+      want = clamp(Math.round(want/step)*step, lo, hi);
+      if(String(want)!==String(sl.value)){ sl.value=String(want); fire(sl); }
+      sync(p);
+    }
+    var t=null;
+    function live(kind,el){
+      clearTimeout(t);
+      t=setTimeout(function(){ apply(kind, el.value); }, 260);   // let them finish the number
+    }
+    [[mu,'mu'],[gm,'gm']].forEach(function(pair){
+      var el=pair[0], kind=pair[1];
+      // the value as it stood when they started typing -- Escape puts it back,
+      // which matters because the debounce has usually applied something already
+      el.addEventListener('focus', function(){ p._entry=sl.value; el.select(); });
+      el.addEventListener('input', function(){ live(kind,el); });
+      el.addEventListener('blur',  function(){ clearTimeout(t); apply(kind, el.value); });
+      el.addEventListener('keydown', function(e){
+        if(e.key==='Enter'){ e.preventDefault(); clearTimeout(t); apply(kind, el.value); el.blur(); }
+        if(e.key==='Escape'){
+          e.preventDefault(); clearTimeout(t);
+          if(p._entry!=null && String(p._entry)!==String(sl.value)){ sl.value=String(p._entry); fire(sl); }
+          sync(p,true); el.blur();
+        }
+      });
+    });
+    sync(p);
+    return true;
+  }
+
+  // Never overwrite the box someone is typing in.
+  function sync(p,force){
+    var sl=p._sl; if(!sl||!p._mu) return;
+    var v=parseFloat(sl.value); if(!isFinite(v)) return;
+    var mu = p.unit==='mu' ? v : gmToMu(v);
+    var gm = p.unit==='mu' ? muToGm(v) : v;
+    if(force||document.activeElement!==p._mu) p._mu.value = isFinite(mu)?show(mu):'—';
+    if(force||document.activeElement!==p._gm) p._gm.value = show(gm);
+  }
+
+  /* ── Labor: the bill rate itself becomes typeable ────────────────────────
+     No margin entry here -- margin is an output of two dollar figures, and
+     back-solving it would invent rates that are not on the rate card. */
+  function buildRate(){
+    var sl=document.getElementById('laborRateSlider'), lb=document.getElementById('laborRateLabel');
+    if(!sl||!lb||lb.dataset.p1mm) return false;
+    lb.dataset.p1mm='1'; lb.style.display='none';
+    var wrap=document.createElement('span'); wrap.className='p1-mm wide';
+    var inp=document.createElement('input'); inp.type='text'; inp.inputMode='decimal';
+    inp.id='laborRateSlider-rate'; inp.title='Bill rate per hour';
+    var b=document.createElement('b'); b.textContent='$/hr';
+    wrap.appendChild(inp); wrap.appendChild(b);
+    lb.parentNode.insertBefore(wrap, lb.nextSibling);
+
+    function syncRate(force){
+      if(!force && document.activeElement===inp) return;
+      var v=parseFloat(sl.value); if(isFinite(v)) inp.value=String(v);
+    }
+    function applyRate(){
+      var v=num(inp.value); if(v===null){ syncRate(); return; }
+      var lo=Number(sl.min), hi=Number(sl.max), step=Number(sl.step)||1;
+      v=clamp(Math.round(v/step)*step, lo, hi);
+      if(String(v)!==String(sl.value)){ sl.value=String(v); fire(sl); }
+      syncRate();
+    }
+    var rt=null;
+    var entry=null;
+    inp.addEventListener('focus', function(){ entry=sl.value; inp.select(); });
+    inp.addEventListener('input', function(){ clearTimeout(rt); rt=setTimeout(applyRate,260); });
+    inp.addEventListener('blur', function(){ clearTimeout(rt); applyRate(); });
+    inp.addEventListener('keydown', function(e){
+      if(e.key==='Enter'){ e.preventDefault(); clearTimeout(rt); applyRate(); inp.blur(); }
+      if(e.key==='Escape'){
+        e.preventDefault(); clearTimeout(rt);
+        if(entry!=null && String(entry)!==String(sl.value)){ sl.value=String(entry); fire(sl); }
+        syncRate(true); inp.blur();
+      }
+    });
+    window._p1SyncRate=syncRate; syncRate();
+    return true;
+  }
+
+  function syncAll(){
+    PANELS.forEach(function(p){ try{ sync(p); }catch(e){} });
+    if(window._p1SyncRate) try{ window._p1SyncRate(); }catch(e){}
+  }
+  function buildAll(){
+    var n=0;
+    PANELS.forEach(function(p){ if(build(p)) n++; });
+    if(buildRate()) n++;
+    return n;
+  }
+
+  // The app repaints these labels on every recalculation; refresh after it does.
+  ['calc','updateMatTotal','syncTMSubRows'].forEach(function(fn){
+    var orig=window[fn];
+    if(typeof orig==='function'){
+      window[fn]=function(){ var r=orig.apply(this,arguments); try{ syncAll(); }catch(e){} return r; };
+    }
+  });
+
+  function boot(){ buildAll(); syncAll(); }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot);
+  else boot();
+  setTimeout(boot,600); setTimeout(boot,1800);
+  setInterval(function(){ buildAll(); syncAll(); }, 1200);   // panels appear as tabs change
 })();
 </script>
 
