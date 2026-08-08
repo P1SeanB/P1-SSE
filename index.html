@@ -1685,6 +1685,12 @@
             <div style="margin-bottom:10px;">
               <label style="font-size:11px;font-weight:600;color:var(--text2);margin-bottom:4px;display:block;">Base Package</label>
               <select id="adc-base" onchange="adcCalc()" style="width:100%;font-size:12px;padding:4px 6px;"><!-- options loaded from Supabase after login --></select>
+
+              <!-- Supervision level — priced per package from Supabase config -->
+              <div id="adc-supervision-row" style="display:none;align-items:center;gap:6px;font-size:11px;margin-top:5px;">
+                <span style="color:var(--text3);">Supervision:</span>
+                <select id="adc-supervision" onchange="adcCalc()" style="flex:1;font-size:11px;padding:2px 4px;"></select>
+              </div>
             </div>
 
             <!-- Add-on sections — shown only after base package selected -->
@@ -1709,7 +1715,7 @@
                 <!-- Commercial Video intercom fields — shown only for Commercial Video / Commercial Video Plus -->
                 <div id="adc-cv-intercom-row" style="display:none;font-size:11px;margin-top:4px;">
                   <div style="display:flex;align-items:center;gap:6px;margin-bottom:5px;">
-                    <span style="color:var(--text3);flex:1;">Video Intercom Devices ($1.25/device/mo):</span>
+                    <span style="color:var(--text3);flex:1;" id="adc-cv-icd-label">Video Intercom Devices ($1.25/device/mo):</span>
                     <input type="number" id="adc-cv-intercom-devices" min="0" step="1" value="0" placeholder="0" oninput="adcVideoCalc()" style="width:50px;font-size:11px;padding:2px 4px;text-align:center;">
                     <span id="adc-cv-intercom-devices-cost" style="color:#e8620a;font-family:'DM Mono',monospace;min-width:44px;text-align:right;">$0.00</span>
                   </div>
@@ -1832,10 +1838,13 @@
                   <label class="adc-cb"><input id="adc-x-garage-door-and-gate" type="checkbox" value="0" onchange="adcCalc()"> Garage Door &amp; Gate</label>
                   <label class="adc-cb"><input id="adc-x-liftmaster-integration" type="checkbox" value="0" onchange="adcCalc()"> LiftMaster Integration</label>
                   <label class="adc-cb"><input id="adc-x-water-management" type="checkbox" value="0" onchange="adcCalc()"> Water Management</label>
+                  <label class="adc-cb"><input id="adc-x-water-management-plus" type="checkbox" value="0" onchange="adcCalc()"> Water Management Plus</label>
                   <label class="adc-cb"><input id="adc-x-solar-integration" type="checkbox" value="0" onchange="adcCalc()"> Solar Integration</label>
                   <label class="adc-cb"><input id="adc-x-enphase-integration" type="checkbox" value="0" onchange="adcCalc()"> Enphase Integration</label>
                   <label class="adc-cb"><input id="adc-x-irrigation-control" type="checkbox" value="0" onchange="adcCalc()"> Irrigation Control</label>
                 </div>
+                <!-- LiftMaster Surcharge — auto-applied with LiftMaster Integration, mirrors portal -->
+                <div id="adc-lm-surcharge-note" style="display:none;font-size:10px;color:var(--text3);margin-top:3px;">LiftMaster Surcharge <span id="adc-lm-surcharge-amt">$0.12</span>/mo applied automatically</div>
               </div>
 
               <!-- INFORMATION & ALERTS -->
@@ -1850,6 +1859,15 @@
                   <label class="adc-cb"><input id="adc-x-voice-notifications-non-alarms" type="checkbox" value="0" onchange="adcCalc()"> Voice Notifications — Non-Alarms</label>
                   <label class="adc-cb"><input id="adc-x-weather-to-panel" type="checkbox" value="0" onchange="adcCalc()"> Weather to Panel</label>
                   <label class="adc-cb"><input id="adc-x-severe-weather-alerts" type="checkbox" value="0" onchange="adcCalc()"> Severe Weather Alerts</label>
+                  <label class="adc-cb"><input id="adc-x-my-circle" type="checkbox" value="0" onchange="adcCalc()"> My Circle</label>
+                </div>
+                <div id="adc-img-events-row" style="font-size:11px;margin-top:6px;">
+                  <span style="color:var(--text3);display:block;margin-bottom:3px;">Image Sensor Extra Events:</span>
+                  <select id="adc-img-events" onchange="adcCalc()" style="width:100%;font-size:11px;padding:3px 5px;"></select>
+                </div>
+                <div id="adc-noonlight-row" style="font-size:11px;margin-top:6px;">
+                  <span style="color:var(--text3);display:block;margin-bottom:3px;" id="adc-noonlight-label">In-App Safety Button licenses:</span>
+                  <select id="adc-noonlight" onchange="adcCalc()" style="width:100%;font-size:11px;padding:3px 5px;"></select>
                 </div>
               </div>
 
@@ -1867,6 +1885,10 @@
                 <div style="font-size:11px;margin-bottom:6px;">
                   <span style="color:var(--text3);display:block;margin-bottom:3px;">Additional Sensors with Sensor Activity Monitoring:</span>
                   <select id="adc-sensors" onchange="adcCalc()" style="width:100%;font-size:11px;padding:3px 5px;"><!-- options loaded from Supabase after login --></select>
+                </div>
+                <div id="adc-flexio-row" style="font-size:11px;margin-bottom:6px;">
+                  <span style="color:var(--text3);display:block;margin-bottom:3px;">Flex IO devices:</span>
+                  <select id="adc-flexio" onchange="adcCalc()" style="width:100%;font-size:11px;padding:3px 5px;"></select>
                 </div>
                 <!-- Commercial/Commercial Plus only -->
                 <div id="adc-remote-commercial-only" style="display:none;">
@@ -1923,6 +1945,14 @@
               </div>
               <div id="adc-comms-fields" style="display:none;padding:6px 0 6px 16px;">
                 <select id="adc-comms" onchange="adcCalc()" style="width:100%;font-size:11px;padding:3px 5px;"><!-- options loaded from Supabase after login --></select>
+                <div id="adc-cellconnector-row" style="font-size:11px;margin-top:6px;">
+                  <span style="color:var(--text3);display:block;margin-bottom:3px;">Cell Connector v2.0:</span>
+                  <select id="adc-cellconnector" onchange="adcCalc()" style="width:100%;font-size:11px;padding:3px 5px;"></select>
+                </div>
+                <div id="adc-verizon-data-row" style="font-size:11px;margin-top:6px;">
+                  <span style="color:var(--text3);display:block;margin-bottom:3px;">Verizon additional data:</span>
+                  <select id="adc-verizon-data" onchange="adcCalc()" style="width:100%;font-size:11px;padding:3px 5px;"></select>
+                </div>
               </div>
 
             </div><!-- end adc-addons -->
@@ -4281,7 +4311,7 @@ function adcVideoCalc() {
   if (isCVIntercom) {
     const devices = parseInt(document.getElementById('adc-cv-intercom-devices').value) || 0;
     const users   = parseInt(document.getElementById('adc-cv-intercom-users').value)   || 0;
-    const devCostVal = devices * 1.25;
+    const devCostVal = devices * (window.P1AdcIcdRate != null ? window.P1AdcIcdRate : 1.25);   // per-device rate from Supabase config
     const usrCostVal = Math.ceil(users / 5) * 1.25;
     const dcEl = document.getElementById('adc-cv-intercom-devices-cost'); if(dcEl) dcEl.textContent = '$' + devCostVal.toFixed(2);
     const ucEl = document.getElementById('adc-cv-intercom-users-cost');   if(ucEl) ucEl.textContent = '$' + usrCostVal.toFixed(2);
@@ -4388,7 +4418,7 @@ function adcCalc() {
   if (isCVIntercomCalc) {
     const cvDevices = parseInt(document.getElementById('adc-cv-intercom-devices').value) || 0;
     const cvUsers   = parseInt(document.getElementById('adc-cv-intercom-users').value)   || 0;
-    total += cvDevices * 1.25;
+    total += cvDevices * (window.P1AdcIcdRate != null ? window.P1AdcIcdRate : 1.25);   // per-device rate from Supabase config
     total += Math.ceil(cvUsers / 5) * 1.25;
   }
   // Access
@@ -4415,6 +4445,39 @@ function adcCalc() {
          + (parseFloat(document.getElementById('adc-fleet').value) || 0);
   // Comms
   total += parseFloat(document.getElementById('adc-comms').value) || 0;
+  // Phase 2 quantity tiers — option values are dollar amounts built from Supabase config
+  ['adc-flexio','adc-cellconnector','adc-verizon-data','adc-img-events'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) total += parseFloat(el.value) || 0;
+  });
+  // Supervision + Noonlight store package-INDEPENDENT selections (level name /
+  // license count) so imports restore correctly regardless of field order;
+  // their dollars are computed here from config for the current package.
+  const adcCfg = (typeof P1_RATES === 'object' && P1_RATES && P1_RATES.adc) ? P1_RATES.adc : null;
+  if (adcCfg) {
+    let p2PkgId = null;
+    (adcCfg.packages || []).some(p => { if (Math.abs(p.cost - baseVal) < 0.005) { p2PkgId = p.id; return true; } return false; });
+    const p2Pick = tbl => tbl ? ((p2PkgId && Object.prototype.hasOwnProperty.call(tbl, p2PkgId)) ? tbl[p2PkgId] : tbl['default']) : null;
+    const supEl = document.getElementById('adc-supervision'), sup = adcCfg.supervision || {};
+    if (supEl) {
+      if (supEl.value === 'six') total += p2Pick(sup.sixHour) || 0;
+      else if (supEl.value === 'hourly') total += p2Pick(sup.hourly) || 0;
+    }
+    const nlEl = document.getElementById('adc-noonlight'), nlt = (adcCfg.tiers || {}).noonlightLicenses;
+    if (nlEl && nlt) {
+      const nlQty = parseInt(nlEl.value) || 0;
+      const nlFree = (nlt.freeUnits && p2PkgId && Object.prototype.hasOwnProperty.call(nlt.freeUnits, p2PkgId)) ? nlt.freeUnits[p2PkgId] : 0;
+      total += Math.max(0, nlQty - nlFree) * (nlt.perUnit || 2);
+    }
+  }
+  // LiftMaster Surcharge — auto-applied while LiftMaster Integration is checked (portal behavior)
+  const lmCb = document.getElementById('adc-x-liftmaster-integration');
+  const lmLab = lmCb ? lmCb.closest('label') : null;
+  const lmOn = !!(lmCb && lmCb.checked && (!lmLab || lmLab.style.display !== 'none'));
+  const lmAmt = (typeof P1_RATES === 'object' && P1_RATES && P1_RATES.adc && P1_RATES.adc.liftmasterSurcharge != null) ? P1_RATES.adc.liftmasterSurcharge : 0;
+  if (lmOn && lmAmt) total += lmAmt;
+  const lmNote = document.getElementById('adc-lm-surcharge-note');
+  if (lmNote) lmNote.style.display = (lmOn && lmAmt) ? 'block' : 'none';
   // Update total and alarmcom field
   document.getElementById('adc-total').textContent = '$' + total.toFixed(2);
   document.getElementById('alarmcom').value = total > 0 ? total.toFixed(2) : '';
@@ -6711,7 +6774,8 @@ function gatherEstimateData() {
     'adc-base','adc-video','adc-camera-count','adc-cv-intercom-devices',
     'adc-cv-intercom-users','adc-expansions','adc-svrs','adc-intercom',
     'adc-access','adc-access-bundle','adc-access-doors',
-    'adc-mobile-10','adc-mobile-100','adc-sensors','adc-cars','adc-fleet','adc-comms','adc-aid'
+    'adc-mobile-10','adc-mobile-100','adc-sensors','adc-cars','adc-fleet','adc-comms','adc-aid',
+    'adc-supervision','adc-flexio','adc-cellconnector','adc-verizon-data','adc-img-events','adc-noonlight'
   ];
   var data = { version: 2, ts: new Date().toISOString(), fields: {} };
   fields.forEach(function(id) {
@@ -6751,7 +6815,9 @@ function gatherEstimateData() {
       'adc-x-weather-to-panel',
       'adc-x-severe-weather-alerts',
       'adc-x-commercial-supervision-ul',
-      'adc-x-wireless-two-way-voice'];
+      'adc-x-wireless-two-way-voice',
+      'adc-x-water-management-plus',
+      'adc-x-my-circle'];
   data.checkboxes = {};
   cbs.forEach(function(id) {
     var el = document.getElementById(id);
@@ -6761,7 +6827,8 @@ function gatherEstimateData() {
   // Selects
   var sels = ['alarmnet-plan','adc-base','adc-video','adc-access','adc-access-bundle','adc-access-doors',
               'adc-mobile-10','adc-mobile-100','adc-expansions','adc-intercom','adc-sensors',
-              'adc-cars','adc-fleet','adc-comms','connectone-sms','connectone-systems'];
+              'adc-cars','adc-fleet','adc-comms','connectone-sms','connectone-systems',
+              'adc-supervision','adc-flexio','adc-cellconnector','adc-verizon-data','adc-img-events','adc-noonlight'];
   data.selects = {};
   sels.forEach(function(id) {
     var el = document.getElementById(id);
@@ -15816,6 +15883,112 @@ document.addEventListener('click', function(e){
     setInterval(function(){ var s2=tierSel(); if(VMX()&&s2&&!s2.querySelector('option[data-vid]')){ lastVid=null; videoSync(); } },900);
     videoSync();
   },350);
+
+  /* ── Phase 2: supervision, quantity tiers, Noonlight free units, auto-surcharge ──
+     Same architecture as the video matrix: HTML carries empty selects, every
+     price comes from config.adc (tiers / supervision / liftmasterSurcharge).
+     Flat quantity tiers carry dollar values; supervision and Noonlight carry
+     package-independent selections ('six'/'hourly', license count) and are
+     priced inside adcCalc so imports restore correctly in any field order. */
+  function T(){ var a=ADC(); return (a&&a.tiers)?a.tiers:null; }
+
+  function fillQty(id,tier,lbl){
+    var e=document.getElementById(id); if(!e||!tier) return;
+    if(e.querySelector('option[data-p1t]')) return;              // already ours
+    var cur=e.value, step=tier.step||1, max=tier.max||10, per=tier.perUnit||0;
+    var html='<option value="0" data-p1t="1">None</option>';
+    for(var u=step;u<=max;u+=step)
+      html+='<option value="'+(u*per).toFixed(2)+'" data-p1t="1">'+lbl(u)+' ($'+(u*per).toFixed(2)+')</option>';
+    e.innerHTML=html; e.value=cur; if(e.selectedIndex<0 && !numMatch(e,cur)) e.selectedIndex=0;
+  }
+
+  function buildStatic(){
+    var t=T(); if(!t) return;
+    fillQty('adc-flexio', t.flexIO, function(u){return u+' device'+(u>1?'s':'');});
+    fillQty('adc-cellconnector', t.cellConnectorV20, function(u){return u+' connector'+(u>1?'s':'');});
+    fillQty('adc-verizon-data', t.verizonDataGB, function(u){return '+'+u+' GB';});
+    fillQty('adc-img-events', t.imageSensorEvents, function(u){return '+'+u+' events';});
+    // Video Intercom Management — rebuild over the stale dropdownsHTML pricing
+    var icd=t.videoIntercomDevices;
+    if(icd){
+      var e=document.getElementById('adc-intercom');
+      if(e && !e.querySelector('option[data-p1t]')){
+        var cur=e.value, html='<option value="0" data-p1t="1">None</option>';
+        for(var u=icd.step||5; u<=(icd.max||200); u+=(icd.step||5))
+          html+='<option value="'+(u*icd.perUnit).toFixed(2)+'" data-p1t="1">'+u+' devices ($'+(u*icd.perUnit).toFixed(2)+')</option>';
+        e.innerHTML=html; e.value=cur; if(e.selectedIndex<0 && !numMatch(e,cur)) e.selectedIndex=0;
+      }
+      window.P1AdcIcdRate=icd.perUnit;
+      var lb=document.getElementById('adc-cv-icd-label');
+      if(lb) lb.textContent='Video Intercom Devices ($'+icd.perUnit.toFixed(2)+'/device/mo):';
+    }
+    var a=ADC(), amt=document.getElementById('adc-lm-surcharge-amt');
+    if(amt && a && a.liftmasterSurcharge!=null) amt.textContent='$'+a.liftmasterSurcharge.toFixed(2);
+  }
+
+  function supPrice(tbl,pkgId){
+    if(!tbl) return null;
+    return (pkgId && Object.prototype.hasOwnProperty.call(tbl,pkgId)) ? tbl[pkgId] : tbl['default'];
+  }
+  function buildSupervision(pkgId){
+    var a=ADC(), e=document.getElementById('adc-supervision'); if(!e||!a||!a.supervision) return;
+    var cur=e.value;
+    var six=supPrice(a.supervision.sixHour,pkgId), hr=supPrice(a.supervision.hourly,pkgId);
+    // values are the LEVEL, not the price — stable across packages and imports
+    var html='<option value="daily" data-p1t="1">Daily (included)</option>';
+    if(six!=null) html+='<option value="six" data-p1t="1">6-Hour Supervision ('+(six>0?'$'+six.toFixed(2)+'/mo':'included')+')</option>';
+    if(hr!=null)  html+='<option value="hourly" data-p1t="1">Hourly Supervision ('+(hr>0?'$'+hr.toFixed(2)+'/mo':'included')+')</option>';
+    e.innerHTML=html;
+    e.value=cur; if(e.selectedIndex<0) e.selectedIndex=0;
+  }
+  function buildNoonlight(pkgId){
+    var t=T(), e=document.getElementById('adc-noonlight'); if(!e||!t||!t.noonlightLicenses) return;
+    var n=t.noonlightLicenses, cur=e.value, per=n.perUnit||2, max=Math.min(n.max||100,100);
+    var free=(n.freeUnits && pkgId && Object.prototype.hasOwnProperty.call(n.freeUnits,pkgId)) ? n.freeUnits[pkgId] : 0;
+    // values are the license COUNT, not the price — stable across packages and imports
+    var html='<option value="0" data-p1t="1">None</option>';
+    for(var u=1;u<=max;u++){
+      var cost=Math.max(0,u-free)*per;
+      html+='<option value="'+u+'" data-p1t="1">'+u+' license'+(u>1?'s':'')+' ('+(cost>0?'$'+cost.toFixed(2):'free')+')</option>';
+    }
+    e.innerHTML=html;
+    e.value=cur; if(e.selectedIndex<0) e.selectedIndex=0;
+    var lb=document.getElementById('adc-noonlight-label');
+    if(lb) lb.textContent='In-App Safety Button licenses'+(free>0?' (first '+free+' free)':'')+':';
+  }
+
+  var lastP2=null;
+  function p2Sync(){
+    var a=ADC(); if(!a) return;
+    buildStatic();
+    var sel=document.getElementById('adc-base'); if(!sel) return;
+    var pkg=pkgByCost(sel.value), pkgId=pkg?pkg.id:null, baseVal=parseFloat(sel.value)||0;
+    if(sel.value!==lastP2){ lastP2=sel.value; buildSupervision(pkgId); buildNoonlight(pkgId); }
+    var sr=document.getElementById('adc-supervision-row');
+    if(sr) sr.style.display=baseVal>0?'flex':'none';
+    // hide tiers the portal marks not-available for this package (config tiers[].na)
+    var t=T()||{};
+    [['adc-cellconnector-row',t.cellConnectorV20],['adc-verizon-data-row',t.verizonDataGB],
+     ['adc-img-events-row',t.imageSensorEvents],['adc-flexio-row',t.flexIO],
+     ['adc-noonlight-row',t.noonlightLicenses]].forEach(function(p){
+      var r=document.getElementById(p[0]); if(!r) return;
+      var na=!!(p[1] && Array.isArray(p[1].na) && pkgId && p[1].na.indexOf(pkgId)>=0);
+      r.style.display=na?'none':'';
+      if(na){ var s=r.querySelector('select'); if(s&&s.selectedIndex>0) s.selectedIndex=0; }
+    });
+  }
+
+  var tp=setInterval(function(){
+    if(typeof window.adcCalc!=='function' || !document.getElementById('adc-supervision')) return;
+    clearInterval(tp);
+    var orig=window.adcCalc;
+    window.adcCalc=function(){ try{ p2Sync(); }catch(e){} return orig.apply(this,arguments); };
+    setInterval(function(){
+      var e=document.getElementById('adc-intercom');
+      if(T() && e && !e.querySelector('option[data-p1t]')){ buildStatic(); }   // dropdownsHTML re-injection
+    },900);
+    p2Sync();
+  },400);
 })();
 </script>
 
