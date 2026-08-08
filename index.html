@@ -1722,7 +1722,7 @@
 
                 <!-- Expansion packs — shown for Pro Video with Analytics only -->
                 <div id="adc-expansion-row" style="display:none;font-size:11px;">
-                  <div style="color:var(--text3);margin-bottom:3px;font-size:10px;">Base: 4 cameras included ($6.00/mo)</div>
+                  <div style="color:var(--text3);margin-bottom:3px;font-size:10px;" id="adc-exp-base-note">Base: 4 cameras included ($6.00/mo)</div>
                   <div style="margin-bottom:6px;">
                     <div style="color:var(--text3);margin-bottom:3px;">Standard video expansion packs (cameras and clips):</div>
                     <select id="adc-expansions" onchange="adcVideoCalc()" style="width:100%;font-size:11px;padding:3px 5px;"><!-- options loaded from Supabase after login --></select>
@@ -1737,6 +1737,29 @@
                     <select id="adc-intercom" onchange="adcVideoCalc()" style="font-size:11px;padding:2px 4px;"><!-- options loaded from Supabase after login --></select>
                   </div>
                   <div style="margin-top:3px;color:#e8620a;font-family:'DM Mono',monospace;font-weight:600;" id="adc-expansion-total"></div>
+                </div>
+
+                <!-- AI Deterrence — tiers with analytics only; options from Supabase -->
+                <div id="adc-aid-row" style="display:none;font-size:11px;margin-top:5px;">
+                  <div style="display:flex;align-items:center;gap:6px;">
+                    <span style="color:var(--text3);flex:1;">AI Deterrence events:</span>
+                    <select id="adc-aid" onchange="adcCalc()" style="font-size:11px;padding:2px 4px;max-width:240px;"></select>
+                  </div>
+                </div>
+
+                <!-- $0 scope features — availability varies per video tier; they land on
+                     the proposal's service list, which is why they are worth ticking -->
+                <div id="adc-vs-wrap" style="display:none;font-size:11px;margin-top:6px;">
+                  <div style="color:var(--text3);font-size:10px;margin-bottom:3px;">Video features (no added cost &mdash; listed on the proposal):</div>
+                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:2px;">
+                    <label class="adc-cb"><input id="adc-vs-doorbell" type="checkbox" value="0" onchange="adcCalc()"> Doorbell Cameras</label>
+                    <label class="adc-cb"><input id="adc-vs-digital-input" type="checkbox" value="0" onchange="adcCalc()"> Digital Input Video Uploads</label>
+                    <label class="adc-cb"><input id="adc-vs-audio-nondb" type="checkbox" value="0" onchange="adcCalc()"> Audio for Non-doorbell Cameras</label>
+                    <label class="adc-cb"><input id="adc-vs-onboard-rec" type="checkbox" value="0" onchange="adcCalc()"> Onboard Recording w/ Smart View</label>
+                    <label class="adc-cb"><input id="adc-vs-biz-analytics" type="checkbox" value="0" onchange="adcCalc()"> Business Activity Analytics</label>
+                    <label class="adc-cb"><input id="adc-vs-third-party" type="checkbox" value="0" onchange="adcCalc()"> Third-Party Cameras</label>
+                  </div>
+                  <div id="adc-vs-includes" style="color:#1a6b4a;font-size:10px;margin-top:3px;"></div>
                 </div>
               </div>
 
@@ -4230,7 +4253,8 @@ function adcVideoCalc() {
   if (isExpansion) {
     const expansionCost = parseFloat(document.getElementById('adc-expansions').value) || 0;
     const intercom = parseFloat(document.getElementById('adc-intercom').value) || 0;
-    totalVideo = P1_RATES.videoExpansionBase + expansionCost + svrs * P1_RATES.videoSvr + intercom;
+    const expBase = (selectedOpt && selectedOpt.hasAttribute('data-vid')) ? videoVal : P1_RATES.videoExpansionBase;
+    totalVideo = expBase + expansionCost + svrs * P1_RATES.videoSvr + intercom;
     const expLbl = document.getElementById('adc-expansion-total');
     if (expLbl) expLbl.textContent = '= $' + totalVideo.toFixed(2) + '/mo';
   } else if (isPerCamera) {
@@ -4350,7 +4374,13 @@ function adcCalc() {
   const svrs2 = parseInt(document.getElementById('adc-svrs').value) || 0;
   const expansionCost2 = parseFloat(document.getElementById('adc-expansions').value) || 0;
   const intercom2 = parseFloat(document.getElementById('adc-intercom').value) || 0;
-  if (isExpansion2) total += P1_RATES.videoExpansionBase + expansionCost2 + svrs2 * P1_RATES.videoSvr + intercom2;
+  if (isExpansion2) {
+    const vOpt2 = document.getElementById('adc-video').selectedOptions[0];
+    const vBase2 = (vOpt2 && vOpt2.hasAttribute('data-vid'))
+      ? (parseFloat(document.getElementById('adc-video').value) || 0)
+      : P1_RATES.videoExpansionBase;
+    total += vBase2 + expansionCost2 + svrs2 * P1_RATES.videoSvr + intercom2;
+  }
   else if (isPerCam) total += videoVal * camCount;
   else total += videoVal;
   // Commercial Video intercom add-ons
@@ -4378,6 +4408,8 @@ function adcCalc() {
   });
   // Sensors — dropdown value is already the dollar amount
   total += parseFloat(document.getElementById('adc-sensors').value) || 0;
+  const aidSel = document.getElementById('adc-aid');
+  if (aidSel) total += parseFloat(aidSel.value) || 0;
   // Cars / fleet
   total += (parseFloat(document.getElementById('adc-cars').value) || 0)
          + (parseFloat(document.getElementById('adc-fleet').value) || 0);
@@ -6679,7 +6711,7 @@ function gatherEstimateData() {
     'adc-base','adc-video','adc-camera-count','adc-cv-intercom-devices',
     'adc-cv-intercom-users','adc-expansions','adc-svrs','adc-intercom',
     'adc-access','adc-access-bundle','adc-access-doors',
-    'adc-mobile-10','adc-mobile-100','adc-sensors','adc-cars','adc-fleet','adc-comms'
+    'adc-mobile-10','adc-mobile-100','adc-sensors','adc-cars','adc-fleet','adc-comms','adc-aid'
   ];
   var data = { version: 2, ts: new Date().toISOString(), fields: {} };
   fields.forEach(function(id) {
@@ -6697,6 +6729,8 @@ function gatherEstimateData() {
              'adc-toggle-fleet','adc-toggle-openeye','adc-toggle-wellness','adc-toggle-comms',
              'adc-mobile-creds-cb','adc-wellness-cb','adc-enterprise-wellness-cb','adc-scheduled-arm-cb',
              'adc-esc-cb','adc-mlesc-cb','adc-openeye-cb',
+             'adc-vs-doorbell','adc-vs-digital-input','adc-vs-audio-nondb',
+             'adc-vs-onboard-rec','adc-vs-biz-analytics','adc-vs-third-party',
       // priced Alarm.com add-ons - previously summed into the total but never saved
       'adc-x-lights-and-thermostat-bundle',
       'adc-x-lights',
@@ -15617,15 +15651,24 @@ document.addEventListener('click', function(e){
     var list=pkgs().filter(function(p){ return !seg || p.segment==='both' || p.segment===seg; });
     var html='<option value="0">&mdash; Select Package &mdash;</option>';
     list.forEach(function(p){
-      html+='<option value="'+p.cost+'" data-pkg="'+p.id+'">'+p.name+' ('+money2(p.cost)+')</option>'; });
+      html+='<option value="'+p.cost.toFixed(2)+'" data-pkg="'+p.id+'">'+p.name+' ('+money2(p.cost)+')</option>'; });
     // an imported estimate can carry a package outside this site type's segment;
     // keep it selectable rather than silently dropping it to "Select"
     if(parseFloat(cur)>0 && !list.some(function(p){ return Math.abs(p.cost-parseFloat(cur))<0.005; })){
       var cp=pkgByCost(cur);
-      html+='<option value="'+cur+'" data-pkg="'+(cp?cp.id:'')+'">'+(cp?cp.name:'Imported package')+' ('+money2(parseFloat(cur))+')</option>';
+      html+='<option value="'+parseFloat(cur).toFixed(2)+'" data-pkg="'+(cp?cp.id:'')+'">'+(cp?cp.name:'Imported package')+' ('+money2(parseFloat(cur))+')</option>';
     }
     sel.innerHTML=html;
-    sel.value=cur; if(sel.value!==cur) sel.value='0';
+    sel.value=cur; if(sel.value!==cur && !numMatch(sel,cur)) sel.value='0';
+  }
+
+  // legacy exports store one-decimal option values ("5.7"); match numerically
+  function numMatch(sel,cur){
+    var n=parseFloat(cur); if(isNaN(n)) return false;
+    for(var i=0;i<sel.options.length;i++){
+      if(Math.abs(parseFloat(sel.options[i].value)-n)<0.005){ sel.selectedIndex=i; return true; }
+    }
+    return false;
   }
 
   function priceFor(e,pkgId){
@@ -15686,6 +15729,93 @@ document.addEventListener('click', function(e){
     },900);
     if(ADC()){ buildBase(); reprice(true); }
   },300);
+
+  /* ── video tier matrix ──────────────────────────────────────────────────
+     Camera pricing follows two portal models: commercial tiers are all-in
+     per-camera (tier cost x cameras -- what adcVideoCalc's per-camera path
+     already computes), Pro tiers are base cameras + $-per-expansion (its
+     expansion path). The matrix supplies which model each tier uses, the AI
+     Deterrence availability, and the $0 scope features per tier. */
+  function VMX(){ var a=ADC(); return (a&&Array.isArray(a.videoMatrix))?a.videoMatrix:null; }
+  function tierSel(){ return document.getElementById('adc-video'); }
+  function curTier(){
+    var sel=tierSel(), m=VMX(); if(!sel||!m) return null;
+    var o=sel.options[sel.selectedIndex];
+    var id=o?o.getAttribute('data-vid'):null;
+    for(var i=0;i<m.length;i++) if(m[i].id===id) return m[i];
+    return null;
+  }
+  function buildVideo(){
+    var sel=tierSel(), m=VMX(); if(!sel||!m) return;
+    var cur=sel.value;
+    sel.innerHTML=m.map(function(v){
+      var dt = v.model==='expansion' ? ' data-type="expansion"' : (v.model==='perCamera' ? '' : ' data-type="flat"');
+      // zero-cost tier keeps legacy value "0" so filterADCOptions resets and old estimates still match
+      var val = v.cost>0 ? v.cost.toFixed(2) : '0';
+      return '<option value="'+val+'" data-vid="'+v.id+'"'+dt+'>'+v.name+(v.cost>0?' ($'+v.cost.toFixed(2)+')':'')+'</option>';
+    }).join('');
+    sel.value=cur; if(sel.selectedIndex<0 && !numMatch(sel,cur)) sel.selectedIndex=0;
+  }
+  function buildExp(t){
+    var e=document.getElementById('adc-expansions'); if(!e||!t||t.model!=='expansion') return;
+    var cur=e.value, max=t.maxExp||15, html='';
+    for(var i=0;i<=max;i++){
+      var cams=(t.baseCams||4)+i*(t.expCams||4);
+      // i===0 keeps legacy value "0" so imported estimates with adc-expansions "0" still match
+      html+='<option value="'+(i===0?'0':(i*(t.expCost||4)).toFixed(2))+'">'+(i===0?'No expansions':(i+' expansion'+(i>1?'s':'')))
+           +' \u2014 '+cams+' cameras (+$'+(i*(t.expCost||4)).toFixed(2)+')</option>';
+    }
+    e.innerHTML=html; e.value=cur; if(e.selectedIndex<0 && !numMatch(e,cur)) e.selectedIndex=0;
+  }
+  function buildAid(){
+    var a=ADC(), e=document.getElementById('adc-aid'); if(!e||!a||e.options.length>1) return;
+    var per=(a.aidPerBlock!=null?a.aidPerBlock:2), ev=(a.aidBlockEvents||60), max=Math.min(a.aidMaxBlocks||256,256);
+    var html='<option value="0">None</option>';
+    for(var i=1;i<=max;i++) html+='<option value="'+(i*per).toFixed(2)+'">'+(i*ev).toLocaleString()
+      +' events / up to '+i+' camera'+(i>1?'s':'')+' ($'+(i*per).toFixed(2)+')</option>';
+    e.innerHTML=html;
+  }
+  var VS=[['adc-vs-doorbell','Doorbell Cameras'],['adc-vs-digital-input','Digital Input Triggered Video Uploads'],
+          ['adc-vs-audio-nondb','Audio for Non-doorbell Cameras'],['adc-vs-onboard-rec','Onboard Recording with Smart View'],
+          ['adc-vs-biz-analytics','Business Activity Analytics'],['adc-vs-third-party','Third-Party Cameras']];
+  var lastVid=null;
+  function videoSync(){
+    var a=ADC(), sel=tierSel(); if(!a||!sel) return;
+    if(VMX() && !sel.querySelector('option[data-vid]')) buildVideo();
+    var t=curTier();
+    var key=(t?t.id:'-')+'|'+sel.value;
+    if(key===lastVid) return; lastVid=key;
+    buildAid(); if(t) buildExp(t);
+    var aidRow=document.getElementById('adc-aid-row');
+    var showAid=!!(t&&t.aid);
+    if(aidRow){ aidRow.style.display=showAid?'block':'none';
+      if(!showAid){ var ae=document.getElementById('adc-aid'); if(ae&&ae.selectedIndex>0){ ae.selectedIndex=0; } } }
+    var scope=a.videoScope||{}, anyVis=false;
+    VS.forEach(function(p){
+      var cb=document.getElementById(p[0]); if(!cb) return;
+      var lab=cb.closest('label'); if(!lab) return;
+      var av=t && Array.isArray(scope[p[1]]) && scope[p[1]].indexOf(t.id)>=0;
+      lab.style.display=av?'':'none';
+      if(!av && cb.checked) cb.checked=false;
+      if(av) anyVis=true;
+    });
+    var wrap=document.getElementById('adc-vs-wrap');
+    if(wrap) wrap.style.display=anyVis?'block':'none';
+    var inc=document.getElementById('adc-vs-includes');
+    if(inc) inc.textContent=(t&&Array.isArray(t.includes)&&t.includes.length)?('Includes: '+t.includes.join(', ')):'';
+    var note=document.getElementById('adc-exp-base-note');
+    if(note&&t&&t.model==='expansion') note.textContent='Base: '+(t.baseCams||4)+' cameras included ($'+t.cost.toFixed(2)+'/mo)';
+  }
+  var tv=setInterval(function(){
+    if(typeof window.adcVideoCalc!=='function' || !tierSel()) return;
+    clearInterval(tv);
+    var orig=window.adcVideoCalc;
+    window.adcVideoCalc=function(){ try{ videoSync(); }catch(e){} return orig.apply(this,arguments); };
+    var origC=window.adcCalc;
+    if(typeof origC==='function') window.adcCalc=function(){ try{ videoSync(); }catch(e){} return origC.apply(this,arguments); };
+    setInterval(function(){ var s2=tierSel(); if(VMX()&&s2&&!s2.querySelector('option[data-vid]')){ lastVid=null; videoSync(); } },900);
+    videoSync();
+  },350);
 })();
 </script>
 
