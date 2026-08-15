@@ -15992,5 +15992,77 @@ document.addEventListener('click', function(e){
 })();
 </script>
 
+<!-- ═════════════════════════════════════════════════════════════════════
+     P1-SSE — Change Request Log hookup
+     Paste this whole block into index.html, just before </body>
+     (after the supabase-js tag and after the Data / Tools menu script).
+     ═════════════════════════════════════════════════════════════════════ -->
+
+<script>
+window.P1CR_CONFIG = {
+  app: 'P1-SSE',
+  autoButton: false,               // no separate header button — it lives in Data / Tools
+  page: function () {
+    var t = document.querySelector('.view-tab.active');
+    return t ? t.textContent.trim() : null;   // Quote Builder / SLA Creator / Monitoring Contracts
+  }
+};
+
+/* Hands the current estimate to the request form — same data Export Estimate saves. */
+window.getCurrentExport = function () {
+  try {
+    if (typeof gatherEstimateData !== 'function') return null;
+    var data = gatherEstimateData();
+    data.custName   = (document.getElementById('custName')      || {}).value || '(no customer)';
+    data.estimator  = (document.getElementById('estimatorName') || {}).value || '(no estimator)';
+    data.exportedAt = new Date().toLocaleString();
+
+    var estNum = ((document.getElementById('estimateNum') || {}).value || 'NoNum')
+                   .replace(/[^a-zA-Z0-9-]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+    var cust   = String(data.custName).replace(/[^a-zA-Z0-9]/g, '-')
+                   .replace(/-+/g, '-').replace(/^-|-$/g, '');
+
+    return {
+      blob: new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }),
+      filename: [estNum, cust].filter(Boolean).join('_') + '.p1est',
+      mimeType: 'application/json',
+      generatedAt: new Date().toISOString()
+    };
+  } catch (e) { return null; }
+};
+</script>
+
+<script src="https://p1seanb.github.io/P1-SSE/change-request.js"></script>
+
+<script>
+/* ── Put "Request a Change / Suggestion" inside the Data / Tools menu ──
+   The menu builds itself on an interval after the header exists, so this
+   waits the same way, then appends the item using the menu's own styling. */
+(function () {
+  function build() {
+    var menu = document.querySelector('.p1-dt .p1-dt-menu');
+    if (!menu || !window.P1CR) return false;          // menu or widget not ready yet
+    if (document.getElementById('p1-dt-cr')) return true;
+
+    var sep = document.createElement('div');
+    sep.className = 'p1-dt-sep';
+    menu.appendChild(sep);
+
+    var item = document.createElement('button');
+    item.type = 'button';
+    item.id = 'p1-dt-cr';
+    item.textContent = 'Request a Change / Suggestion';
+    item.addEventListener('click', function () {
+      var wrap = item.closest('.p1-dt');               // close the dropdown first
+      if (wrap) wrap.classList.remove('on');
+      P1CR.open();
+    });
+    menu.appendChild(item);
+    return true;
+  }
+  var t = setInterval(function () { if (build()) clearInterval(t); }, 300);
+})();
+</script>
+<!-- ═══════════════════════════════ end block ═══════════════════════════ -->
 </body>
 </html>
