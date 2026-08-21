@@ -1,0 +1,12 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "appName": { "value": "p1sse" },
+    "environment": { "value": "prod" },
+    "sqlAdminLogin": { "value": "<choose-an-admin-login>" },
+    "sqlAdminPassword": { "value": "<store-in-key-vault-or-pass-via-CLI-not-in-source-control>" },
+    "sqlEntraAdminGroupObjectId": { "value": "<object-id-of-an-admin-group>" },
+    "sqlEntraAdminGroupName": { "value": "<display-name-of-that-group>" }
+  }
+}

@@ -1,0 +1,62 @@
+-- P1-SSE — seed template for the first rate profile.
+-- Copy real values from the old Supabase app_rates.config JSON, then run after
+-- schema.sql. Placeholder values below are examples, not real rates.
+
+INSERT INTO dbo.Product (Tag) VALUES ('sse');
+
+INSERT INTO dbo.RateProfile (ProductId, Version, IsActive, CreatedBy)
+SELECT ProductId, 1, 1, 'migration' FROM dbo.Product WHERE Tag = 'sse';
+
+DECLARE @rp INT = (SELECT rp.RateProfileId FROM dbo.RateProfile rp
+                   JOIN dbo.Product p ON p.ProductId = rp.ProductId
+                   WHERE p.Tag = 'sse' AND rp.Version = 1);
+
+-- P1_RATES.laborCostPerHr / laborBillDefault / laborSellDefault / svcGM /
+-- subMarkup / avMaintGM / matMarkup / tmSubGM / overheadRate
+INSERT INTO dbo.LaborRate VALUES (@rp, /*cost*/0, /*bill*/0, /*sell*/0, /*svcGM*/0, /*subMarkup*/0, /*avMaintGM*/0, /*matMarkup*/0, /*tmSubGM*/0, /*overhead*/0);
+
+-- P1_RATES.svcStraight / svcTimeAndHalf / svcDoubleTime / priorityMultiplier / premierMultiplier
+INSERT INTO dbo.ServiceCallRate VALUES (@rp, 0, 0, 0, 0, 0);
+
+-- P1_RATES.monBase / monAddon (ConnectOne base + Non-Alarm Zone Status Logging)
+INSERT INTO dbo.MonitoringRate VALUES (@rp, 0, 0);
+
+-- P1_RATES.doorRateSACP / doorRateStd, doorBundlesSACP / doorBundlesStd
+INSERT INTO dbo.DoorRate VALUES (@rp, 0, 0);
+-- INSERT INTO dbo.DoorBundle (RateProfileId, BundleType, MinDoors, MaxDoors, Price, SortOrder) VALUES (@rp, 'SACP', 1, 16, 0, 1), ...;
+
+-- P1_RATES.videoExpansionBase / videoSvr
+INSERT INTO dbo.VideoRate VALUES (@rp, 0, 0);
+
+-- P1_RATES.gcsFire / gcsBurg / gcsResidential / gcsTwoWay / sfBurgResidential / sfBurgCommercial
+INSERT INTO dbo.GcsRate VALUES (@rp, 0, 0, 0, 0, 0, 0);
+
+-- P1_RATES.minRMRCommercial / minRMRResidential / minRMRTwoWay
+INSERT INTO dbo.MinRmrRate VALUES (@rp, 0, 0, 0);
+
+-- MiscRate keys the frontend reads (src/tabs/QuoteBuilder/QuoteBuilder.jsx):
+--   ulCerts          — was P1_RATES.ulCerts
+--   pmVisitRate      — was P1_RATES.pmVisitRate
+--   honeywellComm    — was hardcoded $13.00 in legacy HTML (:1861)
+--   telguardComm     — was hardcoded $25.00 in legacy HTML (:1862)
+--   buildingReports  — was hardcoded $6.00  in legacy HTML (:1863)
+INSERT INTO dbo.MiscRate VALUES
+  (@rp, 'ulCerts', 0),
+  (@rp, 'pmVisitRate', 0),
+  (@rp, 'honeywellComm', 13.00),
+  (@rp, 'telguardComm', 25.00),
+  (@rp, 'buildingReports', 6.00);
+
+-- P1_RATES.tierRates (+ tierRatesLabel)
+INSERT INTO dbo.TierRate (RateProfileId, TierName, Label, Rate, SortOrder) VALUES
+  (@rp, 'Standard', NULL, 0, 1),
+  (@rp, 'Priority', NULL, 0, 2),
+  (@rp, 'Premier',  NULL, 0, 3);
+
+-- PricingOption groups the frontend renders (replaces P1_RATES.dropdownsHTML):
+--   adc-base, adc-video, adc-comms, adc-sensors, adc-expansions, adc-intercom,
+--   adc-cars, adc-fleet, adc-mobile-10, adc-mobile-100,
+--   connectone-sms, alarmnet-plan, overheadRate
+-- Extract each legacy <option value="..">label</option> into one row:
+-- INSERT INTO dbo.PricingOption (RateProfileId, DropdownGroup, OptionValue, Label, Price, SortOrder)
+-- VALUES (@rp, 'adc-base', '<value>', '<label>', <price>, 1), ...;
