@@ -820,6 +820,126 @@
     "status": "todo",
     "tag": "input"
   },
+  "p1cr-addfixed": {
+    "status": "done",
+    "tag": "button",
+    "where": "src/tabs/ChangeRequests/ChangeRequests.jsx + api change-requests & attachments endpoints"
+  },
+  "p1cr-addnote": {
+    "status": "done",
+    "tag": "button",
+    "where": "src/tabs/ChangeRequests/ChangeRequests.jsx + api change-requests & attachments endpoints"
+  },
+  "p1cr-back": {
+    "status": "done",
+    "tag": "button",
+    "where": "src/tabs/ChangeRequests/ChangeRequests.jsx + api change-requests & attachments endpoints"
+  },
+  "p1cr-cancel": {
+    "status": "done",
+    "tag": "button",
+    "where": "src/tabs/ChangeRequests/ChangeRequests.jsx + api change-requests & attachments endpoints"
+  },
+  "p1cr-close": {
+    "status": "done",
+    "tag": "button",
+    "where": "src/tabs/ChangeRequests/ChangeRequests.jsx + api change-requests & attachments endpoints"
+  },
+  "p1cr-d": {
+    "status": "done",
+    "tag": "textarea",
+    "where": "src/tabs/ChangeRequests/ChangeRequests.jsx + api change-requests & attachments endpoints"
+  },
+  "p1cr-fa": {
+    "status": "done",
+    "tag": "select",
+    "where": "src/tabs/ChangeRequests/ChangeRequests.jsx + api change-requests & attachments endpoints"
+  },
+  "p1cr-filein": {
+    "status": "done",
+    "tag": "input",
+    "where": "src/tabs/ChangeRequests/ChangeRequests.jsx + api change-requests & attachments endpoints"
+  },
+  "p1cr-fixedin": {
+    "status": "done",
+    "tag": "input",
+    "where": "src/tabs/ChangeRequests/ChangeRequests.jsx + api change-requests & attachments endpoints"
+  },
+  "p1cr-fs": {
+    "status": "done",
+    "tag": "select",
+    "where": "src/tabs/ChangeRequests/ChangeRequests.jsx + api change-requests & attachments endpoints"
+  },
+  "p1cr-ft": {
+    "status": "done",
+    "tag": "select",
+    "where": "src/tabs/ChangeRequests/ChangeRequests.jsx + api change-requests & attachments endpoints"
+  },
+  "p1cr-new": {
+    "status": "done",
+    "tag": "button",
+    "where": "src/tabs/ChangeRequests/ChangeRequests.jsx + api change-requests & attachments endpoints"
+  },
+  "p1cr-note": {
+    "status": "done",
+    "tag": "textarea",
+    "where": "src/tabs/ChangeRequests/ChangeRequests.jsx + api change-requests & attachments endpoints"
+  },
+  "p1cr-pri": {
+    "status": "done",
+    "tag": "select",
+    "where": "src/tabs/ChangeRequests/ChangeRequests.jsx + api change-requests & attachments endpoints"
+  },
+  "p1cr-q": {
+    "status": "done",
+    "tag": "input",
+    "where": "src/tabs/ChangeRequests/ChangeRequests.jsx + api change-requests & attachments endpoints"
+  },
+  "p1cr-refresh": {
+    "status": "done",
+    "tag": "button",
+    "where": "src/tabs/ChangeRequests/ChangeRequests.jsx + api change-requests & attachments endpoints"
+  },
+  "p1cr-sc": {
+    "status": "done",
+    "tag": "input",
+    "where": "src/tabs/ChangeRequests/ChangeRequests.jsx + api change-requests & attachments endpoints"
+  },
+  "p1cr-snipin": {
+    "status": "done",
+    "tag": "input",
+    "where": "src/tabs/ChangeRequests/ChangeRequests.jsx + api change-requests & attachments endpoints"
+  },
+  "p1cr-st": {
+    "status": "done",
+    "tag": "select",
+    "where": "src/tabs/ChangeRequests/ChangeRequests.jsx + api change-requests & attachments endpoints"
+  },
+  "p1cr-submit": {
+    "status": "done",
+    "tag": "button",
+    "where": "src/tabs/ChangeRequests/ChangeRequests.jsx + api change-requests & attachments endpoints"
+  },
+  "p1cr-t": {
+    "status": "done",
+    "tag": "input",
+    "where": "src/tabs/ChangeRequests/ChangeRequests.jsx + api change-requests & attachments endpoints"
+  },
+  "p1cr-type": {
+    "status": "done",
+    "tag": "select",
+    "where": "src/tabs/ChangeRequests/ChangeRequests.jsx + api change-requests & attachments endpoints"
+  },
+  "p1cr-useexport": {
+    "status": "done",
+    "tag": "input",
+    "where": "src/tabs/ChangeRequests/ChangeRequests.jsx + api change-requests & attachments endpoints"
+  },
+  "p1cr-w": {
+    "status": "done",
+    "tag": "textarea",
+    "where": "src/tabs/ChangeRequests/ChangeRequests.jsx + api change-requests & attachments endpoints"
+  },
   "phoneNumber": {
     "status": "todo",
     "tag": "input"

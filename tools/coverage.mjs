@@ -24,7 +24,13 @@
 // them.
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 
-const LEGACY = new URL('../legacy/index.html', import.meta.url);
+// BOTH legacy files. change-request.js is a separate 1,035-line subsystem that
+// builds its own UI from template strings — scanning only index.html reported zero
+// p1cr-* controls and made an entire feature invisible to the count.
+const LEGACY_FILES = [
+  new URL('../legacy/index.html', import.meta.url),
+  new URL('../legacy/change-request.js', import.meta.url),
+];
 const MAP_PATH = new URL('./port-coverage.json', import.meta.url);
 
 // Controls the user can operate. Not every element with an id — a <div id="panel">
@@ -48,12 +54,15 @@ const DYNAMIC_FAMILIES = [
 ];
 
 function legacyControls() {
-  const html = readFileSync(LEGACY, 'utf8');
   const found = new Map();
-  for (const m of html.matchAll(CONTROL_RE)) {
-    const tag = m[1].toLowerCase();
-    const id = m[2];
-    if (!found.has(id)) found.set(id, tag);
+  for (const file of LEGACY_FILES) {
+    if (!existsSync(file)) continue;
+    const src = readFileSync(file, 'utf8');
+    for (const m of src.matchAll(CONTROL_RE)) {
+      const tag = m[1].toLowerCase();
+      const id = m[2];
+      if (!found.has(id)) found.set(id, tag);
+    }
   }
   // Families the scan cannot see, tracked as one entry each.
   for (const f of DYNAMIC_FAMILIES) found.set(f.id, 'dynamic');
