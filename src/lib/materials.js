@@ -228,6 +228,76 @@ export function billOfMaterials(items) {
 }
 
 /**
+ * Subcontracted T&M lines — :5635-5656.
+ *
+ * ⚠ THE SLIDER IS NAMED GM AND APPLIED AS A MARKUP. `tmSubGMSlider` feeds
+ * `billed = cost * (1 + rate)` (:5644), not `cost / (1 - rate)`. At the default of
+ * 42% those differ by 21% of the price — $1,420 against $1,724 on a $1,000
+ * subcontract — so "correcting" the name to match the maths, or the maths to match
+ * the name, silently reprices every subcontracted job.
+ *
+ * Transcribed as-is. If the business wants true gross margin here, that is a pricing
+ * decision with a number attached, not a tidy-up.
+ */
+export function computeTmSubTotals(rows = [], opts = {}) {
+  const rate = num(opts.tmSubGM, 0.32);
+  let cost = 0;
+  let billed = 0;
+  const lines = [];
+  for (const row of rows) {
+    const c = num(row.cost);
+    const b = c * (1 + rate);
+    cost += c;
+    billed += b;
+    lines.push({
+      desc: String(row.desc ?? ''),
+      cost: c,
+      billed: b,
+      // Added Aug 2026: a subcontracted line is either billed on to the customer or
+      // absorbed internally, and a PCO number ties it to the change it came from.
+      billTo: row.billTo ?? 'customer',
+      pco: row.pco ?? '',
+    });
+  }
+  return { cost, billed, gp: billed - cost, lines };
+}
+
+/**
+ * The one-time total the customer sees — :4633.
+ *
+ *   labour billed + materials billed + subcontract billed + material tax + shipping
+ *
+ * Two things are narrower than they look, and both matter:
+ *
+ *   TAX APPLIES TO MATERIALS ONLY (:4629). Not to labour, not to the subcontract,
+ *   not to shipping. Applying it to the whole total overcharges every taxable job.
+ *
+ *   SHIPPING CARRIES ITS OWN MARKUP (:4632), defaulting to 15% and independent of
+ *   the material markup.
+ */
+export function computeOneTimeTotal(items, tmSub, opts = {}) {
+  const materialsBilled = totalMaterialSell(items);
+  const laborBilled = totalLaborSell(items);
+  const subBilled = tmSub ? num(tmSub.billed) : 0;
+
+  const taxRate = num(opts.matTaxRate);
+  const materialTax = materialsBilled * taxRate;
+
+  const shippingCost = num(opts.shippingCost);
+  const shippingMarkup = num(opts.shippingMarkup, 0.15);
+  const shippingBilled = shippingCost * (1 + shippingMarkup);
+
+  return {
+    materialsBilled,
+    laborBilled,
+    subBilled,
+    materialTax,
+    shippingBilled,
+    total: laborBilled + materialsBilled + subBilled + materialTax + shippingBilled,
+  };
+}
+
+/**
  * Which columns a BOM export should include — :"BOM export: omit columns no line
  * filled in". An export carrying eight empty columns is one nobody reads.
  */

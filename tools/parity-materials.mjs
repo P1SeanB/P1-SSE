@@ -11,6 +11,7 @@
 // enough for the difference to be money.
 import {
   computeMaterialLine, priceRows, totalMaterialSell, totalMaterialCost,
+  computeTmSubTotals, computeOneTimeTotal,
   laborMargin, billOfMaterials, bomColumns, unitDivisor,
 } from '../src/lib/materials.js';
 
@@ -153,6 +154,40 @@ named('unitDivisor matches the legacy table',
   const items = priceRows([{ type: 'labor', desc: 'Trim', hrs: 10, rate: 100, sellPerHr: 150 }], {});
   const m = laborMargin(items);
   named('labour margin uses actual cost against actual sell', Math.abs(m.marginPct - (500 / 1500)) < 0.001);
+}
+
+// ── T&M subcontract and the one-time total ──────────────────────────────────
+// Legacy: billed = cost * (1 + markup) — :5644, where `markup` comes from a slider
+// NAMED tmSubGM. The two readings differ by 21% of price at the default 42%, so this
+// case exists to pin the arithmetic against the name.
+{
+  const rows = [{ desc: 'Fire alarm sub', cost: 1000 }, { desc: 'Trenching', cost: 500 }];
+  const t = computeTmSubTotals(rows, { tmSubGM: 0.42 });
+  const asMarkup = 1500 * 1.42;          // what the legacy does
+  const asTrueGM = 1500 / (1 - 0.42);    // what the NAME implies
+  named('T&M sub applies the GM slider as a MARKUP, matching the legacy',
+    Math.abs(t.billed - asMarkup) < EPS);
+  named('T&M sub is NOT computed as a true gross margin',
+    Math.abs(t.billed - asTrueGM) > 1);
+  named('T&M sub totals cost separately from billed',
+    Math.abs(t.cost - 1500) < EPS && Math.abs(t.gp - (asMarkup - 1500)) < EPS);
+}
+// One-time total — :4633. Tax on materials only; shipping carries its own markup.
+{
+  const items = priceRows([
+    { type: 'material', desc: 'Panel', cost: 100, qty: 10 },
+    { type: 'labor', desc: 'Install', hrs: 10, rate: 100, sellPerHr: 150 },
+  ], { matMarkup: 0 });
+  const tmSub = computeTmSubTotals([{ cost: 1000 }], { tmSubGM: 0.42 });
+  const t = computeOneTimeTotal(items, tmSub, {
+    matTaxRate: 0.0825, shippingCost: 200, shippingMarkup: 0.15,
+  });
+  named('material tax applies to materials only, not the whole total',
+    Math.abs(t.materialTax - 1000 * 0.0825) < EPS);
+  named('shipping carries its own markup',
+    Math.abs(t.shippingBilled - 200 * 1.15) < EPS);
+  named('one-time total = labour + materials + subcontract + tax + shipping',
+    Math.abs(t.total - (1500 + 1000 + 1420 + 82.5 + 230)) < EPS);
 }
 
 const badCases = cases.filter(([, ok]) => !ok);
