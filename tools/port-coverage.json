@@ -1,0 +1,1395 @@
+{
+  "access": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "adc-access": {
+    "status": "todo",
+    "tag": "select"
+  },
+  "adc-access-bundle": {
+    "status": "todo",
+    "tag": "select"
+  },
+  "adc-access-doors": {
+    "status": "todo",
+    "tag": "select"
+  },
+  "adc-aid": {
+    "status": "todo",
+    "tag": "select"
+  },
+  "adc-base": {
+    "status": "todo",
+    "tag": "select"
+  },
+  "adc-camera-count": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "adc-cars": {
+    "status": "todo",
+    "tag": "select"
+  },
+  "adc-cellconnector": {
+    "status": "todo",
+    "tag": "select"
+  },
+  "adc-comms": {
+    "status": "todo",
+    "tag": "select"
+  },
+  "adc-cv-intercom-devices": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "adc-cv-intercom-users": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "adc-enterprise-wellness-cb": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "adc-esc-cb": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "adc-expansions": {
+    "status": "todo",
+    "tag": "select"
+  },
+  "adc-fleet": {
+    "status": "todo",
+    "tag": "select"
+  },
+  "adc-flexio": {
+    "status": "todo",
+    "tag": "select"
+  },
+  "adc-img-events": {
+    "status": "todo",
+    "tag": "select"
+  },
+  "adc-intercom": {
+    "status": "todo",
+    "tag": "select"
+  },
+  "adc-mlesc-cb": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "adc-mobile-10": {
+    "status": "todo",
+    "tag": "select"
+  },
+  "adc-mobile-100": {
+    "status": "todo",
+    "tag": "select"
+  },
+  "adc-mobile-creds-cb": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "adc-noonlight": {
+    "status": "todo",
+    "tag": "select"
+  },
+  "adc-openeye-cb": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "adc-scheduled-arm-cb": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "adc-sensors": {
+    "status": "todo",
+    "tag": "select"
+  },
+  "adc-supervision": {
+    "status": "todo",
+    "tag": "select"
+  },
+  "adc-svrs": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "adc-toggle-access": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "adc-toggle-alerts": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "adc-toggle-comms": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "adc-toggle-energy": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "adc-toggle-fleet": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "adc-toggle-openeye": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "adc-toggle-remote": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "adc-toggle-video": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "adc-toggle-wellness": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "adc-verizon-data": {
+    "status": "todo",
+    "tag": "select"
+  },
+  "adc-video": {
+    "status": "todo",
+    "tag": "select"
+  },
+  "adc-vs-audio-nondb": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "adc-vs-biz-analytics": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "adc-vs-digital-input": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "adc-vs-doorbell": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "adc-vs-onboard-rec": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "adc-vs-third-party": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "adc-wellness-cb": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "adc-x-audio-integration": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "adc-x-commercial-supervision-ul": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "adc-x-energy-monitoring": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "adc-x-enphase-integration": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "adc-x-garage-door-and-gate": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "adc-x-irrigation-control": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "adc-x-liftmaster-integration": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "adc-x-lights": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "adc-x-lights-and-thermostat-bundle": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "adc-x-locks": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "adc-x-lutron-integration": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "adc-x-my-circle": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "adc-x-severe-weather-alerts": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "adc-x-shades": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "adc-x-solar-integration": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "adc-x-thermostats": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "adc-x-voice-notifications-alarms": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "adc-x-voice-notifications-non-alarms": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "adc-x-water-management": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "adc-x-water-management-plus": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "adc-x-weather-to-panel": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "adc-x-wireless-two-way-voice": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "agreementName": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "alarmcom": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "alarmnet": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "alarmnet-plan": {
+    "status": "todo",
+    "tag": "select"
+  },
+  "annualSub": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "avMaintGMSlider": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "avMaintenance": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "avMaintenanceBilled": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "bosch": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "br": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "btn-maint-toggle": {
+    "status": "todo",
+    "tag": "button"
+  },
+  "btn-mat-toggle": {
+    "status": "todo",
+    "tag": "button"
+  },
+  "btn-sub-toggle": {
+    "status": "todo",
+    "tag": "button"
+  },
+  "btn-tm-sub-toggle": {
+    "status": "todo",
+    "tag": "button"
+  },
+  "budget-show-labor": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "cb-alarmcom-enable": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "cb-alarmnet": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "cb-bosch": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "cb-br": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "cb-connectone": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "cb-connectone-addon": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "cb-gcs-access": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "cb-honeywell": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "cb-nfpa": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "cb-pm": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "cb-pm-av-other": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "cb-sfburg": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "cb-teleguard": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "cb-ulcerts": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "connectone": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "connectone-addon": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "connectone-sms": {
+    "status": "todo",
+    "tag": "select"
+  },
+  "connectone-sms-val": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "connectone-systems": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "contactName": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "custName": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "customMonCost": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "customMonDesc": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "emailAddress": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "estimateNum": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "estimatorEmail": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "estimatorName": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "fi-duct": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "fi-floors": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "fi-hr-duct": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "fi-hr-floors": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "fi-hr-notify": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "fi-hr-panels": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "fi-hr-power": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "fi-hr-pull": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "fi-hr-smokes": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "fi-hr-tamper": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "fi-hr-waterflows": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "fi-min-duct": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "fi-min-floors": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "fi-min-notify": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "fi-min-panels": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "fi-min-power": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "fi-min-pull": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "fi-min-smokes": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "fi-min-tamper": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "fi-min-waterflows": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "fi-notify": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "fi-panels": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "fi-pm-hrs": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "fi-power": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "fi-pull": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "fi-smokes": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "fi-tamper": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "fi-technicians": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "fi-waterflows": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "gcs": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "gcs-other-burg": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "gcs-other-burg-val": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "gcs-other-fire": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "gcs-other-fire-val": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "gcs-other-res": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "gcs-other-res-val": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "hdr-clear-all": {
+    "status": "todo",
+    "tag": "button"
+  },
+  "hdr-clear-sys": {
+    "status": "todo",
+    "tag": "button"
+  },
+  "hdr-print": {
+    "status": "todo",
+    "tag": "button"
+  },
+  "honeywell": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "import-file-input": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "inspCost": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "inspHours": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "laborRateSlider": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "matMarkupSlider": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "matShippingCost": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "matTaxRate": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "matTaxRateTop": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "mc-bill-addr": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "mc-bill-city": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "mc-bill-same": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "mc-bill-state": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "mc-bill-zip": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "mon-cost-toggle": {
+    "status": "todo",
+    "tag": "button"
+  },
+  "notes": {
+    "status": "todo",
+    "tag": "textarea"
+  },
+  "oh-cost-btn": {
+    "status": "todo",
+    "tag": "button"
+  },
+  "oh-rev-btn": {
+    "status": "todo",
+    "tag": "button"
+  },
+  "ohMethod": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "overheadRate": {
+    "status": "todo",
+    "tag": "select"
+  },
+  "p1-bom-close": {
+    "status": "todo",
+    "tag": "button"
+  },
+  "p1-bom-copy": {
+    "status": "todo",
+    "tag": "button"
+  },
+  "p1-bom-costs": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "p1-bom-csv": {
+    "status": "todo",
+    "tag": "button"
+  },
+  "p1-bom-job-btn": {
+    "status": "todo",
+    "tag": "button"
+  },
+  "p1-bom-print": {
+    "status": "todo",
+    "tag": "button"
+  },
+  "p1-job-cancel": {
+    "status": "todo",
+    "tag": "button"
+  },
+  "p1-job-go": {
+    "status": "todo",
+    "tag": "button"
+  },
+  "p1-job-phase": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "p1-job-pm": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "p1-job-seq": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "p1-job-swo": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "p1-login-btn": {
+    "status": "dropped",
+    "tag": "button",
+    "why": "Entra replaces the password gate — sign-in is handled by Static Web Apps."
+  },
+  "p1-login-email": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "p1-login-pass": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "phoneNumber": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "pm-audio": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "pm-cabling": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "pm-cameras": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "pm-complexity": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "pm-contacts": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "pm-ctrlsys": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "pm-displays": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "pm-doors": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "pm-extra-hrs": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "pm-freq-audio": {
+    "status": "todo",
+    "tag": "select"
+  },
+  "pm-freq-cabling": {
+    "status": "todo",
+    "tag": "select"
+  },
+  "pm-freq-cameras": {
+    "status": "todo",
+    "tag": "select"
+  },
+  "pm-freq-complexity": {
+    "status": "todo",
+    "tag": "select"
+  },
+  "pm-freq-contacts": {
+    "status": "todo",
+    "tag": "select"
+  },
+  "pm-freq-ctrlsys": {
+    "status": "todo",
+    "tag": "select"
+  },
+  "pm-freq-displays": {
+    "status": "todo",
+    "tag": "select"
+  },
+  "pm-freq-doors": {
+    "status": "todo",
+    "tag": "select"
+  },
+  "pm-freq-glass": {
+    "status": "todo",
+    "tag": "select"
+  },
+  "pm-freq-keypads": {
+    "status": "todo",
+    "tag": "select"
+  },
+  "pm-freq-motions": {
+    "status": "todo",
+    "tag": "select"
+  },
+  "pm-freq-network": {
+    "status": "todo",
+    "tag": "select"
+  },
+  "pm-freq-panels": {
+    "status": "todo",
+    "tag": "select"
+  },
+  "pm-freq-power": {
+    "status": "todo",
+    "tag": "select"
+  },
+  "pm-freq-rack": {
+    "status": "todo",
+    "tag": "select"
+  },
+  "pm-freq-readers": {
+    "status": "todo",
+    "tag": "select"
+  },
+  "pm-freq-rex": {
+    "status": "todo",
+    "tag": "select"
+  },
+  "pm-freq-sirens": {
+    "status": "todo",
+    "tag": "select"
+  },
+  "pm-freq-software": {
+    "status": "todo",
+    "tag": "select"
+  },
+  "pm-freq-videodist": {
+    "status": "todo",
+    "tag": "select"
+  },
+  "pm-glass": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "pm-hr-audio": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "pm-hr-cabling": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "pm-hr-cameras": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "pm-hr-complexity": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "pm-hr-contacts": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "pm-hr-ctrlsys": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "pm-hr-displays": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "pm-hr-doors": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "pm-hr-glass": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "pm-hr-keypads": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "pm-hr-motions": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "pm-hr-network": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "pm-hr-panels": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "pm-hr-power": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "pm-hr-rack": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "pm-hr-readers": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "pm-hr-rex": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "pm-hr-sirens": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "pm-hr-software": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "pm-hr-videodist": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "pm-keypads": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "pm-min-audio": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "pm-min-cabling": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "pm-min-cameras": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "pm-min-complexity": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "pm-min-contacts": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "pm-min-ctrlsys": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "pm-min-displays": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "pm-min-doors": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "pm-min-glass": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "pm-min-keypads": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "pm-min-motions": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "pm-min-network": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "pm-min-panels": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "pm-min-power": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "pm-min-rack": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "pm-min-readers": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "pm-min-rex": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "pm-min-sirens": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "pm-min-software": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "pm-min-videodist": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "pm-motions": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "pm-network": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "pm-panels": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "pm-power": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "pm-rack": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "pm-readers": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "pm-rex": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "pm-sirens": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "pm-software": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "pm-technicians": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "pm-videodist": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "q-print-btn": {
+    "status": "todo",
+    "tag": "button"
+  },
+  "qb-bill-addr": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "qb-bill-city": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "qb-bill-same": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "qb-bill-state": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "qb-bill-zip": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "qb-site1-rate": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "sfburg": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "shMarkupSlider": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "siteAddress": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "siteCity": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "siteState": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "siteType": {
+    "status": "todo",
+    "tag": "select"
+  },
+  "siteZip": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "sla-agr-date": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "sla-agr-num": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "sla-agr-term": {
+    "status": "todo",
+    "tag": "select"
+  },
+  "sla-auto-renew": {
+    "status": "todo",
+    "tag": "select"
+  },
+  "sla-billing-cycle": {
+    "status": "todo",
+    "tag": "select"
+  },
+  "sla-bud-ah-hrs": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "sla-bud-ah-rate": {
+    "status": "todo",
+    "tag": "select"
+  },
+  "sla-bud-em-hrs": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "sla-bud-em-rate": {
+    "status": "todo",
+    "tag": "select"
+  },
+  "sla-bud-mat-amt": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "sla-bud-reg-hrs": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "sla-bud-reg-rate": {
+    "status": "todo",
+    "tag": "select"
+  },
+  "sla-cal-month": {
+    "status": "todo",
+    "tag": "select"
+  },
+  "sla-cal-year": {
+    "status": "todo",
+    "tag": "select"
+  },
+  "sla-custom-months": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "sla-duration": {
+    "status": "todo",
+    "tag": "select"
+  },
+  "sla-end-date": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "sla-notes": {
+    "status": "todo",
+    "tag": "textarea"
+  },
+  "sla-resp-ah-onsite": {
+    "status": "todo",
+    "tag": "select"
+  },
+  "sla-resp-ah-triage": {
+    "status": "todo",
+    "tag": "select"
+  },
+  "sla-resp-em-onsite": {
+    "status": "todo",
+    "tag": "select"
+  },
+  "sla-resp-em-triage": {
+    "status": "todo",
+    "tag": "select"
+  },
+  "sla-resp-reg-onsite": {
+    "status": "todo",
+    "tag": "select"
+  },
+  "sla-resp-reg-triage": {
+    "status": "todo",
+    "tag": "select"
+  },
+  "sla-rmr-monthly": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "sla-rmr-pm": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "sla-start-date": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "sla-visit-btn-1": {
+    "status": "todo",
+    "tag": "button"
+  },
+  "sla-visit-btn-2": {
+    "status": "todo",
+    "tag": "button"
+  },
+  "sla-visit-btn-3": {
+    "status": "todo",
+    "tag": "button"
+  },
+  "sla-visit-btn-4": {
+    "status": "todo",
+    "tag": "button"
+  },
+  "slaops-audit": {
+    "status": "todo",
+    "tag": "select"
+  },
+  "slaops-criticality": {
+    "status": "todo",
+    "tag": "select"
+  },
+  "slaops-industry": {
+    "status": "todo",
+    "tag": "select"
+  },
+  "slaops-material": {
+    "status": "todo",
+    "tag": "select"
+  },
+  "slaops-meeting-duration": {
+    "status": "todo",
+    "tag": "select"
+  },
+  "slaops-meeting-freq": {
+    "status": "todo",
+    "tag": "select"
+  },
+  "slaops-meeting-include": {
+    "status": "todo",
+    "tag": "select"
+  },
+  "slaops-meeting-onsite": {
+    "status": "todo",
+    "tag": "select"
+  },
+  "slaops-meeting-remotehands": {
+    "status": "todo",
+    "tag": "select"
+  },
+  "slaops-meeting-remoteresp": {
+    "status": "todo",
+    "tag": "select"
+  },
+  "slaops-meeting-source": {
+    "status": "todo",
+    "tag": "select"
+  },
+  "slaops-meeting-window": {
+    "status": "todo",
+    "tag": "select"
+  },
+  "slaops-pmobjective": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "slaops-wf-check": {
+    "status": "todo",
+    "tag": "select"
+  },
+  "slaops-wf-role": {
+    "status": "todo",
+    "tag": "select"
+  },
+  "slaops-wf-setup": {
+    "status": "todo",
+    "tag": "select"
+  },
+  "slapm-annual": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "sp-search": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "sub-type-locksmith": {
+    "status": "todo",
+    "tag": "button"
+  },
+  "sub-type-other": {
+    "status": "todo",
+    "tag": "button"
+  },
+  "sub-type-sprinkler": {
+    "status": "todo",
+    "tag": "button"
+  },
+  "subMarkupSlider": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "subOtherDesc": {
+    "status": "todo",
+    "tag": "textarea"
+  },
+  "svcGMSlider": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "systemType": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "tab-mc": {
+    "status": "todo",
+    "tag": "button"
+  },
+  "tab-sla": {
+    "status": "todo",
+    "tag": "button"
+  },
+  "tab-sse": {
+    "status": "todo",
+    "tag": "button"
+  },
+  "teleguard": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "tmSubBilled": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "tmSubDesc": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "tmSubGMSlider": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "tmSubGMSliderR": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "tmSubRate": {
+    "status": "todo",
+    "tag": "input"
+  },
+  "ulcerts": {
+    "status": "todo",
+    "tag": "input"
+  }
+}
