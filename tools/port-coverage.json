@@ -536,120 +536,149 @@
     "tag": "input"
   },
   "fi-duct": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "fi-floors": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "fi-hr-duct": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "fi-hr-floors": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "fi-hr-notify": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "fi-hr-panels": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "fi-hr-power": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "fi-hr-pull": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "fi-hr-smokes": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "fi-hr-tamper": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "fi-hr-waterflows": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "fi-min-duct": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "fi-min-floors": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "fi-min-notify": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "fi-min-panels": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "fi-min-power": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "fi-min-pull": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "fi-min-smokes": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "fi-min-tamper": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "fi-min-waterflows": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "fi-notify": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "fi-panels": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "fi-pm-hrs": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "fi-power": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "fi-pull": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "fi-smokes": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "fi-tamper": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "fi-technicians": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "fi-waterflows": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "gcs": {
     "status": "done",
@@ -977,332 +1006,414 @@
     "tag": "input"
   },
   "pm-audio": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "pm-cabling": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "pm-cameras": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "pm-complexity": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "pm-contacts": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "pm-ctrlsys": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "pm-displays": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "pm-doors": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "pm-extra-hrs": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "pm-freq-audio": {
-    "status": "todo",
-    "tag": "select"
+    "status": "done",
+    "tag": "select",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "pm-freq-cabling": {
-    "status": "todo",
-    "tag": "select"
+    "status": "done",
+    "tag": "select",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "pm-freq-cameras": {
-    "status": "todo",
-    "tag": "select"
+    "status": "done",
+    "tag": "select",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "pm-freq-complexity": {
-    "status": "todo",
-    "tag": "select"
+    "status": "done",
+    "tag": "select",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "pm-freq-contacts": {
-    "status": "todo",
-    "tag": "select"
+    "status": "done",
+    "tag": "select",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "pm-freq-ctrlsys": {
-    "status": "todo",
-    "tag": "select"
+    "status": "done",
+    "tag": "select",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "pm-freq-displays": {
-    "status": "todo",
-    "tag": "select"
+    "status": "done",
+    "tag": "select",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "pm-freq-doors": {
-    "status": "todo",
-    "tag": "select"
+    "status": "done",
+    "tag": "select",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "pm-freq-glass": {
-    "status": "todo",
-    "tag": "select"
+    "status": "done",
+    "tag": "select",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "pm-freq-keypads": {
-    "status": "todo",
-    "tag": "select"
+    "status": "done",
+    "tag": "select",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "pm-freq-motions": {
-    "status": "todo",
-    "tag": "select"
+    "status": "done",
+    "tag": "select",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "pm-freq-network": {
-    "status": "todo",
-    "tag": "select"
+    "status": "done",
+    "tag": "select",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "pm-freq-panels": {
-    "status": "todo",
-    "tag": "select"
+    "status": "done",
+    "tag": "select",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "pm-freq-power": {
-    "status": "todo",
-    "tag": "select"
+    "status": "done",
+    "tag": "select",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "pm-freq-rack": {
-    "status": "todo",
-    "tag": "select"
+    "status": "done",
+    "tag": "select",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "pm-freq-readers": {
-    "status": "todo",
-    "tag": "select"
+    "status": "done",
+    "tag": "select",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "pm-freq-rex": {
-    "status": "todo",
-    "tag": "select"
+    "status": "done",
+    "tag": "select",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "pm-freq-sirens": {
-    "status": "todo",
-    "tag": "select"
+    "status": "done",
+    "tag": "select",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "pm-freq-software": {
-    "status": "todo",
-    "tag": "select"
+    "status": "done",
+    "tag": "select",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "pm-freq-videodist": {
-    "status": "todo",
-    "tag": "select"
+    "status": "done",
+    "tag": "select",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "pm-glass": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "pm-hr-audio": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "pm-hr-cabling": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "pm-hr-cameras": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "pm-hr-complexity": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "pm-hr-contacts": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "pm-hr-ctrlsys": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "pm-hr-displays": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "pm-hr-doors": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "pm-hr-glass": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "pm-hr-keypads": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "pm-hr-motions": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "pm-hr-network": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "pm-hr-panels": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "pm-hr-power": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "pm-hr-rack": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "pm-hr-readers": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "pm-hr-rex": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "pm-hr-sirens": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "pm-hr-software": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "pm-hr-videodist": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "pm-keypads": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "pm-min-audio": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "pm-min-cabling": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "pm-min-cameras": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "pm-min-complexity": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "pm-min-contacts": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "pm-min-ctrlsys": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "pm-min-displays": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "pm-min-doors": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "pm-min-glass": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "pm-min-keypads": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "pm-min-motions": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "pm-min-network": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "pm-min-panels": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "pm-min-power": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "pm-min-rack": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "pm-min-readers": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "pm-min-rex": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "pm-min-sirens": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "pm-min-software": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "pm-min-videodist": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "pm-motions": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "pm-network": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "pm-panels": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "pm-power": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "pm-rack": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "pm-readers": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "pm-rex": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "pm-sirens": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "pm-software": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "pm-technicians": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "pm-videodist": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "q-print-btn": {
     "status": "todo",
