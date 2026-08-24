@@ -1,73 +1,85 @@
 import { app } from '@azure/functions';
-import { getPool } from '../db.js';
+import { query } from '../db.js';
 
-// GET /api/rates — replaces the old Supabase
-// `sb.from('app_rates').select('config').eq('app','sse').single()` read.
-// Route protection (must be signed in) is enforced by staticwebapp.config.json,
-// not by this function, so this handler assumes an already-authenticated caller.
+// GET /api/rates — replaces the Supabase read
+// `sb.from('app_rates').select('config').eq('app','sse').single()`.
+//
+// The legacy version returned one JSON blob. This assembles the same shape from the
+// normalised tables, so the frontend contract is unchanged while the data becomes
+// queryable and versioned. Every quote pins the rate_profile_id it was priced with,
+// which is what makes an old quote explainable later.
+//
+// Route protection is enforced by staticwebapp.config.json — every route requires
+// the sse-users role — so this handler can assume an authenticated caller. That is
+// why authLevel is 'anonymous': the gate is the platform's, not the function's.
 app.http('rates', {
   methods: ['GET'],
-  authLevel: 'anonymous', // SWA's platform-level auth gate already blocked unauthenticated callers
+  authLevel: 'anonymous',
   route: 'rates',
   handler: async (request, context) => {
     const productTag = process.env.PRODUCT_TAG || 'sse';
-    const pool = await getPool();
 
-    const profileResult = await pool.request()
-      .input('tag', productTag)
-      .query(`
-        SELECT rp.RateProfileId, rp.Version
-        FROM dbo.ActiveRateProfile rp
-        WHERE rp.ProductTag = @tag
-      `);
-
-    const profile = profileResult.recordset[0];
-    if (!profile) {
-      return { status: 404, jsonBody: { error: 'No active rate profile for ' + productTag } };
+    const profile = await query(
+      'SELECT rate_profile_id, version FROM active_rate_profile WHERE product_tag = $1',
+      [productTag],
+    );
+    if (profile.rowCount === 0) {
+      return {
+        status: 404,
+        jsonBody: {
+          error:
+            `No active rate profile for "${productTag}". Publish one, or check ` +
+            `PRODUCT_TAG matches a row in the product table.`,
+        },
+      };
     }
-    const rateProfileId = profile.RateProfileId;
+    const { rate_profile_id: id, version } = profile.rows[0];
 
+    // One round trip per table, issued together. The pool is deliberately small, so
+    // this is bounded by it rather than by the number of queries.
     const [labor, svc, monitoring, door, doorBundles, video, gcs, minRmr, misc, tiers, options] =
       await Promise.all([
-        pool.request().input('id', rateProfileId).query('SELECT * FROM dbo.LaborRate WHERE RateProfileId=@id'),
-        pool.request().input('id', rateProfileId).query('SELECT * FROM dbo.ServiceCallRate WHERE RateProfileId=@id'),
-        pool.request().input('id', rateProfileId).query('SELECT * FROM dbo.MonitoringRate WHERE RateProfileId=@id'),
-        pool.request().input('id', rateProfileId).query('SELECT * FROM dbo.DoorRate WHERE RateProfileId=@id'),
-        pool.request().input('id', rateProfileId).query('SELECT * FROM dbo.DoorBundle WHERE RateProfileId=@id ORDER BY BundleType, SortOrder'),
-        pool.request().input('id', rateProfileId).query('SELECT * FROM dbo.VideoRate WHERE RateProfileId=@id'),
-        pool.request().input('id', rateProfileId).query('SELECT * FROM dbo.GcsRate WHERE RateProfileId=@id'),
-        pool.request().input('id', rateProfileId).query('SELECT * FROM dbo.MinRmrRate WHERE RateProfileId=@id'),
-        pool.request().input('id', rateProfileId).query('SELECT * FROM dbo.MiscRate WHERE RateProfileId=@id'),
-        pool.request().input('id', rateProfileId).query('SELECT * FROM dbo.TierRate WHERE RateProfileId=@id ORDER BY SortOrder'),
-        pool.request().input('id', rateProfileId).query('SELECT * FROM dbo.PricingOption WHERE RateProfileId=@id ORDER BY DropdownGroup, SortOrder'),
+        query('SELECT * FROM labor_rate WHERE rate_profile_id = $1', [id]),
+        query('SELECT * FROM service_call_rate WHERE rate_profile_id = $1', [id]),
+        query('SELECT * FROM monitoring_rate WHERE rate_profile_id = $1', [id]),
+        query('SELECT * FROM door_rate WHERE rate_profile_id = $1', [id]),
+        query('SELECT * FROM door_bundle WHERE rate_profile_id = $1 ORDER BY bundle_type, sort_order', [id]),
+        query('SELECT * FROM video_rate WHERE rate_profile_id = $1', [id]),
+        query('SELECT * FROM gcs_rate WHERE rate_profile_id = $1', [id]),
+        query('SELECT * FROM min_rmr_rate WHERE rate_profile_id = $1', [id]),
+        query('SELECT rate_key, rate_value FROM misc_rate WHERE rate_profile_id = $1', [id]),
+        query('SELECT * FROM tier_rate WHERE rate_profile_id = $1 ORDER BY sort_order', [id]),
+        query('SELECT * FROM pricing_option WHERE rate_profile_id = $1 ORDER BY dropdown_group, sort_order', [id]),
       ]);
 
     const miscMap = {};
-    for (const row of misc.recordset) miscMap[row.RateKey] = row.RateValue;
+    for (const row of misc.rows) miscMap[row.rate_key] = row.rate_value;
 
+    // Grouped the way the legacy dropdownsHTML was keyed, so a <select> renders real
+    // <option> elements from data instead of the app injecting stored markup.
     const optionsByGroup = {};
-    for (const row of options.recordset) {
-      (optionsByGroup[row.DropdownGroup] ||= []).push({
-        value: row.OptionValue,
-        label: row.Label,
-        price: row.Price,
+    for (const row of options.rows) {
+      (optionsByGroup[row.dropdown_group] ||= []).push({
+        value: row.option_value,
+        label: row.label,
+        price: row.price,
       });
     }
 
     return {
       jsonBody: {
-        rateProfileId,
-        version: profile.Version,
-        labor: labor.recordset[0] || null,
-        serviceCall: svc.recordset[0] || null,
-        monitoring: monitoring.recordset[0] || null,
-        door: door.recordset[0] || null,
-        doorBundles: doorBundles.recordset,
-        video: video.recordset[0] || null,
-        gcs: gcs.recordset[0] || null,
-        minRmr: minRmr.recordset[0] || null,
+        rateProfileId: id,
+        version,
+        labor: labor.rows[0] || null,
+        serviceCall: svc.rows[0] || null,
+        monitoring: monitoring.rows[0] || null,
+        door: door.rows[0] || null,
+        doorBundles: doorBundles.rows,
+        video: video.rows[0] || null,
+        gcs: gcs.rows[0] || null,
+        minRmr: minRmr.rows[0] || null,
         misc: miscMap,
-        tiers: tiers.recordset,
+        tiers: tiers.rows,
         dropdownOptions: optionsByGroup,
       },
     };

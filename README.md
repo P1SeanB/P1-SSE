@@ -36,7 +36,9 @@ configuration lives in three places:
 |---|---|---|
 | `AAD_CLIENT_ID` | SWA auth | Entra app registration client id (referenced by `clientIdSettingName`) |
 | `AAD_CLIENT_SECRET` | SWA auth | App registration client secret (referenced by `clientSecretSettingName`) |
-| `SQL_CONNECTION_STRING` | `api/src/db.js` | Azure SQL connection — use `Authentication=Active Directory Managed Identity` so no password exists anywhere |
+| `PGHOST` | `api/src/db.js` | Shared PostgreSQL Flexible Server FQDN. The server is consumed, never managed by this app's template |
+| `PGDATABASE` | `api/src/db.js` | This app's database on that server (default `sse`) |
+| `PGUSER` | `api/src/db.js` | Entra principal name of the API's managed identity, which is also its PostgreSQL role name |
 | `PRODUCT_TAG` | `api/src/functions/rates.js` | Which product's rate profile to serve (defaults to `sse`) |
 | `SSE_ENTRA_GROUP_ID` | `api/src/functions/getRoles.js` | Object id of the security group allowed into the app (fails closed if unset) |
 
