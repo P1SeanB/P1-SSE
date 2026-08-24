@@ -34,6 +34,40 @@ function legacyCalcRMR(totalCosts, gmTarget) {
   return totalCosts > 0 ? totalCosts / (12 * (1 - gmTarget)) : 0;
 }
 
+// :4593-4605 — the profit block. These are the figures that tell an estimator
+// whether a job makes money, and until now only recommendedRMR was checked: a quote
+// could price correctly and report the wrong margin, which is the number someone
+// decides to take the work on.
+//
+// The overhead METHOD is the part worth pinning. Overhead applies to costs or to
+// revenue depending on the setting, and on a high-margin job those differ
+// substantially — 12% of $40,000 revenue against 12% of $22,000 cost. Defaulting the
+// wrong way flatters or punishes every quote.
+function legacyProfit(i, rates, recommendedRMR) {
+  const isTM = ['Time & Material Only', 'Material Only', 'Budget Estimate', 'Flat Rate Estimate']
+    .includes(i.systemType);
+  const inspCost = i.inspHours * rates.labor.LaborCostPerHr;
+  const inspBilled = i.inspHours * i.laborRate;
+  const subMonthly = i.annualSub / 12;
+  const mDirect = i.monthlyCosts + inspCost / 12 + subMonthly + i.avMaint / 12;
+  const totalCosts = mDirect * 12;
+
+  const rmrIsManual = i.quotedMonthly > 0 && !isTM;
+  const rmrEff = rmrIsManual ? i.quotedMonthly : recommendedRMR;
+
+  const annRev = rmrEff * 12;
+  const annGP = annRev - totalCosts;
+  const annOH = i.ohMethod === 'cost' ? totalCosts * i.overheadRate : annRev * i.overheadRate;
+  const annNP = annGP - annOH;
+  const gm = annRev > 0 ? annGP / annRev : null;
+  const nm = annRev > 0 ? annNP / annRev : null;
+
+  const laborGP = inspBilled - inspCost;
+  const laborMargin = inspBilled > 0 ? laborGP / inspBilled : null;
+
+  return { totalCosts, annRev, annGP, annOH, annNP, gm, nm, laborGP, laborMargin };
+}
+
 // :4575-4581 — the recommended-RMR block of the main quote calculation.
 function legacyRecommendedRMR(i, rates) {
   const inspCost = i.inspHours * rates.labor.LaborCostPerHr;
@@ -119,12 +153,41 @@ const EPSILON = 0.005;
 let checked = 0;
 const mismatches = [];
 
-for (const input of grid()) {
-  checked++;
-  const legacy = legacyRecommendedRMR(input, RATES);
-  const ported = computeQuote(input, RATES).recommendedRMR;
-  if (Math.abs(legacy - ported) > EPSILON) {
-    mismatches.push({ input, legacy, ported, delta: ported - legacy });
+// Every quote is now checked twice over: once on the price, and once on all six
+// profit figures derived from it, under BOTH overhead methods.
+const PROFIT_FIELDS = ['totalCosts', 'annRev', 'annGP', 'annOH', 'annNP', 'gm', 'nm', 'laborGP', 'laborMargin'];
+
+for (const base of grid()) {
+  for (const ohMethod of ['revenue', 'cost']) {
+    for (const overheadRate of [0, 0.12]) {
+      const input = { ...base, ohMethod, overheadRate };
+      checked++;
+
+      const legacyRmr = legacyRecommendedRMR(input, RATES);
+      const portedAll = computeQuote(input, RATES);
+      if (Math.abs(legacyRmr - portedAll.recommendedRMR) > EPSILON) {
+        mismatches.push({
+          input, legacy: legacyRmr, ported: portedAll.recommendedRMR,
+          delta: portedAll.recommendedRMR - legacyRmr, field: 'recommendedRMR',
+        });
+      }
+
+      const legacyP = legacyProfit(input, RATES, legacyRmr);
+      for (const f of PROFIT_FIELDS) {
+        const a = legacyP[f];
+        const b = portedAll[f];
+        // null is a real value here — a margin is undefined with no revenue, and
+        // reporting 0% instead would read as a break-even job rather than an empty
+        // one.
+        if (a === null || b === null) {
+          if (a !== b) mismatches.push({ input, legacy: a, ported: b, delta: 0, field: f });
+          continue;
+        }
+        if (Math.abs(a - b) > EPSILON) {
+          mismatches.push({ input, legacy: a, ported: b, delta: b - a, field: f });
+        }
+      }
+    }
   }
 }
 

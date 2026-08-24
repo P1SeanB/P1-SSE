@@ -380,8 +380,9 @@
     "where": "EstimateDetails.jsx"
   },
   "avMaintenanceBilled": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "calc.js computeQuote avMaintBilled (parity-verified)"
   },
   "bosch": {
     "status": "done",
@@ -826,20 +827,24 @@
     "tag": "textarea"
   },
   "oh-cost-btn": {
-    "status": "todo",
-    "tag": "button"
+    "status": "done",
+    "tag": "button",
+    "where": "QuoteBuilder.jsx overhead method toggle"
   },
   "oh-rev-btn": {
-    "status": "todo",
-    "tag": "button"
+    "status": "done",
+    "tag": "button",
+    "where": "QuoteBuilder.jsx overhead method toggle"
   },
   "ohMethod": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "QuoteBuilder.jsx + calc.js (parity-verified, both methods)"
   },
   "overheadRate": {
-    "status": "todo",
-    "tag": "select"
+    "status": "done",
+    "tag": "select",
+    "where": "QuoteBuilder.jsx + calc.js (parity-verified)"
   },
   "p1-bom-close": {
     "status": "todo",
@@ -895,12 +900,14 @@
     "why": "Entra replaces the password gate — sign-in is handled by Static Web Apps."
   },
   "p1-login-email": {
-    "status": "todo",
-    "tag": "input"
+    "status": "dropped",
+    "tag": "input",
+    "why": "Entra replaces the password gate — CLAUDE.md security rule 1."
   },
   "p1-login-pass": {
-    "status": "todo",
-    "tag": "input"
+    "status": "dropped",
+    "tag": "input",
+    "why": "Entra replaces the password gate; no password is ever collected."
   },
   "p1cr-addfixed": {
     "status": "done",
@@ -1758,8 +1765,9 @@
     "where": "QuoteBuilder.jsx"
   },
   "systemType": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "QuoteBuilder.jsx + calc.js (drives the T&M branch)"
   },
   "tab-mc": {
     "status": "todo",
@@ -1779,12 +1787,14 @@
     "where": "src/lib/monitoring.js (parity-verified) + src/tabs/QuoteBuilder/QuoteBuilder.jsx"
   },
   "tmSubBilled": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/materials.js computeTmSubTotals (parity-verified)"
   },
   "tmSubDesc": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/materials.js computeTmSubTotals (parity-verified)"
   },
   "tmSubGMSlider": {
     "status": "partial",
@@ -1799,8 +1809,9 @@
     "note": "Markup/GM feeds the priced line calculation. The slider itself is not yet rendered."
   },
   "tmSubRate": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/materials.js computeTmSubTotals (parity-verified)"
   },
   "tmsub-row-*": {
     "status": "partial",
