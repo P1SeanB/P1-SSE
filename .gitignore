@@ -5,3 +5,12 @@ api/node_modules/
 .env.*
 *.local
 .swa/
+
+# Azure Functions local settings. Holds whatever you point the API at while
+# developing — historically a connection string. The .example is the committed one.
+api/local.settings.json
+
+# Real deployment parameters. Only the .example belongs in the repo; the filled-in
+# versions carry tenant and group object ids for each environment.
+infra/main.*.parameters.json
+!infra/main.parameters.json.example
