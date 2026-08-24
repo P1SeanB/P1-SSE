@@ -89,7 +89,15 @@ export function CheckRow({ label, checked, onChange, amount }) {
 export function RateSelect({ group, options, value, onChange, placeholder = '— Select —', ...rest }) {
   const opts = options?.[group] || [];
   return (
-    <select value={value} onChange={(e) => onChange(e.target.value)} {...rest}>
+    <select
+      value={value}
+      // The matched option is passed as a second argument. Some dropdowns carry more
+      // than a price — the Alarm.com video tiers carry a TYPE (flat / per-camera /
+      // expansion) that decides how the tier is charged, and a caller that only
+      // received the value would have to re-find the option to learn it.
+      onChange={(e) => onChange(e.target.value, opts.find((o) => String(o.value) === e.target.value))}
+      {...rest}
+    >
       <option value="">{placeholder}</option>
       {opts.map((o) => (
         <option key={o.value + o.label} value={o.value}>{o.label}</option>
