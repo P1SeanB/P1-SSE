@@ -122,10 +122,24 @@ Rates come out of the database now instead of a JSON blob, but the arithmetic mu
 match to the cent — an estimator quoting from the new tool has to reach the same
 number as the old one. Before trusting any output:
 
-- Both engines are JavaScript. Run the legacy functions and `src/lib/calc.js` over a
-  grid of representative inputs (system type × margin × labor hours × platform) and
-  diff them. That turns "did the port get the math right" into a test rather than a
-  spot check.
+```bash
+npm run parity
+```
+
+`tools/parity.mjs` re-implements the legacy formulas once, transcribed from
+`legacy/index.html` with line citations, and diffs them against `src/lib/calc.js`
+across ~1,300 input combinations. **Run it after any change to `calc.js`, and after
+any merge from `main`.**
+
+It has already earned its place: the RMR rounding changed from "next $5" to "next
+dollar" in the legacy app in Aug 2026, in both of its copies of the formula. The
+port was faithful when written and went stale underneath — every quote would have
+priced up to $4.99/mo high, which over a 36–60 month term is a few hundred dollars
+per site and reads as "the new system is more expensive". Nothing else would have
+caught it: it builds, it runs, and the number just looks plausible.
+
+When it fails, one of two things is true — the port is stale, or the legacy changed.
+Check both against the citations before touching anything.
 - **`src/lib/calc.js:102-111` preserves a real bug on purpose**: the minimum-RMR
   floor never applies, because of a system-type string mismatch. It is kept so the
   new tool matches the old one. Do **not** quietly fix it — it changes quoted prices.

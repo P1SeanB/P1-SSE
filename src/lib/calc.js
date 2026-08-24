@@ -110,11 +110,21 @@ export function computeQuote(input, rates) {
     ? (isCommercial ? rates?.minRmr?.CommercialFloor ?? 0 : rates?.minRmr?.ResidentialFloor ?? 0)
     : (input.systemType === 'Two-Way Monitoring & Services' ? rates?.minRmr?.TwoWayFloor ?? 0 : 0);
 
-  // Recommended RMR — :4300-4303 (rounded up to the next $5)
+  // Recommended RMR — legacy/index.html:4578-4581 (rounded up to the next DOLLAR)
+  //
+  // This rounded to the next $5 until Aug 2026, and this port was written against
+  // that. The legacy app then changed it to whole dollars in BOTH of its copies
+  // (:4581 and :5153), so it was deliberate, not a slip. Left unfixed, every quote
+  // from this tool would price up to $4.99/mo above the tool estimators are using —
+  // a few hundred dollars over a 36-60 month term, per site, reading as "the new
+  // system is more expensive".
+  //
+  // Found by the parity harness (npm run parity), which is exactly the drift it
+  // exists to catch: the port was correct when written and went stale underneath.
   const monRMR53 = Math.max(minRMR, calcRMR(monOnlyCosts, input.svcGM));
   const laborRMR = inspBilledMonthly;
   const rmrRaw = Math.max(minRMR, monRMR53 + subRMR + laborRMR + avMaintRMR);
-  const recommendedRMR = rmrRaw > 0 ? Math.ceil(rmrRaw / 5) * 5 : rmrRaw;
+  const recommendedRMR = rmrRaw > 0 ? Math.ceil(rmrRaw) : rmrRaw;
 
   // Manual per-site override — :4306-4310
   const rmrIsManual = input.quotedMonthly > 0 && !isTM;
