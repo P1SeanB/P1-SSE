@@ -7,10 +7,11 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "parity": "node tools/parity.mjs && node tools/parity-adc.mjs && node tools/parity-materials.mjs",
+    "parity": "node tools/parity.mjs && node tools/parity-adc.mjs && node tools/parity-materials.mjs && node tools/parity-sla.mjs",
     "coverage": "node tools/coverage.mjs",
     "parity:adc": "node tools/parity-adc.mjs",
-    "parity:materials": "node tools/parity-materials.mjs"
+    "parity:materials": "node tools/parity-materials.mjs",
+    "parity:sla": "node tools/parity-sla.mjs"
   },
   "dependencies": {
     "react": "^18.3.1",
