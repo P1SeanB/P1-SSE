@@ -1,12 +1,27 @@
 {
+  "//": [
+    "Copy to main.<env>.parameters.json (gitignored) and fill in. There is no",
+    "database password here any more: the shared PostgreSQL server has password",
+    "authentication disabled, so the API authenticates with its managed identity.",
+    "The only secret is the Entra sign-in client secret, and it should be passed on",
+    "the command line rather than written into this file:",
+    "",
+    "  az deployment group create -g <rg> -f infra/main.bicep \\",
+    "    -p @infra/main.dev.parameters.json -p aadClientSecret=\"$APP_SECRET\"",
+    "",
+    "sseUsersGroupObjectId is required in practice: getRoles fails CLOSED when it is",
+    "unset, so an environment deployed without it admits nobody. That is deliberate —",
+    "the alternative failure mode admits everybody."
+  ],
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "appName": { "value": "p1sse" },
-    "environment": { "value": "prod" },
-    "sqlAdminLogin": { "value": "<choose-an-admin-login>" },
-    "sqlAdminPassword": { "value": "<store-in-key-vault-or-pass-via-CLI-not-in-source-control>" },
-    "sqlEntraAdminGroupObjectId": { "value": "<object-id-of-an-admin-group>" },
-    "sqlEntraAdminGroupName": { "value": "<display-name-of-that-group>" }
+    "environmentName": { "value": "dev" },
+    "postgresFqdn": { "value": "<shared-postgres-server>.postgres.database.azure.com" },
+    "postgresDatabase": { "value": "sse" },
+    "aadClientId": { "value": "<appId of the SSE sign-in registration for this environment>" },
+    "sseUsersGroupObjectId": { "value": "<object id of the SSE users security group>" },
+    "sseDevelopersGroupObjectId": { "value": "<object id of the group allowed to change request status>" },
+    "productTag": { "value": "sse" }
   }
 }
