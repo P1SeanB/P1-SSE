@@ -31,6 +31,22 @@ const MAP_PATH = new URL('./port-coverage.json', import.meta.url);
 // is layout, and tracking it would drown the signal.
 const CONTROL_RE = /<(input|select|textarea|button)\b[^>]*\bid=["']([a-zA-Z0-9_-]+)["']/gi;
 
+// ⚠ THIS COUNTS STATIC MARKUP ONLY, and the gap is not small.
+//
+// The legacy builds whole families of controls in JavaScript — every material row,
+// labour row and T&M subcontract row is generated with ids like `mat-3-cost`, so
+// none of them appear here. The file has 774 element ids and 488 distinct
+// getElementById targets against the 348 controls this scan finds.
+//
+// So the denominator is a floor, not the whole surface. A dynamic family is tracked
+// by its TEMPLATE — one entry standing for every instance — which is recorded
+// explicitly in the map so nobody mistakes "348 accounted for" for "everything".
+const DYNAMIC_FAMILIES = [
+  { id: 'mat-row-*', note: 'Material rows built by addMatRow (:5714). One entry stands for every instance.' },
+  { id: 'labor-row-*', note: 'Labour rows built by addPartRow (:6454).' },
+  { id: 'tmsub-row-*', note: 'T&M subcontract rows built by addTMSubRow (:5591).' },
+];
+
 function legacyControls() {
   const html = readFileSync(LEGACY, 'utf8');
   const found = new Map();
@@ -39,6 +55,8 @@ function legacyControls() {
     const id = m[2];
     if (!found.has(id)) found.set(id, tag);
   }
+  // Families the scan cannot see, tracked as one entry each.
+  for (const f of DYNAMIC_FAMILIES) found.set(f.id, 'dynamic');
   return found;
 }
 

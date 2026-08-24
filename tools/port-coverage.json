@@ -751,9 +751,19 @@
     "status": "todo",
     "tag": "input"
   },
+  "labor-row-*": {
+    "status": "done",
+    "tag": "dynamic",
+    "where": "src/tabs/QuoteBuilder/MaterialRows.jsx — labour rows with per-row sell rate"
+  },
   "laborRateSlider": {
     "status": "todo",
     "tag": "input"
+  },
+  "mat-row-*": {
+    "status": "done",
+    "tag": "dynamic",
+    "where": "src/tabs/QuoteBuilder/MaterialRows.jsx — material rows, all three costing modes, purchasing detail for the BOM"
   },
   "matMarkupSlider": {
     "status": "partial",
@@ -1529,6 +1539,11 @@
   "tmSubRate": {
     "status": "todo",
     "tag": "input"
+  },
+  "tmsub-row-*": {
+    "status": "partial",
+    "tag": "dynamic",
+    "where": "src/lib/materials.js computeTmSubTotals (parity-verified); UI pending"
   },
   "ulcerts": {
     "status": "todo",
