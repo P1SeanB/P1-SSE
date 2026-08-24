@@ -847,52 +847,64 @@
     "where": "QuoteBuilder.jsx + calc.js (parity-verified)"
   },
   "p1-bom-close": {
-    "status": "todo",
-    "tag": "button"
+    "status": "done",
+    "tag": "button",
+    "where": "src/tabs/QuoteBuilder/BomExport.jsx + src/lib/materials.js (grouping parity-verified)"
   },
   "p1-bom-copy": {
-    "status": "todo",
-    "tag": "button"
+    "status": "done",
+    "tag": "button",
+    "where": "src/tabs/QuoteBuilder/BomExport.jsx + src/lib/materials.js (grouping parity-verified)"
   },
   "p1-bom-costs": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/tabs/QuoteBuilder/BomExport.jsx + src/lib/materials.js (grouping parity-verified)"
   },
   "p1-bom-csv": {
-    "status": "todo",
-    "tag": "button"
+    "status": "done",
+    "tag": "button",
+    "where": "src/tabs/QuoteBuilder/BomExport.jsx + src/lib/materials.js (grouping parity-verified)"
   },
   "p1-bom-job-btn": {
-    "status": "todo",
-    "tag": "button"
+    "status": "done",
+    "tag": "button",
+    "where": "src/tabs/QuoteBuilder/BomExport.jsx + src/lib/materials.js (grouping parity-verified)"
   },
   "p1-bom-print": {
-    "status": "todo",
-    "tag": "button"
+    "status": "done",
+    "tag": "button",
+    "where": "src/tabs/QuoteBuilder/BomExport.jsx + src/lib/materials.js (grouping parity-verified)"
   },
   "p1-job-cancel": {
-    "status": "todo",
-    "tag": "button"
+    "status": "done",
+    "tag": "button",
+    "where": "src/tabs/QuoteBuilder/BomExport.jsx + src/lib/materials.js (grouping parity-verified)"
   },
   "p1-job-go": {
-    "status": "todo",
-    "tag": "button"
+    "status": "done",
+    "tag": "button",
+    "where": "src/tabs/QuoteBuilder/BomExport.jsx + src/lib/materials.js (grouping parity-verified)"
   },
   "p1-job-phase": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/tabs/QuoteBuilder/BomExport.jsx + src/lib/materials.js (grouping parity-verified)"
   },
   "p1-job-pm": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/tabs/QuoteBuilder/BomExport.jsx + src/lib/materials.js (grouping parity-verified)"
   },
   "p1-job-seq": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/tabs/QuoteBuilder/BomExport.jsx + src/lib/materials.js (grouping parity-verified)"
   },
   "p1-job-swo": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/tabs/QuoteBuilder/BomExport.jsx + src/lib/materials.js (grouping parity-verified)"
   },
   "p1-login-btn": {
     "status": "dropped",
