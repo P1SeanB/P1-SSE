@@ -5,7 +5,8 @@
   "type": "module",
   "main": "src/functions/*.js",
   "scripts": {
-    "start": "func start"
+    "start": "func start",
+    "verify": "node verify.mjs"
   },
   "dependencies": {
     "@azure/functions": "^4.5.1",
