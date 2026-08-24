@@ -1209,128 +1209,159 @@
     "tag": "input"
   },
   "sla-agr-date": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/tabs/SlaCreator/SlaCreator.jsx + src/lib/sla.js (parity-verified)"
   },
   "sla-agr-num": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/tabs/SlaCreator/SlaCreator.jsx + src/lib/sla.js (parity-verified)"
   },
   "sla-agr-term": {
-    "status": "todo",
-    "tag": "select"
+    "status": "done",
+    "tag": "select",
+    "where": "src/tabs/SlaCreator/SlaCreator.jsx + src/lib/sla.js (parity-verified)"
   },
   "sla-auto-renew": {
-    "status": "todo",
-    "tag": "select"
+    "status": "done",
+    "tag": "select",
+    "where": "src/tabs/SlaCreator/SlaCreator.jsx + src/lib/sla.js (parity-verified)"
   },
   "sla-billing-cycle": {
-    "status": "todo",
-    "tag": "select"
+    "status": "done",
+    "tag": "select",
+    "where": "src/tabs/SlaCreator/SlaCreator.jsx + src/lib/sla.js (parity-verified)"
   },
   "sla-bud-ah-hrs": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/tabs/SlaCreator/SlaCreator.jsx + src/lib/sla.js (parity-verified)"
   },
   "sla-bud-ah-rate": {
-    "status": "todo",
-    "tag": "select"
+    "status": "done",
+    "tag": "select",
+    "where": "src/tabs/SlaCreator/SlaCreator.jsx + src/lib/sla.js (parity-verified)"
   },
   "sla-bud-em-hrs": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/tabs/SlaCreator/SlaCreator.jsx + src/lib/sla.js (parity-verified)"
   },
   "sla-bud-em-rate": {
-    "status": "todo",
-    "tag": "select"
+    "status": "done",
+    "tag": "select",
+    "where": "src/tabs/SlaCreator/SlaCreator.jsx + src/lib/sla.js (parity-verified)"
   },
   "sla-bud-mat-amt": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/tabs/SlaCreator/SlaCreator.jsx + src/lib/sla.js (parity-verified)"
   },
   "sla-bud-reg-hrs": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/tabs/SlaCreator/SlaCreator.jsx + src/lib/sla.js (parity-verified)"
   },
   "sla-bud-reg-rate": {
-    "status": "todo",
-    "tag": "select"
+    "status": "done",
+    "tag": "select",
+    "where": "src/tabs/SlaCreator/SlaCreator.jsx + src/lib/sla.js (parity-verified)"
   },
   "sla-cal-month": {
-    "status": "todo",
-    "tag": "select"
+    "status": "done",
+    "tag": "select",
+    "where": "src/tabs/SlaCreator/SlaCreator.jsx + src/lib/sla.js (parity-verified)"
   },
   "sla-cal-year": {
-    "status": "todo",
-    "tag": "select"
+    "status": "done",
+    "tag": "select",
+    "where": "src/tabs/SlaCreator/SlaCreator.jsx + src/lib/sla.js (parity-verified)"
   },
   "sla-custom-months": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/tabs/SlaCreator/SlaCreator.jsx + src/lib/sla.js (parity-verified)"
   },
   "sla-duration": {
-    "status": "todo",
-    "tag": "select"
+    "status": "done",
+    "tag": "select",
+    "where": "src/tabs/SlaCreator/SlaCreator.jsx + src/lib/sla.js (parity-verified)"
   },
   "sla-end-date": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/tabs/SlaCreator/SlaCreator.jsx + src/lib/sla.js (parity-verified)"
   },
   "sla-notes": {
-    "status": "todo",
-    "tag": "textarea"
+    "status": "done",
+    "tag": "textarea",
+    "where": "src/tabs/SlaCreator/SlaCreator.jsx + src/lib/sla.js (parity-verified)"
   },
   "sla-resp-ah-onsite": {
-    "status": "todo",
-    "tag": "select"
+    "status": "done",
+    "tag": "select",
+    "where": "src/tabs/SlaCreator/SlaCreator.jsx + src/lib/sla.js (parity-verified)"
   },
   "sla-resp-ah-triage": {
-    "status": "todo",
-    "tag": "select"
+    "status": "done",
+    "tag": "select",
+    "where": "src/tabs/SlaCreator/SlaCreator.jsx + src/lib/sla.js (parity-verified)"
   },
   "sla-resp-em-onsite": {
-    "status": "todo",
-    "tag": "select"
+    "status": "done",
+    "tag": "select",
+    "where": "src/tabs/SlaCreator/SlaCreator.jsx + src/lib/sla.js (parity-verified)"
   },
   "sla-resp-em-triage": {
-    "status": "todo",
-    "tag": "select"
+    "status": "done",
+    "tag": "select",
+    "where": "src/tabs/SlaCreator/SlaCreator.jsx + src/lib/sla.js (parity-verified)"
   },
   "sla-resp-reg-onsite": {
-    "status": "todo",
-    "tag": "select"
+    "status": "done",
+    "tag": "select",
+    "where": "src/tabs/SlaCreator/SlaCreator.jsx + src/lib/sla.js (parity-verified)"
   },
   "sla-resp-reg-triage": {
-    "status": "todo",
-    "tag": "select"
+    "status": "done",
+    "tag": "select",
+    "where": "src/tabs/SlaCreator/SlaCreator.jsx + src/lib/sla.js (parity-verified)"
   },
   "sla-rmr-monthly": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/tabs/SlaCreator/SlaCreator.jsx + src/lib/sla.js (parity-verified)"
   },
   "sla-rmr-pm": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/tabs/SlaCreator/SlaCreator.jsx + src/lib/sla.js (parity-verified)"
   },
   "sla-start-date": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/tabs/SlaCreator/SlaCreator.jsx + src/lib/sla.js (parity-verified)"
   },
   "sla-visit-btn-1": {
-    "status": "todo",
-    "tag": "button"
+    "status": "done",
+    "tag": "button",
+    "where": "src/tabs/SlaCreator/SlaCreator.jsx + src/lib/sla.js (parity-verified)"
   },
   "sla-visit-btn-2": {
-    "status": "todo",
-    "tag": "button"
+    "status": "done",
+    "tag": "button",
+    "where": "src/tabs/SlaCreator/SlaCreator.jsx + src/lib/sla.js (parity-verified)"
   },
   "sla-visit-btn-3": {
-    "status": "todo",
-    "tag": "button"
+    "status": "done",
+    "tag": "button",
+    "where": "src/tabs/SlaCreator/SlaCreator.jsx + src/lib/sla.js (parity-verified)"
   },
   "sla-visit-btn-4": {
-    "status": "todo",
-    "tag": "button"
+    "status": "done",
+    "tag": "button",
+    "where": "src/tabs/SlaCreator/SlaCreator.jsx + src/lib/sla.js (parity-verified)"
   },
   "slaops-audit": {
     "status": "todo",
