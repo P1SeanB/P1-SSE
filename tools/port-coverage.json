@@ -756,8 +756,10 @@
     "tag": "input"
   },
   "matMarkupSlider": {
-    "status": "todo",
-    "tag": "input"
+    "status": "partial",
+    "tag": "input",
+    "where": "src/lib/materials.js (pricing, parity-verified)",
+    "note": "Markup/GM feeds the priced line calculation. The slider itself is not yet rendered."
   },
   "matShippingCost": {
     "status": "todo",
@@ -1513,12 +1515,16 @@
     "tag": "input"
   },
   "tmSubGMSlider": {
-    "status": "todo",
-    "tag": "input"
+    "status": "partial",
+    "tag": "input",
+    "where": "src/lib/materials.js (pricing, parity-verified)",
+    "note": "Markup/GM feeds the priced line calculation. The slider itself is not yet rendered."
   },
   "tmSubGMSliderR": {
-    "status": "todo",
-    "tag": "input"
+    "status": "partial",
+    "tag": "input",
+    "where": "src/lib/materials.js (pricing, parity-verified)",
+    "note": "Markup/GM feeds the priced line calculation. The slider itself is not yet rendered."
   },
   "tmSubRate": {
     "status": "todo",
