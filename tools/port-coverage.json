@@ -1,7 +1,8 @@
 {
   "access": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/monitoring.js (parity-verified) + src/tabs/QuoteBuilder/QuoteBuilder.jsx"
   },
   "adc-access": {
     "status": "done",
@@ -348,16 +349,19 @@
     "tag": "input"
   },
   "alarmcom": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/monitoring.js (parity-verified) + src/tabs/QuoteBuilder/QuoteBuilder.jsx"
   },
   "alarmnet": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/monitoring.js (parity-verified) + src/tabs/QuoteBuilder/QuoteBuilder.jsx"
   },
   "alarmnet-plan": {
-    "status": "todo",
-    "tag": "select"
+    "status": "done",
+    "tag": "select",
+    "where": "src/lib/monitoring.js (parity-verified) + src/tabs/QuoteBuilder/QuoteBuilder.jsx"
   },
   "annualSub": {
     "status": "todo",
@@ -376,12 +380,14 @@
     "tag": "input"
   },
   "bosch": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/monitoring.js (parity-verified) + src/tabs/QuoteBuilder/QuoteBuilder.jsx"
   },
   "br": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/monitoring.js (parity-verified) + src/tabs/QuoteBuilder/QuoteBuilder.jsx"
   },
   "btn-maint-toggle": {
     "status": "todo",
@@ -404,36 +410,44 @@
     "tag": "input"
   },
   "cb-alarmcom-enable": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/monitoring.js (parity-verified) + src/tabs/QuoteBuilder/QuoteBuilder.jsx"
   },
   "cb-alarmnet": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/monitoring.js (parity-verified) + src/tabs/QuoteBuilder/QuoteBuilder.jsx"
   },
   "cb-bosch": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/monitoring.js (parity-verified) + src/tabs/QuoteBuilder/QuoteBuilder.jsx"
   },
   "cb-br": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/monitoring.js (parity-verified) + src/tabs/QuoteBuilder/QuoteBuilder.jsx"
   },
   "cb-connectone": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/monitoring.js (parity-verified) + src/tabs/QuoteBuilder/QuoteBuilder.jsx"
   },
   "cb-connectone-addon": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/monitoring.js (parity-verified) + src/tabs/QuoteBuilder/QuoteBuilder.jsx"
   },
   "cb-gcs-access": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/monitoring.js (parity-verified) + src/tabs/QuoteBuilder/QuoteBuilder.jsx"
   },
   "cb-honeywell": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/monitoring.js (parity-verified) + src/tabs/QuoteBuilder/QuoteBuilder.jsx"
   },
   "cb-nfpa": {
     "status": "todo",
@@ -448,36 +462,44 @@
     "tag": "input"
   },
   "cb-sfburg": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/monitoring.js (parity-verified) + src/tabs/QuoteBuilder/QuoteBuilder.jsx"
   },
   "cb-teleguard": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/monitoring.js (parity-verified) + src/tabs/QuoteBuilder/QuoteBuilder.jsx"
   },
   "cb-ulcerts": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/monitoring.js (parity-verified) + src/tabs/QuoteBuilder/QuoteBuilder.jsx"
   },
   "connectone": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/monitoring.js (parity-verified) + src/tabs/QuoteBuilder/QuoteBuilder.jsx"
   },
   "connectone-addon": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/monitoring.js (parity-verified) + src/tabs/QuoteBuilder/QuoteBuilder.jsx"
   },
   "connectone-sms": {
-    "status": "todo",
-    "tag": "select"
+    "status": "done",
+    "tag": "select",
+    "where": "src/lib/monitoring.js (parity-verified) + src/tabs/QuoteBuilder/QuoteBuilder.jsx"
   },
   "connectone-sms-val": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/monitoring.js (parity-verified) + src/tabs/QuoteBuilder/QuoteBuilder.jsx"
   },
   "connectone-systems": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/monitoring.js (parity-verified) + src/tabs/QuoteBuilder/QuoteBuilder.jsx"
   },
   "contactName": {
     "status": "todo",
@@ -488,12 +510,14 @@
     "tag": "input"
   },
   "customMonCost": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/monitoring.js (parity-verified) + src/tabs/QuoteBuilder/QuoteBuilder.jsx"
   },
   "customMonDesc": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/monitoring.js (parity-verified) + src/tabs/QuoteBuilder/QuoteBuilder.jsx"
   },
   "emailAddress": {
     "status": "todo",
@@ -628,32 +652,39 @@
     "tag": "input"
   },
   "gcs": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/monitoring.js (parity-verified) + src/tabs/QuoteBuilder/QuoteBuilder.jsx"
   },
   "gcs-other-burg": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/monitoring.js (parity-verified) + src/tabs/QuoteBuilder/QuoteBuilder.jsx"
   },
   "gcs-other-burg-val": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/monitoring.js (parity-verified) + src/tabs/QuoteBuilder/QuoteBuilder.jsx"
   },
   "gcs-other-fire": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/monitoring.js (parity-verified) + src/tabs/QuoteBuilder/QuoteBuilder.jsx"
   },
   "gcs-other-fire-val": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/monitoring.js (parity-verified) + src/tabs/QuoteBuilder/QuoteBuilder.jsx"
   },
   "gcs-other-res": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/monitoring.js (parity-verified) + src/tabs/QuoteBuilder/QuoteBuilder.jsx"
   },
   "gcs-other-res-val": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/monitoring.js (parity-verified) + src/tabs/QuoteBuilder/QuoteBuilder.jsx"
   },
   "hdr-clear-all": {
     "status": "todo",
@@ -668,8 +699,9 @@
     "tag": "button"
   },
   "honeywell": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/monitoring.js (parity-verified) + src/tabs/QuoteBuilder/QuoteBuilder.jsx"
   },
   "import-file-input": {
     "status": "todo",
@@ -1301,8 +1333,9 @@
     "tag": "input"
   },
   "sfburg": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/monitoring.js (parity-verified) + src/tabs/QuoteBuilder/QuoteBuilder.jsx"
   },
   "shMarkupSlider": {
     "status": "todo",
@@ -1596,8 +1629,9 @@
     "tag": "button"
   },
   "teleguard": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/monitoring.js (parity-verified) + src/tabs/QuoteBuilder/QuoteBuilder.jsx"
   },
   "tmSubBilled": {
     "status": "todo",
@@ -1629,7 +1663,8 @@
     "where": "src/lib/materials.js computeTmSubTotals (parity-verified); UI pending"
   },
   "ulcerts": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/monitoring.js (parity-verified) + src/tabs/QuoteBuilder/QuoteBuilder.jsx"
   }
 }
