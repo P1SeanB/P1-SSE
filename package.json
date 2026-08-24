@@ -7,8 +7,9 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "parity": "node tools/parity.mjs",
-    "coverage": "node tools/coverage.mjs"
+    "parity": "node tools/parity.mjs && node tools/parity-adc.mjs",
+    "coverage": "node tools/coverage.mjs",
+    "parity:adc": "node tools/parity-adc.mjs"
   },
   "dependencies": {
     "react": "^18.3.1",

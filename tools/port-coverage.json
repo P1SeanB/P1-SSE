@@ -4,276 +4,412 @@
     "tag": "input"
   },
   "adc-access": {
-    "status": "todo",
-    "tag": "select"
+    "status": "partial",
+    "tag": "select",
+    "where": "src/lib/adc.js (pricing, parity-verified)",
+    "note": "Pricing ported and covered by npm run parity:adc. The control itself is not yet rendered."
   },
   "adc-access-bundle": {
-    "status": "todo",
-    "tag": "select"
+    "status": "partial",
+    "tag": "select",
+    "where": "src/lib/adc.js (pricing, parity-verified)",
+    "note": "Pricing ported and covered by npm run parity:adc. The control itself is not yet rendered."
   },
   "adc-access-doors": {
-    "status": "todo",
-    "tag": "select"
+    "status": "partial",
+    "tag": "select",
+    "where": "src/lib/adc.js (pricing, parity-verified)",
+    "note": "Pricing ported and covered by npm run parity:adc. The control itself is not yet rendered."
   },
   "adc-aid": {
-    "status": "todo",
-    "tag": "select"
+    "status": "partial",
+    "tag": "select",
+    "where": "src/lib/adc.js (pricing, parity-verified)",
+    "note": "Pricing ported and covered by npm run parity:adc. The control itself is not yet rendered."
   },
   "adc-base": {
-    "status": "todo",
-    "tag": "select"
+    "status": "partial",
+    "tag": "select",
+    "where": "src/lib/adc.js (pricing, parity-verified)",
+    "note": "Pricing ported and covered by npm run parity:adc. The control itself is not yet rendered."
   },
   "adc-camera-count": {
-    "status": "todo",
-    "tag": "input"
+    "status": "partial",
+    "tag": "input",
+    "where": "src/lib/adc.js (pricing, parity-verified)",
+    "note": "Pricing ported and covered by npm run parity:adc. The control itself is not yet rendered."
   },
   "adc-cars": {
-    "status": "todo",
-    "tag": "select"
+    "status": "partial",
+    "tag": "select",
+    "where": "src/lib/adc.js (pricing, parity-verified)",
+    "note": "Pricing ported and covered by npm run parity:adc. The control itself is not yet rendered."
   },
   "adc-cellconnector": {
-    "status": "todo",
-    "tag": "select"
+    "status": "partial",
+    "tag": "select",
+    "where": "src/lib/adc.js (pricing, parity-verified)",
+    "note": "Pricing ported and covered by npm run parity:adc. The control itself is not yet rendered."
   },
   "adc-comms": {
-    "status": "todo",
-    "tag": "select"
+    "status": "partial",
+    "tag": "select",
+    "where": "src/lib/adc.js (pricing, parity-verified)",
+    "note": "Pricing ported and covered by npm run parity:adc. The control itself is not yet rendered."
   },
   "adc-cv-intercom-devices": {
-    "status": "todo",
-    "tag": "input"
+    "status": "partial",
+    "tag": "input",
+    "where": "src/lib/adc.js (pricing, parity-verified)",
+    "note": "Pricing ported and covered by npm run parity:adc. The control itself is not yet rendered."
   },
   "adc-cv-intercom-users": {
-    "status": "todo",
-    "tag": "input"
+    "status": "partial",
+    "tag": "input",
+    "where": "src/lib/adc.js (pricing, parity-verified)",
+    "note": "Pricing ported and covered by npm run parity:adc. The control itself is not yet rendered."
   },
   "adc-enterprise-wellness-cb": {
-    "status": "todo",
-    "tag": "input"
+    "status": "partial",
+    "tag": "input",
+    "where": "src/lib/adc.js (pricing, parity-verified)",
+    "note": "Pricing ported and covered by npm run parity:adc. The control itself is not yet rendered."
   },
   "adc-esc-cb": {
-    "status": "todo",
-    "tag": "input"
+    "status": "partial",
+    "tag": "input",
+    "where": "src/lib/adc.js (pricing, parity-verified)",
+    "note": "Pricing ported and covered by npm run parity:adc. The control itself is not yet rendered."
   },
   "adc-expansions": {
-    "status": "todo",
-    "tag": "select"
+    "status": "partial",
+    "tag": "select",
+    "where": "src/lib/adc.js (pricing, parity-verified)",
+    "note": "Pricing ported and covered by npm run parity:adc. The control itself is not yet rendered."
   },
   "adc-fleet": {
-    "status": "todo",
-    "tag": "select"
+    "status": "partial",
+    "tag": "select",
+    "where": "src/lib/adc.js (pricing, parity-verified)",
+    "note": "Pricing ported and covered by npm run parity:adc. The control itself is not yet rendered."
   },
   "adc-flexio": {
-    "status": "todo",
-    "tag": "select"
+    "status": "partial",
+    "tag": "select",
+    "where": "src/lib/adc.js (pricing, parity-verified)",
+    "note": "Pricing ported and covered by npm run parity:adc. The control itself is not yet rendered."
   },
   "adc-img-events": {
-    "status": "todo",
-    "tag": "select"
+    "status": "partial",
+    "tag": "select",
+    "where": "src/lib/adc.js (pricing, parity-verified)",
+    "note": "Pricing ported and covered by npm run parity:adc. The control itself is not yet rendered."
   },
   "adc-intercom": {
-    "status": "todo",
-    "tag": "select"
+    "status": "partial",
+    "tag": "select",
+    "where": "src/lib/adc.js (pricing, parity-verified)",
+    "note": "Pricing ported and covered by npm run parity:adc. The control itself is not yet rendered."
   },
   "adc-mlesc-cb": {
-    "status": "todo",
-    "tag": "input"
+    "status": "partial",
+    "tag": "input",
+    "where": "src/lib/adc.js (pricing, parity-verified)",
+    "note": "Pricing ported and covered by npm run parity:adc. The control itself is not yet rendered."
   },
   "adc-mobile-10": {
-    "status": "todo",
-    "tag": "select"
+    "status": "partial",
+    "tag": "select",
+    "where": "src/lib/adc.js (pricing, parity-verified)",
+    "note": "Pricing ported and covered by npm run parity:adc. The control itself is not yet rendered."
   },
   "adc-mobile-100": {
-    "status": "todo",
-    "tag": "select"
+    "status": "partial",
+    "tag": "select",
+    "where": "src/lib/adc.js (pricing, parity-verified)",
+    "note": "Pricing ported and covered by npm run parity:adc. The control itself is not yet rendered."
   },
   "adc-mobile-creds-cb": {
-    "status": "todo",
-    "tag": "input"
+    "status": "partial",
+    "tag": "input",
+    "where": "src/lib/adc.js (pricing, parity-verified)",
+    "note": "Pricing ported and covered by npm run parity:adc. The control itself is not yet rendered."
   },
   "adc-noonlight": {
-    "status": "todo",
-    "tag": "select"
+    "status": "partial",
+    "tag": "select",
+    "where": "src/lib/adc.js (pricing, parity-verified)",
+    "note": "Pricing ported and covered by npm run parity:adc. The control itself is not yet rendered."
   },
   "adc-openeye-cb": {
-    "status": "todo",
-    "tag": "input"
+    "status": "partial",
+    "tag": "input",
+    "where": "src/lib/adc.js (pricing, parity-verified)",
+    "note": "Pricing ported and covered by npm run parity:adc. The control itself is not yet rendered."
   },
   "adc-scheduled-arm-cb": {
-    "status": "todo",
-    "tag": "input"
+    "status": "partial",
+    "tag": "input",
+    "where": "src/lib/adc.js (pricing, parity-verified)",
+    "note": "Pricing ported and covered by npm run parity:adc. The control itself is not yet rendered."
   },
   "adc-sensors": {
-    "status": "todo",
-    "tag": "select"
+    "status": "partial",
+    "tag": "select",
+    "where": "src/lib/adc.js (pricing, parity-verified)",
+    "note": "Pricing ported and covered by npm run parity:adc. The control itself is not yet rendered."
   },
   "adc-supervision": {
-    "status": "todo",
-    "tag": "select"
+    "status": "partial",
+    "tag": "select",
+    "where": "src/lib/adc.js (pricing, parity-verified)",
+    "note": "Pricing ported and covered by npm run parity:adc. The control itself is not yet rendered."
   },
   "adc-svrs": {
-    "status": "todo",
-    "tag": "input"
+    "status": "partial",
+    "tag": "input",
+    "where": "src/lib/adc.js (pricing, parity-verified)",
+    "note": "Pricing ported and covered by npm run parity:adc. The control itself is not yet rendered."
   },
   "adc-toggle-access": {
-    "status": "todo",
-    "tag": "input"
+    "status": "partial",
+    "tag": "input",
+    "where": "src/lib/adc.js (pricing, parity-verified)",
+    "note": "Pricing ported and covered by npm run parity:adc. The control itself is not yet rendered."
   },
   "adc-toggle-alerts": {
-    "status": "todo",
-    "tag": "input"
+    "status": "partial",
+    "tag": "input",
+    "where": "src/lib/adc.js (pricing, parity-verified)",
+    "note": "Pricing ported and covered by npm run parity:adc. The control itself is not yet rendered."
   },
   "adc-toggle-comms": {
-    "status": "todo",
-    "tag": "input"
+    "status": "partial",
+    "tag": "input",
+    "where": "src/lib/adc.js (pricing, parity-verified)",
+    "note": "Pricing ported and covered by npm run parity:adc. The control itself is not yet rendered."
   },
   "adc-toggle-energy": {
-    "status": "todo",
-    "tag": "input"
+    "status": "partial",
+    "tag": "input",
+    "where": "src/lib/adc.js (pricing, parity-verified)",
+    "note": "Pricing ported and covered by npm run parity:adc. The control itself is not yet rendered."
   },
   "adc-toggle-fleet": {
-    "status": "todo",
-    "tag": "input"
+    "status": "partial",
+    "tag": "input",
+    "where": "src/lib/adc.js (pricing, parity-verified)",
+    "note": "Pricing ported and covered by npm run parity:adc. The control itself is not yet rendered."
   },
   "adc-toggle-openeye": {
-    "status": "todo",
-    "tag": "input"
+    "status": "partial",
+    "tag": "input",
+    "where": "src/lib/adc.js (pricing, parity-verified)",
+    "note": "Pricing ported and covered by npm run parity:adc. The control itself is not yet rendered."
   },
   "adc-toggle-remote": {
-    "status": "todo",
-    "tag": "input"
+    "status": "partial",
+    "tag": "input",
+    "where": "src/lib/adc.js (pricing, parity-verified)",
+    "note": "Pricing ported and covered by npm run parity:adc. The control itself is not yet rendered."
   },
   "adc-toggle-video": {
-    "status": "todo",
-    "tag": "input"
+    "status": "partial",
+    "tag": "input",
+    "where": "src/lib/adc.js (pricing, parity-verified)",
+    "note": "Pricing ported and covered by npm run parity:adc. The control itself is not yet rendered."
   },
   "adc-toggle-wellness": {
-    "status": "todo",
-    "tag": "input"
+    "status": "partial",
+    "tag": "input",
+    "where": "src/lib/adc.js (pricing, parity-verified)",
+    "note": "Pricing ported and covered by npm run parity:adc. The control itself is not yet rendered."
   },
   "adc-verizon-data": {
-    "status": "todo",
-    "tag": "select"
+    "status": "partial",
+    "tag": "select",
+    "where": "src/lib/adc.js (pricing, parity-verified)",
+    "note": "Pricing ported and covered by npm run parity:adc. The control itself is not yet rendered."
   },
   "adc-video": {
-    "status": "todo",
-    "tag": "select"
+    "status": "partial",
+    "tag": "select",
+    "where": "src/lib/adc.js (pricing, parity-verified)",
+    "note": "Pricing ported and covered by npm run parity:adc. The control itself is not yet rendered."
   },
   "adc-vs-audio-nondb": {
-    "status": "todo",
-    "tag": "input"
+    "status": "partial",
+    "tag": "input",
+    "where": "src/lib/adc.js (pricing, parity-verified)",
+    "note": "Pricing ported and covered by npm run parity:adc. The control itself is not yet rendered."
   },
   "adc-vs-biz-analytics": {
-    "status": "todo",
-    "tag": "input"
+    "status": "partial",
+    "tag": "input",
+    "where": "src/lib/adc.js (pricing, parity-verified)",
+    "note": "Pricing ported and covered by npm run parity:adc. The control itself is not yet rendered."
   },
   "adc-vs-digital-input": {
-    "status": "todo",
-    "tag": "input"
+    "status": "partial",
+    "tag": "input",
+    "where": "src/lib/adc.js (pricing, parity-verified)",
+    "note": "Pricing ported and covered by npm run parity:adc. The control itself is not yet rendered."
   },
   "adc-vs-doorbell": {
-    "status": "todo",
-    "tag": "input"
+    "status": "partial",
+    "tag": "input",
+    "where": "src/lib/adc.js (pricing, parity-verified)",
+    "note": "Pricing ported and covered by npm run parity:adc. The control itself is not yet rendered."
   },
   "adc-vs-onboard-rec": {
-    "status": "todo",
-    "tag": "input"
+    "status": "partial",
+    "tag": "input",
+    "where": "src/lib/adc.js (pricing, parity-verified)",
+    "note": "Pricing ported and covered by npm run parity:adc. The control itself is not yet rendered."
   },
   "adc-vs-third-party": {
-    "status": "todo",
-    "tag": "input"
+    "status": "partial",
+    "tag": "input",
+    "where": "src/lib/adc.js (pricing, parity-verified)",
+    "note": "Pricing ported and covered by npm run parity:adc. The control itself is not yet rendered."
   },
   "adc-wellness-cb": {
-    "status": "todo",
-    "tag": "input"
+    "status": "partial",
+    "tag": "input",
+    "where": "src/lib/adc.js (pricing, parity-verified)",
+    "note": "Pricing ported and covered by npm run parity:adc. The control itself is not yet rendered."
   },
   "adc-x-audio-integration": {
-    "status": "todo",
-    "tag": "input"
+    "status": "partial",
+    "tag": "input",
+    "where": "src/lib/adc.js (pricing, parity-verified)",
+    "note": "Pricing ported and covered by npm run parity:adc. The control itself is not yet rendered."
   },
   "adc-x-commercial-supervision-ul": {
-    "status": "todo",
-    "tag": "input"
+    "status": "partial",
+    "tag": "input",
+    "where": "src/lib/adc.js (pricing, parity-verified)",
+    "note": "Pricing ported and covered by npm run parity:adc. The control itself is not yet rendered."
   },
   "adc-x-energy-monitoring": {
-    "status": "todo",
-    "tag": "input"
+    "status": "partial",
+    "tag": "input",
+    "where": "src/lib/adc.js (pricing, parity-verified)",
+    "note": "Pricing ported and covered by npm run parity:adc. The control itself is not yet rendered."
   },
   "adc-x-enphase-integration": {
-    "status": "todo",
-    "tag": "input"
+    "status": "partial",
+    "tag": "input",
+    "where": "src/lib/adc.js (pricing, parity-verified)",
+    "note": "Pricing ported and covered by npm run parity:adc. The control itself is not yet rendered."
   },
   "adc-x-garage-door-and-gate": {
-    "status": "todo",
-    "tag": "input"
+    "status": "partial",
+    "tag": "input",
+    "where": "src/lib/adc.js (pricing, parity-verified)",
+    "note": "Pricing ported and covered by npm run parity:adc. The control itself is not yet rendered."
   },
   "adc-x-irrigation-control": {
-    "status": "todo",
-    "tag": "input"
+    "status": "partial",
+    "tag": "input",
+    "where": "src/lib/adc.js (pricing, parity-verified)",
+    "note": "Pricing ported and covered by npm run parity:adc. The control itself is not yet rendered."
   },
   "adc-x-liftmaster-integration": {
-    "status": "todo",
-    "tag": "input"
+    "status": "partial",
+    "tag": "input",
+    "where": "src/lib/adc.js (pricing, parity-verified)",
+    "note": "Pricing ported and covered by npm run parity:adc. The control itself is not yet rendered."
   },
   "adc-x-lights": {
-    "status": "todo",
-    "tag": "input"
+    "status": "partial",
+    "tag": "input",
+    "where": "src/lib/adc.js (pricing, parity-verified)",
+    "note": "Pricing ported and covered by npm run parity:adc. The control itself is not yet rendered."
   },
   "adc-x-lights-and-thermostat-bundle": {
-    "status": "todo",
-    "tag": "input"
+    "status": "partial",
+    "tag": "input",
+    "where": "src/lib/adc.js (pricing, parity-verified)",
+    "note": "Pricing ported and covered by npm run parity:adc. The control itself is not yet rendered."
   },
   "adc-x-locks": {
-    "status": "todo",
-    "tag": "input"
+    "status": "partial",
+    "tag": "input",
+    "where": "src/lib/adc.js (pricing, parity-verified)",
+    "note": "Pricing ported and covered by npm run parity:adc. The control itself is not yet rendered."
   },
   "adc-x-lutron-integration": {
-    "status": "todo",
-    "tag": "input"
+    "status": "partial",
+    "tag": "input",
+    "where": "src/lib/adc.js (pricing, parity-verified)",
+    "note": "Pricing ported and covered by npm run parity:adc. The control itself is not yet rendered."
   },
   "adc-x-my-circle": {
-    "status": "todo",
-    "tag": "input"
+    "status": "partial",
+    "tag": "input",
+    "where": "src/lib/adc.js (pricing, parity-verified)",
+    "note": "Pricing ported and covered by npm run parity:adc. The control itself is not yet rendered."
   },
   "adc-x-severe-weather-alerts": {
-    "status": "todo",
-    "tag": "input"
+    "status": "partial",
+    "tag": "input",
+    "where": "src/lib/adc.js (pricing, parity-verified)",
+    "note": "Pricing ported and covered by npm run parity:adc. The control itself is not yet rendered."
   },
   "adc-x-shades": {
-    "status": "todo",
-    "tag": "input"
+    "status": "partial",
+    "tag": "input",
+    "where": "src/lib/adc.js (pricing, parity-verified)",
+    "note": "Pricing ported and covered by npm run parity:adc. The control itself is not yet rendered."
   },
   "adc-x-solar-integration": {
-    "status": "todo",
-    "tag": "input"
+    "status": "partial",
+    "tag": "input",
+    "where": "src/lib/adc.js (pricing, parity-verified)",
+    "note": "Pricing ported and covered by npm run parity:adc. The control itself is not yet rendered."
   },
   "adc-x-thermostats": {
-    "status": "todo",
-    "tag": "input"
+    "status": "partial",
+    "tag": "input",
+    "where": "src/lib/adc.js (pricing, parity-verified)",
+    "note": "Pricing ported and covered by npm run parity:adc. The control itself is not yet rendered."
   },
   "adc-x-voice-notifications-alarms": {
-    "status": "todo",
-    "tag": "input"
+    "status": "partial",
+    "tag": "input",
+    "where": "src/lib/adc.js (pricing, parity-verified)",
+    "note": "Pricing ported and covered by npm run parity:adc. The control itself is not yet rendered."
   },
   "adc-x-voice-notifications-non-alarms": {
-    "status": "todo",
-    "tag": "input"
+    "status": "partial",
+    "tag": "input",
+    "where": "src/lib/adc.js (pricing, parity-verified)",
+    "note": "Pricing ported and covered by npm run parity:adc. The control itself is not yet rendered."
   },
   "adc-x-water-management": {
-    "status": "todo",
-    "tag": "input"
+    "status": "partial",
+    "tag": "input",
+    "where": "src/lib/adc.js (pricing, parity-verified)",
+    "note": "Pricing ported and covered by npm run parity:adc. The control itself is not yet rendered."
   },
   "adc-x-water-management-plus": {
-    "status": "todo",
-    "tag": "input"
+    "status": "partial",
+    "tag": "input",
+    "where": "src/lib/adc.js (pricing, parity-verified)",
+    "note": "Pricing ported and covered by npm run parity:adc. The control itself is not yet rendered."
   },
   "adc-x-weather-to-panel": {
-    "status": "todo",
-    "tag": "input"
+    "status": "partial",
+    "tag": "input",
+    "where": "src/lib/adc.js (pricing, parity-verified)",
+    "note": "Pricing ported and covered by npm run parity:adc. The control itself is not yet rendered."
   },
   "adc-x-wireless-two-way-voice": {
-    "status": "todo",
-    "tag": "input"
+    "status": "partial",
+    "tag": "input",
+    "where": "src/lib/adc.js (pricing, parity-verified)",
+    "note": "Pricing ported and covered by npm run parity:adc. The control itself is not yet rendered."
   },
   "agreementName": {
     "status": "todo",
