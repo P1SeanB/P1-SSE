@@ -345,8 +345,9 @@
     "where": "src/tabs/QuoteBuilder/AdcPanel.jsx + src/lib/adc.js (parity-verified)"
   },
   "agreementName": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "EstimateDetails.jsx"
   },
   "alarmcom": {
     "status": "done",
@@ -364,16 +365,19 @@
     "where": "src/lib/monitoring.js (parity-verified) + src/tabs/QuoteBuilder/QuoteBuilder.jsx"
   },
   "annualSub": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "EstimateDetails.jsx"
   },
   "avMaintGMSlider": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "QuoteBuilder.jsx"
   },
   "avMaintenance": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "EstimateDetails.jsx"
   },
   "avMaintenanceBilled": {
     "status": "todo",
@@ -502,12 +506,14 @@
     "where": "src/lib/monitoring.js (parity-verified) + src/tabs/QuoteBuilder/QuoteBuilder.jsx"
   },
   "contactName": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "QuoteBuilder.jsx + AppState"
   },
   "custName": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "QuoteBuilder.jsx + AppState"
   },
   "customMonCost": {
     "status": "done",
@@ -520,20 +526,24 @@
     "where": "src/lib/monitoring.js (parity-verified) + src/tabs/QuoteBuilder/QuoteBuilder.jsx"
   },
   "emailAddress": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "QuoteBuilder.jsx + AppState"
   },
   "estimateNum": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "EstimateDetails.jsx"
   },
   "estimatorEmail": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "EstimateDetails.jsx"
   },
   "estimatorName": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "EstimateDetails.jsx"
   },
   "fi-duct": {
     "status": "done",
@@ -737,12 +747,14 @@
     "tag": "input"
   },
   "inspCost": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "QuoteBuilder.jsx + calc.js (parity-verified)"
   },
   "inspHours": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "QuoteBuilder.jsx + calc.js (parity-verified)"
   },
   "labor-row-*": {
     "status": "done",
@@ -750,8 +762,9 @@
     "where": "src/tabs/QuoteBuilder/MaterialRows.jsx — labour rows with per-row sell rate"
   },
   "laborRateSlider": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "QuoteBuilder.jsx"
   },
   "mat-row-*": {
     "status": "done",
@@ -765,36 +778,44 @@
     "note": "Markup/GM feeds the priced line calculation. The slider itself is not yet rendered."
   },
   "matShippingCost": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "EstimateDetails.jsx"
   },
   "matTaxRate": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "EstimateDetails.jsx"
   },
   "matTaxRateTop": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "EstimateDetails.jsx"
   },
   "mc-bill-addr": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "EstimateDetails.jsx (shared billing block)"
   },
   "mc-bill-city": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "EstimateDetails.jsx (shared billing block)"
   },
   "mc-bill-same": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "EstimateDetails.jsx (shared billing block)"
   },
   "mc-bill-state": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "EstimateDetails.jsx (shared billing block)"
   },
   "mc-bill-zip": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "EstimateDetails.jsx (shared billing block)"
   },
   "mon-cost-toggle": {
     "status": "todo",
@@ -1420,24 +1441,29 @@
     "tag": "button"
   },
   "qb-bill-addr": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "EstimateDetails.jsx"
   },
   "qb-bill-city": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "EstimateDetails.jsx"
   },
   "qb-bill-same": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "EstimateDetails.jsx"
   },
   "qb-bill-state": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "EstimateDetails.jsx"
   },
   "qb-bill-zip": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "EstimateDetails.jsx"
   },
   "qb-site1-rate": {
     "status": "todo",
@@ -1449,28 +1475,34 @@
     "where": "src/lib/monitoring.js (parity-verified) + src/tabs/QuoteBuilder/QuoteBuilder.jsx"
   },
   "shMarkupSlider": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "EstimateDetails.jsx"
   },
   "siteAddress": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "AppState"
   },
   "siteCity": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "AppState"
   },
   "siteState": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "AppState"
   },
   "siteType": {
-    "status": "todo",
-    "tag": "select"
+    "status": "done",
+    "tag": "select",
+    "where": "QuoteBuilder.jsx"
   },
   "siteZip": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "AppState"
   },
   "sla-agr-date": {
     "status": "done",
@@ -1712,16 +1744,18 @@
     "tag": "button"
   },
   "subMarkupSlider": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "QuoteBuilder.jsx"
   },
   "subOtherDesc": {
     "status": "todo",
     "tag": "textarea"
   },
   "svcGMSlider": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "QuoteBuilder.jsx"
   },
   "systemType": {
     "status": "todo",
