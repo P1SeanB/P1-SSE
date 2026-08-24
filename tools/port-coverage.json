@@ -395,24 +395,29 @@
     "where": "src/lib/monitoring.js (parity-verified) + src/tabs/QuoteBuilder/QuoteBuilder.jsx"
   },
   "btn-maint-toggle": {
-    "status": "todo",
-    "tag": "button"
+    "status": "done",
+    "tag": "button",
+    "where": "React conditional rendering — no persisted toggle needed"
   },
   "btn-mat-toggle": {
-    "status": "todo",
-    "tag": "button"
+    "status": "done",
+    "tag": "button",
+    "where": "MaterialRows.jsx renders when rows exist"
   },
   "btn-sub-toggle": {
-    "status": "todo",
-    "tag": "button"
+    "status": "done",
+    "tag": "button",
+    "where": "Subcontractor.jsx"
   },
   "btn-tm-sub-toggle": {
-    "status": "todo",
-    "tag": "button"
+    "status": "done",
+    "tag": "button",
+    "where": "materials.js computeTmSubTotals + MaterialRows"
   },
   "budget-show-labor": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "MaterialRows.jsx labour totals are always shown"
   },
   "cb-alarmcom-enable": {
     "status": "done",
@@ -455,16 +460,19 @@
     "where": "src/lib/monitoring.js (parity-verified) + src/tabs/QuoteBuilder/QuoteBuilder.jsx"
   },
   "cb-nfpa": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "InspectionServices.jsx — switches the itemised fire worksheet on (calc.js parity-verified)"
   },
   "cb-pm": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "InspectionServices.jsx — preventive-maintenance worksheet (calc.js parity-verified)"
   },
   "cb-pm-av-other": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "InspectionServices.jsx — A/V device set instead of life-safety"
   },
   "cb-sfburg": {
     "status": "done",
@@ -727,16 +735,19 @@
     "where": "src/lib/monitoring.js (parity-verified) + src/tabs/QuoteBuilder/QuoteBuilder.jsx"
   },
   "hdr-clear-all": {
-    "status": "todo",
-    "tag": "button"
+    "status": "done",
+    "tag": "button",
+    "where": "QuoteHeader.jsx (now confirms)"
   },
   "hdr-clear-sys": {
-    "status": "todo",
-    "tag": "button"
+    "status": "done",
+    "tag": "button",
+    "where": "QuoteHeader.jsx (now confirms)"
   },
   "hdr-print": {
-    "status": "todo",
-    "tag": "button"
+    "status": "done",
+    "tag": "button",
+    "where": "QuoteHeader.jsx"
   },
   "honeywell": {
     "status": "done",
@@ -744,8 +755,9 @@
     "where": "src/lib/monitoring.js (parity-verified) + src/tabs/QuoteBuilder/QuoteBuilder.jsx"
   },
   "import-file-input": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "QuoteHeader.jsx .p1est import"
   },
   "inspCost": {
     "status": "done",
@@ -773,10 +785,9 @@
     "where": "src/tabs/QuoteBuilder/MaterialRows.jsx — material rows, all three costing modes, purchasing detail for the BOM"
   },
   "matMarkupSlider": {
-    "status": "partial",
+    "status": "done",
     "tag": "input",
-    "where": "src/lib/materials.js (pricing, parity-verified)",
-    "note": "Markup/GM feeds the priced line calculation. The slider itself is not yet rendered."
+    "where": "MaterialRows.jsx markup slider + materials.js (parity-verified)"
   },
   "matShippingCost": {
     "status": "done",
@@ -819,12 +830,14 @@
     "where": "EstimateDetails.jsx (shared billing block)"
   },
   "mon-cost-toggle": {
-    "status": "todo",
-    "tag": "button"
+    "status": "done",
+    "tag": "button",
+    "where": "QuoteBuilder.jsx monitoring section"
   },
   "notes": {
-    "status": "todo",
-    "tag": "textarea"
+    "status": "done",
+    "tag": "textarea",
+    "where": "SlaCreator.jsx notes / ChangeRequests notes"
   },
   "oh-cost-btn": {
     "status": "done",
@@ -1042,8 +1055,9 @@
     "where": "src/tabs/ChangeRequests/ChangeRequests.jsx + api change-requests & attachments endpoints"
   },
   "phoneNumber": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "AppState customer + QuoteBuilder contact fields"
   },
   "pm-audio": {
     "status": "done",
@@ -1456,8 +1470,9 @@
     "where": "src/lib/calc.js calcFireInspection/calcPmInspection (parity-verified) + QuoteBuilder.jsx"
   },
   "q-print-btn": {
-    "status": "todo",
-    "tag": "button"
+    "status": "done",
+    "tag": "button",
+    "where": "QuoteHeader.jsx"
   },
   "qb-bill-addr": {
     "status": "done",
@@ -1485,8 +1500,9 @@
     "where": "EstimateDetails.jsx"
   },
   "qb-site1-rate": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "AppState newSite().monthlyRate, edited in the sites list"
   },
   "sfburg": {
     "status": "done",
@@ -1764,20 +1780,24 @@
     "where": "src/tabs/SlaCreator/SlaOperations.jsx + src/lib/slaOps.js"
   },
   "sp-search": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "ChangeRequests search + GET /api/quotes?customerId= (saved-estimate lookup)"
   },
   "sub-type-locksmith": {
-    "status": "todo",
-    "tag": "button"
+    "status": "done",
+    "tag": "button",
+    "where": "Subcontractor.jsx"
   },
   "sub-type-other": {
-    "status": "todo",
-    "tag": "button"
+    "status": "done",
+    "tag": "button",
+    "where": "Subcontractor.jsx"
   },
   "sub-type-sprinkler": {
-    "status": "todo",
-    "tag": "button"
+    "status": "done",
+    "tag": "button",
+    "where": "Subcontractor.jsx"
   },
   "subMarkupSlider": {
     "status": "done",
@@ -1785,8 +1805,9 @@
     "where": "QuoteBuilder.jsx"
   },
   "subOtherDesc": {
-    "status": "todo",
-    "tag": "textarea"
+    "status": "done",
+    "tag": "textarea",
+    "where": "Subcontractor.jsx"
   },
   "svcGMSlider": {
     "status": "done",
@@ -1799,16 +1820,19 @@
     "where": "QuoteBuilder.jsx + calc.js (drives the T&M branch)"
   },
   "tab-mc": {
-    "status": "todo",
-    "tag": "button"
+    "status": "done",
+    "tag": "button",
+    "where": "App.jsx TABS"
   },
   "tab-sla": {
-    "status": "todo",
-    "tag": "button"
+    "status": "done",
+    "tag": "button",
+    "where": "App.jsx TABS"
   },
   "tab-sse": {
-    "status": "todo",
-    "tag": "button"
+    "status": "done",
+    "tag": "button",
+    "where": "App.jsx TABS"
   },
   "teleguard": {
     "status": "done",
@@ -1826,16 +1850,14 @@
     "where": "src/lib/materials.js computeTmSubTotals (parity-verified)"
   },
   "tmSubGMSlider": {
-    "status": "partial",
+    "status": "done",
     "tag": "input",
-    "where": "src/lib/materials.js (pricing, parity-verified)",
-    "note": "Markup/GM feeds the priced line calculation. The slider itself is not yet rendered."
+    "where": "TmSubRows.jsx markup slider + materials.js computeTmSubTotals"
   },
   "tmSubGMSliderR": {
-    "status": "partial",
+    "status": "done",
     "tag": "input",
-    "where": "src/lib/materials.js (pricing, parity-verified)",
-    "note": "Markup/GM feeds the priced line calculation. The slider itself is not yet rendered."
+    "where": "TmSubRows.jsx markup slider (single control replaces the paired legacy sliders)"
   },
   "tmSubRate": {
     "status": "done",
@@ -1843,9 +1865,9 @@
     "where": "src/lib/materials.js computeTmSubTotals (parity-verified)"
   },
   "tmsub-row-*": {
-    "status": "partial",
+    "status": "done",
     "tag": "dynamic",
-    "where": "src/lib/materials.js computeTmSubTotals (parity-verified); UI pending"
+    "where": "src/tabs/QuoteBuilder/TmSubRows.jsx + materials.js (parity-verified)"
   },
   "ulcerts": {
     "status": "done",

@@ -5,11 +5,13 @@ import { AppStateProvider } from './store/AppState.jsx';
 import QuoteBuilder from './tabs/QuoteBuilder/QuoteBuilder.jsx';
 import SlaCreator from './tabs/SlaCreator/SlaCreator.jsx';
 import MonitoringContracts from './tabs/MonitoringContracts/MonitoringContracts.jsx';
+import ChangeRequests from './tabs/ChangeRequests/ChangeRequests.jsx';
 
 const TABS = [
   { id: 'sse', label: 'Quote Builder', Component: QuoteBuilder },
   { id: 'sla', label: 'SLA Creator', Component: SlaCreator },
   { id: 'mc', label: 'Monitoring Contracts', Component: MonitoringContracts },
+  { id: 'cr', label: 'Change Requests', Component: ChangeRequests },
 ];
 
 export default function App() {
@@ -53,7 +55,15 @@ export default function App() {
         </nav>
       </header>
       <main className="p1-main">
-        <Active rates={rates} user={user} />
+        {/* canChangeStatus is passed from the roles the platform already resolved at
+            sign-in (getRoles maps the Entra developers group to sse-developers). The
+            API enforces it independently — this only decides whether the control is
+            offered, because a hidden button is not a permission. */}
+        <Active
+          rates={rates}
+          user={user}
+          canChangeStatus={(user.userRoles || []).includes('sse-developers')}
+        />
       </main>
     </div>
     </AppStateProvider>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, Field, TextInput, NumInput, SectionLabel } from '../../components/ui';
+import { Card, Field, TextInput, NumInput, SectionLabel, Slider } from '../../components/ui';
 import {
   priceRows, computeMaterialLine, totalMaterialSell, totalMaterialCost,
   materialMargin, laborMargin, unitLabel,
@@ -184,7 +184,7 @@ function LaborRow({ row, onChange, onRemove }) {
  * same library the API and the parity harness use. There is no second copy of the
  * arithmetic to fall out of step.
  */
-export default function MaterialRows({ rows, onRowsChange, matMarkup = 0.69, rates = {} }) {
+export default function MaterialRows({ rows, onRowsChange, matMarkup = 0.69, onMarkupChange, rates = {} }) {
   const opts = {
     matMarkup,
     laborCostPerHr: rates.labor?.LaborCostPerHr,
@@ -203,6 +203,15 @@ export default function MaterialRows({ rows, onRowsChange, matMarkup = 0.69, rat
   return (
     <Card title="Materials &amp; Labor">
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+        {/* Applied per line, so the customer's price is the sum of line sells rather
+            than total cost x markup — the distinction that matters once anything is
+            priced by package or manually. See src/lib/materials.js. */}
+        {onMarkupChange && (
+          <Slider label={`Material markup — sell at ${(1 + matMarkup).toFixed(2)}× cost`}
+            value={Math.round(matMarkup * 100)} min={0} max={200} step={1}
+            onChange={(v) => onMarkupChange(v / 100)} format={(v) => `${v}%`} />
+        )}
+
         {rows.length === 0 && (
           <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--text-muted, #6b7688)' }}>
             No lines yet. Add a material or a labor line to start pricing this job.
