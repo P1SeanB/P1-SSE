@@ -1679,72 +1679,89 @@
     "where": "src/tabs/SlaCreator/SlaCreator.jsx + src/lib/sla.js (parity-verified)"
   },
   "slaops-audit": {
-    "status": "todo",
-    "tag": "select"
+    "status": "done",
+    "tag": "select",
+    "where": "src/tabs/SlaCreator/SlaOperations.jsx + src/lib/slaOps.js"
   },
   "slaops-criticality": {
-    "status": "todo",
-    "tag": "select"
+    "status": "done",
+    "tag": "select",
+    "where": "src/tabs/SlaCreator/SlaOperations.jsx + src/lib/slaOps.js"
   },
   "slaops-industry": {
-    "status": "todo",
-    "tag": "select"
+    "status": "done",
+    "tag": "select",
+    "where": "src/tabs/SlaCreator/SlaOperations.jsx + src/lib/slaOps.js"
   },
   "slaops-material": {
-    "status": "todo",
-    "tag": "select"
+    "status": "done",
+    "tag": "select",
+    "where": "src/tabs/SlaCreator/SlaOperations.jsx + src/lib/slaOps.js"
   },
   "slaops-meeting-duration": {
-    "status": "todo",
-    "tag": "select"
+    "status": "done",
+    "tag": "select",
+    "where": "src/tabs/SlaCreator/SlaOperations.jsx + src/lib/slaOps.js"
   },
   "slaops-meeting-freq": {
-    "status": "todo",
-    "tag": "select"
+    "status": "done",
+    "tag": "select",
+    "where": "src/tabs/SlaCreator/SlaOperations.jsx + src/lib/slaOps.js"
   },
   "slaops-meeting-include": {
-    "status": "todo",
-    "tag": "select"
+    "status": "done",
+    "tag": "select",
+    "where": "src/tabs/SlaCreator/SlaOperations.jsx + src/lib/slaOps.js"
   },
   "slaops-meeting-onsite": {
-    "status": "todo",
-    "tag": "select"
+    "status": "done",
+    "tag": "select",
+    "where": "src/tabs/SlaCreator/SlaOperations.jsx + src/lib/slaOps.js"
   },
   "slaops-meeting-remotehands": {
-    "status": "todo",
-    "tag": "select"
+    "status": "done",
+    "tag": "select",
+    "where": "src/tabs/SlaCreator/SlaOperations.jsx + src/lib/slaOps.js"
   },
   "slaops-meeting-remoteresp": {
-    "status": "todo",
-    "tag": "select"
+    "status": "done",
+    "tag": "select",
+    "where": "src/tabs/SlaCreator/SlaOperations.jsx + src/lib/slaOps.js"
   },
   "slaops-meeting-source": {
-    "status": "todo",
-    "tag": "select"
+    "status": "done",
+    "tag": "select",
+    "where": "src/tabs/SlaCreator/SlaOperations.jsx + src/lib/slaOps.js"
   },
   "slaops-meeting-window": {
-    "status": "todo",
-    "tag": "select"
+    "status": "done",
+    "tag": "select",
+    "where": "src/tabs/SlaCreator/SlaOperations.jsx + src/lib/slaOps.js"
   },
   "slaops-pmobjective": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/tabs/SlaCreator/SlaOperations.jsx + src/lib/slaOps.js"
   },
   "slaops-wf-check": {
-    "status": "todo",
-    "tag": "select"
+    "status": "done",
+    "tag": "select",
+    "where": "src/tabs/SlaCreator/SlaOperations.jsx + src/lib/slaOps.js"
   },
   "slaops-wf-role": {
-    "status": "todo",
-    "tag": "select"
+    "status": "done",
+    "tag": "select",
+    "where": "src/tabs/SlaCreator/SlaOperations.jsx + src/lib/slaOps.js"
   },
   "slaops-wf-setup": {
-    "status": "todo",
-    "tag": "select"
+    "status": "done",
+    "tag": "select",
+    "where": "src/tabs/SlaCreator/SlaOperations.jsx + src/lib/slaOps.js"
   },
   "slapm-annual": {
-    "status": "todo",
-    "tag": "input"
+    "status": "done",
+    "tag": "input",
+    "where": "src/tabs/SlaCreator/SlaOperations.jsx + src/lib/slaOps.js"
   },
   "sp-search": {
     "status": "todo",
