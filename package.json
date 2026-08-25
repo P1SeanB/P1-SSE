@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "node tools/dev.mjs",
     "dev:vite": "vite",
-    "dev:swa": "swa start http://localhost:5173 --run \"npm run dev:vite\" --api-devserver-url http://localhost:7071 --port 4280",
+    "dev:swa": "swa start http://localhost:5173 --run \"npm run dev:vite\" --api-devserver-url http://localhost:7071 --swa-config-location tools/swa-local --port 4280",
     "build": "vite build",
     "preview": "vite preview",
     "db:local": "node tools/seed-local.mjs",

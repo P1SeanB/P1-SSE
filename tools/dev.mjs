@@ -151,6 +151,12 @@ const swaArgs = [
   'start', 'http://localhost:5173',
   '--run', '"npm run dev:vite"',
   '--api-devserver-url', 'http://localhost:7071',
+  // A local variant of staticwebapp.config.json WITHOUT rolesSource. In Azure the
+  // roles come from GetRoles resolving Entra group claims; the emulator cannot mint
+  // those, so rolesSource would fail closed and nobody could ever sign in locally.
+  // Without it the roles you type at the login screen apply directly, which is the
+  // point of an emulator. Route protection is otherwise identical.
+  '--swa-config-location', 'tools/swa-local',
   '--port', String(SWA_PORT),
 ];
 const swa = WIN
