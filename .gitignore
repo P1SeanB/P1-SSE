@@ -3,6 +3,9 @@ dist/
 api/node_modules/
 .env
 .env.*
+# ...but the TEMPLATE is meant to be shared. Without this negation .env.* swallows
+# it and nobody else ever gets the file that explains which key to use.
+!.env.migration.example
 *.local
 .swa/
 
