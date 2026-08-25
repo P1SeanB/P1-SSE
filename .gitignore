@@ -14,3 +14,7 @@ api/local.settings.json
 # versions carry tenant and group object ids for each environment.
 infra/main.*.parameters.json
 !infra/main.parameters.json.example
+
+# Exported legacy data from the Supabase migration rehearsal. Real email addresses
+# and business records — a working copy, never a backup, and never committed.
+migration-data/
