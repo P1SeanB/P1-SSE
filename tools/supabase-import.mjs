@@ -229,7 +229,16 @@ async function main() {
 
     // misc_rate is key/value, so anything scalar the schema has no column for is kept
     // rather than dropped. Losing a rate silently is worse than storing it untyped.
-    for (const [key, value] of Object.entries({ ulCerts: c.ulCerts, pmVisitRate: c.pmVisitRate })) {
+    // The last three were never in app_rates: the legacy hardcodes them in its markup
+    // (legacy/index.html:2037-2039). Carried here so a price change is a rate edit
+    // rather than a code change, and so imported profiles are self-describing.
+    for (const [key, value] of Object.entries({
+      ulCerts: c.ulCerts,
+      pmVisitRate: c.pmVisitRate,
+      honeywellComm: c.honeywellComm ?? 13.0,
+      telguardComm: c.telguardComm ?? 25.0,
+      buildingReports: c.buildingReports ?? 6.0,
+    })) {
       if (n(value) === null) continue;
       await client.query(
         'INSERT INTO misc_rate (rate_profile_id, rate_key, rate_value) VALUES ($1,$2,$3)',

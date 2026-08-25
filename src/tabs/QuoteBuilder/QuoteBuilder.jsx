@@ -111,9 +111,12 @@ export default function QuoteBuilder({ rates }) {
 
   // Fixed "Other monthly" rates come from the rate profile (MiscRate keys) —
   // in the legacy file these were hardcoded in the HTML onchange handlers (:1861-1863).
-  const honeywellRate = Number(misc.honeywellComm) || 13;
-  const teleguardRate = Number(misc.telguardComm) || 25;
-  const brRate = Number(misc.buildingReports) || 6;
+  // These now come from misc_rate like every other price. They used to fall back to
+  // 13/25/6 hardcoded here, mirroring the legacy's markup — correct until the day a
+  // price moved, at which point it needed a deploy.
+  const honeywellRate = Number(misc.honeywellComm) || 0;
+  const teleguardRate = Number(misc.telguardComm) || 0;
+  const brRate = Number(misc.buildingReports) || 0;
   const ulCertsRate = Number(misc.ulCerts) || 0;
 
   const monthlyCosts =

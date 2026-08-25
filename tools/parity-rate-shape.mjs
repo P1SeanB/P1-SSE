@@ -40,7 +40,7 @@ const API_PAYLOAD = {
     sf_burg_residential: '5.00', sf_burg_commercial: '8.00',
   },
   minRmr: { commercial_floor: '45.00', residential_floor: '40.00', two_way_floor: '15.00' },
-  misc: { ulCerts: '12.00', pmVisitRate: '177.44' },
+  misc: { ulCerts: '12.00', pmVisitRate: '177.44', honeywellComm: '13.00', telguardComm: '25.00', buildingReports: '6.00' },
   tiers: [{ tier_name: 'essential', rate: '177.44', straight_time: '177.44' }],
   dropdownOptions: { 'adc-base': [{ value: '11.50', label: 'Commercial', price: 11.5 }] },
   adc: { packages: [{ id: 'commercial', cost: 11.5 }], addOns: [], supervision: {}, tiers: {} },
@@ -78,7 +78,10 @@ const REQUIRED = [
   ['videoExpansionBase', 24],
   ['videoSvr', 6.5],
   ['pmVisitRate', 177.44],
-  ['misc.ulCerts', '12.00'],   // misc passes through untouched — it is already keyed by name
+  ['misc.ulCerts', '12.00'],
+  ['misc.honeywellComm', '13.00'],
+  ['misc.telguardComm', '25.00'],
+  ['misc.buildingReports', '6.00'],   // misc passes through untouched — it is already keyed by name
 ];
 
 const read = (obj, path) => path.split('.').reduce((o, k) => (o == null ? o : o[k]), obj);
