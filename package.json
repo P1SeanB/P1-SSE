@@ -10,7 +10,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "db:local": "node tools/seed-local.mjs",
-    "parity": "node tools/parity.mjs && node tools/parity-adc.mjs && node tools/parity-materials.mjs && node tools/parity-sla.mjs && node tools/parity-monitoring.mjs && node tools/parity-inspection.mjs",
+    "parity": "node tools/parity-rate-shape.mjs && node tools/parity.mjs && node tools/parity-adc.mjs && node tools/parity-materials.mjs && node tools/parity-sla.mjs && node tools/parity-monitoring.mjs && node tools/parity-inspection.mjs",
     "coverage": "node tools/coverage.mjs",
     "parity:adc": "node tools/parity-adc.mjs",
     "parity:materials": "node tools/parity-materials.mjs",
@@ -21,7 +21,8 @@
     "migrate:export": "node tools/supabase-export.mjs",
     "migrate:roster": "node tools/migration-roster.mjs",
     "migrate:import": "node tools/supabase-import.mjs",
-    "migrate:blob": "node tools/blob-upload.mjs"
+    "migrate:blob": "node tools/blob-upload.mjs",
+    "parity:shape": "node tools/parity-rate-shape.mjs"
   },
   "dependencies": {
     "react": "^18.3.1",
