@@ -19,7 +19,8 @@
     "parity:inspection": "node tools/parity-inspection.mjs",
     "dev:api": "node tools/dev-api.mjs",
     "migrate:export": "node tools/supabase-export.mjs",
-    "migrate:roster": "node tools/migration-roster.mjs"
+    "migrate:roster": "node tools/migration-roster.mjs",
+    "migrate:import": "node tools/supabase-import.mjs"
   },
   "dependencies": {
     "react": "^18.3.1",

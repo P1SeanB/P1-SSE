@@ -37,7 +37,7 @@ app.http('rates', {
 
     // One round trip per table, issued together. The pool is deliberately small, so
     // this is bounded by it rather than by the number of queries.
-    const [labor, svc, monitoring, door, doorBundles, video, gcs, minRmr, misc, tiers, options] =
+    const [labor, svc, monitoring, door, doorBundles, video, gcs, minRmr, misc, tiers, options, sheet] =
       await Promise.all([
         query('SELECT * FROM labor_rate WHERE rate_profile_id = $1', [id]),
         query('SELECT * FROM service_call_rate WHERE rate_profile_id = $1', [id]),
@@ -50,6 +50,12 @@ app.http('rates', {
         query('SELECT rate_key, rate_value FROM misc_rate WHERE rate_profile_id = $1', [id]),
         query('SELECT * FROM tier_rate WHERE rate_profile_id = $1 ORDER BY sort_order', [id]),
         query('SELECT * FROM pricing_option WHERE rate_profile_id = $1 ORDER BY dropdown_group, sort_order', [id]),
+        // Alarm.com's price sheet, stored as published. src/lib/adc.js consumes it as a
+        // tree; WITHOUT IT adcCfg is null and supervision, Noonlight licences and the
+        // LiftMaster surcharge each contribute zero to a quote (adc.js:193, :202, :217).
+        // That was the state before the Supabase import: three charges silently missing
+        // from every commercial quote.
+        query('SELECT adc FROM rate_profile WHERE rate_profile_id = $1', [id]),
       ]);
 
     const miscMap = {};
@@ -63,6 +69,12 @@ app.http('rates', {
         value: row.option_value,
         label: row.label,
         price: row.price,
+          // From the legacy data-type attribute. src/lib/adc.js:76 reads this to decide
+          // whether a video selection is flat, per-camera or an expansion package —
+          // omit it and every tier prices as flat, quietly and plausibly.
+          type: row.option_type,
+          // The legacy title attribute: guidance an estimator reads while choosing.
+          tooltip: row.tooltip,
       });
     }
 
@@ -80,6 +92,9 @@ app.http('rates', {
         minRmr: minRmr.rows[0] || null,
         misc: miscMap,
         tiers: tiers.rows,
+        // null when no sheet has been imported. adc.js already guards on that, and a
+        // null reads as "not loaded" where an empty object would read as "free".
+        adc: sheet.rows[0]?.adc || null,
         dropdownOptions: optionsByGroup,
       },
     };
