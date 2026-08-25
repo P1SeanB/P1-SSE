@@ -13,14 +13,18 @@
     "parity:materials": "node tools/parity-materials.mjs",
     "parity:sla": "node tools/parity-sla.mjs",
     "parity:monitoring": "node tools/parity-monitoring.mjs",
-    "parity:inspection": "node tools/parity-inspection.mjs"
+    "parity:inspection": "node tools/parity-inspection.mjs",
+    "db:local": "node tools/seed-local.mjs",
+    "dev:swa": "swa start http://localhost:5173 --run \"npm run dev\" --api-location api"
   },
   "dependencies": {
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },
   "devDependencies": {
+    "@azure/static-web-apps-cli": "^2.0.10",
     "@vitejs/plugin-react": "^6.0.3",
+    "pg": "^8.23.0",
     "vite": "^8.1.3"
   }
 }

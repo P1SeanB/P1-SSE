@@ -1,0 +1,50 @@
+# Local dependencies for developing P1-SSE.
+#
+#   docker compose up -d
+#
+# Two containers, standing in for two Azure services:
+#
+#   postgres   the shared PostgreSQL Flexible Server. Plain Postgres — there is no
+#              emulator to use, and none is needed: the app speaks ordinary SQL and
+#              the only Azure-specific part is how it AUTHENTICATES, which is a
+#              password here and a managed identity in Azure.
+#   azurite    Azure Blob Storage, for change-request attachments.
+#
+# Not covered here, because neither is a container:
+#   Entra sign-in and roles → the SWA CLI emulator (npm run dev:swa)
+#   Static Web Apps hosting → the SWA CLI
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: p1sse-postgres
+    environment:
+      POSTGRES_USER: sse
+      POSTGRES_PASSWORD: sse
+      POSTGRES_DB: sse
+    ports:
+      # 5433, not 5432 — the estimator and F.R.E.D both run local Postgres too, and
+      # a port collision presents as a confusing authentication failure against
+      # whichever container happened to start first.
+      - '5433:5432'
+    volumes:
+      - p1sse-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U sse -d sse']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  azurite:
+    image: mcr.microsoft.com/azure-storage/azurite:latest
+    container_name: p1sse-azurite
+    # Blob only. Queue and Table are not used, and leaving them off keeps the log
+    # readable when something does go wrong.
+    command: azurite-blob --blobHost 0.0.0.0 --location /data
+    ports:
+      - '10000:10000'
+    volumes:
+      - p1sse-azurite:/data
+
+volumes:
+  p1sse-pgdata:
+  p1sse-azurite:

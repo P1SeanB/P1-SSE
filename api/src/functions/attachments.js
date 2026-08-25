@@ -40,13 +40,32 @@ const safeName = (name) =>
 let containerClient;
 async function container() {
   if (containerClient) return containerClient;
-  const url = process.env.AZURE_STORAGE_ACCOUNT_URL;
   const name = process.env.AZURE_STORAGE_CONTAINER || 'change-requests';
-  if (!url) throw new Error('AZURE_STORAGE_ACCOUNT_URL is not configured.');
-  const [{ BlobServiceClient }, { DefaultAzureCredential }] = await Promise.all([
-    import('@azure/storage-blob'),
-    import('@azure/identity'),
-  ]);
+  const { BlobServiceClient } = await import('@azure/storage-blob');
+
+  // LOCAL DEVELOPMENT ONLY. Azurite authenticates by shared key, and the real
+  // storage account has shared-key access disabled — so the passwordless path below
+  // cannot work against the emulator, and the emulator's key cannot work against
+  // Azure. Setting this in Azure would be both pointless and a step backwards, which
+  // is why it is named for what it is and never appears in infra/main.bicep.
+  const conn = process.env.AZURE_STORAGE_CONNECTION_STRING;
+  if (conn) {
+    const client = BlobServiceClient.fromConnectionString(conn);
+    containerClient = client.getContainerClient(name);
+    // Azurite starts empty; the container the app expects has to exist before the
+    // first upload, and creating it here saves a setup step that is easy to forget.
+    await containerClient.createIfNotExists();
+    return containerClient;
+  }
+
+  const url = process.env.AZURE_STORAGE_ACCOUNT_URL;
+  if (!url) {
+    throw new Error(
+      'Storage is not configured. Set AZURE_STORAGE_ACCOUNT_URL (Azure) or ' +
+        'AZURE_STORAGE_CONNECTION_STRING (local Azurite).',
+    );
+  }
+  const { DefaultAzureCredential } = await import('@azure/identity');
   containerClient = new BlobServiceClient(url, new DefaultAzureCredential()).getContainerClient(name);
   return containerClient;
 }

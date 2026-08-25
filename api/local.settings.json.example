@@ -2,9 +2,16 @@
   "IsEncrypted": false,
   "Values": {
     "FUNCTIONS_WORKER_RUNTIME": "node",
-    "AzureWebJobsStorage": "",
-    "SQL_CONNECTION_STRING": "Server=tcp:<server>.database.windows.net,1433;Database=<db>;Authentication=Active Directory Managed Identity;Encrypt=true;",
-    "PRODUCT_TAG": "sse",
-    "SSE_ENTRA_GROUP_ID": "<object-id-of-the-security-group>"
+
+    "PGHOST": "localhost",
+    "PGPORT": "5433",
+    "PGDATABASE": "sse",
+    "PGUSER": "sse",
+    "PGPASSWORD": "sse",
+
+    "AZURE_STORAGE_CONNECTION_STRING": "UseDevelopmentStorage=true",
+    "AZURE_STORAGE_CONTAINER": "change-requests",
+
+    "PRODUCT_TAG": "sse"
   }
 }
