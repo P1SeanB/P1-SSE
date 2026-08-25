@@ -77,10 +77,6 @@ jobs:
           # cannot load.
           node-version: 22
 
-      - name: Install API dependencies
-        working-directory: api
-        run: npm ci --omit=dev
-
       - name: Check the publish profile is configured
         # Without this the failure is actively misleading. functions-action treats an
         # empty publish-profile as "use RBAC instead", then fails with "No credentials
@@ -98,3 +94,10 @@ jobs:
           app-name: p1sse-api-dev
           package: api
           publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}
+          # REQUIRED on Linux Consumption. That plan has no writable wwwroot — it runs
+          # exclusively from a mounted package — so a plain ZipDeploy fails with
+          # "Failed to deploy web package to App Service" after appearing to upload
+          # fine. These two switch the action to the remote-build flow, which builds
+          # with Oryx and sets the package pointer the host actually reads.
+          scm-do-build-during-deployment: true
+          enable-oryx-build: true
