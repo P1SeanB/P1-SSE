@@ -1,5 +1,10 @@
 name: Deploy to Azure Static Web Apps
 
+# TWO Azure resources, so two jobs. The Static Web App serves dist/; the linked
+# Function App serves /api. They deploy by different mechanisms and fail
+# independently, which is why the job names say which resource each one touches —
+# "Build and deploy" told you neither.
+
 on:
   push:
     branches:
@@ -16,23 +21,30 @@ jobs:
   build_and_deploy:
     if: github.event_name == 'push' || github.event.action != 'closed'
     runs-on: ubuntu-latest
-    name: Build and deploy
+    name: Front end -> Static Web App (p1sse-swa-dev)
     steps:
       - uses: actions/checkout@v4
         with:
+          # Do not write the job token into .git/config. Nothing here needs git
+          # credentials after checkout, and persisting them causes the recurring
+          # "Failed to remove http.https://github.com/.extraheader" warning: the SWA
+          # action builds through a container that alters the workspace, so the
+          # checkout post-step can no longer unset what it set. Harmless on an
+          # ephemeral runner, but not writing the token is better than tidying it up.
+          persist-credentials: false
           submodules: true
 
       # staticwebapp.config.json cannot reference app settings for openIdIssuer,
       # so the tenant id is substituted here from a repo secret instead of being
       # hardcoded in source.
-      - name: Inject Entra tenant id into SWA config
+      - name: Inject the Entra tenant id into staticwebapp.config.json
         run: |
           if [ -z "${{ secrets.AAD_TENANT_ID }}" ]; then
             echo "::error::AAD_TENANT_ID secret is not set"; exit 1
           fi
           sed -i "s|<TENANT_ID>|${{ secrets.AAD_TENANT_ID }}|g" staticwebapp.config.json
 
-      - name: Build and deploy
+      - name: Build dist/ and upload to the Static Web App
         id: deploy
         uses: Azure/static-web-apps-deploy@v1
         with:
@@ -48,19 +60,37 @@ jobs:
           api_location: ''
           output_location: 'dist'
 
+      # The Actions page otherwise shows two job names and leaves you to work out
+      # which Azure resource each one touched. This says it outright.
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo "### Front end — Static Web App"
+            echo ""
+            echo "| | |"
+            echo "|---|---|"
+            echo "| Resource | \`p1sse-swa-dev\` |"
+            echo "| Ships | the built \`dist/\` plus staticwebapp.config.json |"
+            echo "| URL | https://blue-island-0e139601e.7.azurestaticapps.net |"
+            echo "| Result | ${{ job.status }} |"
+            echo ""
+            echo "The API is a separate resource deployed by the other job."
+          } >> "$GITHUB_STEP_SUMMARY"
+
   close_pull_request:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
     runs-on: ubuntu-latest
-    name: Close pull request
+    name: Tear down the PR preview environment
     steps:
-      - name: Close pull request
+      - name: Close the preview environment
         uses: Azure/static-web-apps-deploy@v1
         with:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
           action: close
 
   deploy_api:
-    name: Deploy the linked Function App
+    name: API -> Function App (p1sse-api-dev)
     permissions:
       # Required for OIDC: without id-token:write the login step cannot request a
       # token and fails with a permissions error that reads like a role problem.
@@ -74,6 +104,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Do not write the job token into .git/config. Nothing here needs git
+          # credentials after checkout, and persisting them causes the recurring
+          # "Failed to remove http.https://github.com/.extraheader" warning: the SWA
+          # action builds through a container that alters the workspace, so the
+          # checkout post-step can no longer unset what it set. Harmless on an
+          # ephemeral runner, but not writing the token is better than tidying it up.
+          persist-credentials: false
 
       - uses: actions/setup-node@v4
         with:
@@ -91,13 +129,13 @@ jobs:
       # GitHub proves this workflow's identity with a short-lived token instead, so
       # there is no credential in the repository to leak or rotate. Matches how
       # F.R.E.D deploys.
-      - name: Sign in to Azure
+      - name: Sign in to Azure (OIDC, no stored credential)
         uses: azure/login@v2
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-      - name: Deploy
+      - name: Publish the API to the Function App
         uses: Azure/functions-action@v1
         with:
           app-name: p1sse-api-dev
@@ -110,3 +148,20 @@ jobs:
           # scm-do-build-during-deployment / enable-oryx-build are the CONSUMPTION
           # (Y1) knobs and do not belong here.
           remote-build: true
+
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo "### API — Function App"
+            echo ""
+            echo "| | |"
+            echo "|---|---|"
+            echo "| Resource | \`p1sse-api-dev\` (Flex Consumption) |"
+            echo "| Serves | /api/* for the Static Web App, as a linked backend |"
+            echo "| Auth | OIDC — no credential stored in this repository |"
+            echo "| Result | ${{ job.status }} |"
+            echo ""
+            echo "Note: \`az functionapp function list\` returns EMPTY for the v4 model"
+            echo "even on success — handlers register in code, not as function.json folders."
+          } >> "$GITHUB_STEP_SUMMARY"
