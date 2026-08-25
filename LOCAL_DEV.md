@@ -48,16 +48,35 @@ you up; every run after leaves your data alone.
 If you would rather drive the pieces yourself — pointing at a database somewhere
 else, say — `npm run dev:swa` skips all of the above and just starts the app.
 
-The CLI shows a login screen where you type any username and a list of roles. Enter
-the roles the app actually checks:
+## Signing in
 
-```
-sse-users              can use the app at all
-sse-developers         can also change a change-request status
+You don't. `npm run dev` opens the browser already signed in as `localdev` with
+`sse-users` and `sse-developers`.
+
+It works by serving a page from the API host that sets the emulator's session cookie
+and redirects. That is what the CLI's own login form does — the cookie is written by
+page JavaScript, with no `Set-Cookie` header anywhere, which is also why sign-in
+cannot be scripted with curl. Cookies ignore ports, so a cookie set on :7071 is sent
+to the app on :4280; without that the page would have to come from the SWA CLI, which
+refuses to serve anything to someone who has no role yet.
+
+**This is a local convenience, not a way in.** `tools/` is never deployed, and the
+cookie only means anything to the emulator — Azure signs and encrypts its own, so a
+hand-built one is rejected.
+
+**Being a full developer by default is the risk here.** You will never trip over a
+permission failure by accident, so exercise the other side on purpose:
+
+```bash
+npm run dev -- --roles=sse-users   # no sse-developers: status changes should refuse
+npm run dev -- --anon              # signed out: the wall an outsider hits
+npm run dev -- --user=jsmith       # a different name in the audit trail
+npm run dev -- --no-open           # start it, leave the browser alone
 ```
 
-Leaving roles blank is worth doing once: it shows what an unauthorised colleague
-sees, which is the behaviour `getRoles.js` fails closed to produce.
+Roles are baked into the session when the cookie is written, exactly as Entra bakes
+them in at sign-in, so changing them means restarting — the same "sign out and back
+in" that catches people in production.
 
 ## Day to day
 
@@ -132,24 +151,25 @@ started. If you have a database elsewhere, put its details in
 `npm run dev` re-seeds from scratch. Without `-v` the data survives, which is usually
 what you want.
 
-**Roles seem ignored.** The SWA CLI bakes roles into the session at sign-in, exactly
-as Entra does. Sign out and back in after changing them — a role change mid-session
-does nothing, which is the same behaviour you will see in production.
+**Roles seem ignored.** They are baked into the session when it is created, exactly as
+Entra does at sign-in, so `--roles=` only takes effect on a restart. A role change
+mid-session does nothing — the same thing that catches people in production, where the
+fix is signing out and back in.
 
 **A price looks wrong.** Run `npm run parity` before assuming the UI is at fault. It
 diffs every pricing engine against the legacy formulas across 17,000+ combinations,
 and it has already caught drift that nothing else would have.
 
-**"Port 4280 is already taken" / "EADDRINUSE :::7071".** A previous run left processes
-behind. `npm run dev` now kills the whole tree on Ctrl-C, but anything started before
-that fix — or killed with the task manager rather than Ctrl-C — survives. The stack is
-ten processes deep (`dev.mjs` → npm → cmd → SWA CLI → cmd → npm → cmd → Vite), so
-closing the terminal window is not enough either:
+**"Port 4280 is already taken" / "EADDRINUSE :::7071".** `npm run dev` clears leftovers
+from this repo on startup and kills the whole tree on Ctrl-C, so this should not
+happen — if it does, something outside the repo has the port and the message names the
+process. 5173 is Vite's default, so that is usually another project of yours; it is
+reported rather than killed on purpose.
 
-```powershell
-Get-NetTCPConnection -LocalPort 4280,5173,7071 -State Listen |
-  ForEach-Object { taskkill /PID $_.OwningProcess /T /F }
-```
+Worth knowing why this matters more than a port clash normally would: when a stale API
+host holds 7071, **the new one dies and the app keeps working — on the old code.** You
+then edit a handler, see no change, and start doubting the edit. That is now a clear
+error instead of a silent one.
 
 **"Fetch http://127.0.0.1:7071 with status 404 … Unable to query functions trigger
 types."** Expected, and not an error. The CLI probes for Functions metadata that only

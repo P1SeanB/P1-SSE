@@ -190,12 +190,33 @@ security incidents, not solutions.
 
 ## Testing — run it, don't deploy to find out
 
+One command. It starts everything and opens a browser already signed in:
+
 ```bash
-npm install && npm run dev      # Vite dev server
-cd api && npm install && npm start   # Functions host on :7071
+npm run dev
 ```
 
-The dev server proxies `/api` to the Functions host. Auth is not enforced locally, so
-check role-gated behaviour explicitly rather than assuming the gate works.
+That is the whole answer to "run it locally" — no forms to fill in, no second
+terminal, no Functions Core Tools. Details in `LOCAL_DEV.md`; the parts worth knowing
+before you change anything:
+
+- **Auth IS enforced locally**, unlike most setups. Every route requires the
+  `sse-users` role, so a missing role gives you the same wall a real outsider gets.
+- **You are signed in as `localdev` with every role**, which is convenient and
+  therefore misleading: you will never see a permission failure by accident. When you
+  touch anything role-gated, check the other side deliberately:
+
+  ```bash
+  npm run dev -- --roles=sse-users   # no sse-developers — the gate should refuse
+  npm run dev -- --anon              # signed out — the wall an outsider hits
+  ```
+
+- **Vite's port 5173 is not the app.** It serves the UI but not `/.auth/*`, so
+  sign-in cannot work there and every role check sees nobody. Use **4280**.
+- **Attachments do not work locally** unless Azurite is running; the local API host
+  does not parse multipart at all. Test uploads in Azure.
+- `tools/dev*.mjs` are local-only and never deployed. The auto sign-in forges the
+  *emulator's* cookie, which Azure rejects — it is not a way in anywhere real. Don't
+  reach for that pattern in `api/` or `src/`.
 
 **A deploy is for sharing a change, never for finding out whether it works.**
