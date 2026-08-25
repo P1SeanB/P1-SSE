@@ -94,10 +94,11 @@ jobs:
           app-name: p1sse-api-dev
           package: api
           publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}
-          # REQUIRED on Linux Consumption. That plan has no writable wwwroot — it runs
-          # exclusively from a mounted package — so a plain ZipDeploy fails with
-          # "Failed to deploy web package to App Service" after appearing to upload
-          # fine. These two switch the action to the remote-build flow, which builds
-          # with Oryx and sets the package pointer the host actually reads.
-          scm-do-build-during-deployment: true
-          enable-oryx-build: true
+          # The app is FLEX CONSUMPTION, so dependencies are built on the server and
+          # the package is published to a blob container using the app's managed
+          # identity — no account key, which is what makes this work at all against a
+          # storage account with shared-key access disabled.
+          #
+          # scm-do-build-during-deployment / enable-oryx-build are the CONSUMPTION
+          # (Y1) knobs and do not belong here.
+          remote-build: true

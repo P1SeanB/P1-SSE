@@ -92,6 +92,9 @@ var staticWebAppName = 'p1sse-swa-${envLower}'
 var functionAppName  = 'p1sse-api-${envLower}'
 var planName         = 'p1sse-plan-${envLower}'
 var storageName      = 'p1ssestor${envLower}'
+// Matches the estimator's and F.R.E.D's naming, which is title-cased per environment.
+var workspaceName    = 'LegaC-SSE-Logs-${environmentName == 'prod' ? 'Prod' : 'Dev'}'
+var insightsName     = 'p1sse-ai-${envLower}'
 var attachmentsContainerName = 'change-requests'
 
 // ── Static Web App ──────────────────────────────────────────────────────────
@@ -167,6 +170,34 @@ resource attachments 'Microsoft.Storage/storageAccounts/blobServices/containers@
   name: attachmentsContainerName
   properties: {
     publicAccess: 'None'
+  }
+}
+
+// ── Observability ───────────────────────────────────────────────────────────
+// Created here rather than by hand, because an app with no telemetry cannot be
+// diagnosed at all. When sign-in was failing there was nothing to read: no log store,
+// no request counts, no way to tell 'the function returned no roles' apart from 'the
+// function was never called'. Those are opposite problems with the same symptom.
+resource workspace 'Microsoft.OperationalInsights/workspaces@2023-09-01' = {
+  name: workspaceName
+  location: location
+  tags: tags
+  properties: {
+    sku: {
+      name: 'PerGB2018'
+    }
+    retentionInDays: 30
+  }
+}
+
+resource insights 'Microsoft.Insights/components@2020-02-02' = {
+  name: insightsName
+  location: location
+  tags: tags
+  kind: 'web'
+  properties: {
+    Application_Type: 'web'
+    WorkspaceResourceId: workspace.id
   }
 }
 
@@ -281,6 +312,7 @@ resource functionApp 'Microsoft.Web/sites@2023-12-01' = {
         { name: 'SSE_ENTRA_GROUP_ID', value: sseUsersGroupObjectId }
         { name: 'SSE_DEVELOPERS_GROUP_ID', value: sseDevelopersGroupObjectId }
         { name: 'APP_ENV', value: environmentName }
+        { name: 'APPLICATIONINSIGHTS_CONNECTION_STRING', value: insights.properties.ConnectionString }
       ]
     }
   }
