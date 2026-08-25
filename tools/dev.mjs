@@ -13,7 +13,7 @@
 // checks for an active profile and only seeds when there is none — so the first run
 // sets you up and every run after leaves your data alone.
 import { spawn, spawnSync } from 'node:child_process';
-import { existsSync, copyFileSync } from 'node:fs';
+import { existsSync, copyFileSync, readFileSync } from 'node:fs';
 
 const WIN = process.platform === 'win32';
 const SWA_PORT = 4280;
@@ -27,6 +27,22 @@ const run = (cmd, args, opts = {}) =>
 
 const quiet = (cmd, args) =>
   spawnSync(cmd, args, { encoding: 'utf8', shell: WIN, stdio: ['ignore', 'pipe', 'pipe'] });
+
+// ── 0. Is Docker even needed? ───────────────────────────────────────────────
+// Docker is one way to get a database, not the only one. If api/local.settings.json
+// already points somewhere — a shared dev server, a Postgres on another machine —
+// the containers are redundant, and demanding Docker anyway would block someone who
+// already has everything they need.
+const SETTINGS = 'api/local.settings.json';
+const pointsAtLocal =
+  !existsSync(SETTINGS) ||
+  /"PGHOST"\s*:\s*"(localhost|127\.0\.0\.1)"/.test(readFileSync(SETTINGS, 'utf8'));
+
+if (!pointsAtLocal) {
+  say(`${SETTINGS} points at a non-local database — skipping the containers`);
+  say('(delete it, or set PGHOST to localhost, to go back to Docker)');
+  startApp();
+} else {
 
 // ── 1. Docker ───────────────────────────────────────────────────────────────
 if (quiet('docker', ['--version']).status !== 0) {
@@ -109,17 +125,29 @@ if (!existsSync('api/local.settings.json')) {
 }
 
 // ── 5. Hand over to the SWA CLI ─────────────────────────────────────────────
+startApp();
+
+} // end of the Docker path
+
+function startApp() {
 console.log('');
 say(`starting the app — open http://localhost:${SWA_PORT}`);
 say('sign in with any username; give yourself the role "sse-users"');
 say('(add "sse-developers" to change a change-request status)');
 console.log('');
 
-const swa = spawn(
-  'swa',
-  ['start', 'http://localhost:5173', '--run', 'npm run dev:vite', '--api-location', 'api', '--port', String(SWA_PORT)],
-  { stdio: 'inherit', shell: WIN },
-);
+// Built as a command STRING on Windows rather than args + shell:true. Node deprecates
+// that combination (DEP0190) because it concatenates without escaping — and one of
+// these arguments contains a space, so it needs quoting either way.
+const swaArgs = [
+  'start', 'http://localhost:5173',
+  '--run', '"npm run dev:vite"',
+  '--api-location', 'api',
+  '--port', String(SWA_PORT),
+];
+const swa = WIN
+  ? spawn(`swa ${swaArgs.join(' ')}`, { stdio: 'inherit', shell: true })
+  : spawn('swa', swaArgs.map((a) => a.replace(/^"|"$/g, '')), { stdio: 'inherit' });
 
 // Containers are deliberately left running: they hold the database you were just
 // working in, and stopping them on every Ctrl-C would make local data feel
@@ -131,3 +159,4 @@ const bye = () => {
 process.on('SIGINT', bye);
 process.on('SIGTERM', bye);
 swa.on('exit', (code) => process.exit(code ?? 0));
+}

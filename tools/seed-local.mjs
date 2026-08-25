@@ -23,18 +23,49 @@ const cfg = {
   ssl: false,
 };
 
-// Refuse to run anywhere that looks like a real environment. This script publishes
-// invented rates and would happily overwrite the active profile.
-if (/\.postgres\.database\.azure\.com$/i.test(cfg.host)) {
+// The danger is OVERWRITING LIVE RATES, not seeding at all — an empty database has
+// nothing to lose, and a shared dev environment has to be filled from somewhere
+// before anyone can open the app.
+//
+// So the rule is about what is already there, not only about where "there" is:
+//   local host        seed freely
+//   Azure host        needs --i-know-this-is-shared, AND refuses outright if an
+//                     active rate profile already exists
+//
+// A blanket refusal on hostname was the first version of this. It was safe and
+// useless: it also blocked the one legitimate case, which pushes people towards
+// editing the guard rather than thinking about it.
+const isAzureHost = /\.postgres\.database\.azure\.com$/i.test(cfg.host);
+const acknowledged = process.argv.includes('--i-know-this-is-shared');
+
+if (isAzureHost && !acknowledged) {
   console.error(
-    `\n  REFUSING: "${cfg.host}" is an Azure PostgreSQL server.\n\n` +
-      `  This seeds INVENTED rates and marks them active. Run it against the local\n` +
-      `  container only (PGHOST=localhost). Real rates are published through the app.\n`,
+    `\n  REFUSING: "${cfg.host}" is a SHARED Azure PostgreSQL server.\n\n` +
+      `  This publishes INVENTED rates and marks them active. They are not Point 1's\n` +
+      `  numbers and nobody should quote from them.\n\n` +
+      `  If this is an empty dev database being stood up for the first time:\n` +
+      `      node tools/seed-local.mjs --i-know-this-is-shared\n\n` +
+      `  It will still refuse if an active rate profile already exists.\n`,
   );
   process.exit(1);
 }
 
-const client = new pg.Client(cfg);
+// A shared server has no password: it authenticates with an Entra token, which
+// DefaultAzureCredential gets from whoever is signed in to the Azure CLI.
+async function password() {
+  if (!isAzureHost) return cfg.password;
+  const { DefaultAzureCredential } = await import('@azure/identity');
+  const token = await new DefaultAzureCredential()
+    .getToken('https://ossrdbms-aad.database.windows.net/.default');
+  if (!token) throw new Error('Could not get an Entra token. Run: az login');
+  return token.token;
+}
+
+// Built inside main(), after the token is fetched — pg.Client copies its options at
+// construction, so assigning .password afterwards is silently ignored and the
+// connection fails with "Connection terminated unexpectedly", which names neither
+// the cause nor the fix.
+let client;
 
 const RATE_PROFILE = {
   labor: {
@@ -80,8 +111,36 @@ const RATE_PROFILE = {
 };
 
 async function main() {
+  client = new pg.Client({
+    ...cfg,
+    password: await password(),
+    ssl: isAzureHost ? { rejectUnauthorized: true } : false,
+  });
   await client.connect();
   console.log(`  connected to ${cfg.host}:${cfg.port}/${cfg.database}`);
+
+  // The check the hostname guard cannot make: is there already something here that
+  // people are relying on? Refused even with the acknowledgement flag, because
+  // republishing over a live profile is the outcome the flag exists to permit
+  // AROUND, not to permit.
+  if (isAzureHost) {
+    const existing = await client.query(
+      `SELECT rp.version FROM rate_profile rp
+         JOIN product p ON p.product_id = rp.product_id
+        WHERE rp.is_active AND p.tag = $1`,
+      ['sse'],
+    ).catch(() => ({ rowCount: 0, rows: [] }));
+    if (existing.rowCount > 0) {
+      await client.end();
+      console.error(
+        `\n  REFUSING: "${cfg.host}" already has an ACTIVE rate profile ` +
+          `(v${existing.rows[0].version}).\n\n` +
+          `  Seeding would replace real rates with invented ones. Publish new rates\n` +
+          `  through the app instead.\n`,
+      );
+      process.exit(1);
+    }
+  }
 
   const schema = readFileSync(new URL('../db/schema.pg.sql', import.meta.url), 'utf8');
   await client.query(schema);

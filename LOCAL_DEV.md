@@ -20,6 +20,10 @@ there.
 npm install && cd api && npm install && cd ..
 ```
 
+**Docker is optional.** If `api/local.settings.json` already points at a database —
+the shared dev server, say — `npm run dev` skips the containers entirely and just
+starts the app. Docker is one way to get a database, not a requirement.
+
 Then, every time:
 
 ```bash
