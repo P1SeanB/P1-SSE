@@ -40,7 +40,12 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: upload
           app_location: '/'
-          api_location: 'api'
+          # EMPTY ON PURPOSE. This Static Web App uses a LINKED backend (a real Function
+          # App), and in that mode the SWA action does NOT deploy the API — it ignores
+          # api_location silently. Leaving it set produced a green build with no API
+          # deployed at all: every route resolved zero roles, and every user got 403
+          # after a successful sign-in. The API is deployed by the job below.
+          api_location: ''
           output_location: 'dist'
 
   close_pull_request:
@@ -53,3 +58,32 @@ jobs:
         with:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
           action: close
+
+  deploy_api:
+    name: Deploy the linked Function App
+    # The Static Web App and the API are two resources, so they are two deploys. The
+    # SWA action only ships dist/; without this job the site goes live pointing at an
+    # API that does not exist, which presents as a 403 for every signed-in user
+    # rather than as a failed deployment.
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          # Node 20 reached end of life on 2026-04-30. The Function App runs Node 22;
+          # building on the version it runs on avoids shipping something the host
+          # cannot load.
+          node-version: 22
+
+      - name: Install API dependencies
+        working-directory: api
+        run: npm ci --omit=dev
+
+      - name: Deploy
+        uses: Azure/functions-action@v1
+        with:
+          app-name: p1sse-api-dev
+          package: api
+          publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}

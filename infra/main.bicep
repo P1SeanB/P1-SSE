@@ -201,7 +201,9 @@ resource functionApp 'Microsoft.Web/sites@2023-12-01' = {
     serverFarmId: plan.id
     httpsOnly: true
     siteConfig: {
-      linuxFxVersion: 'Node|20'
+      // Node 20 reached end of life on 2026-04-30 and receives no further security
+      // updates. 22 is the current Azure Functions LTS target.
+      linuxFxVersion: 'Node|22'
       ftpsState: 'Disabled'
       minTlsVersion: '1.2'
       // The SWA is the only legitimate caller; it proxies /api to this backend.
@@ -214,7 +216,7 @@ resource functionApp 'Microsoft.Web/sites@2023-12-01' = {
       appSettings: [
         { name: 'FUNCTIONS_EXTENSION_VERSION', value: '~4' }
         { name: 'FUNCTIONS_WORKER_RUNTIME', value: 'node' }
-        { name: 'WEBSITE_NODE_DEFAULT_VERSION', value: '~20' }
+        { name: 'WEBSITE_NODE_DEFAULT_VERSION', value: '~22' }
         // Identity-based storage for the Function App's own bookkeeping — no
         // AzureWebJobsStorage connection string, so no account key anywhere.
         { name: 'AzureWebJobsStorage__accountName', value: storage.name }
