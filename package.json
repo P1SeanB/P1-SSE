@@ -4,18 +4,19 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "node tools/dev.mjs",
+    "dev:vite": "vite",
+    "dev:swa": "swa start http://localhost:5173 --run \"npm run dev:vite\" --api-location api --port 4280",
     "build": "vite build",
     "preview": "vite preview",
+    "db:local": "node tools/seed-local.mjs",
     "parity": "node tools/parity.mjs && node tools/parity-adc.mjs && node tools/parity-materials.mjs && node tools/parity-sla.mjs && node tools/parity-monitoring.mjs && node tools/parity-inspection.mjs",
     "coverage": "node tools/coverage.mjs",
     "parity:adc": "node tools/parity-adc.mjs",
     "parity:materials": "node tools/parity-materials.mjs",
     "parity:sla": "node tools/parity-sla.mjs",
     "parity:monitoring": "node tools/parity-monitoring.mjs",
-    "parity:inspection": "node tools/parity-inspection.mjs",
-    "db:local": "node tools/seed-local.mjs",
-    "dev:swa": "swa start http://localhost:5173 --run \"npm run dev\" --api-location api"
+    "parity:inspection": "node tools/parity-inspection.mjs"
   },
   "dependencies": {
     "react": "^18.3.1",
