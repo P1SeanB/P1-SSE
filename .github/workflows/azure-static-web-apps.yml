@@ -61,6 +61,11 @@ jobs:
 
   deploy_api:
     name: Deploy the linked Function App
+    permissions:
+      # Required for OIDC: without id-token:write the login step cannot request a
+      # token and fails with a permissions error that reads like a role problem.
+      id-token: write
+      contents: read
     # The Static Web App and the API are two resources, so they are two deploys. The
     # SWA action only ships dist/; without this job the site goes live pointing at an
     # API that does not exist, which presents as a 403 for every signed-in user
@@ -77,23 +82,26 @@ jobs:
           # cannot load.
           node-version: 22
 
-      - name: Check the publish profile is configured
-        # Without this the failure is actively misleading. functions-action treats an
-        # empty publish-profile as "use RBAC instead", then fails with "No credentials
-        # found. Add an Azure login action before this action" — which sends you off to
-        # set up OIDC federation when the real fix is one repository secret.
-        run: |
-          if [ -z "${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}" ]; then
-            echo "::error::AZURE_FUNCTIONAPP_PUBLISH_PROFILE is not set. Get it with:"
-            echo "::error::az functionapp deployment list-publishing-profiles -n p1sse-api-dev -g LegaC-SSE-Development --xml"
-            exit 1
-          fi
+      # OIDC, not a publish profile. FLEX CONSUMPTION DOES NOT SUPPORT PUBLISH
+      # PROFILES AT ALL — asking for one returns "Invalid command. This is not
+      # currently supported for Azure Functions on the Flex Consumption plan", and
+      # since that error goes to stdout, piping it into a secret stores the error text
+      # as though it were a credential. Nothing downstream notices.
+      #
+      # GitHub proves this workflow's identity with a short-lived token instead, so
+      # there is no credential in the repository to leak or rotate. Matches how
+      # F.R.E.D deploys.
+      - name: Sign in to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
       - name: Deploy
         uses: Azure/functions-action@v1
         with:
           app-name: p1sse-api-dev
           package: api
-          publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}
           # The app is FLEX CONSUMPTION, so dependencies are built on the server and
           # the package is published to a blob container using the app's managed
           # identity — no account key, which is what makes this work at all against a
