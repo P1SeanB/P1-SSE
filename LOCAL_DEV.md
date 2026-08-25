@@ -139,3 +139,19 @@ does nothing, which is the same behaviour you will see in production.
 **A price looks wrong.** Run `npm run parity` before assuming the UI is at fault. It
 diffs every pricing engine against the legacy formulas across 17,000+ combinations,
 and it has already caught drift that nothing else would have.
+
+**"Port 4280 is already taken" / "EADDRINUSE :::7071".** A previous run left processes
+behind. `npm run dev` now kills the whole tree on Ctrl-C, but anything started before
+that fix — or killed with the task manager rather than Ctrl-C — survives. The stack is
+ten processes deep (`dev.mjs` → npm → cmd → SWA CLI → cmd → npm → cmd → Vite), so
+closing the terminal window is not enough either:
+
+```powershell
+Get-NetTCPConnection -LocalPort 4280,5173,7071 -State Listen |
+  ForEach-Object { taskkill /PID $_.OwningProcess /T /F }
+```
+
+**"Fetch http://127.0.0.1:7071 with status 404 … Unable to query functions trigger
+types."** Expected, and not an error. The CLI probes for Functions metadata that only
+Core Tools serves; we pass `--api-devserver-url` instead, so it skips that and proxies
+`/api` straight through. Routes work regardless — the line above it lists them.

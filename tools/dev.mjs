@@ -161,17 +161,48 @@ const swaArgs = [
 ];
 const swa = WIN
   ? spawn(`swa ${swaArgs.join(' ')}`, { stdio: 'inherit', shell: true })
-  : spawn('swa', swaArgs.map((a) => a.replace(/^"|"$/g, '')), { stdio: 'inherit' });
+  : spawn('swa', swaArgs.map((a) => a.replace(/^"|"$/g, '')), { stdio: 'inherit', detached: true });
+
+// Kill the whole TREE, not the child we happen to hold.
+//
+// `swa` is three processes deep: this script spawns a shell, the shell spawns the
+// SWA CLI, and the CLI spawns `npm run dev:vite`, which spawns Vite. Killing our
+// direct child on Windows terminates only that process — every descendant is
+// reparented and keeps running, still holding ports 4280 and 5173. The next
+// `npm run dev` then fails to bind, or worse, silently attaches to yesterday's
+// build and serves stale code while you debug the source.
+//
+// taskkill /T walks the tree; on POSIX the equivalent is signalling the process
+// group, which is what `detached: true` above creates.
+const killTree = (child) => {
+  if (!child || child.exitCode !== null || !child.pid) return;
+  try {
+    if (WIN) spawnSync('taskkill', ['/PID', String(child.pid), '/T', '/F'], { stdio: 'ignore' });
+    else process.kill(-child.pid, 'SIGTERM');
+  } catch { /* already gone */ }
+};
 
 // Containers are deliberately left running: they hold the database you were just
 // working in, and stopping them on every Ctrl-C would make local data feel
 // disposable when it is not.
+let leaving = false;
 const bye = () => {
-  try { api.kill(); } catch { /* already gone */ }
+  if (leaving) return; // Ctrl-C twice shouldn't race two teardowns
+  leaving = true;
+  killTree(api);
+  killTree(swa);
   console.log('\n  Stopped. Containers are still running — `docker compose down` to stop them.\n');
   process.exit(0);
 };
 process.on('SIGINT', bye);
 process.on('SIGTERM', bye);
-swa.on('exit', (code) => process.exit(code ?? 0));
+// If the SWA CLI dies on its own — a port clash, a config it refuses — take the API
+// host down with it. Otherwise it survives as an orphan holding 7071, and the next
+// run's "address already in use" points at a process nobody remembers starting.
+swa.on('exit', (code) => {
+  if (leaving) return;
+  leaving = true;
+  killTree(api);
+  process.exit(code ?? 0);
+});
 }
