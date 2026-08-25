@@ -34,7 +34,29 @@ app.http('GetRoles', {
 
     const payload = await request.json();
     const claims = payload?.claims || [];
-    const groupIds = claims.filter((c) => c.typ === 'groups').map((c) => c.val);
+
+    // Microsoft's documented Entra payload uses full schema URIs for claim types and
+    // does not include groups at all, which is why their group-based tutorial calls
+    // Graph instead. Whether a 'groups' claim actually arrives here depends on the
+    // registration's token configuration, so accept both the short name and the URI
+    // form rather than assuming one.
+    const isGroupClaim = (typ) =>
+      typ === 'groups' || typ === 'http://schemas.microsoft.com/ws/2008/06/identity/claims/groups';
+    const groupIds = claims.filter((c) => isGroupClaim(c.typ)).map((c) => c.val);
+
+    // DIAGNOSTIC, and deliberately not removed after first use: when nobody can sign
+    // in, this is the only view into why. The roles function cannot be called
+    // externally once rolesSource is configured, so without a log there is nothing to
+    // inspect at all.
+    //
+    // Claim TYPES only, never values — a claims dump would put object ids and email
+    // addresses into a log store that is retained and searchable.
+    if (!groupIds.length) {
+      context.log(
+        `[getRoles] no group claim. types received: ${[...new Set(claims.map((c) => c.typ))].join(', ') || '(none)'}`,
+      );
+    }
+    context.log(`[getRoles] ${groupIds.length} group claim(s); expected id present: ${groupIds.includes(usersGroupId)}`);
 
     const roles = [];
     if (groupIds.includes(usersGroupId)) roles.push('sse-users');
