@@ -170,6 +170,17 @@ resource attachments 'Microsoft.Storage/storageAccounts/blobServices/containers@
   }
 }
 
+// Flex Consumption pushes the built package here and mounts it. Separate from the
+// attachments container so a deployment artefact and a customer's file never share
+// a blob prefix or a lifecycle rule.
+resource deployments 'Microsoft.Storage/storageAccounts/blobServices/containers@2023-05-01' = {
+  parent: blobService
+  name: 'deployments'
+  properties: {
+    publicAccess: 'None'
+  }
+}
+
 // ── Function App (the linked backend) ───────────────────────────────────────
 // Consumption. This workload is a handful of requests per estimator per day, which
 // sits well inside the free grant; a dedicated plan would cost more than the rest
@@ -178,9 +189,17 @@ resource plan 'Microsoft.Web/serverfarms@2023-12-01' = {
   name: planName
   location: location
   tags: tags
+  // FLEX CONSUMPTION, matching the estimator. Not Y1 Dynamic: that plan has no
+  // writable wwwroot and deploys only via a package blob whose pointer is minted with
+  // an ACCOUNT KEY. Shared-key access is disabled on this account, so a Y1 app here
+  // cannot be deployed at all — it fails with 'Malformed SCM_RUN_FROM_PACKAGE' after a
+  // build that looks like it succeeded.
+  //
+  // Flex deploys from a blob container authenticated by MANAGED IDENTITY, so the key
+  // stays disabled and no second storage account is needed.
   sku: {
-    name: 'Y1'
-    tier: 'Dynamic'
+    name: 'FC1'
+    tier: 'FlexConsumption'
   }
   properties: {
     reserved: true   // Linux
@@ -200,10 +219,31 @@ resource functionApp 'Microsoft.Web/sites@2023-12-01' = {
   properties: {
     serverFarmId: plan.id
     httpsOnly: true
+    // Flex declares its runtime and deployment HERE, not via linuxFxVersion or the
+    // FUNCTIONS_* app settings. Setting both is rejected, not ignored.
+    functionAppConfig: {
+      deployment: {
+        storage: {
+          type: 'blobContainer'
+          value: '${storage.properties.primaryEndpoints.blob}${deployments.name}'
+          authentication: {
+            // No key, no connection string — the whole reason for Flex here.
+            type: 'SystemAssignedIdentity'
+          }
+        }
+      }
+      scaleAndConcurrency: {
+        // A few requests per estimator per day. The memory floor exists so a cold
+        // start is not also a memory-starved one.
+        maximumInstanceCount: 40
+        instanceMemoryMB: 2048
+      }
+      runtime: {
+        name: 'node'
+        version: '22'
+      }
+    }
     siteConfig: {
-      // Node 20 reached end of life on 2026-04-30 and receives no further security
-      // updates. 22 is the current Azure Functions LTS target.
-      linuxFxVersion: 'Node|22'
       ftpsState: 'Disabled'
       minTlsVersion: '1.2'
       // The SWA is the only legitimate caller; it proxies /api to this backend.
@@ -214,9 +254,9 @@ resource functionApp 'Microsoft.Web/sites@2023-12-01' = {
         supportCredentials: false
       }
       appSettings: [
-        { name: 'FUNCTIONS_EXTENSION_VERSION', value: '~4' }
-        { name: 'FUNCTIONS_WORKER_RUNTIME', value: 'node' }
-        { name: 'WEBSITE_NODE_DEFAULT_VERSION', value: '~22' }
+        // FUNCTIONS_EXTENSION_VERSION, FUNCTIONS_WORKER_RUNTIME and
+        // WEBSITE_NODE_DEFAULT_VERSION are deliberately absent: on Flex the runtime is
+        // declared in functionAppConfig above and these are rejected.
         // Identity-based storage for the Function App's own bookkeeping — no
         // AzureWebJobsStorage connection string, so no account key anywhere.
         { name: 'AzureWebJobsStorage__accountName', value: storage.name }
@@ -258,15 +298,17 @@ resource linkedBackend 'Microsoft.Web/staticSites/linkedBackends@2023-12-01' = {
 }
 
 // ── Role assignments for the Function App's identity ────────────────────────
-// Storage Blob Data Contributor: read and write attachments. Scoped to this
-// storage account, not the resource group.
-var roleBlobDataContributor = 'ba92f5b4-2d11-453d-a403-e96b0029c9fe'
+// Storage Blob Data OWNER, not Contributor. Contributor is enough to read and write
+// attachments, but Flex Consumption also writes and mounts its deployment package
+// through this identity and needs Owner on the container to do it. This matches what
+// the estimator's function app already holds.
+var roleBlobDataOwner = 'b7e6dc6d-f1e8-4753-8033-0f276bb0955b'
 
 resource blobRole 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
   scope: storage
-  name: guid(storage.id, functionApp.id, roleBlobDataContributor)
+  name: guid(storage.id, functionApp.id, roleBlobDataOwner)
   properties: {
-    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', roleBlobDataContributor)
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', roleBlobDataOwner)
     principalId: functionApp.identity.principalId
     principalType: 'ServicePrincipal'
   }
