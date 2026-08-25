@@ -62,7 +62,16 @@ export function getPool() {
     // three applications draw from. A generous pool here starves the others.
     max: Number(process.env.PGPOOL_MAX || 4),
     idleTimeoutMillis: 30_000,
-    connectionTimeoutMillis: 10_000,
+    // 30s, not 10s, because ACQUIRING THE TOKEN HAPPENS INSIDE THIS BUDGET. The
+    // password callback runs per new connection, and a cold DefaultAzureCredential
+    // walks several sources before it finds one — measured at ~5s on a developer
+    // workstation and slower on a cold Function instance, against a TCP connect that
+    // takes ~300ms once it starts.
+    //
+    // At 10s the FIRST request after a cold start failed with "Connection terminated
+    // due to connection timeout" and the retry succeeded, which reads as a flaky
+    // database rather than a budget that did not account for authentication.
+    connectionTimeoutMillis: Number(process.env.PGCONNECT_TIMEOUT_MS || 30_000),
     ssl: process.env.PGSSLMODE === 'disable' ? false : { rejectUnauthorized: true },
   });
 

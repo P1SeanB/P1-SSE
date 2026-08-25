@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "node tools/dev.mjs",
     "dev:vite": "vite",
-    "dev:swa": "swa start http://localhost:5173 --run \"npm run dev:vite\" --api-location api --port 4280",
+    "dev:swa": "swa start http://localhost:5173 --run \"npm run dev:vite\" --api-devserver-url http://localhost:7071 --port 4280",
     "build": "vite build",
     "preview": "vite preview",
     "db:local": "node tools/seed-local.mjs",
@@ -16,7 +16,8 @@
     "parity:materials": "node tools/parity-materials.mjs",
     "parity:sla": "node tools/parity-sla.mjs",
     "parity:monitoring": "node tools/parity-monitoring.mjs",
-    "parity:inspection": "node tools/parity-inspection.mjs"
+    "parity:inspection": "node tools/parity-inspection.mjs",
+    "dev:api": "node tools/dev-api.mjs"
   },
   "dependencies": {
     "react": "^18.3.1",

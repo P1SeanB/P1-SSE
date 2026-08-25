@@ -136,13 +136,21 @@ say('sign in with any username; give yourself the role "sse-users"');
 say('(add "sse-developers" to change a change-request status)');
 console.log('');
 
+// The API runs as our own host, not Core Tools — see tools/dev-api.mjs for why.
+// --api-devserver-url points the CLI at something already listening instead of
+// having it start (and download) a Functions host.
+const api = spawn(process.execPath, ['tools/dev-api.mjs'], { stdio: 'inherit' });
+api.on('exit', (code) => {
+  if (code) console.error(`\n  The local API host exited with code ${code}.\n`);
+});
+
 // Built as a command STRING on Windows rather than args + shell:true. Node deprecates
 // that combination (DEP0190) because it concatenates without escaping — and one of
 // these arguments contains a space, so it needs quoting either way.
 const swaArgs = [
   'start', 'http://localhost:5173',
   '--run', '"npm run dev:vite"',
-  '--api-location', 'api',
+  '--api-devserver-url', 'http://localhost:7071',
   '--port', String(SWA_PORT),
 ];
 const swa = WIN
@@ -153,6 +161,7 @@ const swa = WIN
 // working in, and stopping them on every Ctrl-C would make local data feel
 // disposable when it is not.
 const bye = () => {
+  try { api.kill(); } catch { /* already gone */ }
   console.log('\n  Stopped. Containers are still running — `docker compose down` to stop them.\n');
   process.exit(0);
 };
