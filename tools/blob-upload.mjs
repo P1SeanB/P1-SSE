@@ -22,6 +22,8 @@
 import { readFileSync, existsSync, readdirSync, statSync } from 'node:fs';
 import { resolve, join } from 'node:path';
 import { createHash } from 'node:crypto';
+import { createRequire } from 'node:module';
+import { pathToFileURL } from 'node:url';
 import pg from 'pg';
 
 const say = (m) => console.log(`  ${m}`);
@@ -91,7 +93,13 @@ const flatten = (storagePath) => storagePath.replace(/[^a-zA-Z0-9._-]+/g, '_');
 const sha = (buf) => createHash('sha256').update(buf).digest('hex').slice(0, 16);
 
 async function main() {
-  const { BlobServiceClient } = await import('@azure/storage-blob');
+  // Resolved from api/, not from here. @azure/storage-blob is the API's dependency —
+  // it belongs to the code that serves attachments, not to the repo root — and ESM
+  // does not honour NODE_PATH, so a bare import fails with ERR_MODULE_NOT_FOUND.
+  // Installing a second copy at the root to avoid this would risk the migration and
+  // the app disagreeing about the SDK version.
+  const requireFromApi = createRequire(resolve('api/package.json'));
+  const { BlobServiceClient } = await import(pathToFileURL(requireFromApi.resolve('@azure/storage-blob')).href);
   const { DefaultAzureCredential } = await import('@azure/identity');
   const container = new BlobServiceClient(ACCOUNT_URL, new DefaultAzureCredential())
     .getContainerClient(CONTAINER);
@@ -105,7 +113,7 @@ async function main() {
 
   console.log('');
   say(`export   : migration-data/${stamp}`);
-  say(`storage  : ${ACCOUNT_URL}${CONTAINER}`);
+  say(`storage  : ${ACCOUNT_URL.replace(/\/+$/, '')}/${CONTAINER}`);
   say(`database : ${cfg.host}/${cfg.database}`);
   say(`mode     : ${COMMIT ? 'COMMIT — uploads and repoints rows' : 'DRY RUN — nothing is uploaded'}`);
   console.log('');
@@ -139,18 +147,29 @@ async function main() {
   );
   if (!rows.length) die('No imported file rows found. Run: npm run migrate:import -- --commit');
 
-  let uploaded = 0, skipped = 0, repointed = 0;
+  let uploaded = 0, skipped = 0, repointed = 0, wouldUpload = 0;
   const problems = [];
 
-  for (const r of rows) {
-    // Already moved: the path no longer looks like the legacy one. Recognised by
-    // shape rather than by a flag, so a partially-finished run resumes cleanly.
-    const alreadyMoved = r.storage_path.startsWith(`${r.change_request_id}/`)
-      && !r.storage_path.startsWith(`${r.legacy_id}/`);
+  // THE EXPORT IS THE AUTHORITY ON WHERE A FILE CAME FROM, not the database row.
+  //
+  // The row's storage_path is rewritten by this very tool, so using it to locate the
+  // local file works exactly once. On a second run the path already points at the
+  // Blob location, the lookup misses, and every file is reported as "not in the
+  // export" — which reads as data loss when in fact the move succeeded. The legacy
+  // path never changes, so keying off it makes re-runs correct instead of alarming.
+  const legacyFiles = JSON.parse(readFileSync(join(DIR, 'cr_files.json'), 'utf8'));
+  const legacyPath = new Map(legacyFiles.map((f) => [Number(f.id), f.storage_path]));
 
-    const local = join(DIR, 'files', flatten(r.storage_path));
+  for (const r of rows) {
+    const original = legacyPath.get(Number(r.legacy_id));
+    if (!original) {
+      problems.push(`#${r.legacy_id} ${r.filename}: no matching row in this export's cr_files.json`);
+      continue;
+    }
+
+    const local = join(DIR, 'files', flatten(original));
     if (!existsSync(local)) {
-      problems.push(`#${r.legacy_id} ${r.filename}: not in the export (${flatten(r.storage_path)})`);
+      problems.push(`#${r.legacy_id} ${r.filename}: not in the export (${flatten(original)})`);
       continue;
     }
     const bytes = readFileSync(local);
@@ -165,7 +184,8 @@ async function main() {
     // Keep the legacy filename portion, swap the request-id prefix to the NEW id.
     // The app's convention is '<change_request_id>/…', and a path claiming a request
     // it does not belong to is the kind of quiet inconsistency that misleads later.
-    const base = r.storage_path.split('/').slice(1).join('/') || r.filename;
+    // Derived from the LEGACY path so it is the same on every run.
+    const base = original.split('/').slice(1).join('/') || r.filename;
     const target = `${r.change_request_id}/${base}`;
     const blob = container.getBlockBlobClient(target);
 
@@ -199,13 +219,14 @@ async function main() {
       }
     } else if (exists) {
       skipped++;
+    } else {
+      wouldUpload++;
     }
 
     if (COMMIT && r.storage_path !== target) {
       await client.query('UPDATE change_request_file SET storage_path = $1 WHERE change_request_file_id = $2', [target, r.id]);
       repointed++;
     }
-    if (alreadyMoved) skipped++;
   }
 
   console.log('');
@@ -216,7 +237,7 @@ async function main() {
     );
     say(`${left.rows[0].n} row(s) still pointing at a legacy path`);
   } else {
-    say(`${rows.length} file(s) would be uploaded to ${CONTAINER}. Nothing was written.`);
+    say(`${wouldUpload} of ${rows.length} file(s) would be uploaded to ${CONTAINER}; ${skipped} already there. Nothing was written.`);
     say('Re-run with --commit when the paths above look right.');
   }
 

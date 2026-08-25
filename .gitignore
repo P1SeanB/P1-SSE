@@ -13,10 +13,14 @@ api/node_modules/
 # developing — historically a connection string. The .example is the committed one.
 api/local.settings.json
 
-# Real deployment parameters. Only the .example belongs in the repo; the filled-in
-# versions carry tenant and group object ids for each environment.
-infra/main.*.parameters.json
-!infra/main.parameters.json.example
+# The committed infra/main.<env>.bicepparam are placeholder templates; the real
+# per-environment values live in *.local.bicepparam (Postgres FQDN, client id, group
+# object ids).
+# NOTE: the extension must stay .bicepparam — `az deployment group create -p`
+# detects the params format by extension, so main.dev.bicepparam.local gets misread
+# as JSON. Hence *.local.bicepparam (".local" BEFORE the extension).
+infra/*.local.bicepparam
+infra/*.bicepparam.local
 
 # Exported legacy data from the Supabase migration rehearsal. Real email addresses
 # and business records — a working copy, never a backup, and never committed.
