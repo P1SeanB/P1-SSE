@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Card, Field, NumInput, SectionLabel, CheckRow, RateSelect, optionPrice } from '../../components/ui';
-import { computeAdc, isCommercialBase, hasCvIntercom, doorOptions } from '../../lib/adc';
+import { computeAdc, isCommercialBase, hasCvIntercom, doorOptions, addonsForBase } from '../../lib/adc';
 
 // Alarm.com configuration — the legacy's adc-* section (index.html:4018-4487).
 //
@@ -104,6 +104,27 @@ export default function AdcPanel({ value: adc, onChange, rates = {} }) {
     });
   }, [commercial]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Which add-ons this base package offers, and at what price. Keyed by id so the
+  // checkbox rows below read both without recomputing per row.
+  const addonMatrix = React.useMemo(() => {
+    const map = {};
+    for (const a of addonsForBase(rates.adc, adc.base)) map[a.id] = a;
+    return map;
+  }, [rates.adc, adc.base]);
+
+  // Changing package can withdraw an add-on entirely. The legacy force-unchecks it
+  // (:15762) rather than leaving a hidden box ticked, and that matters: a selection you
+  // cannot see is one you cannot remove, and it would ride along into the saved quote.
+  useEffect(() => {
+    const stale = Object.keys(adc.addons || {}).filter(
+      (k) => adc.addons[k] && addonMatrix[k] && !addonMatrix[k].available,
+    );
+    if (!stale.length) return;
+    const next = { ...adc.addons };
+    for (const k of stale) next[k] = false;
+    set({ addons: next });
+  }, [addonMatrix]); // eslint-disable-line react-hooks/exhaustive-deps
+
   // The same call the quote total makes, so the figure shown here and the figure
   // charged are the same number by construction.
   const priced = computeAdc(
@@ -112,12 +133,14 @@ export default function AdcPanel({ value: adc, onChange, rates = {} }) {
       video: adc.video,
       cvIntercom: adc.cvIntercom,
       access: adc.access,
-      // Each checked add-on contributes its configured monthly amount. The legacy
-      // read it off the checkbox's own value attribute (:4416); here it comes from
-      // the rate tables, so a price change is a data change.
-      addons: Object.entries(adc.addons)
-        .filter(([, on]) => on)
-        .map(([k]) => optionPrice(rates.dropdownOptions || {}, 'adc-addons', k)),
+      // IDS, not amounts — computeAdc resolves each against the selected package.
+      //
+      // This used to send one flat price per add-on, looked up from a pricing_option
+      // group named 'adc-addons' that does not exist in the rate data at all, so every
+      // add-on contributed exactly nothing. Even with rows it would have been wrong:
+      // 22 of the 24 add-ons are priced PER PACKAGE, free on the packages that bundle
+      // them and chargeable on the ones that do not.
+      addons: Object.entries(adc.addons).filter(([, on]) => on).map(([k]) => k),
       sensors: adc.sensors, aid: adc.aid, cars: adc.cars, fleet: adc.fleet, comms: adc.comms,
       flexIo: adc.flexIo, cellConnector: adc.cellConnector,
       verizonData: adc.verizonData, imageEvents: adc.imageEvents,
@@ -309,11 +332,15 @@ export default function AdcPanel({ value: adc, onChange, rates = {} }) {
                     s.toggle === 'energy'
                       ? /energy|solar|enphase|thermostat|lights|shades|irrigation|water/.test(k)
                       : !/energy|solar|enphase|thermostat|lights|shades|irrigation|water/.test(k),
-                  ).map(([k, label]) => (
-                    <CheckRow key={k} label={label} checked={!!adc.addons[k]}
-                      amount={optionPrice(opts, 'adc-addons', k)}
-                      onChange={(on) => set({ addons: { ...adc.addons, [k]: on } })} />
-                  ))}
+                  )
+                    // Hidden when the selected package does not offer it at all — the
+                    // legacy hides the row rather than showing an unbuyable option.
+                    .filter(([k]) => !addonMatrix[k] || addonMatrix[k].available)
+                    .map(([k, label]) => (
+                      <CheckRow key={k} label={label} checked={!!adc.addons[k]}
+                        amount={addonMatrix[k] ? addonMatrix[k].price : 0}
+                        onChange={(on) => set({ addons: { ...adc.addons, [k]: on } })} />
+                    ))}
                 </div>
               )}
             </div>

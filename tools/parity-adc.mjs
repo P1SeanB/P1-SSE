@@ -35,6 +35,18 @@ const RATES = {
       noonlightLicenses: { freeUnits: { 'commercial-plus': 5 }, perUnit: 2 },
     },
     liftmasterSurcharge: 1.75,
+    // Covers all four shapes the real sheet contains, because each fails differently:
+    //   0            included on that package — must NOT fall through to default
+    //   differing    the ordinary per-package case
+    //   null         withdrawn there: hidden and force-unchecked
+    //   no default   withdrawn everywhere except the packages listed
+    addOns: [
+      { id: 'locks',       prices: { commercial: 0, 'commercial-plus': 0, default: 1.5 } },
+      { id: 'thermostats', prices: { 'commercial-plus': 0, default: 1.25 } },
+      { id: 'lights',      prices: { commercial: null, default: 1.25 } },
+      { id: 'liftmaster',  prices: { default: 2.5 } },
+      { id: 'solar',       prices: { 'commercial-plus': 3.0 } },
+    ],
   },
 };
 
@@ -82,7 +94,24 @@ function legacyAdcTotal(i, P1_RATES) {
   }
 
   // Checked add-ons — :4416
-  for (const v of i.addons || []) total += parseFloat(v) || 0;
+  // Add-ons — :15741-15745 (priceFor) and :15755-15771 (reprice).
+  //
+  // The legacy writes each package's price onto the checkbox and then sums the
+  // checkbox values at :4416. Transcribed here as 'resolve the id against the
+  // selected package', which is what those two steps amount to. A null price means
+  // the row is hidden AND unchecked (:15760-15763), so it contributes nothing.
+  const addonPkg = (P1_RATES.adc?.packages || [])
+    .find((p) => Math.abs(parseFloat(p.cost) - baseVal) < 0.005);
+  const addonPkgId = addonPkg ? addonPkg.id : null;
+  for (const id of i.addons || []) {
+    const a = (P1_RATES.adc?.addOns || []).find((x) => x.id === id);
+    if (!a) continue;
+    const pr = Object.prototype.hasOwnProperty.call(a.prices || {}, addonPkgId)
+      ? a.prices[addonPkgId]
+      : (Object.prototype.hasOwnProperty.call(a.prices || {}, 'default') ? a.prices.default : null);
+    if (pr === null || pr === undefined) continue;
+    total += parseFloat(pr) || 0;
+  }
 
   total += parseFloat(i.sensors) || 0;                                  // :4440
   total += parseFloat(i.aid) || 0;                                      // :4442
@@ -143,6 +172,14 @@ const ACCESSES = [
 ];
 const SUPERVISIONS = [null, 'six', 'hourly'];
 const NOONLIGHT = [0, 3, 8];
+// Sets chosen so every package sees at least one included (0), one chargeable and one
+// withdrawn (null) add-on.
+const ADDON_SETS = [
+  [],
+  ['locks', 'thermostats'],
+  ['lights', 'solar', 'liftmaster'],
+  ['locks', 'lights', 'thermostats', 'solar', 'liftmaster'],
+];
 
 let checked = 0;
 const mismatches = [];
@@ -153,12 +190,13 @@ for (const base of BASES) {
       for (const supervision of SUPERVISIONS) {
         for (const noonlightLicenses of NOONLIGHT) {
           for (const liftmasterIntegration of [false, true]) {
+           for (const addons of ADDON_SETS) {
             const input = {
               base,
               video,
               cvIntercom: { devices: 3, users: 12 },
               access,
-              addons: [1.5, 0, 2.75],
+              addons,
               sensors: 4.0, aid: 1.25, cars: 3.0, fleet: 1.5, comms: 8.0,
               flexIo: 2.5, cellConnector: 1.0, verizonData: 6.0, imageEvents: 0.75,
               supervision, noonlightLicenses, liftmasterIntegration,
@@ -169,6 +207,7 @@ for (const base of BASES) {
             if (Math.abs(legacy - ported) > 0.005) {
               mismatches.push({ input, legacy, ported });
             }
+           }
           }
         }
       }

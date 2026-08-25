@@ -64,6 +64,56 @@ function pickForPackage(table, packageId) {
 }
 
 /**
+ * What one add-on costs on a given package — a transcription of legacy `priceFor`
+ * (:15741-15745).
+ *
+ * Returns a number, or NULL meaning "not offered on this package at all". The
+ * distinction is load-bearing and is not the same as zero:
+ *
+ *   null   the add-on does not exist for this package. The legacy HIDES the checkbox
+ *          and FORCE-UNCHECKS it (:15760-15763), so switching package can remove a
+ *          selection the estimator already made.
+ *   0      offered and included — the legacy labels it "(included)" (:15769).
+ *   > 0    offered at that price.
+ *
+ * 22 of the 24 add-ons in the real rate config price differently per package: lights,
+ * locks, shades and thermostats are $1.25 on a default package and $0 on Gold,
+ * Automation and Commercial Plus, where they are bundled. A single price per add-on
+ * cannot express that, and using one overcharges every bundled package.
+ */
+export function addonPrice(adcCfg, addonId, packageId) {
+  const list = (adcCfg && adcCfg.addOns) || [];
+  const addon = list.find((a) => a && a.id === addonId);
+  if (!addon) return null;
+  const prices = addon.prices || {};
+  // hasOwnProperty, not a truthiness check: a package key holding 0 means "included"
+  // and must win over the default, while `prices[pkgId] || prices.default` would
+  // silently fall through to the default and charge for something bundled.
+  if (packageId && Object.prototype.hasOwnProperty.call(prices, packageId)) {
+    const v = prices[packageId];
+    return v === null || v === undefined ? null : num(v);
+  }
+  if (Object.prototype.hasOwnProperty.call(prices, 'default')) {
+    const v = prices.default;
+    return v === null || v === undefined ? null : num(v);
+  }
+  return null;
+}
+
+/**
+ * Every add-on with its price for the selected base cost, for rendering. `available`
+ * false means the legacy would hide it — the caller must also clear any selection,
+ * the way :15762 does.
+ */
+export function addonsForBase(adcCfg, baseCost) {
+  const packageId = packageIdForBase(adcCfg, baseCost);
+  return ((adcCfg && adcCfg.addOns) || []).map((a) => {
+    const price = addonPrice(adcCfg, a.id, packageId);
+    return { id: a.id, price: price === null ? 0 : price, available: price !== null };
+  });
+}
+
+/**
  * Video component of the monthly total — :4380-4394.
  *
  * Three mutually exclusive modes, decided by the selected option's data-type:
@@ -167,8 +217,25 @@ export function computeAdc(input = {}, rates = {}) {
 
   parts.access = computeAccess(input.access, rates);
 
-  // Checked add-on boxes — :4416. Each carries its own monthly amount.
-  parts.addons = (input.addons || []).reduce((sum, v) => sum + num(v), 0);
+  // Checked add-ons — :4416, priced through the package matrix at :15741.
+  //
+  // THESE ARE IDS, NOT AMOUNTS. The legacy writes each package's price onto the
+  // checkbox's own value and then sums those values, so the dollars are decided by
+  // whatever `reprice` last wrote. Passing ids here and resolving them against the
+  // selected package makes that impossible to get wrong from the outside — the panel
+  // cannot hand this function a stale or package-mismatched amount, because it no
+  // longer hands it amounts at all.
+  //
+  // Numbers are still accepted so an older caller degrades to the previous behaviour
+  // rather than silently summing NaN.
+  const packageIdForAddons = packageIdForBase(adcCfg, base);
+  parts.addons = (input.addons || []).reduce((sum, entry) => {
+    if (typeof entry === 'number') return sum + num(entry);
+    const price = addonPrice(adcCfg, entry, packageIdForAddons);
+    // null means the package does not offer it: contributes nothing, matching the
+    // legacy, which hides and unchecks it (:15760-15763).
+    return sum + (price === null ? 0 : price);
+  }, 0);
 
   parts.sensors = num(input.sensors);
   parts.aid = num(input.aid);
