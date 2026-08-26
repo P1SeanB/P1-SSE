@@ -22,7 +22,8 @@
     "migrate:roster": "node tools/migration-roster.mjs",
     "migrate:import": "node tools/supabase-import.mjs",
     "migrate:blob": "node tools/blob-upload.mjs",
-    "parity:shape": "node tools/parity-rate-shape.mjs"
+    "parity:shape": "node tools/parity-rate-shape.mjs",
+    "scan:legacy": "node tools/legacy-scan.mjs"
   },
   "dependencies": {
     "react": "^18.3.1",
