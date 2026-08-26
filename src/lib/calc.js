@@ -172,21 +172,45 @@ export function slaMonthlyFromDisplay(value, freq) {
   return value;
 }
 
-// SLA service-call rate table — legacy/index.html:7443-7452
+/**
+ * SLA service-call rates by tier — the PUBLISHED rate card, legacy :9702-9706.
+ *
+ * The legacy sets the three budget rate dropdowns straight from tierRates when a tier
+ * is selected:
+ *
+ *     var _trSel = (isEssential ? _trCfg.essential
+ *                 : isPremier   ? _trCfg.premier
+ *                               : _trCfg.priority) || {};
+ *     regRate = _trSel.st;  ahRate = _trSel.th;  emRate = _trSel.dt;
+ *
+ * THIS USED TO DERIVE THE RATES INSTEAD, by multiplying straight time by the priority
+ * and premier multipliers. That was transcribed from legacy :8199-8207, which computes
+ * exactly that — and which the legacy assigns and then never reads again. A dead code
+ * path, faithfully ported.
+ *
+ * The published card is not a multiplier grid and cannot be reconstructed as one:
+ * emergency is a FLAT 266.03 on every tier, and Priority's time-and-a-half (230.67)
+ * equals Premier's straight time. Deriving overcharged Priority and Premier
+ * after-hours and emergency work by $22-$80/hr.
+ *
+ * Returns null when no tiers are loaded, deliberately. The alternative — falling back
+ * to the multiplier model — is how the wrong numbers looked plausible for so long.
+ */
 export function slaRateTable(rates) {
-  const s = rates?.serviceCall;
-  if (!s) return null;
-  return {
-    standard: { straight: s.StraightTimeRate, timeAndHalf: s.TimeAndHalfRate, doubleTime: s.DoubleTimeRate },
-    priority: {
-      straight: s.StraightTimeRate * s.PriorityMultiplier,
-      timeAndHalf: s.TimeAndHalfRate * s.PriorityMultiplier,
-      doubleTime: s.DoubleTimeRate * s.PriorityMultiplier,
-    },
-    premier: {
-      straight: s.StraightTimeRate * s.PremierMultiplier,
-      timeAndHalf: s.TimeAndHalfRate * s.PremierMultiplier,
-      doubleTime: s.DoubleTimeRate * s.PremierMultiplier,
-    },
-  };
+  const rows = rates?.tiers;
+  if (!Array.isArray(rows) || !rows.length) return null;
+
+  const table = {};
+  for (const row of rows) {
+    const name = String(row.tier_name || row.tierName || '').toLowerCase();
+    if (!name) continue;
+    // straight_time is the explicit column; `rate` carries the same value and is kept
+    // only so older readers do not break.
+    table[name] = {
+      straight: Number(row.straight_time ?? row.rate),
+      timeAndHalf: Number(row.time_and_half),
+      doubleTime: Number(row.double_time),
+    };
+  }
+  return Object.keys(table).length ? table : null;
 }

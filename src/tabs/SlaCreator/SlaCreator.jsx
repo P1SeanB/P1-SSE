@@ -21,7 +21,11 @@ import {
 // All arithmetic is src/lib/sla.js, covered by npm run parity:sla.
 
 const SLA_SYSTEMS = ['Fire', 'Burglar', 'Access Control', 'Video', 'AV', 'Nurse Call', 'Intercom'];
-const TIERS = ['Standard', 'Priority', 'Premier'];
+// ESSENTIAL, not "Standard". The legacy names the base tier Essential everywhere a
+// customer can see it (:3710, :9316, :10326) and keys its rate card on it. "Standard"
+// came from the invented development seed, and with the real rate profile loaded it
+// matched no tier at all — selecting it produced no rates.
+const TIERS = ['Essential', 'Priority', 'Premier'];
 const FREQS = [
   { value: 'monthly', label: 'Monthly' },
   { value: 'quarterly', label: 'Quarterly' },
