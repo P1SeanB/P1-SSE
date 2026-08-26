@@ -42,7 +42,10 @@ export default function SlaCreator({ rates }) {
   const site1 = sites[0] || {};
 
   const [systems, setSystems] = useState([]);
-  const [tier, setTier] = useState('Standard');
+  // Must match TIERS above. Left at 'Standard' this defaults to a tier the rate card
+  // does not contain, so the tab opens with no rates at all until you happen to click
+  // a different tier and back — the renaming above is only half a fix without it.
+  const [tier, setTier] = useState('Essential');
   const [frequency, setFrequency] = useState('monthly');
 
   // Agreement identity and term
