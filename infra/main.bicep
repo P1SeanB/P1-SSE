@@ -95,6 +95,8 @@ var storageName      = 'p1ssestor${envLower}'
 // Matches the estimator's and F.R.E.D's naming, which is title-cased per environment.
 var workspaceName    = 'LegaC-SSE-Logs-${environmentName == 'prod' ? 'Prod' : 'Dev'}'
 var insightsName     = 'p1sse-ai-${envLower}'
+// Matches the estimator's and F.R.E.D's vault naming.
+var keyVaultName     = 'legac-sse-kv-${envLower}'
 var attachmentsContainerName = 'change-requests'
 
 // ── Static Web App ──────────────────────────────────────────────────────────
@@ -104,6 +106,12 @@ resource staticWebApp 'Microsoft.Web/staticSites@2023-12-01' = {
   name: staticWebAppName
   location: location
   tags: tags
+  identity: {
+    // Required to resolve the Key Vault reference below. Static Web Apps uses its
+    // managed identity for exactly one thing — fetching AUTH secrets from a vault —
+    // so this grants nothing else.
+    type: 'SystemAssigned'
+  }
   sku: {
     name: 'Standard'
     tier: 'Standard'
@@ -129,7 +137,15 @@ resource swaSettings 'Microsoft.Web/staticSites/config@2023-12-01' = {
   name: 'appsettings'
   properties: {
     AAD_CLIENT_ID: aadClientId
-    AAD_CLIENT_SECRET: aadClientSecret
+    // A REFERENCE, not the secret. SWA resolves this with its managed identity at
+    // sign-in time, so the value is no longer readable from the app settings.
+    //
+    // ALWAYS a reference, never a conditional. Making it fall back to the literal
+    // meant a routine redeploy that omitted the parameter — which is most of them —
+    // silently blanked the setting and broke sign-in. Pointing at the vault
+    // unconditionally means a redeploy without the secret changes nothing, because the
+    // value already lives in the vault.
+    AAD_CLIENT_SECRET: '@Microsoft.KeyVault(SecretUri=${keyVault.properties.vaultUri}secrets/aad-client-secret/)'
   }
 }
 
@@ -209,6 +225,65 @@ resource deployments 'Microsoft.Storage/storageAccounts/blobServices/containers@
   name: 'deployments'
   properties: {
     publicAccess: 'None'
+  }
+}
+
+// ── Key Vault for the sign-in secret ────────────────────────────────────────
+// The estimator already does this (legac-estimator-kv-dev, secret 'aad-client-secret'),
+// so this mirrors it rather than inventing a second pattern.
+//
+// WHAT THIS DOES AND DOES NOT BUY. It stops the client secret being readable in the
+// Static Web App's application settings, and gives one place to replace it. It does
+// NOT rotate anything: an Entra app secret is minted by Entra, and a vault only holds
+// a copy. It expires on the same date either way — npm run audit:credentials is what
+// keeps that from being a surprise.
+//
+// RBAC rather than access policies, matching the estimator's vault.
+resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' = {
+  name: keyVaultName
+  location: location
+  tags: tags
+  properties: {
+    tenantId: subscription().tenantId
+    sku: {
+      family: 'A'
+      name: 'standard'
+    }
+    enableRbacAuthorization: true
+    // A deleted secret is recoverable for 90 days. Purge protection is deliberately
+    // left off on dev so a mistake can be cleaned up; prod keeps it, because the point
+    // of prod is that a mistake cannot quietly erase the record.
+    enableSoftDelete: true
+    softDeleteRetentionInDays: 90
+    enablePurgeProtection: isProd ? true : null
+  }
+}
+
+// Written by the deploy, so the secret reaches the vault without anyone pasting it
+// into a portal. Only when one was supplied: a deploy that omits it must not blank an
+// existing secret.
+resource aadSecret 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = if (!empty(aadClientSecret)) {
+  parent: keyVault
+  name: 'aad-client-secret'
+  properties: {
+    value: aadClientSecret
+    attributes: {
+      enabled: true
+    }
+  }
+}
+
+// Key Vault Secrets User — read a secret's VALUE, nothing else. Not Secrets Officer,
+// which could also write and delete.
+var roleKeyVaultSecretsUser = '4633458b-17de-408a-b874-0445c86b69e6'
+
+resource swaVaultRead 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  scope: keyVault
+  name: guid(keyVault.id, staticWebApp.id, roleKeyVaultSecretsUser)
+  properties: {
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', roleKeyVaultSecretsUser)
+    principalId: staticWebApp.identity.principalId
+    principalType: 'ServicePrincipal'
   }
 }
 
