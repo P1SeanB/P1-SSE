@@ -89,7 +89,11 @@ if (isProd && COMMIT && PROD_ACK !== cfg.host) {
 if (isProd && !COMMIT) {
   say(`"${cfg.host}" is PRODUCTION — dry run only, nothing will be written.`);
 }
-if (isAzure && COMMIT && !ACK_SHARED) {
+// Naming the host exactly already proves you know which server this is, so the
+// production acknowledgement satisfies this one too. Stacking both flags added
+// friction without adding a decision -- and friction with no decision behind it just
+// teaches people to paste whatever the error prints.
+if (isAzure && COMMIT && !ACK_SHARED && PROD_ACK !== cfg.host) {
   die(
     `"${cfg.host}" is a SHARED Azure server (this app, the estimator and F.R.E.D).\n\n` +
       `  A dry run is fine and needs no flag. To actually write:\n` +
