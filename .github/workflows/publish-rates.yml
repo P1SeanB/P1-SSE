@@ -1,0 +1,107 @@
+name: Publish rates
+
+# A rate change is a reviewed pull request, not a database edit.
+#
+# Editing db/rates/sse.json and merging publishes it as a NEW active rate profile. The
+# previous version is retained and still referenced by every quote priced against it,
+# so this supersedes rather than overwrites — and rolling back is republishing the
+# earlier file, which is a diff someone can read.
+#
+# Deliberately narrow: it fires only when a rate file changes. A code change must not
+# reprice anything, and a rate change must not need a code deploy.
+on:
+  push:
+    branches:
+      - development
+      - production
+    paths:
+      - 'db/rates/**'
+  # For republishing an unchanged file — after a database rebuild, or to roll forward a
+  # profile that was rolled back by hand.
+  workflow_dispatch:
+
+concurrency:
+  # Two publishes racing would allocate the same next version number and one would lose.
+  # Never cancel in progress: a half-applied publish is worse than a queued one.
+  group: publish-rates-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Publish rates -> ${{ github.ref == 'refs/heads/production' && 'PRODUCTION' || 'dev' }}
+    permissions:
+      id-token: write
+      contents: read
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install
+        run: npm ci
+
+      - name: Resolve the target environment
+        id: env
+        run: |
+          if [ "${{ github.ref }}" = "refs/heads/production" ]; then
+            echo "name=prod" >> "$GITHUB_OUTPUT"
+            echo "pghost=legac-estimator-postgres-prod.postgres.database.azure.com" >> "$GITHUB_OUTPUT"
+          else
+            echo "name=dev" >> "$GITHUB_OUTPUT"
+            echo "pghost=legac-estimator-postgres-dev.postgres.database.azure.com" >> "$GITHUB_OUTPUT"
+          fi
+
+      # OIDC, no stored credential. The database role is 'sse-migrator', bound to this
+      # identity's object id and holding DML on the sse database only — it cannot reach
+      # the estimator's or F.R.E.D's data, and it cannot alter the schema.
+      - name: Sign in to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      # Dry run first, always, and its output is the record of what changed. On
+      # production this is the last chance to see the numbers before they are live.
+      - name: Dry run
+        env:
+          PGHOST: ${{ steps.env.outputs.pghost }}
+          PGUSER: sse-migrator
+        run: npm run rates:publish
+
+      - name: Publish
+        env:
+          PGHOST: ${{ steps.env.outputs.pghost }}
+          PGUSER: sse-migrator
+          # Names the actor in rate_profile.created_by, so the database says who
+          # published a set of rates without anyone consulting the git log.
+          GITHUB_ACTOR: ${{ github.actor }}
+        run: |
+          if [ "${{ steps.env.outputs.name }}" = "prod" ]; then
+            npm run rates:publish -- --commit --i-am-loading-production="${{ steps.env.outputs.pghost }}"
+          else
+            npm run rates:publish -- --commit
+          fi
+
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo "### Rates published"
+            echo ""
+            echo "| | |"
+            echo "|---|---|"
+            echo "| Environment | ${{ steps.env.outputs.name }} |"
+            echo "| Database | \`${{ steps.env.outputs.pghost }}\` |"
+            echo "| Published by | ${{ github.actor }} |"
+            echo "| Result | ${{ job.status }} |"
+            echo ""
+            echo "A new rate profile version was created. The previous one is retained and"
+            echo "still referenced by quotes priced against it — rolling back means"
+            echo "republishing the earlier file, not restoring a backup."
+          } >> "$GITHUB_STEP_SUMMARY"
