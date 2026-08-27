@@ -29,7 +29,8 @@
     "migrate:identity": "node tools/map-identity.mjs",
     "rates:export": "node tools/rates-export.mjs",
     "rates:publish": "node tools/rates-publish.mjs",
-    "parity:rates": "node tools/parity-rates-roundtrip.mjs"
+    "parity:rates": "node tools/parity-rates-roundtrip.mjs",
+    "rates:prune": "node tools/rates-prune.mjs"
   },
   "dependencies": {
     "react": "^18.3.1",
