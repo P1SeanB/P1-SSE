@@ -31,6 +31,11 @@ const die = (m) => { console.error(`\n  ${m}\n`); process.exit(1); };
 const argv = process.argv.slice(2);
 const COMMIT = argv.includes('--commit');
 const ACK_SHARED = argv.includes('--i-know-this-is-shared');
+// Loading production is a real thing that has to happen once, at cutover. The flag
+// therefore exists — but it CARRIES THE HOSTNAME, so it cannot be reused from shell
+// history against a different server and cannot be typed from muscle memory:
+//   --i-am-loading-production=legac-estimator-postgres-prod.postgres.database.azure.com
+const PROD_ACK = (argv.find((a) => a.startsWith('--i-am-loading-production=')) || '').split('=')[1];
 const named = argv.find((a) => !a.startsWith('--'));
 
 // ── Find the export ─────────────────────────────────────────────────────────
@@ -61,10 +66,28 @@ const cfg = {
 };
 
 const isAzure = /\.postgres\.database\.azure\.com$/i.test(cfg.host);
-// Never, under any flag. A rehearsal has no business touching production, and the
-// only way to be sure is to make it impossible rather than discouraged.
-if (/(^|[-._])prod(uction)?([-._]|$)/i.test(cfg.host)) {
-  die(`REFUSING: "${cfg.host}" looks like PRODUCTION. This tool does not write there.`);
+const isProd = /(^|[-._])prod(uction)?([-._]|$)/i.test(cfg.host);
+
+// PRODUCTION. Reading is always allowed — a dry run against prod is how you find out
+// what a load would do, and it writes nothing. Writing needs the hostname echoed back.
+//
+// This used to refuse outright, under every flag. That was right while there was
+// nothing to load, and wrong for cutover: an absolute guard with a real need behind it
+// gets edited out at the worst possible moment, by someone in a hurry, permanently.
+// A guard you cannot satisfy is a guard that gets deleted.
+if (isProd && COMMIT && PROD_ACK !== cfg.host) {
+  die(
+    `"${cfg.host}" is PRODUCTION.\n\n` +
+      `  A dry run needs no flag and is the right first step:\n` +
+      `      npm run migrate:import\n\n` +
+      `  To actually write, echo the host back exactly:\n` +
+      `      npm run migrate:import -- --commit --i-am-loading-production=${cfg.host}\n\n` +
+      `  The hostname is part of the flag on purpose: it cannot be replayed from shell\n` +
+      `  history against a different server, and it cannot be typed by habit.`,
+  );
+}
+if (isProd && !COMMIT) {
+  say(`"${cfg.host}" is PRODUCTION — dry run only, nothing will be written.`);
 }
 if (isAzure && COMMIT && !ACK_SHARED) {
   die(
@@ -164,6 +187,26 @@ async function main() {
     const row = appRates.find((r) => r.app === 'sse');
     if (!row) die("No app_rates row for 'sse' in this export.");
     const c = typeof row.config === 'string' ? JSON.parse(row.config) : row.config;
+
+    // Refuse to republish over rates that are already live. The prod acknowledgement
+    // exists to permit the FIRST load, not to make repricing an accident: after
+    // cutover, new rates belong in a profile published through the app, where the
+    // change is attributable and reversible.
+    if (isProd) {
+      const live = await client.query(
+        `SELECT rp.version FROM rate_profile rp
+           JOIN product p ON p.product_id = rp.product_id
+          WHERE rp.is_active AND p.tag = $1`,
+        ['sse'],
+      ).catch(() => ({ rowCount: 0, rows: [] }));
+      if (live.rowCount > 0) {
+        throw new Error(
+          `${cfg.host} already has an ACTIVE rate profile (v${live.rows[0].version}). ` +
+          'Refusing to publish over it — estimators may be quoting from those numbers. ' +
+          'Publish new rates through the app instead.',
+        );
+      }
+    }
 
     const product = await client.query(
       `INSERT INTO product (tag) VALUES ('sse')
