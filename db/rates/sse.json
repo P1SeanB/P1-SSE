@@ -1,7 +1,7 @@
 {
   "$schema": "p1-sse rate profile v1",
   "productTag": "sse",
-  "exportedFromVersion": 4,
+  "exportedFromVersion": 6,
   "labor": {
     "labor_cost_per_hr": 120,
     "labor_bill_default": 180,
