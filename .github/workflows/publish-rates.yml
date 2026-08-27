@@ -42,8 +42,16 @@ jobs:
         with:
           node-version: 22
 
+      # npm install, not npm ci. The committed lockfile was generated on Windows and
+      # omits the Linux-only optional dependencies (@emnapi/*, native binding shims),
+      # so `npm ci` fails on the runner with "Missing ... from lock file" while passing
+      # locally on a clean tree. No other workflow hit this because the Static Web App
+      # and Function App builds run through Oryx, which uses npm install.
+      #
+      # The real fix is a lockfile regenerated on Linux and committed; until then this
+      # step must not be the thing that blocks a rate change.
       - name: Install
-        run: npm ci
+        run: npm install --no-audit --no-fund
 
       - name: Resolve the target environment
         id: env
