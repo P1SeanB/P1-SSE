@@ -10,7 +10,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "db:local": "node tools/seed-local.mjs",
-    "parity": "node tools/parity-rate-shape.mjs && node tools/parity-tier-rates.mjs && node tools/parity.mjs && node tools/parity-adc.mjs && node tools/parity-materials.mjs && node tools/parity-sla.mjs && node tools/parity-monitoring.mjs && node tools/parity-inspection.mjs",
+    "parity": "node tools/parity-rates-roundtrip.mjs && node tools/parity-rate-shape.mjs && node tools/parity-tier-rates.mjs && node tools/parity.mjs && node tools/parity-adc.mjs && node tools/parity-materials.mjs && node tools/parity-sla.mjs && node tools/parity-monitoring.mjs && node tools/parity-inspection.mjs",
     "coverage": "node tools/coverage.mjs",
     "parity:adc": "node tools/parity-adc.mjs",
     "parity:materials": "node tools/parity-materials.mjs",
@@ -26,7 +26,10 @@
     "scan:legacy": "node tools/legacy-scan.mjs",
     "parity:tiers": "node tools/parity-tier-rates.mjs",
     "audit:credentials": "node tools/credential-audit.mjs",
-    "migrate:identity": "node tools/map-identity.mjs"
+    "migrate:identity": "node tools/map-identity.mjs",
+    "rates:export": "node tools/rates-export.mjs",
+    "rates:publish": "node tools/rates-publish.mjs",
+    "parity:rates": "node tools/parity-rates-roundtrip.mjs"
   },
   "dependencies": {
     "react": "^18.3.1",
