@@ -44,10 +44,18 @@ jobs:
           # correct for a Node nobody uses here.
           node-version: 22
 
-      - name: Regenerate
-        run: |
-          rm -f package-lock.json
-          npm install --package-lock-only --no-audit --no-fund
+      # THE LOCKFILE IS KEPT, deliberately. Deleting it first forces npm to re-resolve
+      # every range to the newest version it allows: the first attempt did that and
+      # produced 35 version changes — axios 1.19 to 1.20, @vitejs/plugin-react 6.0.3 to
+      # 6.1.0, every @rolldown/binding 1.1.4 to 1.2.6. All semver-compatible, all
+      # probably fine, and all a dependency upgrade smuggled inside a build fix. If
+      # something misbehaves next week, nobody can tell which change caused it.
+      #
+      # Keeping it means npm only ADDS the entries missing for this platform and leaves
+      # existing resolutions alone. Upgrading dependencies stays a separate decision
+      # with its own diff and its own review.
+      - name: Add the missing platform entries
+        run: npm install --package-lock-only --no-audit --no-fund
 
       # The whole point. If npm ci still fails, the new lockfile is no better than the
       # old one and must not be proposed as a fix.
