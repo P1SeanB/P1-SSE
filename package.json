@@ -24,7 +24,8 @@
     "migrate:blob": "node tools/blob-upload.mjs",
     "parity:shape": "node tools/parity-rate-shape.mjs",
     "scan:legacy": "node tools/legacy-scan.mjs",
-    "parity:tiers": "node tools/parity-tier-rates.mjs"
+    "parity:tiers": "node tools/parity-tier-rates.mjs",
+    "audit:credentials": "node tools/credential-audit.mjs"
   },
   "dependencies": {
     "react": "^18.3.1",
