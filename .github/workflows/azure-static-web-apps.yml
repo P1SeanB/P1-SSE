@@ -8,10 +8,11 @@ name: Deploy to Azure Static Web Apps
 on:
   push:
     branches:
-      # development is the Azure dev app. NOT main — main is the LEGACY single-file
-      # page estimators use today, and pointing this workflow at it would aim a Vite
-      # build at a repo that has none.
+      # development is the Azure dev app; production is the live one. NOT main — main
+      # is the LEGACY single-file page estimators use today, and pointing this workflow
+      # at it would aim a Vite build at a repo that has none.
       - development
+      - production
   pull_request:
     types: [opened, synchronize, reopened, closed]
     branches:
@@ -21,7 +22,7 @@ jobs:
   build_and_deploy:
     if: github.event_name == 'push' || github.event.action != 'closed'
     runs-on: ubuntu-latest
-    name: Front end -> Static Web App (p1sse-swa-dev)
+    name: Front end -> Static Web App (${{ github.ref == 'refs/heads/production' && 'p1sse-swa-prod' || 'p1sse-swa-dev' }})
     steps:
       - uses: actions/checkout@v4
         with:
@@ -37,6 +38,23 @@ jobs:
       # staticwebapp.config.json cannot reference app settings for openIdIssuer,
       # so the tenant id is substituted here from a repo secret instead of being
       # hardcoded in source.
+      # ONE place decides which environment this run targets. The alternative — a
+      # ${{ github.ref == ... }} ternary at each use — drifts the moment someone adds a
+      # reference and copies the wrong half of it.
+      - name: Resolve the target environment
+        id: env
+        run: |
+          if [ "${{ github.ref }}" = "refs/heads/production" ]; then
+            echo "name=prod"            >> "$GITHUB_OUTPUT"
+            echo "swa=p1sse-swa-prod"   >> "$GITHUB_OUTPUT"
+            echo "api=p1sse-api-prod"   >> "$GITHUB_OUTPUT"
+          else
+            echo "name=dev"             >> "$GITHUB_OUTPUT"
+            echo "swa=p1sse-swa-dev"    >> "$GITHUB_OUTPUT"
+            echo "api=p1sse-api-dev"    >> "$GITHUB_OUTPUT"
+          fi
+          echo "Targeting $(cat "$GITHUB_OUTPUT" | grep '^name=' | cut -d= -f2)"
+
       - name: Inject the Entra tenant id into staticwebapp.config.json
         run: |
           if [ -z "${{ secrets.AAD_TENANT_ID }}" ]; then
@@ -44,11 +62,24 @@ jobs:
           fi
           sed -i "s|<TENANT_ID>|${{ secrets.AAD_TENANT_ID }}|g" staticwebapp.config.json
 
+      - name: Check the production token is configured
+        if: steps.env.outputs.name == 'prod'
+        run: |
+          if [ -z "${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_PROD }}" ]; then
+            echo "::error::AZURE_STATIC_WEB_APPS_API_TOKEN_PROD is not set. Without it this"
+            echo "::error::run would deploy production's content to the DEV site and report success."
+            echo "::error::Get it with: az staticwebapp secrets list -n p1sse-swa-prod -g LegaC-SSE-Production --query properties.apiKey -o tsv"
+            exit 1
+          fi
+
       - name: Build dist/ and upload to the Static Web App
         id: deploy
         uses: Azure/static-web-apps-deploy@v1
         with:
-          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
+          # Each Static Web App has its own deployment token, so the secret is chosen
+          # by environment. A production run must never be able to fall back to the dev
+          # token: it would deploy the live site's content to dev and report success.
+          azure_static_web_apps_api_token: ${{ steps.env.outputs.name == 'prod' && secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_PROD || secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: upload
           app_location: '/'
@@ -70,9 +101,9 @@ jobs:
             echo ""
             echo "| | |"
             echo "|---|---|"
-            echo "| Resource | \`p1sse-swa-dev\` |"
+            echo "| Resource | \`${{ steps.env.outputs.swa }}\` (${{ steps.env.outputs.name }}) |"
             echo "| Ships | the built \`dist/\` plus staticwebapp.config.json |"
-            echo "| URL | https://blue-island-0e139601e.7.azurestaticapps.net |"
+            echo "| URL | ${{ steps.deploy.outputs.static_web_app_url }} |"
             echo "| Result | ${{ job.status }} |"
             echo ""
             echo "The API is a separate resource deployed by the other job."
@@ -90,7 +121,7 @@ jobs:
           action: close
 
   deploy_api:
-    name: API -> Function App (p1sse-api-dev)
+    name: API -> Function App (${{ github.ref == 'refs/heads/production' && 'p1sse-api-prod' || 'p1sse-api-dev' }})
     permissions:
       # Required for OIDC: without id-token:write the login step cannot request a
       # token and fails with a permissions error that reads like a role problem.
@@ -129,6 +160,23 @@ jobs:
       # GitHub proves this workflow's identity with a short-lived token instead, so
       # there is no credential in the repository to leak or rotate. Matches how
       # F.R.E.D deploys.
+      # ONE place decides which environment this run targets. The alternative — a
+      # ${{ github.ref == ... }} ternary at each use — drifts the moment someone adds a
+      # reference and copies the wrong half of it.
+      - name: Resolve the target environment
+        id: env
+        run: |
+          if [ "${{ github.ref }}" = "refs/heads/production" ]; then
+            echo "name=prod"            >> "$GITHUB_OUTPUT"
+            echo "swa=p1sse-swa-prod"   >> "$GITHUB_OUTPUT"
+            echo "api=p1sse-api-prod"   >> "$GITHUB_OUTPUT"
+          else
+            echo "name=dev"             >> "$GITHUB_OUTPUT"
+            echo "swa=p1sse-swa-dev"    >> "$GITHUB_OUTPUT"
+            echo "api=p1sse-api-dev"    >> "$GITHUB_OUTPUT"
+          fi
+          echo "Targeting $(cat "$GITHUB_OUTPUT" | grep '^name=' | cut -d= -f2)"
+
       - name: Sign in to Azure (OIDC, no stored credential)
         uses: azure/login@v2
         with:
@@ -138,7 +186,7 @@ jobs:
       - name: Publish the API to the Function App
         uses: Azure/functions-action@v1
         with:
-          app-name: p1sse-api-dev
+          app-name: ${{ steps.env.outputs.api }}
           package: api
           # The app is FLEX CONSUMPTION, so dependencies are built on the server and
           # the package is published to a blob container using the app's managed
@@ -157,7 +205,7 @@ jobs:
             echo ""
             echo "| | |"
             echo "|---|---|"
-            echo "| Resource | \`p1sse-api-dev\` (Flex Consumption) |"
+            echo "| Resource | \`${{ steps.env.outputs.api }}\` (${{ steps.env.outputs.name }}, Flex Consumption) |"
             echo "| Serves | /api/* for the Static Web App, as a linked backend |"
             echo "| Auth | OIDC — no credential stored in this repository |"
             echo "| Result | ${{ job.status }} |"
