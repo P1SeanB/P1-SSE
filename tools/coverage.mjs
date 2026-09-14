@@ -53,6 +53,7 @@ const DYNAMIC_FAMILIES = [
   { id: 'mat-row-*', note: 'Material rows built by addMatRow (:5714). One entry stands for every instance.' },
   { id: 'labor-row-*', note: 'Labour rows built by addPartRow (:6454).' },
   { id: 'tmsub-row-*', note: 'T&M subcontract rows built by addTMSubRow (:5591).' },
+  { id: 'rental-row-*', note: 'Rental equipment rows built by addRentalRow (:5807).' },
 ];
 
 function legacyControls() {
