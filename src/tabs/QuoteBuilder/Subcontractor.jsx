@@ -65,4 +65,4 @@ export default function Subcontractor({ value, onChange, subMarkup = 0.15 }) {
   );
 }
 
-export const newSubcontractor = () => ({ type: '', description: '', annualCost: '' });
+export { newSubcontractor } from './estimateState.js';

@@ -201,7 +201,7 @@ export function doorOptions(pkg, rates = {}) {
  * just "the totals differ".
  */
 export function computeAdc(input = {}, rates = {}) {
-  const adcCfg = rates.adc || null;
+  const adcCfg = rates?.adc || null;
   const base = num(input.base);
   const parts = {};
 

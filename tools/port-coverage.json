@@ -404,6 +404,11 @@
     "tag": "button",
     "where": "MaterialRows.jsx renders when rows exist"
   },
+  "btn-rental-toggle": {
+    "status": "done",
+    "tag": "button",
+    "where": "RentalEquipment.jsx renders when rows exist — no persisted toggle needed"
+  },
   "btn-sub-toggle": {
     "status": "done",
     "tag": "button",
@@ -462,17 +467,17 @@
   "cb-nfpa": {
     "status": "done",
     "tag": "input",
-    "where": "InspectionServices.jsx — switches the itemised fire worksheet on (calc.js parity-verified)"
+    "where": "QuoteBuilder.jsx inspection toggles + calc.js calcFireInspection/calcPmInspection (parity-verified) — switches the itemised fire worksheet on"
   },
   "cb-pm": {
     "status": "done",
     "tag": "input",
-    "where": "InspectionServices.jsx — preventive-maintenance worksheet (calc.js parity-verified)"
+    "where": "QuoteBuilder.jsx inspection toggles + calc.js calcFireInspection/calcPmInspection (parity-verified) — preventive-maintenance worksheet"
   },
   "cb-pm-av-other": {
     "status": "done",
     "tag": "input",
-    "where": "InspectionServices.jsx — A/V device set instead of life-safety"
+    "where": "QuoteBuilder.jsx — A/V device set instead of life-safety (PM_AV_DEVICES)"
   },
   "cb-sfburg": {
     "status": "done",
@@ -1503,6 +1508,36 @@
     "status": "done",
     "tag": "input",
     "where": "AppState newSite().monthlyRate, edited in the sites list"
+  },
+  "rental-row-*": {
+    "status": "done",
+    "tag": "dynamic",
+    "where": "src/tabs/QuoteBuilder/RentalEquipment.jsx — rental rows, one entry per instance"
+  },
+  "rentalBilled": {
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/rental.js computeRentalTotals (parity-verified)"
+  },
+  "rentalCost": {
+    "status": "done",
+    "tag": "input",
+    "where": "src/lib/rental.js computeRentalTotals (parity-verified)"
+  },
+  "rentalDelivery": {
+    "status": "done",
+    "tag": "input",
+    "where": "RentalEquipment.jsx pickup / drop-off + src/lib/rental.js (parity-verified)"
+  },
+  "rentalMarkup": {
+    "status": "done",
+    "tag": "input",
+    "where": "RentalEquipment.jsx markup slider + src/lib/rental.js (parity-verified)"
+  },
+  "rentalMarkupSliderR": {
+    "status": "done",
+    "tag": "input",
+    "where": "RentalEquipment.jsx markup slider (single control replaces the paired legacy sliders)"
   },
   "sfburg": {
     "status": "done",

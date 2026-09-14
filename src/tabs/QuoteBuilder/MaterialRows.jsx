@@ -32,22 +32,8 @@ const COST_MODES = [
 const money = (n) =>
   (n || 0).toLocaleString('en-US', { style: 'currency', currency: 'USD' });
 
-let nextId = 1;
-export const newMaterialRow = (partial = {}) => ({
-  key: `m${nextId++}`, type: 'material',
-  desc: '', cost: '', qty: 1, unit: 'ea',
-  vendor: '', source: '', partNumber: '', quoteNumber: '', manufacturer: '',
-  chargeTo: '',
-  laborHrs: '', laborRate: '', laborSellRate: '',
-  pkgSize: '', pkgUnit: '', waste: '', costBy: 'actual', manualCost: '',
-  ...partial,
-});
-
-export const newLaborRow = (partial = {}) => ({
-  key: `l${nextId++}`, type: 'labor',
-  desc: '', hrs: '', rate: '', sellPerHr: '', chargeTo: '',
-  ...partial,
-});
+export { newMaterialRow, newLaborRow } from './estimateState.js';
+import { newMaterialRow, newLaborRow } from './estimateState.js';
 
 function MaterialRow({ row, opts, onChange, onRemove }) {
   const set = (patch) => onChange({ ...row, ...patch });
