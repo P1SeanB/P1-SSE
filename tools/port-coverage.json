@@ -467,17 +467,17 @@
   "cb-nfpa": {
     "status": "done",
     "tag": "input",
-    "where": "InspectionServices.jsx — switches the itemised fire worksheet on (calc.js parity-verified)"
+    "where": "QuoteBuilder.jsx inspection toggles + calc.js calcFireInspection/calcPmInspection (parity-verified) — switches the itemised fire worksheet on"
   },
   "cb-pm": {
     "status": "done",
     "tag": "input",
-    "where": "InspectionServices.jsx — preventive-maintenance worksheet (calc.js parity-verified)"
+    "where": "QuoteBuilder.jsx inspection toggles + calc.js calcFireInspection/calcPmInspection (parity-verified) — preventive-maintenance worksheet"
   },
   "cb-pm-av-other": {
     "status": "done",
     "tag": "input",
-    "where": "InspectionServices.jsx — A/V device set instead of life-safety"
+    "where": "QuoteBuilder.jsx — A/V device set instead of life-safety (PM_AV_DEVICES)"
   },
   "cb-sfburg": {
     "status": "done",

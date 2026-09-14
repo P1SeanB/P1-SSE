@@ -200,3 +200,48 @@ input[readonly] { background: var(--surface2); color: var(--text2); cursor: defa
 .rate-table th:first-child, .rate-table td:first-child { text-align: left; }
 .rate-table td { font-family: 'DM Mono', monospace; }
 .rate-table tr.active td { background: var(--orange-light); font-weight: 600; }
+
+/* ── Customer quote ─────────────────────────────────────────────────────────
+   The only screen a customer sees. Deliberately plainer than the rest of the app:
+   a document, not an interface.
+
+   PRINTING is the point of it — the legacy's q-print-btn produces the PDF that gets
+   emailed. @media print hides everything except the sheet, so Ctrl-P from anywhere
+   in the app with the quote open produces the proposal and nothing else. */
+.cq-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 50; overflow: auto; padding: 24px 12px; }
+.cq-sheet { max-width: 8.5in; margin: 0 auto; }
+.cq-actions { display: flex; gap: 8px; justify-content: flex-end; margin-bottom: 10px; }
+.cq-doc { background: #fff; color: #1c1c1c; padding: 0.75in 0.7in; border-radius: var(--radius); font-size: 12px; line-height: 1.5; }
+
+.cq-head { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #1c1c1c; padding-bottom: 10px; margin-bottom: 16px; }
+.cq-brand { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; }
+.cq-sub { font-size: 11px; color: #555; letter-spacing: 0.08em; text-transform: uppercase; }
+.cq-meta { text-align: right; font-size: 11px; color: #555; }
+
+.cq-party { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 18px; }
+.cq-title { font-size: 15px; font-weight: 700; margin-bottom: 12px; }
+
+.cq-group { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #555; margin: 10px 0 3px; }
+.cq-box { border: 1px solid #ddd; border-radius: 6px; padding: 12px 14px; margin-bottom: 14px; }
+.cq-box-head { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #1c1c1c; margin-bottom: 6px; }
+.cq-line { display: flex; justify-content: space-between; align-items: baseline; padding: 3px 0; border-bottom: 1px solid #eee; }
+.cq-amt { font-family: 'DM Mono', monospace; font-weight: 700; white-space: nowrap; padding-left: 16px; }
+.cq-total { display: flex; justify-content: space-between; align-items: baseline; padding-top: 7px; margin-top: 5px; border-top: 2px solid #1c1c1c; font-weight: 700; }
+.cq-foot { margin-top: 18px; font-size: 10px; color: #555; }
+.cq-foot p { margin-bottom: 4px; }
+
+@media print {
+  /* Hide the app, keep the document. Printing then produces the proposal rather than
+     a screenshot of the estimating tool.
+
+     VISIBILITY, NOT DISPLAY. The quote is rendered inside #root like everything else,
+     so `#root { display: none }` would take the quote down with it. Hiding every
+     element and re-showing the sheet's subtree leaves the quote in the layout while
+     everything around it stops painting. */
+  body * { visibility: hidden; }
+  .cq-backdrop, .cq-backdrop * { visibility: visible; }
+  .cq-backdrop { position: absolute; inset: 0; background: none; padding: 0; overflow: visible; }
+  .cq-actions { display: none !important; }
+  .cq-doc { padding: 0; border-radius: 0; }
+  .cq-box { break-inside: avoid; }
+}

@@ -210,9 +210,12 @@ for (const id of byStatus.done) {
   }
 }
 
+// Printed even when it is clean, so the reader sees the answer rather than inferring
+// it from the absence of a warning.
+console.log(`  Actually shipping: ${shippedDone}/${total}  (${Math.round((shippedDone / total) * 100)}%)`);
+
 if (unshipped.size) {
   const affected = new Set([...unshipped.values()].flat()).size;
-  console.log(`  Actually shipping: ${shippedDone}/${total}  (${Math.round((shippedDone / total) * 100)}%)`);
   console.log('');
   console.log(`  ${unshipped.size} file(s) are mapped as done but are not reachable from`);
   console.log(`  src/main.jsx, so ${affected} control(s) are written and not shipped:`);

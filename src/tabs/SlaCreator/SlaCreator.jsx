@@ -5,6 +5,8 @@ import {
   slaRate, slaEndDate, TERM_OPTIONS, BILLING_CYCLES, RESPONSE_TIERS,
 } from '../../lib/sla.js';
 import { money, num } from '../../lib/format.js';
+import SlaOperations from './SlaOperations.jsx';
+import { newSlaOps } from '../../lib/slaOps.js';
 import {
   Card, Field, TextInput, NumInput, SectionLabel, MetricRow,
 } from '../../components/ui.jsx';
@@ -79,6 +81,11 @@ export default function SlaCreator({ rates }) {
   });
 
   const [notes, setNotes] = useState('');
+
+  // Operational requirements — the wording of the agreement rather than its price:
+  // who schedules a meeting, how fast someone answers remotely, what happens to
+  // spares. None of it is priced, all of it prints.
+  const [ops, setOps] = useState(newSlaOps);
 
   const effectiveTerm = termMonths === 'custom' ? parseInt(customMonths, 10) || 0 : termMonths;
   const endDate = slaEndDate(startDate, effectiveTerm);
@@ -271,6 +278,10 @@ export default function SlaCreator({ rates }) {
         <textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={4}
           style={{ width: '100%' }} placeholder="Exclusions, special terms, anything that should print on the agreement" />
       </Card>
+
+      {/* After the numbered flow rather than inside it: these four cards are the
+          agreement's operational language, not another step in pricing it. */}
+      <SlaOperations value={ops} onChange={setOps} />
 
       <Card title="SLA Summary">
         <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.6rem' }}>

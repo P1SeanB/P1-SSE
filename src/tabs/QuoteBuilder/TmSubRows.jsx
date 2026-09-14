@@ -19,10 +19,8 @@ const BILL_TO = [
   { value: 'internal', label: 'Absorb internally' },
 ];
 
-let seq = 1;
-export const newTmSubRow = (partial = {}) => ({
-  key: `t${seq++}`, desc: '', cost: '', billTo: 'customer', pco: '', ...partial,
-});
+export { newTmSubRow } from './estimateState.js';
+import { newTmSubRow } from './estimateState.js';
 
 export default function TmSubRows({ rows, onRowsChange, tmSubGM, onGmChange }) {
   const totals = computeTmSubTotals(rows, { tmSubGM });

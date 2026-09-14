@@ -21,12 +21,8 @@ import { money } from '../../lib/format.js';
 // and is carried onto the proposal; it does not divide the quantity. Materials next
 // door work the other way, where '100ft' does divide — see rental.js.
 
-let seq = 1;
-export const newRentalRow = (partial = {}) => ({
-  key: `r${seq++}`, desc: '', vendor: '', part: '', qty: 1, unit: 'Day', cost: '', ...partial,
-});
-
-export const newRentalState = () => ({ rows: [], delivery: '', markup: 15 });
+export { newRentalRow, newRentalState } from './estimateState.js';
+import { newRentalRow } from './estimateState.js';
 
 export default function RentalEquipment({ value, onChange }) {
   const { rows, delivery, markup } = value;
