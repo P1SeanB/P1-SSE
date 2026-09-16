@@ -2317,6 +2317,37 @@
         </div>
       </div>
 
+      <!-- Rental Equipment (available on any estimate type) -->
+      <div id="rental-wrap" style="display:none;margin-top:12px;">
+        <button type="button" id="btn-rental-toggle" onclick="toggleRentalPanel()"
+          style="display:flex;align-items:center;gap:8px;background:transparent;border:1px solid var(--border2);border-radius:var(--radius-sm);padding:7px 14px;font-size:12px;font-weight:600;color:var(--text2);cursor:pointer;font-family:'DM Sans',sans-serif;width:100%;text-align:left;transition:border-color 0.15s,color 0.15s;">
+          <span id="btn-rental-icon" style="font-size:16px;line-height:1;color:var(--text3);">+</span>
+          <span>Add Rental Equipment</span>
+        </button>
+        <div id="rental-panel" style="display:none;margin-top:8px;background:var(--surface2);border-radius:var(--radius-sm);padding:10px 12px;border-left:3px solid #e8620a;">
+          <div style="font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#e8620a;margin-bottom:4px;">Rental Equipment</div>
+          <div style="font-size:10px;color:var(--text3);margin-bottom:10px;line-height:1.4;">Untaxed job cost — a lift/equipment rental you use to do the install. Enter the vendor's charge (tax included); it marks up like a subcontractor and rolls into the one-time total.</div>
+          <div id="rental-rows"></div>
+          <button type="button" onclick="addRentalRow()" style="margin-top:6px;background:transparent;border:1px dashed var(--border2);border-radius:var(--radius-sm);padding:5px 12px;font-size:11px;color:var(--text2);cursor:pointer;font-family:'DM Sans',sans-serif;width:100%;">+ Add rental</button>
+          <!-- Pickup / drop-off charge -->
+          <div style="margin-top:10px;display:grid;grid-template-columns:1fr 110px;gap:6px 8px;align-items:center;">
+            <label style="font-size:11px;font-weight:600;color:var(--text2);margin:0;">Pickup / drop-off charge ($)</label>
+            <input type="number" id="rentalDelivery" min="0" step="0.01" value="" placeholder="0.00" oninput="syncRentalRows()" style="font-size:12px;padding:5px 8px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface);color:var(--text);font-family:'DM Mono',monospace;text-align:right;width:100%;box-sizing:border-box;">
+          </div>
+          <!-- Totals footer -->
+          <div style="margin-top:10px;padding-top:8px;border-top:1px solid var(--border);display:grid;grid-template-columns:auto auto;justify-content:space-between;gap:4px 22px;font-size:12px;">
+            <span style="font-weight:600;color:var(--text2);">Rental cost</span>
+            <span style="font-family:'DM Mono',monospace;font-weight:600;color:var(--text2);text-align:right;" id="rental-total-cost">—</span>
+            <span style="font-weight:700;color:var(--text);">Billed to customer</span>
+            <span style="font-family:'DM Mono',monospace;font-weight:700;color:#e8620a;text-align:right;" id="rental-total-billed">—</span>
+          </div>
+          <!-- Hidden fields for calc() compatibility -->
+          <input type="hidden" id="rentalCost" value="0">
+          <input type="hidden" id="rentalBilled" value="0">
+          <input type="hidden" id="rentalMarkup" value="15">
+        </div>
+      </div>
+
 
   </div>
 
@@ -2521,6 +2552,34 @@
         <div class="metric-row total">
           <span class="metric-label">Gross profit</span>
           <span class="metric-value" id="s-tm-sub-gp">—</span>
+        </div>
+        <hr class="divider">
+      </div>
+
+      <!-- RENTAL EQUIPMENT SECTION -->
+      <div id="section-rental" style="display:none;">
+        <div style="font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#e8620a;margin-bottom:8px;">Rental Equipment</div>
+        <div style="background:var(--surface2);border-radius:var(--radius-sm);padding:8px 10px;margin-bottom:8px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+            <label style="margin:0;font-size:11px;font-weight:600;color:var(--text2);">Markup</label>
+            <span style="font-family:'DM Mono',monospace;font-size:12px;font-weight:600;color:#e8620a;" id="rentalMarkupLabel">15%</span>
+          </div>
+          <input type="range" id="rentalMarkupSliderR" min="0" max="50" step="1" value="15"
+            style="width:100%;accent-color:#e8620a;"
+            oninput="document.getElementById('rentalMarkupLabel').textContent=this.value+'%'; var h=document.getElementById('rentalMarkup'); if(h) h.value=this.value; syncRentalRows();">
+          <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text3);margin-top:2px;"><span>0%</span><span>50%</span></div>
+        </div>
+        <div class="metric-row">
+          <span class="metric-label">Billed to customer</span>
+          <span class="metric-value" id="s-rental-billed">—</span>
+        </div>
+        <div class="metric-row">
+          <span class="metric-label">Rental cost</span>
+          <span class="metric-value" id="s-rental-cost">—</span>
+        </div>
+        <div class="metric-row total">
+          <span class="metric-label">Gross profit</span>
+          <span class="metric-value" id="s-rental-gp">—</span>
         </div>
         <hr class="divider">
       </div>
@@ -4072,6 +4131,8 @@ function updateMonthlyCostsVisibility() {
   if (inspWrap) inspWrap.style.display = (ready && !isTM) ? '' : 'none';
   const matWrap = document.getElementById('mat-wrap');
   if (matWrap) matWrap.style.display = ready ? '' : 'none';
+  const rentalWrap = document.getElementById('rental-wrap');
+  if (rentalWrap) rentalWrap.style.display = ready ? '' : 'none';
   const tmSubWrap = document.getElementById('tm-sub-wrap');
   if (tmSubWrap) tmSubWrap.style.display = (ready && isTM) ? '' : 'none';
 }
@@ -4624,13 +4685,19 @@ function calc() {
   // tmSubRate and tmSubBilledAmt fed by syncTMSubRows via hidden inputs
   const tmSubRate     = num('tmSubRate');
   const tmSubBilledAmt = parseFloat((document.getElementById('tmSubBilled')||{value:'0'}).value) || 0;
+  // Rental equipment — untaxed one-time job cost, marked up like a subcontractor.
+  // Feeds the One-Time total and the Combined One-Time margin, not recurring/RMR.
+  const rentalCostAmt   = parseFloat((document.getElementById('rentalCost')||{value:'0'}).value) || 0;
+  const rentalBilledAmt = parseFloat((document.getElementById('rentalBilled')||{value:'0'}).value) || 0;
+  const rentalMarkupPct = (function(){ var h=document.getElementById('rentalMarkup'); return h ? (parseFloat(h.value)||0)/100 : 0.15; })();
+  const rentalGP        = rentalBilledAmt - rentalCostAmt;
   // Sales tax on materials — pass-through, added to one-time total display only
   const matTaxRateVal = (function(){ var el=document.getElementById('matTaxRate'); return el ? (parseFloat(el.value)||0)/100 : 0; })();
   const matTaxAmt     = matBilled * matTaxRateVal;
   const shCostCalc    = (function(){ var el=document.getElementById('matShippingCost'); return el ? (parseFloat(el.value)||0) : 0; })();
   const shMarkupCalc  = (function(){ var el=document.getElementById('shMarkupSlider'); return el ? (parseInt(el.value)||15)/100 : 0.15; })();
   const shBilledCalc  = shCostCalc * (1 + shMarkupCalc);
-  const oneTimeTotal  = laborBilledForGM + matBilled + tmSubBilledAmt + matTaxAmt + shBilledCalc;
+  const oneTimeTotal  = laborBilledForGM + matBilled + tmSubBilledAmt + rentalBilledAmt + matTaxAmt + shBilledCalc;
   const hOnetimeWrap = document.getElementById('h-onetime-wrap');
   const hOnetime = document.getElementById('h-onetime');
   if (hOnetimeWrap) hOnetimeWrap.style.display = oneTimeTotal > 0 ? '' : 'none';
@@ -4671,6 +4738,8 @@ function calc() {
   if (secInstLabor) secInstLabor.style.display = laborCostTotal > 0 ? '' : 'none';
   const secTMSub = document.getElementById('section-tm-sub');
   if (secTMSub) secTMSub.style.display = tmSubRate > 0 ? '' : 'none';
+  const secRental = document.getElementById('section-rental');
+  if (secRental) secRental.style.display = (rentalCostAmt > 0 || rentalBilledAmt > 0) ? '' : 'none';
   // Materials metrics
   const matMarkupLblR = document.getElementById('matMarkupLabel'); if(matMarkupLblR) matMarkupLblR.textContent = Math.round(matMarkup*100)+'%';
   const sMatTotal = document.getElementById('s-mat-total'); if(sMatTotal) sMatTotal.textContent = matCostTotal > 0 ? money(matBilled) : '—';
@@ -4694,6 +4763,12 @@ function calc() {
   const sTMSubGP     = document.getElementById('s-tm-sub-gp');     if(sTMSubGP){    sTMSubGP.textContent    = tmSubRate > 0 ? money(tmSubGP)         : '—'; sTMSubGP.style.color = tmSubGP > 0 ? 'var(--green)' : 'var(--text)'; }
   // Sync right panel slider with hidden input
   const tmSubGMSliderR = document.getElementById('tmSubGMSliderR'); const tmSubGMElR = document.getElementById('tmSubGMSlider'); if(tmSubGMSliderR && tmSubGMElR) tmSubGMSliderR.value = tmSubGMElR.value;
+  // Rental equipment right panel
+  const sRentalCost   = document.getElementById('s-rental-cost');   if(sRentalCost)   sRentalCost.textContent   = rentalCostAmt > 0   ? money(rentalCostAmt)   : '—';
+  const sRentalBilled = document.getElementById('s-rental-billed'); if(sRentalBilled) sRentalBilled.textContent = rentalBilledAmt > 0 ? money(rentalBilledAmt) : '—';
+  const sRentalGP     = document.getElementById('s-rental-gp');     if(sRentalGP){    sRentalGP.textContent    = rentalBilledAmt > 0 ? money(rentalGP) : '—'; sRentalGP.style.color = rentalGP > 0 ? 'var(--green)' : 'var(--text)'; }
+  const rentalMLbl    = document.getElementById('rentalMarkupLabel'); if(rentalMLbl) rentalMLbl.textContent = Math.round(rentalMarkupPct*100) + '%';
+  const rentalSliderR = document.getElementById('rentalMarkupSliderR'); const rentalMH = document.getElementById('rentalMarkup'); if(rentalSliderR && rentalMH) rentalSliderR.value = rentalMH.value;
   const sMatSub = document.getElementById('s-mat-total-sub'); if(sMatSub) sMatSub.textContent = 'billed @ ' + Math.round(matMarkup*100) + '% markup';
   const sMatMarginSub = document.getElementById('s-mat-margin-sub'); if(sMatMarginSub) sMatMarginSub.textContent = matMarginPct !== null ? money(matGP) + ' gross profit' : '—';
   // Labor install metrics
@@ -4816,17 +4891,17 @@ function calc() {
   // the quote carries one-time work. Previously this was gated on the estimate
   // being T&M and every other type got a cut-down version with no overhead or
   // net profit, so install work on a monitoring quote never showed a net figure.
-  const hasOneTime = (laborCostTotal + matCostTotal + tmSubRate
-                      + laborBilledForGM + matBilled + tmSubBilledAmt) > 0;
+  const hasOneTime = (laborCostTotal + matCostTotal + tmSubRate + rentalCostAmt
+                      + laborBilledForGM + matBilled + tmSubBilledAmt + rentalBilledAmt) > 0;
   const secTMCombined = document.getElementById('section-tm-combined');
   if (secTMCombined) secTMCombined.style.display = hasOneTime ? '' : 'none';
   const secCombined = document.getElementById('section-combined-totals');
   if (secCombined) secCombined.style.display = isTMCalc ? 'none' : '';
   if (hasOneTime) {
-    // Cost = labor cost + material cost + sub flat rate
-    const tmTotalCost   = laborCostTotal + matCostTotal + tmSubRate;
-    // Billed = labor billed + material billed + sub billed
-    const tmTotalBilled = laborBilledForGM + matBilled + tmSubBilledAmt;
+    // Cost = labor cost + material cost + sub flat rate + rental cost
+    const tmTotalCost   = laborCostTotal + matCostTotal + tmSubRate + rentalCostAmt;
+    // Billed = labor billed + material billed + sub billed + rental billed
+    const tmTotalBilled = laborBilledForGM + matBilled + tmSubBilledAmt + rentalBilledAmt;
     const tmGP          = tmTotalBilled - tmTotalCost;
     const tmMarkup      = tmTotalCost > 0 ? (tmGP / tmTotalCost) * 100 : null;
     // Overhead on T&M (applied to cost same as other system types)
@@ -4976,6 +5051,20 @@ function clearForm() {
   var tmSubBtn   = document.getElementById('btn-tm-sub-toggle'); if(tmSubBtn){ tmSubBtn.style.borderColor=''; tmSubBtn.style.color=''; }
   var tmTotalCostEl   = document.getElementById('tm-sub-total-cost');   if(tmTotalCostEl)   tmTotalCostEl.textContent   = '—';
   var tmTotalBilledEl = document.getElementById('tm-sub-total-billed'); if(tmTotalBilledEl) tmTotalBilledEl.textContent = '—';
+  // Reset rental equipment
+  var rentalRowsEl = document.getElementById('rental-rows'); if(rentalRowsEl) rentalRowsEl.innerHTML = '';
+  rentalRowCount = 0;
+  var rentalPanel = document.getElementById('rental-panel'); if(rentalPanel) rentalPanel.style.display = 'none';
+  var rentalIcon  = document.getElementById('btn-rental-icon'); if(rentalIcon) rentalIcon.textContent = '+';
+  var rentalBtn   = document.getElementById('btn-rental-toggle'); if(rentalBtn){ rentalBtn.style.borderColor=''; rentalBtn.style.color=''; }
+  var rentalDelEl = document.getElementById('rentalDelivery'); if(rentalDelEl) rentalDelEl.value = '';
+  var rentalCostH = document.getElementById('rentalCost'); if(rentalCostH) rentalCostH.value = '0';
+  var rentalBillH = document.getElementById('rentalBilled'); if(rentalBillH) rentalBillH.value = '0';
+  var rentalMarkH = document.getElementById('rentalMarkup'); if(rentalMarkH) rentalMarkH.value = '15';
+  var rentalSlR   = document.getElementById('rentalMarkupSliderR'); if(rentalSlR) rentalSlR.value = '15';
+  var rentalMLblR = document.getElementById('rentalMarkupLabel'); if(rentalMLblR) rentalMLblR.textContent = '15%';
+  var rentalTC    = document.getElementById('rental-total-cost'); if(rentalTC) rentalTC.textContent = '—';
+  var rentalTB    = document.getElementById('rental-total-billed'); if(rentalTB) rentalTB.textContent = '—';
   // Reset custom monitoring field
   var cmdEl = document.getElementById('customMonDesc'); if(cmdEl) cmdEl.value = '';
   var cmcEl = document.getElementById('customMonCost'); if(cmcEl) cmcEl.value = '';
@@ -5457,6 +5546,18 @@ function copyQuote() {
       return lines;
     })(),
     (matCostTotal > 0 || laborCostTotal > 0) ? '' : '',
+    (function(){ var r=(typeof getRentalRows==='function')?getRentalRows():[]; return r.length ? '--- RENTAL EQUIPMENT (ONE-TIME) ---' : ''; })(),
+    ...(function(){
+      var r=(typeof getRentalRows==='function')?getRentalRows():[]; if(!r.length) return [];
+      var mk=(function(){var h=document.getElementById('rentalMarkup');return h?(parseFloat(h.value)||0)/100:0.15;})();
+      var out=[]; var tot=0;
+      r.forEach(function(it){ var ext=(it.qty||0)*(it.cost||0); var bill=ext*(1+mk); tot+=bill;
+        out.push('  '+(it.desc||'Rental')+(it.vendor?' ['+it.vendor+']':'')+'  '+(it.qty||0)+' × '+it.unit+' @ '+money(it.cost)+'  →  '+money(bill)); });
+      var del=parseFloat((document.getElementById('rentalDelivery')||{}).value)||0;
+      if(del>0){ var db=del*(1+mk); tot+=db; out.push('  Pickup / drop-off  →  '+money(db)); }
+      out.push('  Rental Total: '+money(tot));
+      return out;
+    })(),
     '--- MONTHLY RATE ---',
     'Monthly Rate: ' + (rmr > 0 ? money(rmr) + '/mo' : '—'),
     'Annual Rate:  ' + (annRev > 0 ? money(annRev) + '/yr' : '—'),
@@ -5693,6 +5794,173 @@ function toggleTMSubPanel() {
     calc();
   } else {
     var subRowsEl = document.getElementById('tm-sub-rows'); if (subRowsEl && !subRowsEl.children.length) addTMSubRow();
+  }
+}
+
+/* ===== Rental Equipment (untaxed one-time job cost, marks up like a subcontractor) ===== */
+var rentalRowCount = 0;
+function rentalUnitOptions(sel){
+  return ['Day','Week','Month','Each'].map(function(u){
+    return '<option value="'+u+'"'+(sel===u?' selected':'')+'>'+u+'</option>';
+  }).join('');
+}
+function addRentalRow(preset){
+  rentalRowCount++;
+  var id = 'rental-' + rentalRowCount;
+  var rowId = 'rental-row-' + rentalRowCount;
+  var wrap = document.createElement('div');
+  wrap.id = rowId;
+  wrap.style.cssText = 'margin-bottom:8px;padding:6px 8px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);';
+  var inp = 'font-size:12px;padding:4px 6px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface2);color:var(--text);box-sizing:border-box;width:100%;';
+  var mono = inp + "font-family:'DM Mono',monospace;text-align:right;";
+
+  // Line 1 — description
+  var descEl = document.createElement('input');
+  descEl.type='text'; descEl.id=id+'-desc'; descEl.placeholder='Equipment (e.g. 26ft scissor lift)';
+  descEl.style.cssText = inp + 'margin-bottom:5px;';
+  descEl.oninput = syncRentalRows;
+  wrap.appendChild(descEl);
+
+  // Line 2 — vendor | part/quote #
+  var line2 = document.createElement('div');
+  line2.style.cssText = 'display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:5px;';
+  var venEl = document.createElement('input');
+  venEl.type='text'; venEl.id=id+'-vendor'; venEl.placeholder='Vendor';
+  venEl.style.cssText = inp; venEl.oninput = syncRentalRows;
+  var partEl = document.createElement('input');
+  partEl.type='text'; partEl.id=id+'-part'; partEl.placeholder='Part / Quote #';
+  partEl.style.cssText = inp; partEl.oninput = syncRentalRows;
+  line2.appendChild(venEl); line2.appendChild(partEl);
+  wrap.appendChild(line2);
+
+  var GRID = 'display:grid;grid-template-columns:44px 72px 1fr 62px 62px 18px;gap:5px;align-items:center;';
+
+  // Line 3 — column labels
+  var labels = document.createElement('div');
+  labels.style.cssText = GRID.replace('align-items:center;','') + 'margin-bottom:2px;';
+  ['Qty','Per','Unit Cost','Cost','Billed',''].forEach(function(t,i){
+    var s=document.createElement('span');
+    s.textContent=t;
+    s.style.cssText='font-size:9px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;color:var(--text3);text-align:'+((i===0||i===1)?'center':'right')+';';
+    labels.appendChild(s);
+  });
+  wrap.appendChild(labels);
+
+  // Line 3 — fields
+  var fields = document.createElement('div');
+  fields.style.cssText = GRID;
+  var qtyEl = document.createElement('input');
+  qtyEl.type='number'; qtyEl.id=id+'-qty'; qtyEl.min='0'; qtyEl.step='1'; qtyEl.value='1'; qtyEl.placeholder='1';
+  qtyEl.style.cssText = inp + "text-align:center;font-family:'DM Mono',monospace;";
+  qtyEl.oninput = syncRentalRows;
+  var unitEl = document.createElement('select');
+  unitEl.id=id+'-unit';
+  unitEl.style.cssText = inp + 'padding:4px 4px;';
+  unitEl.innerHTML = rentalUnitOptions('Day');
+  unitEl.onchange = syncRentalRows;
+  var costEl = document.createElement('input');
+  costEl.type='number'; costEl.id=id+'-cost'; costEl.min='0'; costEl.step='0.01'; costEl.placeholder='0.00';
+  costEl.style.cssText = mono;
+  costEl.oninput = syncRentalRows;
+  var extEl = document.createElement('span');
+  extEl.id=id+'-ext';
+  extEl.style.cssText="font-family:'DM Mono',monospace;font-size:11px;font-weight:600;color:var(--text2);text-align:right;white-space:nowrap;";
+  extEl.textContent='—';
+  var billEl = document.createElement('span');
+  billEl.id=id+'-bill';
+  billEl.style.cssText="font-family:'DM Mono',monospace;font-size:11px;font-weight:700;color:#e8620a;text-align:right;white-space:nowrap;";
+  billEl.textContent='—';
+  var rm = document.createElement('button');
+  rm.type='button'; rm.textContent='×';
+  rm.style.cssText='background:transparent;border:none;color:#999;cursor:pointer;font-size:16px;line-height:1;padding:0;';
+  rm.onclick=function(){ wrap.remove(); syncRentalRows(); };
+  fields.appendChild(qtyEl); fields.appendChild(unitEl); fields.appendChild(costEl);
+  fields.appendChild(extEl); fields.appendChild(billEl); fields.appendChild(rm);
+  wrap.appendChild(fields);
+
+  if (preset){
+    descEl.value = preset.desc||''; venEl.value = preset.vendor||''; partEl.value = preset.part||'';
+    qtyEl.value = (preset.qty!=null?preset.qty:1); unitEl.value = preset.unit||'Day';
+    costEl.value = (preset.cost!=null?preset.cost:'');
+  }
+
+  var container = document.getElementById('rental-rows');
+  if (container){ container.appendChild(wrap); if(!preset) descEl.focus(); }
+  syncRentalRows();
+}
+
+function rentalMarkupVal(){
+  var h = document.getElementById('rentalMarkup');
+  var v = h ? parseFloat(h.value) : 15;
+  if (!isFinite(v)) v = 15;
+  return v/100;
+}
+
+function syncRentalRows(){
+  var markup = rentalMarkupVal();
+  var equipCost = 0;
+  var rows = document.getElementById('rental-rows');
+  if (rows){
+    rows.querySelectorAll('[id^="rental-"][id$="-cost"]').forEach(function(costEl){
+      var base = costEl.id.replace(/-cost$/,'');
+      var qty  = parseFloat((document.getElementById(base+'-qty')||{}).value) || 0;
+      var cost = parseFloat(costEl.value) || 0;
+      var ext  = qty * cost;
+      equipCost += ext;
+      var e = document.getElementById(base+'-ext');  if(e) e.textContent = ext>0 ? money(ext) : '—';
+      var b = document.getElementById(base+'-bill'); if(b) b.textContent = ext>0 ? money(ext*(1+markup)) : '—';
+    });
+  }
+  var delivery = parseFloat((document.getElementById('rentalDelivery')||{}).value) || 0;
+  var totalCost   = equipCost + delivery;
+  var totalBilled = totalCost * (1 + markup);
+  var tc = document.getElementById('rental-total-cost');   if(tc) tc.textContent = totalCost>0   ? money(totalCost)   : '—';
+  var tb = document.getElementById('rental-total-billed'); if(tb) tb.textContent = totalBilled>0 ? money(totalBilled) : '—';
+  var hc = document.getElementById('rentalCost');   if(hc) hc.value = totalCost;
+  var hb = document.getElementById('rentalBilled'); if(hb) hb.value = totalBilled;
+  var sl = document.getElementById('rentalMarkupSliderR'); var lbl = document.getElementById('rentalMarkupLabel');
+  if (sl && lbl) lbl.textContent = sl.value + '%';
+  if (typeof calc === 'function') calc();
+}
+
+function getRentalRows(){
+  var items = [];
+  var rows = document.getElementById('rental-rows');
+  if (rows){
+    rows.querySelectorAll('[id^="rental-"][id$="-cost"]').forEach(function(costEl){
+      var base   = costEl.id.replace(/-cost$/,'');
+      var desc   = (document.getElementById(base+'-desc')||{}).value || '';
+      var vendor = (document.getElementById(base+'-vendor')||{}).value || '';
+      var part   = (document.getElementById(base+'-part')||{}).value || '';
+      var qty    = parseFloat((document.getElementById(base+'-qty')||{}).value) || 0;
+      var unit   = (document.getElementById(base+'-unit')||{}).value || 'Day';
+      var cost   = parseFloat(costEl.value) || 0;
+      if (desc || cost > 0) items.push({ desc:desc, vendor:vendor, part:part, qty:qty, unit:unit, cost:cost });
+    });
+  }
+  return items;
+}
+
+function toggleRentalPanel(){
+  var panel = document.getElementById('rental-panel');
+  if (!panel) return;
+  var icon = document.getElementById('btn-rental-icon');
+  var btn  = document.getElementById('btn-rental-toggle');
+  var open = panel.style.display !== 'none';
+  panel.style.display = open ? 'none' : '';
+  if (icon) icon.textContent = open ? '+' : '−';
+  if (btn){ btn.style.borderColor = open ? '' : '#e8620a'; btn.style.color = open ? '' : '#e8620a'; }
+  if (open){
+    var rows = document.getElementById('rental-rows'); if (rows) rows.innerHTML = '';
+    rentalRowCount = 0;
+    var del = document.getElementById('rentalDelivery'); if(del) del.value = '';
+    var hc = document.getElementById('rentalCost');   if(hc) hc.value = '0';
+    var hb = document.getElementById('rentalBilled'); if(hb) hb.value = '0';
+    var tc = document.getElementById('rental-total-cost');   if(tc) tc.textContent = '—';
+    var tb = document.getElementById('rental-total-billed'); if(tb) tb.textContent = '—';
+    if (typeof calc === 'function') calc();
+  } else {
+    var r = document.getElementById('rental-rows'); if (r && !r.children.length) addRentalRow();
   }
 }
 
@@ -6854,6 +7122,13 @@ function gatherEstimateData() {
   data.tmSubPanelOpen = document.getElementById('tm-sub-panel') ?
     document.getElementById('tm-sub-panel').style.display !== 'none' : false;
 
+  // Rental equipment rows
+  data.rentalRows = (typeof getRentalRows === 'function') ? getRentalRows() : [];
+  data.rentalDelivery = parseFloat((document.getElementById('rentalDelivery')||{}).value) || 0;
+  data.rentalMarkup = parseFloat((document.getElementById('rentalMarkup')||{}).value) || 15;
+  data.rentalPanelOpen = document.getElementById('rental-panel') ?
+    document.getElementById('rental-panel').style.display !== 'none' : false;
+
   // Mat rows
   data.matRows = getMatData().filter(function(m){ return !m.attached; }).map(function(m) {
     var r = { type: m.type, desc: m.desc };
@@ -7330,6 +7605,34 @@ function restoreEstimateData(data) {
         if (typeof syncTMSubRows === 'function') syncTMSubRows();
       }
     }
+  }
+
+  // Restore rental equipment rows
+  if (data.rentalPanelOpen || (data.rentalRows && data.rentalRows.length > 0)) {
+    var rentalPanelR = document.getElementById('rental-panel');
+    var rentalBtnR   = document.getElementById('btn-rental-toggle');
+    var rentalIconR  = document.getElementById('btn-rental-icon');
+    if (rentalPanelR && rentalPanelR.style.display === 'none') {
+      rentalPanelR.style.display = '';
+      if (rentalIconR) rentalIconR.textContent = '−';
+      if (rentalBtnR)  { rentalBtnR.style.borderColor = '#e8620a'; rentalBtnR.style.color = '#e8620a'; }
+    }
+    if (data.rentalMarkup != null) {
+      var rmH = document.getElementById('rentalMarkup');       if(rmH) rmH.value = data.rentalMarkup;
+      var rmS = document.getElementById('rentalMarkupSliderR'); if(rmS) rmS.value = data.rentalMarkup;
+      var rmL = document.getElementById('rentalMarkupLabel');   if(rmL) rmL.textContent = Math.round(data.rentalMarkup) + '%';
+    }
+    var rentalDelR = document.getElementById('rentalDelivery');
+    if (rentalDelR) rentalDelR.value = (data.rentalDelivery != null && data.rentalDelivery !== 0) ? data.rentalDelivery : '';
+    if (data.rentalRows && data.rentalRows.length > 0) {
+      var rentalRowsR = document.getElementById('rental-rows');
+      if (rentalRowsR) {
+        rentalRowsR.innerHTML = '';
+        rentalRowCount = 0;
+        data.rentalRows.forEach(function(r) { addRentalRow(r); });
+      }
+    }
+    if (typeof syncRentalRows === 'function') syncRentalRows();
   }
 
   // Restore fire inspection fields
@@ -8612,7 +8915,12 @@ function generateCustomerQuote() {
   const matBox = document.getElementById('q-mat-box');
   const matLinesEl = document.getElementById('q-mat-lines');
   const matTotalEl = document.getElementById('q-mat-total');
-  if (matItems.length > 0) {
+  // A one-time subcontractor or rental should print on the proposal like parts/labor,
+  // even on an RMR/monitoring quote that has no material or labor rows of its own.
+  var hasTMSubQ_main  = ((typeof getTMSubRows === 'function') && getTMSubRows().length > 0) ||
+                        ((parseFloat((document.getElementById('tmSubRate')||{value:'0'}).value) || 0) > 0);
+  var hasRentalQ_main = (typeof getRentalRows === 'function') && getRentalRows().length > 0;
+  if (matItems.length > 0 || hasTMSubQ_main || hasRentalQ_main) {
     let grandTotal = 0;
     if (matLinesEl) matLinesEl.innerHTML = '';
     // Section: Labor
@@ -8695,6 +9003,29 @@ function generateCustomerQuote() {
       row2.appendChild(rn2); row2.appendChild(rt2);
       tmSubLinesEl2.appendChild(hdr2); tmSubLinesEl2.appendChild(row2);
     }
+    // Rental equipment lines (untaxed one-time) — shown wherever subs show
+    var rentalItemsQ = (typeof getRentalRows === 'function') ? getRentalRows() : [];
+    if (rentalItemsQ.length > 0 && tmSubLinesEl2) {
+      var rmkQ = (function(){ var h=document.getElementById('rentalMarkup'); return h ? (parseFloat(h.value)||0)/100 : 0.15; })();
+      var rHdr = document.createElement('div'); rHdr.style.cssText='font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#555;margin:8px 0 3px;'; rHdr.textContent='Rental Equipment';
+      tmSubLinesEl2.appendChild(rHdr);
+      rentalItemsQ.forEach(function(it){
+        var ext=(it.qty||0)*(it.cost||0); var bill=ext*(1+rmkQ);
+        grandTotal += bill;
+        var row=document.createElement('div'); row.style.cssText='display:flex;justify-content:space-between;align-items:baseline;padding:3px 0;border-bottom:1px solid #eee;font-size:12px;';
+        var rn=document.createElement('span'); rn.style.color='#444'; rn.textContent=(it.desc||'Rental Equipment')+(it.qty ? ' ('+it.qty+' × '+it.unit+')' : '');
+        var rt=document.createElement('span'); rt.style.cssText='font-family:monospace;font-weight:700;white-space:nowrap;'; rt.textContent=money(bill);
+        row.appendChild(rn); row.appendChild(rt); tmSubLinesEl2.appendChild(row);
+      });
+      var delQ=parseFloat((document.getElementById('rentalDelivery')||{}).value)||0;
+      if (delQ>0){
+        var delBill=delQ*(1+rmkQ); grandTotal += delBill;
+        var drow=document.createElement('div'); drow.style.cssText='display:flex;justify-content:space-between;align-items:baseline;padding:3px 0;border-bottom:1px solid #eee;font-size:12px;';
+        var dn=document.createElement('span'); dn.style.color='#444'; dn.textContent='Pickup / drop-off';
+        var dt=document.createElement('span'); dt.style.cssText='font-family:monospace;font-weight:700;white-space:nowrap;'; dt.textContent=money(delBill);
+        drow.appendChild(dn); drow.appendChild(dt); tmSubLinesEl2.appendChild(drow);
+      }
+    }
     // S&H line on quote
     var shCostQ    = parseFloat((document.getElementById('matShippingCost')||{value:'0'}).value) || 0;
     var shMarkupQ  = parseInt((document.getElementById('shMarkupSlider')||{value:'15'}).value) || 15;
@@ -8744,7 +9075,7 @@ function generateCustomerQuote() {
       else if (qSystem === 'Budget Estimate') qMatHdr.textContent = 'Budget Estimate — Services & Materials';
       else if (qSystem === 'Flat Rate Estimate') qMatHdr.textContent = 'Flat Rate Services & Materials';
       else if (qSystem === 'Time & Material Only') qMatHdr.textContent = 'Time & Material Services';
-      else qMatHdr.textContent = 'Installation Labor/Materials — One-Time';
+      else qMatHdr.textContent = (matItems.length > 0) ? 'Installation Labor/Materials — One-Time' : 'One-Time Costs';
     }
     var qMatLbl = document.getElementById('q-mat-total-label');
     if (qMatLbl) {
@@ -8752,7 +9083,7 @@ function generateCustomerQuote() {
       else if (qSystem === 'Budget Estimate') qMatLbl.textContent = 'Estimated Budget Total';
       else if (qSystem === 'Flat Rate Estimate') qMatLbl.textContent = 'Flat Rate Total';
       else if (qSystem === 'Time & Material Only') qMatLbl.textContent = 'Time & Material Total';
-      else qMatLbl.textContent = 'One-Time Labor/Material Total';
+      else qMatLbl.textContent = (matItems.length > 0) ? 'One-Time Labor/Material Total' : 'One-Time Total';
     }
   } else if (qSystem === 'Time & Material Only' || qSystem === 'Material Only' || qSystem === 'Budget Estimate' || qSystem === 'Flat Rate Estimate') {
     if (matBox) {
@@ -8761,21 +9092,44 @@ function generateCustomerQuote() {
       if(qh) qh.textContent = qSystem === 'Flat Rate Estimate' ? 'Flat Rate Services & Materials' : qSystem === 'Budget Estimate' ? 'Budget Estimate — Services & Materials' : 'Time & Material Services';
       var ql = document.getElementById('q-mat-total-label');
       if(ql) ql.textContent = qSystem === 'Material Only' ? 'Material Total' : qSystem === 'Flat Rate Estimate' ? 'Flat Rate Total' : qSystem === 'Budget Estimate' ? 'Estimated Budget Total' : 'Time & Material Total';
-      // Show sub line even when no mat rows
+      // Show sub / rental lines even when no mat rows
       var tmSubLinesEl3 = document.getElementById('q-tm-sub-lines');
       if (tmSubLinesEl3) tmSubLinesEl3.innerHTML = '';
       var tmSubItems2 = (typeof getTMSubRows === 'function') ? getTMSubRows() : [];
-      if (tmSubItems2.length > 0 && tmSubLinesEl3) {
-        var hdr2=document.createElement('div'); hdr2.style.cssText='font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#555;margin:8px 0 3px;'; hdr2.textContent='Point 1 Provided LSP/Subcontractor';
-        tmSubLinesEl3.appendChild(hdr2);
+      var rentalItems2 = (typeof getRentalRows === 'function') ? getRentalRows() : [];
+      if ((tmSubItems2.length > 0 || rentalItems2.length > 0) && tmSubLinesEl3) {
         var subTotal2 = 0;
-        tmSubItems2.forEach(function(sub) {
-          subTotal2 += sub.billed;
-          var row2=document.createElement('div'); row2.style.cssText='display:flex;justify-content:space-between;align-items:baseline;padding:3px 0;border-bottom:1px solid #eee;font-size:12px;';
-          var rn2=document.createElement('span'); rn2.style.color='#444'; rn2.textContent=sub.desc;
-          var rt2=document.createElement('span'); rt2.style.cssText='font-family:monospace;font-weight:700;white-space:nowrap;'; rt2.textContent=money(sub.billed);
-          row2.appendChild(rn2); row2.appendChild(rt2); tmSubLinesEl3.appendChild(row2);
-        });
+        if (tmSubItems2.length > 0) {
+          var hdr2=document.createElement('div'); hdr2.style.cssText='font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#555;margin:8px 0 3px;'; hdr2.textContent='Point 1 Provided LSP/Subcontractor';
+          tmSubLinesEl3.appendChild(hdr2);
+          tmSubItems2.forEach(function(sub) {
+            subTotal2 += sub.billed;
+            var row2=document.createElement('div'); row2.style.cssText='display:flex;justify-content:space-between;align-items:baseline;padding:3px 0;border-bottom:1px solid #eee;font-size:12px;';
+            var rn2=document.createElement('span'); rn2.style.color='#444'; rn2.textContent=sub.desc;
+            var rt2=document.createElement('span'); rt2.style.cssText='font-family:monospace;font-weight:700;white-space:nowrap;'; rt2.textContent=money(sub.billed);
+            row2.appendChild(rn2); row2.appendChild(rt2); tmSubLinesEl3.appendChild(row2);
+          });
+        }
+        // Rental equipment on T&M-only quote
+        if (rentalItems2.length > 0) {
+          var rmkQ2 = (function(){ var h=document.getElementById('rentalMarkup'); return h ? (parseFloat(h.value)||0)/100 : 0.15; })();
+          var rHdr2=document.createElement('div'); rHdr2.style.cssText='font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#555;margin:8px 0 3px;'; rHdr2.textContent='Rental Equipment';
+          tmSubLinesEl3.appendChild(rHdr2);
+          rentalItems2.forEach(function(it) {
+            var ext=(it.qty||0)*(it.cost||0); var bill=ext*(1+rmkQ2); subTotal2 += bill;
+            var rr=document.createElement('div'); rr.style.cssText='display:flex;justify-content:space-between;align-items:baseline;padding:3px 0;border-bottom:1px solid #eee;font-size:12px;';
+            var rn=document.createElement('span'); rn.style.color='#444'; rn.textContent=(it.desc||'Rental Equipment')+(it.qty ? ' ('+it.qty+' × '+it.unit+')' : '');
+            var rt=document.createElement('span'); rt.style.cssText='font-family:monospace;font-weight:700;white-space:nowrap;'; rt.textContent=money(bill);
+            rr.appendChild(rn); rr.appendChild(rt); tmSubLinesEl3.appendChild(rr);
+          });
+          var delQ2=parseFloat((document.getElementById('rentalDelivery')||{}).value)||0;
+          if (delQ2>0){ var db2=delQ2*(1+rmkQ2); subTotal2 += db2;
+            var dr=document.createElement('div'); dr.style.cssText='display:flex;justify-content:space-between;align-items:baseline;padding:3px 0;border-bottom:1px solid #eee;font-size:12px;';
+            var dn=document.createElement('span'); dn.style.color='#444'; dn.textContent='Pickup / drop-off';
+            var dt=document.createElement('span'); dt.style.cssText='font-family:monospace;font-weight:700;white-space:nowrap;'; dt.textContent=money(db2);
+            dr.appendChild(dn); dr.appendChild(dt); tmSubLinesEl3.appendChild(dr);
+          }
+        }
         // Tax on materials in T&M-only case
         var taxRateQ3  = parseFloat((document.getElementById('matTaxRate')||{value:'0'}).value) || 0;
         var matSellQ3  = 0;

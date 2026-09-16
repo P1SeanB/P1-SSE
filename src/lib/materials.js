@@ -263,22 +263,31 @@ export function computeTmSubTotals(rows = [], opts = {}) {
 }
 
 /**
- * The one-time total the customer sees — :4633.
+ * The one-time total the customer sees — :4700 (was :4633 before rental landed).
  *
- *   labour billed + materials billed + subcontract billed + material tax + shipping
+ *   labour billed + materials billed + subcontract billed + RENTAL billed
+ *   + material tax + shipping
  *
- * Two things are narrower than they look, and both matter:
+ * Three things are narrower than they look, and all of them matter:
  *
- *   TAX APPLIES TO MATERIALS ONLY (:4629). Not to labour, not to the subcontract,
- *   not to shipping. Applying it to the whole total overcharges every taxable job.
+ *   TAX APPLIES TO MATERIALS ONLY (:4694-4696). Not to labour, not to the
+ *   subcontract, not to rental, not to shipping. Applying it to the whole total
+ *   overcharges every taxable job.
  *
- *   SHIPPING CARRIES ITS OWN MARKUP (:4632), defaulting to 15% and independent of
- *   the material markup.
+ *   SHIPPING CARRIES ITS OWN MARKUP (:4697-4699), defaulting to 15% and independent
+ *   of the material markup.
+ *
+ *   RENTAL ARRIVES PRE-PRICED, through `opts.rental` from src/lib/rental.js, and
+ *   carries its own third markup. It is passed in options rather than as a fourth
+ *   positional argument deliberately: a caller that has not been updated then omits
+ *   rental — a line short, which shows — instead of shifting `opts` into the rental
+ *   slot and silently dropping tax and shipping, which does not.
  */
 export function computeOneTimeTotal(items, tmSub, opts = {}) {
   const materialsBilled = totalMaterialSell(items);
   const laborBilled = totalLaborSell(items);
   const subBilled = tmSub ? num(tmSub.billed) : 0;
+  const rentalBilled = opts.rental ? num(opts.rental.billed) : 0;
 
   const taxRate = num(opts.matTaxRate);
   const materialTax = materialsBilled * taxRate;
@@ -291,9 +300,56 @@ export function computeOneTimeTotal(items, tmSub, opts = {}) {
     materialsBilled,
     laborBilled,
     subBilled,
+    rentalBilled,
     materialTax,
     shippingBilled,
-    total: laborBilled + materialsBilled + subBilled + materialTax + shippingBilled,
+    total: laborBilled + materialsBilled + subBilled + rentalBilled + materialTax + shippingBilled,
+  };
+}
+
+/**
+ * The estimator-facing side of the same work: what it COSTS, and what is left after
+ * overhead — :4894-4912.
+ *
+ * Separate from computeOneTimeTotal because the two answer different questions and
+ * have different membership. The customer's total carries tax and shipping; this one
+ * does not, because neither is Point 1's margin to make. What it does carry is the
+ * cost of every one-time component, which is the only place rental's COST lands.
+ *
+ * The legacy shows this panel for EVERY estimate type (:4890-4893). It used to be
+ * gated on the estimate being T&M, so install work on a monitoring quote never
+ * showed a net figure — worth preserving as the comment it is, because the gate
+ * looks like a reasonable thing for a port to reinstate.
+ *
+ * `ohMethod` picks the overhead base: 'cost' applies the rate to cost, anything else
+ * to billed (:4909). Same convention as calc.js computeQuote.
+ */
+export function computeOneTimeMargin(items, tmSub, opts = {}) {
+  const materialsCost = totalMaterialCost(items);
+  const materialsBilled = totalMaterialSell(items);
+  const laborCost = totalLaborCost(items);
+  const laborBilled = totalLaborSell(items);
+  const subCost = tmSub ? num(tmSub.cost) : 0;
+  const subBilled = tmSub ? num(tmSub.billed) : 0;
+  const rentalCost = opts.rental ? num(opts.rental.cost) : 0;
+  const rentalBilled = opts.rental ? num(opts.rental.billed) : 0;
+
+  const cost = laborCost + materialsCost + subCost + rentalCost;          // :4902
+  const billed = laborBilled + materialsBilled + subBilled + rentalBilled; // :4904
+  const gp = billed - cost;                                                // :4905
+
+  const overheadRate = num(opts.overheadRate);
+  const overheadBase = opts.ohMethod === 'cost' ? cost : billed;           // :4909
+  const overhead = overheadBase * overheadRate;
+  const netProfit = gp - overhead;                                         // :4911
+
+  return {
+    cost, billed, gp,
+    markupPct: cost > 0 ? (gp / cost) * 100 : null,                        // :4906
+    gmPct: billed > 0 ? gp / billed : null,                                // :4915
+    overhead, netProfit,
+    netMarginPct: billed > 0 ? netProfit / billed : null,                  // :4912
+    hasOneTime: cost + billed > 0,                                         // :4894-4895
   };
 }
 

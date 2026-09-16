@@ -65,20 +65,12 @@ const VIDEO_SCOPE = [
 
 const money = (n) => (n || 0).toLocaleString('en-US', { style: 'currency', currency: 'USD' });
 
-export const newAdcState = () => ({
-  base: '',
-  sections: {},                    // toggle name → open
-  video: { value: '', type: '', cameras: 1, expansions: '', servers: 0, intercom: '' },
-  videoScope: {},
-  cvIntercom: { devices: 0, users: 0 },
-  access: { enabled: false, packageValue: '', package: '', bundle: '', doors: '', mobile10: '', mobile100: '' },
-  addons: {},
-  sensors: '', aid: '', cars: '', fleet: '', comms: '',
-  flexIo: '', cellConnector: '', verizonData: '', imageEvents: '',
-  supervision: '', noonlightLicenses: 0,
-  openEye: false, enterpriseWellness: false, wellness: false,
-  scheduledArm: false, esc: false, mlEsc: false, mobileCreds: false,
-});
+// The shape lives in estimateState.js so estimateFile.js can build one without
+// importing React. Re-exported here because this is where callers look for it.
+export { newAdcState } from './estimateState.js';
+
+export { adcInputFrom } from './adcInput.js';
+import { adcInputFrom } from './adcInput.js';
 
 export default function AdcPanel({ value: adc, onChange, rates = {} }) {
   const set = (patch) => onChange({ ...adc, ...patch });
@@ -125,31 +117,8 @@ export default function AdcPanel({ value: adc, onChange, rates = {} }) {
     set({ addons: next });
   }, [addonMatrix]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // The same call the quote total makes, so the figure shown here and the figure
-  // charged are the same number by construction.
-  const priced = computeAdc(
-    {
-      base: adc.base,
-      video: adc.video,
-      cvIntercom: adc.cvIntercom,
-      access: adc.access,
-      // IDS, not amounts — computeAdc resolves each against the selected package.
-      //
-      // This used to send one flat price per add-on, looked up from a pricing_option
-      // group named 'adc-addons' that does not exist in the rate data at all, so every
-      // add-on contributed exactly nothing. Even with rows it would have been wrong:
-      // 22 of the 24 add-ons are priced PER PACKAGE, free on the packages that bundle
-      // them and chargeable on the ones that do not.
-      addons: Object.entries(adc.addons).filter(([, on]) => on).map(([k]) => k),
-      sensors: adc.sensors, aid: adc.aid, cars: adc.cars, fleet: adc.fleet, comms: adc.comms,
-      flexIo: adc.flexIo, cellConnector: adc.cellConnector,
-      verizonData: adc.verizonData, imageEvents: adc.imageEvents,
-      supervision: adc.supervision,
-      noonlightLicenses: adc.noonlightLicenses,
-      liftmasterIntegration: !!adc.addons['liftmaster-integration'],
-    },
-    rates,
-  );
+  // The same call the quote total makes — literally the same, through adcInputFrom.
+  const priced = computeAdc(adcInputFrom(adc), rates);
 
   const opts = rates.dropdownOptions || {};
   const showCvIntercom = hasCvIntercom(adc.video.value);
