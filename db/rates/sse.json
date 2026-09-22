@@ -1,0 +1,3299 @@
+{
+  "$schema": "p1-sse rate profile v1",
+  "productTag": "sse",
+  "exportedFromVersion": 2,
+  "labor": {
+    "labor_cost_per_hr": 120,
+    "labor_bill_default": 180,
+    "labor_sell_default": 177.44,
+    "svc_gm": 53,
+    "sub_markup": 20,
+    "av_maint_gm": 53,
+    "mat_markup": 69,
+    "tm_sub_gm": 42,
+    "overhead_rate": 0.28
+  },
+  "serviceCall": {
+    "straight_time_rate": 177.44,
+    "time_and_half_rate": 219.87,
+    "double_time_rate": 266.03,
+    "priority_multiplier": 1.2,
+    "premier_multiplier": 1.3
+  },
+  "monitoring": {
+    "base_rate": 6,
+    "addon_rate": 5
+  },
+  "door": {
+    "sacp_rate": 4,
+    "standard_rate": 3
+  },
+  "video": {
+    "expansion_base_rate": 6,
+    "server_rate": 3
+  },
+  "gcs": {
+    "fire_rate": 12,
+    "burg_rate": 10.5,
+    "residential_rate": 5,
+    "two_way_rate": 5,
+    "sf_burg_residential": 5,
+    "sf_burg_commercial": 8
+  },
+  "minRmr": {
+    "commercial_floor": 45,
+    "residential_floor": 40,
+    "two_way_floor": 15
+  },
+  "misc": {
+    "buildingReports": 6,
+    "honeywellComm": 13,
+    "pmVisitRate": 177.44,
+    "telguardComm": 25,
+    "ulCerts": 12
+  },
+  "tiers": [
+    {
+      "tier_name": "essential",
+      "label": "Dec 2025 - Nov 2026",
+      "rate": 177.44,
+      "sort_order": 1,
+      "straight_time": 177.44,
+      "time_and_half": 219.87,
+      "double_time": 266.03
+    },
+    {
+      "tier_name": "priority",
+      "label": "Dec 2025 - Nov 2026",
+      "rate": 212.93,
+      "sort_order": 2,
+      "straight_time": 212.93,
+      "time_and_half": 230.67,
+      "double_time": 266.03
+    },
+    {
+      "tier_name": "premier",
+      "label": "Dec 2025 - Nov 2026",
+      "rate": 230.67,
+      "sort_order": 3,
+      "straight_time": 230.67,
+      "time_and_half": 263.84,
+      "double_time": 266.03
+    }
+  ],
+  "doorBundles": [
+    {
+      "bundle_type": "SACP",
+      "min_doors": 0,
+      "max_doors": null,
+      "price": 0,
+      "sort_order": 1
+    },
+    {
+      "bundle_type": "SACP",
+      "min_doors": 16,
+      "max_doors": null,
+      "price": 45,
+      "sort_order": 2
+    },
+    {
+      "bundle_type": "SACP",
+      "min_doors": 32,
+      "max_doors": null,
+      "price": 82,
+      "sort_order": 3
+    },
+    {
+      "bundle_type": "SACP",
+      "min_doors": 64,
+      "max_doors": null,
+      "price": 144,
+      "sort_order": 4
+    },
+    {
+      "bundle_type": "Standard",
+      "min_doors": 0,
+      "max_doors": null,
+      "price": 0,
+      "sort_order": 1
+    },
+    {
+      "bundle_type": "Standard",
+      "min_doors": 16,
+      "max_doors": null,
+      "price": 29,
+      "sort_order": 2
+    },
+    {
+      "bundle_type": "Standard",
+      "min_doors": 32,
+      "max_doors": null,
+      "price": 50,
+      "sort_order": 3
+    },
+    {
+      "bundle_type": "Standard",
+      "min_doors": 64,
+      "max_doors": null,
+      "price": 80,
+      "sort_order": 4
+    }
+  ],
+  "pricingOptions": [
+    {
+      "dropdown_group": "adc-base",
+      "option_value": 8.95,
+      "label": "Interactive Gold ($8.95/mo)",
+      "price": 8.95,
+      "sort_order": 1,
+      "option_type": null,
+      "tooltip": "• Remote arm/disarm\n• Interactive alerts & notifications\n• Activity history\n• Geo-services\n• Video verification\n• Gold-level feature set\n• Enterprise Security Console"
+    },
+    {
+      "dropdown_group": "adc-base",
+      "option_value": 7.15,
+      "label": "Interactive ($7.15/mo)",
+      "price": 7.15,
+      "sort_order": 2,
+      "option_type": null,
+      "tooltip": "• Remote arm/disarm\n• Interactive alerts & notifications\n• Activity history\n• Geo-services\n• Standard interactive features\n• Enterprise Security Console"
+    },
+    {
+      "dropdown_group": "adc-base",
+      "option_value": 8.15,
+      "label": "Interactive + Automation ($8.15/mo)",
+      "price": 8.15,
+      "sort_order": 3,
+      "option_type": null,
+      "tooltip": "• Everything in Interactive\n• Automation control (locks, lights, thermostats)\n• Z-Wave device support\n• Energy management\n• Remote automation scheduling\n• Enterprise Security Console"
+    },
+    {
+      "dropdown_group": "adc-base",
+      "option_value": 5.7,
+      "label": "Connected Installation ($5.70/mo)",
+      "price": 5.7,
+      "sort_order": 4,
+      "option_type": null,
+      "tooltip": "• Remote arm/disarm\n• Basic alerts & notifications\n• Activity history\n• Designed for connected installation accounts\n• Streamlined dealer management"
+    },
+    {
+      "dropdown_group": "adc-base",
+      "option_value": 11.5,
+      "label": "Commercial ($11.50/mo)",
+      "price": 11.5,
+      "sort_order": 5,
+      "option_type": null,
+      "tooltip": "• Remote arm/disarm\n• Standard notifications\n• Activity history\n• Enterprise Security Console\n• Commercial supervision\n• Commercial reporting"
+    },
+    {
+      "dropdown_group": "adc-base",
+      "option_value": 13.95,
+      "label": "Commercial Plus ($13.95/mo)",
+      "price": 13.95,
+      "sort_order": 6,
+      "option_type": null,
+      "tooltip": "• Everything in Commercial\n• 1 Hour Supervision\n• Enterprise Security Console\n• Multi-level enterprise mgmt\n• Enhanced UL monitoring\n• Smarter Access Control"
+    },
+    {
+      "dropdown_group": "adc-base",
+      "option_value": 4.25,
+      "label": "Wireless Signal Forwarding ($4.25/mo)",
+      "price": 4.25,
+      "sort_order": 7,
+      "option_type": null,
+      "tooltip": "• Basic remote arm/disarm\n• Standard alerts & notifications\n• Wireless signal forwarding\n• Entry-level monitoring package\n• Simplified account management"
+    },
+    {
+      "dropdown_group": "adc-cars",
+      "option_value": 0,
+      "label": "0 Connected Car",
+      "price": 0,
+      "sort_order": 1,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-cars",
+      "option_value": 3.35,
+      "label": "1 Connected Car ($3.35)",
+      "price": 3.35,
+      "sort_order": 2,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-cars",
+      "option_value": 6.7,
+      "label": "2 Connected Cars ($6.70)",
+      "price": 6.7,
+      "sort_order": 3,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-cars",
+      "option_value": 10.05,
+      "label": "3 Connected Cars ($10.05)",
+      "price": 10.05,
+      "sort_order": 4,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-cars",
+      "option_value": 13.4,
+      "label": "4 Connected Cars ($13.40)",
+      "price": 13.4,
+      "sort_order": 5,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-cars",
+      "option_value": 16.75,
+      "label": "5 Connected Cars ($16.75)",
+      "price": 16.75,
+      "sort_order": 6,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-cars",
+      "option_value": 20.1,
+      "label": "6 Connected Cars ($20.10)",
+      "price": 20.1,
+      "sort_order": 7,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-cars",
+      "option_value": 23.45,
+      "label": "7 Connected Cars ($23.45)",
+      "price": 23.45,
+      "sort_order": 8,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-cars",
+      "option_value": 26.8,
+      "label": "8 Connected Cars ($26.80)",
+      "price": 26.8,
+      "sort_order": 9,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-cars",
+      "option_value": 30.15,
+      "label": "9 Connected Cars ($30.15)",
+      "price": 30.15,
+      "sort_order": 10,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-cars",
+      "option_value": 33.5,
+      "label": "10 Connected Cars ($33.50)",
+      "price": 33.5,
+      "sort_order": 11,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-comms",
+      "option_value": 0,
+      "label": "6 Hour Supervision ($0.00)",
+      "price": 0,
+      "sort_order": 1,
+      "option_type": null,
+      "tooltip": "• Panel checks signal every 6 hours\n• Included at no additional cost\n• Basic supervision for standard accounts\n• Not suitable for UL/fire alarm installations"
+    },
+    {
+      "dropdown_group": "adc-comms",
+      "option_value": 9.67,
+      "label": "Universal Communicator Commercial ($9.67/mo)",
+      "price": 9.67,
+      "sort_order": 2,
+      "option_type": null,
+      "tooltip": "• Cellular + IP dual-path communication\n• Supports multiple panel types\n• Faster signal delivery vs. standard supervision\n• Required for higher-security/UL accounts\n• Provides redundant communication path\n• Alarm.com Universal Communicator module"
+    },
+    {
+      "dropdown_group": "adc-expansions",
+      "option_value": 0,
+      "label": "0 Expansions — Total of: 4 cameras, 3,000 clips",
+      "price": 0,
+      "sort_order": 1,
+      "option_type": null,
+      "tooltip": "• 4 cameras included\n• 3,000 clips storage\n• 3,000 clips/mo upload bandwidth"
+    },
+    {
+      "dropdown_group": "adc-expansions",
+      "option_value": 4,
+      "label": "1 Expansion — Total of: 8 cameras, 8,000 clips ($4.00)",
+      "price": 4,
+      "sort_order": 2,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-expansions",
+      "option_value": 8,
+      "label": "2 Expansions — Total of: 12 cameras, 13,000 clips ($8.00)",
+      "price": 8,
+      "sort_order": 3,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-expansions",
+      "option_value": 12,
+      "label": "3 Expansions — Total of: 16 cameras, 18,000 clips ($12.00)",
+      "price": 12,
+      "sort_order": 4,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-expansions",
+      "option_value": 16,
+      "label": "4 Expansions — Total of: 20 cameras, 23,000 clips ($16.00)",
+      "price": 16,
+      "sort_order": 5,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-expansions",
+      "option_value": 20,
+      "label": "5 Expansions — Total of: 24 cameras, 28,000 clips ($20.00)",
+      "price": 20,
+      "sort_order": 6,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-expansions",
+      "option_value": 24,
+      "label": "6 Expansions — Total of: 28 cameras, 33,000 clips ($24.00)",
+      "price": 24,
+      "sort_order": 7,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-expansions",
+      "option_value": 28,
+      "label": "7 Expansions — Total of: 32 cameras, 38,000 clips ($28.00)",
+      "price": 28,
+      "sort_order": 8,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-expansions",
+      "option_value": 32,
+      "label": "8 Expansions — Total of: 36 cameras, 43,000 clips ($32.00)",
+      "price": 32,
+      "sort_order": 9,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-expansions",
+      "option_value": 36,
+      "label": "9 Expansions — Total of: 40 cameras, 48,000 clips ($36.00)",
+      "price": 36,
+      "sort_order": 10,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-expansions",
+      "option_value": 40,
+      "label": "10 Expansions — Total of: 44 cameras, 53,000 clips ($40.00)",
+      "price": 40,
+      "sort_order": 11,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-expansions",
+      "option_value": 44,
+      "label": "11 Expansions — Total of: 48 cameras, 58,000 clips ($44.00)",
+      "price": 44,
+      "sort_order": 12,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-expansions",
+      "option_value": 48,
+      "label": "12 Expansions — Total of: 52 cameras, 63,000 clips ($48.00)",
+      "price": 48,
+      "sort_order": 13,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-expansions",
+      "option_value": 52,
+      "label": "13 Expansions — Total of: 56 cameras, 68,000 clips ($52.00)",
+      "price": 52,
+      "sort_order": 14,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-expansions",
+      "option_value": 56,
+      "label": "14 Expansions — Total of: 60 cameras, 73,000 clips ($56.00)",
+      "price": 56,
+      "sort_order": 15,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-expansions",
+      "option_value": 60,
+      "label": "15 Expansions — Total of: 64 cameras, 78,000 clips ($60.00)",
+      "price": 60,
+      "sort_order": 16,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 0,
+      "label": "0 Connected Car",
+      "price": 0,
+      "sort_order": 1,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 6.15,
+      "label": "1 Connected Car ($6.15)",
+      "price": 6.15,
+      "sort_order": 2,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 12.3,
+      "label": "2 Connected Cars ($12.30)",
+      "price": 12.3,
+      "sort_order": 3,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 18.45,
+      "label": "3 Connected Cars ($18.45)",
+      "price": 18.45,
+      "sort_order": 4,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 24.6,
+      "label": "4 Connected Cars ($24.60)",
+      "price": 24.6,
+      "sort_order": 5,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 30.75,
+      "label": "5 Connected Cars ($30.75)",
+      "price": 30.75,
+      "sort_order": 6,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 36.9,
+      "label": "6 Connected Cars ($36.90)",
+      "price": 36.9,
+      "sort_order": 7,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 43.05,
+      "label": "7 Connected Cars ($43.05)",
+      "price": 43.05,
+      "sort_order": 8,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 49.2,
+      "label": "8 Connected Cars ($49.20)",
+      "price": 49.2,
+      "sort_order": 9,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 55.35,
+      "label": "9 Connected Cars ($55.35)",
+      "price": 55.35,
+      "sort_order": 10,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 61.5,
+      "label": "10 Connected Cars ($61.50)",
+      "price": 61.5,
+      "sort_order": 11,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 67.65,
+      "label": "11 Connected Cars ($67.65)",
+      "price": 67.65,
+      "sort_order": 12,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 73.8,
+      "label": "12 Connected Cars ($73.80)",
+      "price": 73.8,
+      "sort_order": 13,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 79.95,
+      "label": "13 Connected Cars ($79.95)",
+      "price": 79.95,
+      "sort_order": 14,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 86.1,
+      "label": "14 Connected Cars ($86.10)",
+      "price": 86.1,
+      "sort_order": 15,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 92.25,
+      "label": "15 Connected Cars ($92.25)",
+      "price": 92.25,
+      "sort_order": 16,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 98.4,
+      "label": "16 Connected Cars ($98.40)",
+      "price": 98.4,
+      "sort_order": 17,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 104.55,
+      "label": "17 Connected Cars ($104.55)",
+      "price": 104.55,
+      "sort_order": 18,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 110.7,
+      "label": "18 Connected Cars ($110.70)",
+      "price": 110.7,
+      "sort_order": 19,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 116.85,
+      "label": "19 Connected Cars ($116.85)",
+      "price": 116.85,
+      "sort_order": 20,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 123,
+      "label": "20 Connected Cars ($123.00)",
+      "price": 123,
+      "sort_order": 21,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 129.15,
+      "label": "21 Connected Cars ($129.15)",
+      "price": 129.15,
+      "sort_order": 22,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 135.3,
+      "label": "22 Connected Cars ($135.30)",
+      "price": 135.3,
+      "sort_order": 23,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 141.45,
+      "label": "23 Connected Cars ($141.45)",
+      "price": 141.45,
+      "sort_order": 24,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 147.6,
+      "label": "24 Connected Cars ($147.60)",
+      "price": 147.6,
+      "sort_order": 25,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 153.75,
+      "label": "25 Connected Cars ($153.75)",
+      "price": 153.75,
+      "sort_order": 26,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 159.9,
+      "label": "26 Connected Cars ($159.90)",
+      "price": 159.9,
+      "sort_order": 27,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 166.05,
+      "label": "27 Connected Cars ($166.05)",
+      "price": 166.05,
+      "sort_order": 28,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 172.2,
+      "label": "28 Connected Cars ($172.20)",
+      "price": 172.2,
+      "sort_order": 29,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 178.35,
+      "label": "29 Connected Cars ($178.35)",
+      "price": 178.35,
+      "sort_order": 30,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 184.5,
+      "label": "30 Connected Cars ($184.50)",
+      "price": 184.5,
+      "sort_order": 31,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 190.65,
+      "label": "31 Connected Cars ($190.65)",
+      "price": 190.65,
+      "sort_order": 32,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 196.8,
+      "label": "32 Connected Cars ($196.80)",
+      "price": 196.8,
+      "sort_order": 33,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 202.95,
+      "label": "33 Connected Cars ($202.95)",
+      "price": 202.95,
+      "sort_order": 34,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 209.1,
+      "label": "34 Connected Cars ($209.10)",
+      "price": 209.1,
+      "sort_order": 35,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 215.25,
+      "label": "35 Connected Cars ($215.25)",
+      "price": 215.25,
+      "sort_order": 36,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 221.4,
+      "label": "36 Connected Cars ($221.40)",
+      "price": 221.4,
+      "sort_order": 37,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 227.55,
+      "label": "37 Connected Cars ($227.55)",
+      "price": 227.55,
+      "sort_order": 38,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 233.7,
+      "label": "38 Connected Cars ($233.70)",
+      "price": 233.7,
+      "sort_order": 39,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 239.85,
+      "label": "39 Connected Cars ($239.85)",
+      "price": 239.85,
+      "sort_order": 40,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 246,
+      "label": "40 Connected Cars ($246.00)",
+      "price": 246,
+      "sort_order": 41,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 252.15,
+      "label": "41 Connected Cars ($252.15)",
+      "price": 252.15,
+      "sort_order": 42,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 258.3,
+      "label": "42 Connected Cars ($258.30)",
+      "price": 258.3,
+      "sort_order": 43,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 264.45,
+      "label": "43 Connected Cars ($264.45)",
+      "price": 264.45,
+      "sort_order": 44,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 270.6,
+      "label": "44 Connected Cars ($270.60)",
+      "price": 270.6,
+      "sort_order": 45,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 276.75,
+      "label": "45 Connected Cars ($276.75)",
+      "price": 276.75,
+      "sort_order": 46,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 282.9,
+      "label": "46 Connected Cars ($282.90)",
+      "price": 282.9,
+      "sort_order": 47,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 289.05,
+      "label": "47 Connected Cars ($289.05)",
+      "price": 289.05,
+      "sort_order": 48,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 295.2,
+      "label": "48 Connected Cars ($295.20)",
+      "price": 295.2,
+      "sort_order": 49,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 301.35,
+      "label": "49 Connected Cars ($301.35)",
+      "price": 301.35,
+      "sort_order": 50,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 307.5,
+      "label": "50 Connected Cars ($307.50)",
+      "price": 307.5,
+      "sort_order": 51,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 313.65,
+      "label": "51 Connected Cars ($313.65)",
+      "price": 313.65,
+      "sort_order": 52,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 319.8,
+      "label": "52 Connected Cars ($319.80)",
+      "price": 319.8,
+      "sort_order": 53,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 325.95,
+      "label": "53 Connected Cars ($325.95)",
+      "price": 325.95,
+      "sort_order": 54,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 332.1,
+      "label": "54 Connected Cars ($332.10)",
+      "price": 332.1,
+      "sort_order": 55,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 338.25,
+      "label": "55 Connected Cars ($338.25)",
+      "price": 338.25,
+      "sort_order": 56,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 344.4,
+      "label": "56 Connected Cars ($344.40)",
+      "price": 344.4,
+      "sort_order": 57,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 350.55,
+      "label": "57 Connected Cars ($350.55)",
+      "price": 350.55,
+      "sort_order": 58,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 356.7,
+      "label": "58 Connected Cars ($356.70)",
+      "price": 356.7,
+      "sort_order": 59,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 362.85,
+      "label": "59 Connected Cars ($362.85)",
+      "price": 362.85,
+      "sort_order": 60,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 369,
+      "label": "60 Connected Cars ($369.00)",
+      "price": 369,
+      "sort_order": 61,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 375.15,
+      "label": "61 Connected Cars ($375.15)",
+      "price": 375.15,
+      "sort_order": 62,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 381.3,
+      "label": "62 Connected Cars ($381.30)",
+      "price": 381.3,
+      "sort_order": 63,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 387.45,
+      "label": "63 Connected Cars ($387.45)",
+      "price": 387.45,
+      "sort_order": 64,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 393.6,
+      "label": "64 Connected Cars ($393.60)",
+      "price": 393.6,
+      "sort_order": 65,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 399.75,
+      "label": "65 Connected Cars ($399.75)",
+      "price": 399.75,
+      "sort_order": 66,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 405.9,
+      "label": "66 Connected Cars ($405.90)",
+      "price": 405.9,
+      "sort_order": 67,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 412.05,
+      "label": "67 Connected Cars ($412.05)",
+      "price": 412.05,
+      "sort_order": 68,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 418.2,
+      "label": "68 Connected Cars ($418.20)",
+      "price": 418.2,
+      "sort_order": 69,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 424.35,
+      "label": "69 Connected Cars ($424.35)",
+      "price": 424.35,
+      "sort_order": 70,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 430.5,
+      "label": "70 Connected Cars ($430.50)",
+      "price": 430.5,
+      "sort_order": 71,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 436.65,
+      "label": "71 Connected Cars ($436.65)",
+      "price": 436.65,
+      "sort_order": 72,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 442.8,
+      "label": "72 Connected Cars ($442.80)",
+      "price": 442.8,
+      "sort_order": 73,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 448.95,
+      "label": "73 Connected Cars ($448.95)",
+      "price": 448.95,
+      "sort_order": 74,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 455.1,
+      "label": "74 Connected Cars ($455.10)",
+      "price": 455.1,
+      "sort_order": 75,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 461.25,
+      "label": "75 Connected Cars ($461.25)",
+      "price": 461.25,
+      "sort_order": 76,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 467.4,
+      "label": "76 Connected Cars ($467.40)",
+      "price": 467.4,
+      "sort_order": 77,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 473.55,
+      "label": "77 Connected Cars ($473.55)",
+      "price": 473.55,
+      "sort_order": 78,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 479.7,
+      "label": "78 Connected Cars ($479.70)",
+      "price": 479.7,
+      "sort_order": 79,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 485.85,
+      "label": "79 Connected Cars ($485.85)",
+      "price": 485.85,
+      "sort_order": 80,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 492,
+      "label": "80 Connected Cars ($492.00)",
+      "price": 492,
+      "sort_order": 81,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 498.15,
+      "label": "81 Connected Cars ($498.15)",
+      "price": 498.15,
+      "sort_order": 82,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 504.3,
+      "label": "82 Connected Cars ($504.30)",
+      "price": 504.3,
+      "sort_order": 83,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 510.45,
+      "label": "83 Connected Cars ($510.45)",
+      "price": 510.45,
+      "sort_order": 84,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 516.6,
+      "label": "84 Connected Cars ($516.60)",
+      "price": 516.6,
+      "sort_order": 85,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 522.75,
+      "label": "85 Connected Cars ($522.75)",
+      "price": 522.75,
+      "sort_order": 86,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 528.9,
+      "label": "86 Connected Cars ($528.90)",
+      "price": 528.9,
+      "sort_order": 87,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 535.05,
+      "label": "87 Connected Cars ($535.05)",
+      "price": 535.05,
+      "sort_order": 88,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 541.2,
+      "label": "88 Connected Cars ($541.20)",
+      "price": 541.2,
+      "sort_order": 89,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 547.35,
+      "label": "89 Connected Cars ($547.35)",
+      "price": 547.35,
+      "sort_order": 90,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 553.5,
+      "label": "90 Connected Cars ($553.50)",
+      "price": 553.5,
+      "sort_order": 91,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 559.65,
+      "label": "91 Connected Cars ($559.65)",
+      "price": 559.65,
+      "sort_order": 92,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 565.8,
+      "label": "92 Connected Cars ($565.80)",
+      "price": 565.8,
+      "sort_order": 93,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 571.95,
+      "label": "93 Connected Cars ($571.95)",
+      "price": 571.95,
+      "sort_order": 94,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 578.1,
+      "label": "94 Connected Cars ($578.10)",
+      "price": 578.1,
+      "sort_order": 95,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 584.25,
+      "label": "95 Connected Cars ($584.25)",
+      "price": 584.25,
+      "sort_order": 96,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 590.4,
+      "label": "96 Connected Cars ($590.40)",
+      "price": 590.4,
+      "sort_order": 97,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 596.55,
+      "label": "97 Connected Cars ($596.55)",
+      "price": 596.55,
+      "sort_order": 98,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 602.7,
+      "label": "98 Connected Cars ($602.70)",
+      "price": 602.7,
+      "sort_order": 99,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 608.85,
+      "label": "99 Connected Cars ($608.85)",
+      "price": 608.85,
+      "sort_order": 100,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-fleet",
+      "option_value": 615,
+      "label": "100 Connected Cars ($615.00)",
+      "price": 615,
+      "sort_order": 101,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-intercom",
+      "option_value": 0,
+      "label": "0 Devices",
+      "price": 0,
+      "sort_order": 1,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-intercom",
+      "option_value": 1.25,
+      "label": "5 Devices ($1.25)",
+      "price": 1.25,
+      "sort_order": 2,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-intercom",
+      "option_value": 2.5,
+      "label": "10 Devices ($2.50)",
+      "price": 2.5,
+      "sort_order": 3,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-intercom",
+      "option_value": 3.75,
+      "label": "15 Devices ($3.75)",
+      "price": 3.75,
+      "sort_order": 4,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-intercom",
+      "option_value": 5,
+      "label": "20 Devices ($5.00)",
+      "price": 5,
+      "sort_order": 5,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-intercom",
+      "option_value": 6.25,
+      "label": "25 Devices ($6.25)",
+      "price": 6.25,
+      "sort_order": 6,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-intercom",
+      "option_value": 7.5,
+      "label": "30 Devices ($7.50)",
+      "price": 7.5,
+      "sort_order": 7,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-intercom",
+      "option_value": 8.75,
+      "label": "35 Devices ($8.75)",
+      "price": 8.75,
+      "sort_order": 8,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-intercom",
+      "option_value": 10,
+      "label": "40 Devices ($10.00)",
+      "price": 10,
+      "sort_order": 9,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-intercom",
+      "option_value": 11.25,
+      "label": "45 Devices ($11.25)",
+      "price": 11.25,
+      "sort_order": 10,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-intercom",
+      "option_value": 12.5,
+      "label": "50 Devices ($12.50)",
+      "price": 12.5,
+      "sort_order": 11,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-intercom",
+      "option_value": 13.75,
+      "label": "55 Devices ($13.75)",
+      "price": 13.75,
+      "sort_order": 12,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-intercom",
+      "option_value": 15,
+      "label": "60 Devices ($15.00)",
+      "price": 15,
+      "sort_order": 13,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-intercom",
+      "option_value": 16.25,
+      "label": "65 Devices ($16.25)",
+      "price": 16.25,
+      "sort_order": 14,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-intercom",
+      "option_value": 17.5,
+      "label": "70 Devices ($17.50)",
+      "price": 17.5,
+      "sort_order": 15,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-intercom",
+      "option_value": 18.75,
+      "label": "75 Devices ($18.75)",
+      "price": 18.75,
+      "sort_order": 16,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-intercom",
+      "option_value": 20,
+      "label": "80 Devices ($20.00)",
+      "price": 20,
+      "sort_order": 17,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-intercom",
+      "option_value": 21.25,
+      "label": "85 Devices ($21.25)",
+      "price": 21.25,
+      "sort_order": 18,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-intercom",
+      "option_value": 22.5,
+      "label": "90 Devices ($22.50)",
+      "price": 22.5,
+      "sort_order": 19,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-intercom",
+      "option_value": 23.75,
+      "label": "95 Devices ($23.75)",
+      "price": 23.75,
+      "sort_order": 20,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-intercom",
+      "option_value": 25,
+      "label": "100 Devices ($25.00)",
+      "price": 25,
+      "sort_order": 21,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-mobile-10",
+      "option_value": 0,
+      "label": "0 Mobile Credentials (Paid) ($0.00)",
+      "price": 0,
+      "sort_order": 1,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-mobile-10",
+      "option_value": 2.5,
+      "label": "10 Mobile Credentials (Paid) ($2.50)",
+      "price": 2.5,
+      "sort_order": 2,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-mobile-10",
+      "option_value": 5,
+      "label": "20 Mobile Credentials (Paid) ($5.00)",
+      "price": 5,
+      "sort_order": 3,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-mobile-10",
+      "option_value": 7.5,
+      "label": "30 Mobile Credentials (Paid) ($7.50)",
+      "price": 7.5,
+      "sort_order": 4,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-mobile-10",
+      "option_value": 10,
+      "label": "40 Mobile Credentials (Paid) ($10.00)",
+      "price": 10,
+      "sort_order": 5,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-mobile-10",
+      "option_value": 12.5,
+      "label": "50 Mobile Credentials (Paid) ($12.50)",
+      "price": 12.5,
+      "sort_order": 6,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-mobile-10",
+      "option_value": 15,
+      "label": "60 Mobile Credentials (Paid) ($15.00)",
+      "price": 15,
+      "sort_order": 7,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-mobile-10",
+      "option_value": 17.5,
+      "label": "70 Mobile Credentials (Paid) ($17.50)",
+      "price": 17.5,
+      "sort_order": 8,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-mobile-10",
+      "option_value": 20,
+      "label": "80 Mobile Credentials (Paid) ($20.00)",
+      "price": 20,
+      "sort_order": 9,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-mobile-10",
+      "option_value": 22.5,
+      "label": "90 Mobile Credentials (Paid) ($22.50)",
+      "price": 22.5,
+      "sort_order": 10,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-mobile-10",
+      "option_value": 25,
+      "label": "100 Mobile Credentials (Paid) ($25.00)",
+      "price": 25,
+      "sort_order": 11,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-mobile-10",
+      "option_value": 27.5,
+      "label": "110 Mobile Credentials (Paid) ($27.50)",
+      "price": 27.5,
+      "sort_order": 12,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-mobile-10",
+      "option_value": 30,
+      "label": "120 Mobile Credentials (Paid) ($30.00)",
+      "price": 30,
+      "sort_order": 13,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-mobile-10",
+      "option_value": 32.5,
+      "label": "130 Mobile Credentials (Paid) ($32.50)",
+      "price": 32.5,
+      "sort_order": 14,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-mobile-10",
+      "option_value": 35,
+      "label": "140 Mobile Credentials (Paid) ($35.00)",
+      "price": 35,
+      "sort_order": 15,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-mobile-10",
+      "option_value": 37.5,
+      "label": "150 Mobile Credentials (Paid) ($37.50)",
+      "price": 37.5,
+      "sort_order": 16,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-mobile-10",
+      "option_value": 40,
+      "label": "160 Mobile Credentials (Paid) ($40.00)",
+      "price": 40,
+      "sort_order": 17,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-mobile-10",
+      "option_value": 42.5,
+      "label": "170 Mobile Credentials (Paid) ($42.50)",
+      "price": 42.5,
+      "sort_order": 18,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-mobile-10",
+      "option_value": 45,
+      "label": "180 Mobile Credentials (Paid) ($45.00)",
+      "price": 45,
+      "sort_order": 19,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-mobile-10",
+      "option_value": 47.5,
+      "label": "190 Mobile Credentials (Paid) ($47.50)",
+      "price": 47.5,
+      "sort_order": 20,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-mobile-10",
+      "option_value": 50,
+      "label": "200 Mobile Credentials (Paid) ($50.00)",
+      "price": 50,
+      "sort_order": 21,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-mobile-100",
+      "option_value": 0,
+      "label": "0 Mobile Credentials (Paid) ($0.00)",
+      "price": 0,
+      "sort_order": 1,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-mobile-100",
+      "option_value": 13.75,
+      "label": "100 Mobile Credentials (Paid) ($13.75)",
+      "price": 13.75,
+      "sort_order": 2,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-mobile-100",
+      "option_value": 27.5,
+      "label": "200 Mobile Credentials (Paid) ($27.50)",
+      "price": 27.5,
+      "sort_order": 3,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-mobile-100",
+      "option_value": 41.25,
+      "label": "300 Mobile Credentials (Paid) ($41.25)",
+      "price": 41.25,
+      "sort_order": 4,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-mobile-100",
+      "option_value": 55,
+      "label": "400 Mobile Credentials (Paid) ($55.00)",
+      "price": 55,
+      "sort_order": 5,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-mobile-100",
+      "option_value": 68.75,
+      "label": "500 Mobile Credentials (Paid) ($68.75)",
+      "price": 68.75,
+      "sort_order": 6,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-mobile-100",
+      "option_value": 82.5,
+      "label": "600 Mobile Credentials (Paid) ($82.50)",
+      "price": 82.5,
+      "sort_order": 7,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-mobile-100",
+      "option_value": 96.25,
+      "label": "700 Mobile Credentials (Paid) ($96.25)",
+      "price": 96.25,
+      "sort_order": 8,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-mobile-100",
+      "option_value": 110,
+      "label": "800 Mobile Credentials (Paid) ($110.00)",
+      "price": 110,
+      "sort_order": 9,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-mobile-100",
+      "option_value": 123.75,
+      "label": "900 Mobile Credentials (Paid) ($123.75)",
+      "price": 123.75,
+      "sort_order": 10,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-mobile-100",
+      "option_value": 137.5,
+      "label": "1000 Mobile Credentials (Paid) ($137.50)",
+      "price": 137.5,
+      "sort_order": 11,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-mobile-100",
+      "option_value": 151.25,
+      "label": "1100 Mobile Credentials (Paid) ($151.25)",
+      "price": 151.25,
+      "sort_order": 12,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-mobile-100",
+      "option_value": 165,
+      "label": "1200 Mobile Credentials (Paid) ($165.00)",
+      "price": 165,
+      "sort_order": 13,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-mobile-100",
+      "option_value": 178.75,
+      "label": "1300 Mobile Credentials (Paid) ($178.75)",
+      "price": 178.75,
+      "sort_order": 14,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-mobile-100",
+      "option_value": 192.5,
+      "label": "1400 Mobile Credentials (Paid) ($192.50)",
+      "price": 192.5,
+      "sort_order": 15,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-mobile-100",
+      "option_value": 206.25,
+      "label": "1500 Mobile Credentials (Paid) ($206.25)",
+      "price": 206.25,
+      "sort_order": 16,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-mobile-100",
+      "option_value": 220,
+      "label": "1600 Mobile Credentials (Paid) ($220.00)",
+      "price": 220,
+      "sort_order": 17,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-mobile-100",
+      "option_value": 233.75,
+      "label": "1700 Mobile Credentials (Paid) ($233.75)",
+      "price": 233.75,
+      "sort_order": 18,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-mobile-100",
+      "option_value": 247.5,
+      "label": "1800 Mobile Credentials (Paid) ($247.50)",
+      "price": 247.5,
+      "sort_order": 19,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-mobile-100",
+      "option_value": 261.25,
+      "label": "1900 Mobile Credentials (Paid) ($261.25)",
+      "price": 261.25,
+      "sort_order": 20,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-mobile-100",
+      "option_value": 275,
+      "label": "2000 Mobile Credentials (Paid) ($275.00)",
+      "price": 275,
+      "sort_order": 21,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-sensors",
+      "option_value": 0,
+      "label": 0,
+      "price": 0,
+      "sort_order": 1,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-sensors",
+      "option_value": 0.25,
+      "label": "5 ($0.25)",
+      "price": 0.25,
+      "sort_order": 2,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-sensors",
+      "option_value": 0.5,
+      "label": "10 ($0.50)",
+      "price": 0.5,
+      "sort_order": 3,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-sensors",
+      "option_value": 0.75,
+      "label": "15 ($0.75)",
+      "price": 0.75,
+      "sort_order": 4,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-sensors",
+      "option_value": 1,
+      "label": "20 ($1.00)",
+      "price": 1,
+      "sort_order": 5,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-sensors",
+      "option_value": 1.25,
+      "label": "25 ($1.25)",
+      "price": 1.25,
+      "sort_order": 6,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-sensors",
+      "option_value": 1.5,
+      "label": "30 ($1.50)",
+      "price": 1.5,
+      "sort_order": 7,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-sensors",
+      "option_value": 1.75,
+      "label": "35 ($1.75)",
+      "price": 1.75,
+      "sort_order": 8,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-sensors",
+      "option_value": 2,
+      "label": "40 ($2.00)",
+      "price": 2,
+      "sort_order": 9,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-sensors",
+      "option_value": 2.25,
+      "label": "45 ($2.25)",
+      "price": 2.25,
+      "sort_order": 10,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-sensors",
+      "option_value": 2.5,
+      "label": "50 ($2.50)",
+      "price": 2.5,
+      "sort_order": 11,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-sensors",
+      "option_value": 2.75,
+      "label": "55 ($2.75)",
+      "price": 2.75,
+      "sort_order": 12,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-sensors",
+      "option_value": 3,
+      "label": "60 ($3.00)",
+      "price": 3,
+      "sort_order": 13,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-sensors",
+      "option_value": 3.25,
+      "label": "65 ($3.25)",
+      "price": 3.25,
+      "sort_order": 14,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-sensors",
+      "option_value": 3.5,
+      "label": "70 ($3.50)",
+      "price": 3.5,
+      "sort_order": 15,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-sensors",
+      "option_value": 3.75,
+      "label": "75 ($3.75)",
+      "price": 3.75,
+      "sort_order": 16,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-sensors",
+      "option_value": 4,
+      "label": "80 ($4.00)",
+      "price": 4,
+      "sort_order": 17,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-sensors",
+      "option_value": 4.25,
+      "label": "85 ($4.25)",
+      "price": 4.25,
+      "sort_order": 18,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-sensors",
+      "option_value": 4.5,
+      "label": "90 ($4.50)",
+      "price": 4.5,
+      "sort_order": 19,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-sensors",
+      "option_value": 4.75,
+      "label": "95 ($4.75)",
+      "price": 4.75,
+      "sort_order": 20,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-sensors",
+      "option_value": 5,
+      "label": "100 ($5.00)",
+      "price": 5,
+      "sort_order": 21,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-sensors",
+      "option_value": 5.25,
+      "label": "105 ($5.25)",
+      "price": 5.25,
+      "sort_order": 22,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-sensors",
+      "option_value": 5.5,
+      "label": "110 ($5.50)",
+      "price": 5.5,
+      "sort_order": 23,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-sensors",
+      "option_value": 5.75,
+      "label": "115 ($5.75)",
+      "price": 5.75,
+      "sort_order": 24,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-sensors",
+      "option_value": 6,
+      "label": "120 ($6.00)",
+      "price": 6,
+      "sort_order": 25,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-sensors",
+      "option_value": 6.25,
+      "label": "125 ($6.25)",
+      "price": 6.25,
+      "sort_order": 26,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-sensors",
+      "option_value": 6.5,
+      "label": "130 ($6.50)",
+      "price": 6.5,
+      "sort_order": 27,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-sensors",
+      "option_value": 6.75,
+      "label": "135 ($6.75)",
+      "price": 6.75,
+      "sort_order": 28,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-sensors",
+      "option_value": 7,
+      "label": "140 ($7.00)",
+      "price": 7,
+      "sort_order": 29,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-sensors",
+      "option_value": 7.25,
+      "label": "145 ($7.25)",
+      "price": 7.25,
+      "sort_order": 30,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-sensors",
+      "option_value": 7.5,
+      "label": "150 ($7.50)",
+      "price": 7.5,
+      "sort_order": 31,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-sensors",
+      "option_value": 7.75,
+      "label": "155 ($7.75)",
+      "price": 7.75,
+      "sort_order": 32,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-sensors",
+      "option_value": 8,
+      "label": "160 ($8.00)",
+      "price": 8,
+      "sort_order": 33,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-sensors",
+      "option_value": 8.25,
+      "label": "165 ($8.25)",
+      "price": 8.25,
+      "sort_order": 34,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-sensors",
+      "option_value": 8.5,
+      "label": "170 ($8.50)",
+      "price": 8.5,
+      "sort_order": 35,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-sensors",
+      "option_value": 8.75,
+      "label": "175 ($8.75)",
+      "price": 8.75,
+      "sort_order": 36,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-sensors",
+      "option_value": 9,
+      "label": "180 ($9.00)",
+      "price": 9,
+      "sort_order": 37,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-sensors",
+      "option_value": 9.25,
+      "label": "185 ($9.25)",
+      "price": 9.25,
+      "sort_order": 38,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-sensors",
+      "option_value": 9.5,
+      "label": "190 ($9.50)",
+      "price": 9.5,
+      "sort_order": 39,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-sensors",
+      "option_value": 9.75,
+      "label": "195 ($9.75)",
+      "price": 9.75,
+      "sort_order": 40,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-sensors",
+      "option_value": 10,
+      "label": "200 ($10.00)",
+      "price": 10,
+      "sort_order": 41,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-video",
+      "option_value": 0,
+      "label": "No Video Selected ($0.00)",
+      "price": 0,
+      "sort_order": 1,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "adc-video",
+      "option_value": 6,
+      "label": "Pro Video with Analytics 3000 ($6.00/mo)",
+      "price": 6,
+      "sort_order": 2,
+      "option_type": "expansion",
+      "tooltip": "• Base package: 4 cameras, 3,000 clips ($6.00/mo)\n• 3,000 clips storage + 3,000 clips/mo upload\n• AI-powered detection (people, vehicles, animals)\n• Video alerts that matter\n• Add expansion packs for more cameras (+$4.00 each)\n• Add SVRs for local recording (+$3.00 each)"
+    },
+    {
+      "dropdown_group": "adc-video",
+      "option_value": 4.5,
+      "label": "Pro Video — per camera ($4.50/mo)",
+      "price": 4.5,
+      "sort_order": 3,
+      "option_type": null,
+      "tooltip": "• Pro-level video features\n• Live view & playback\n• Cloud video storage\n• Motion-triggered clips\n• Per camera licensing"
+    },
+    {
+      "dropdown_group": "adc-video",
+      "option_value": 2.5,
+      "label": "Basic Doorbell ($2.50/mo)",
+      "price": 2.5,
+      "sort_order": 4,
+      "option_type": "flat",
+      "tooltip": "• Basic doorbell camera support\n• Live view & two-way audio\n• Motion-triggered clips\n• Cloud video storage"
+    },
+    {
+      "dropdown_group": "adc-video",
+      "option_value": 6.5,
+      "label": "Premium Video — per camera ($6.50/mo)",
+      "price": 6.5,
+      "sort_order": 5,
+      "option_type": null,
+      "tooltip": "• Premium video quality\n• Enhanced cloud storage\n• Live view & playback\n• Motion-triggered clips\n• Per camera licensing"
+    },
+    {
+      "dropdown_group": "adc-video",
+      "option_value": 2.5,
+      "label": "Single Doorbell with Analytics ($2.50/mo)",
+      "price": 2.5,
+      "sort_order": 6,
+      "option_type": "flat",
+      "tooltip": "• Single doorbell camera\n• AI-powered analytics\n• Live view & two-way audio\n• Motion-triggered clips\n• Cloud video storage"
+    },
+    {
+      "dropdown_group": "adc-video",
+      "option_value": 1.5,
+      "label": "Commercial Video — per camera ($1.50/mo)",
+      "price": 1.5,
+      "sort_order": 7,
+      "option_type": null,
+      "tooltip": "• Per camera licensing: $1.50/camera/mo\n• 1,000 clips/camera/mo storage\n• 24x7 SVR recording\n• Smart View, Video Analytics\n• Business Activity Analytics\n• Enterprise Multi-Location mgmt"
+    },
+    {
+      "dropdown_group": "adc-video",
+      "option_value": 3.1,
+      "label": "Commercial Video Plus — per camera ($3.10/mo)",
+      "price": 3.1,
+      "sort_order": 8,
+      "option_type": null,
+      "tooltip": "• Per camera licensing: $3.10/camera/mo\n• All Commercial Video features\n• Extended remote video sharing\n• Increased video device supervision\n• Enhanced 3rd-party camera support\n• Panoramic & motorized PTZ support"
+    },
+    {
+      "dropdown_group": "alarmnet-plan",
+      "option_value": 8,
+      "label": "IP Only (~$8.00/mo)",
+      "price": 8,
+      "sort_order": 1,
+      "option_type": null,
+      "tooltip": "• IP-only communication path\n• Broadband connection required\n• Lower cost option for stable IP environments"
+    },
+    {
+      "dropdown_group": "alarmnet-plan",
+      "option_value": 10,
+      "label": "Cellular / LTE (~$10.00/mo)",
+      "price": 10,
+      "sort_order": 2,
+      "option_type": null,
+      "tooltip": "• LTE cellular communication path\n• No broadband required\n• Reliable backup for IP outages"
+    },
+    {
+      "dropdown_group": "alarmnet-plan",
+      "option_value": 12,
+      "label": "Dual-path / IP + LTE (~$12.00/mo)",
+      "price": 12,
+      "sort_order": 3,
+      "option_type": null,
+      "tooltip": "• IP + LTE dual-path communication\n• Maximum reliability and redundancy\n• Required for UL-listed installations"
+    },
+    {
+      "dropdown_group": "connectone-sms",
+      "option_value": 0,
+      "label": "— None —",
+      "price": 0,
+      "sort_order": 1,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "connectone-sms",
+      "option_value": 1.25,
+      "label": "+100 SMS Messages ($1.25/mo)",
+      "price": 1.25,
+      "sort_order": 2,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "connectone-sms",
+      "option_value": 3.15,
+      "label": "+250 SMS Messages ($3.15/mo)",
+      "price": 3.15,
+      "sort_order": 3,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "connectone-sms",
+      "option_value": 6,
+      "label": "+500 SMS Messages ($6.00/mo)",
+      "price": 6,
+      "sort_order": 4,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "connectone-sms",
+      "option_value": 12.15,
+      "label": "+1000 SMS Messages ($12.15/mo)",
+      "price": 12.15,
+      "sort_order": 5,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "connectone-sms",
+      "option_value": 18.25,
+      "label": "+1500 SMS Messages ($18.25/mo)",
+      "price": 18.25,
+      "sort_order": 6,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "connectone-sms",
+      "option_value": 24.25,
+      "label": "+2000 SMS Messages ($24.25/mo)",
+      "price": 24.25,
+      "sort_order": 7,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "connectone-sms",
+      "option_value": 30.5,
+      "label": "+2500 SMS Messages ($30.50/mo)",
+      "price": 30.5,
+      "sort_order": 8,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "connectone-sms",
+      "option_value": 60.75,
+      "label": "+5000 SMS Messages ($60.75/mo)",
+      "price": 60.75,
+      "sort_order": 9,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "connectone-sms",
+      "option_value": 91.25,
+      "label": "+7500 SMS Messages ($91.25/mo)",
+      "price": 91.25,
+      "sort_order": 10,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "connectone-sms",
+      "option_value": 121.5,
+      "label": "+10000 SMS Messages ($121.50/mo)",
+      "price": 121.5,
+      "sort_order": 11,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "connectone-sms",
+      "option_value": 182.25,
+      "label": "+15000 SMS Messages ($182.25/mo)",
+      "price": 182.25,
+      "sort_order": 12,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "overheadRate",
+      "option_value": 0.05,
+      "label": "5%",
+      "price": 0.05,
+      "sort_order": 1,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "overheadRate",
+      "option_value": 0.1,
+      "label": "10%",
+      "price": 0.1,
+      "sort_order": 2,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "overheadRate",
+      "option_value": 0.28,
+      "label": "28%",
+      "price": 0.28,
+      "sort_order": 3,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "overheadRate",
+      "option_value": 0.3,
+      "label": "30%",
+      "price": 0.3,
+      "sort_order": 4,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "overheadRate",
+      "option_value": 0.32,
+      "label": "32%",
+      "price": 0.32,
+      "sort_order": 5,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "overheadRate",
+      "option_value": 0.35,
+      "label": "35%",
+      "price": 0.35,
+      "sort_order": 6,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "sla-bud-ah-rate",
+      "option_value": 177.44,
+      "label": "Straight — $177.44/hr",
+      "price": 177.44,
+      "sort_order": 1,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "sla-bud-ah-rate",
+      "option_value": 219.87,
+      "label": "Time & Half — $219.87/hr",
+      "price": 219.87,
+      "sort_order": 2,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "sla-bud-ah-rate",
+      "option_value": 266.03,
+      "label": "Double Time — $266.03/hr",
+      "price": 266.03,
+      "sort_order": 3,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "sla-bud-ah-rate",
+      "option_value": 212.93,
+      "label": "Straight — $212.93/hr",
+      "price": 212.93,
+      "sort_order": 4,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "sla-bud-ah-rate",
+      "option_value": 230.67,
+      "label": "Time & Half — $230.67/hr",
+      "price": 230.67,
+      "sort_order": 5,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "sla-bud-ah-rate",
+      "option_value": 266.03,
+      "label": "Double Time — $266.03/hr",
+      "price": 266.03,
+      "sort_order": 6,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "sla-bud-ah-rate",
+      "option_value": 230.67,
+      "label": "Straight — $230.67/hr",
+      "price": 230.67,
+      "sort_order": 7,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "sla-bud-ah-rate",
+      "option_value": 263.84,
+      "label": "Time & Half — $263.84/hr",
+      "price": 263.84,
+      "sort_order": 8,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "sla-bud-ah-rate",
+      "option_value": 266.03,
+      "label": "Double Time — $266.03/hr",
+      "price": 266.03,
+      "sort_order": 9,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "sla-bud-em-rate",
+      "option_value": 266.03,
+      "label": "Double Time — $266.03/hr",
+      "price": 266.03,
+      "sort_order": 1,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "sla-bud-em-rate",
+      "option_value": 266.03,
+      "label": "Double Time — $266.03/hr",
+      "price": 266.03,
+      "sort_order": 2,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "sla-bud-em-rate",
+      "option_value": 266.03,
+      "label": "Double Time — $266.03/hr",
+      "price": 266.03,
+      "sort_order": 3,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "sla-bud-reg-rate",
+      "option_value": 177.44,
+      "label": "Straight — $177.44/hr",
+      "price": 177.44,
+      "sort_order": 1,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "sla-bud-reg-rate",
+      "option_value": 219.87,
+      "label": "Time & Half — $219.87/hr",
+      "price": 219.87,
+      "sort_order": 2,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "sla-bud-reg-rate",
+      "option_value": 266.03,
+      "label": "Double Time — $266.03/hr",
+      "price": 266.03,
+      "sort_order": 3,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "sla-bud-reg-rate",
+      "option_value": 212.93,
+      "label": "Straight — $212.93/hr",
+      "price": 212.93,
+      "sort_order": 4,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "sla-bud-reg-rate",
+      "option_value": 230.67,
+      "label": "Time & Half — $230.67/hr",
+      "price": 230.67,
+      "sort_order": 5,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "sla-bud-reg-rate",
+      "option_value": 266.03,
+      "label": "Double Time — $266.03/hr",
+      "price": 266.03,
+      "sort_order": 6,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "sla-bud-reg-rate",
+      "option_value": 230.67,
+      "label": "Straight — $230.67/hr",
+      "price": 230.67,
+      "sort_order": 7,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "sla-bud-reg-rate",
+      "option_value": 263.84,
+      "label": "Time & Half — $263.84/hr",
+      "price": 263.84,
+      "sort_order": 8,
+      "option_type": null,
+      "tooltip": null
+    },
+    {
+      "dropdown_group": "sla-bud-reg-rate",
+      "option_value": 266.03,
+      "label": "Double Time — $266.03/hr",
+      "price": 266.03,
+      "sort_order": 9,
+      "option_type": null,
+      "tooltip": null
+    }
+  ],
+  "adc": {
+    "tiers": {
+      "flexIO": {
+        "max": 10,
+        "step": 1,
+        "perUnit": 1.95
+      },
+      "connectedCars": {
+        "na": [
+          "wsf"
+        ],
+        "max": 5,
+        "step": 1,
+        "perUnit": 3.35
+      },
+      "verizonDataGB": {
+        "na": [
+          "wsf"
+        ],
+        "max": 50,
+        "step": 5,
+        "perUnit": 1.5
+      },
+      "activitySensors": {
+        "na": [
+          "wsf"
+        ],
+        "max": 80,
+        "step": 5,
+        "perUnit": 0.05
+      },
+      "cellConnectorV20": {
+        "na": [
+          "wsf"
+        ],
+        "max": 20,
+        "step": 1,
+        "perUnit": 49
+      },
+      "imageSensorEvents": {
+        "na": [
+          "wsf"
+        ],
+        "max": 200,
+        "step": 20,
+        "perUnit": 0.0875
+      },
+      "noonlightLicenses": {
+        "max": 100,
+        "perUnit": 2,
+        "freeUnits": {
+          "fire": 0,
+          "gold": 4,
+          "connected": 0,
+          "interactive": 1
+        }
+      },
+      "videoIntercomDevices": {
+        "max": 200,
+        "step": 5,
+        "perUnit": 0.25
+      }
+    },
+    "video": [
+      {
+        "cost": 0,
+        "name": "No Video Selected"
+      },
+      {
+        "cost": 2.5,
+        "name": "Basic Doorbell"
+      },
+      {
+        "cost": 2.5,
+        "name": "Single Doorbell with Analytics"
+      },
+      {
+        "cost": 3.7,
+        "name": "Premium Single Doorbell"
+      },
+      {
+        "cost": 4.5,
+        "name": "Pro Video"
+      },
+      {
+        "cost": 6,
+        "name": "Pro Video with Analytics 3000"
+      },
+      {
+        "cost": 8.5,
+        "name": "Premium Video"
+      },
+      {
+        "cost": 1.5,
+        "name": "Commercial Video"
+      },
+      {
+        "cost": 3.1,
+        "name": "Commercial Video Plus"
+      }
+    ],
+    "addOns": [
+      {
+        "id": "adc-x-lights-and-thermostat-bundle",
+        "prices": {
+          "wsf": null,
+          "gold": 0,
+          "default": 2,
+          "connected": null,
+          "automation": 0,
+          "commercialPlus": 0
+        }
+      },
+      {
+        "id": "adc-x-lights",
+        "prices": {
+          "wsf": null,
+          "gold": 0,
+          "default": 1.25,
+          "connected": null,
+          "automation": 0,
+          "commercialPlus": 0
+        }
+      },
+      {
+        "id": "adc-x-shades",
+        "prices": {
+          "wsf": null,
+          "gold": 0,
+          "default": 1.25,
+          "connected": null,
+          "automation": 0,
+          "commercialPlus": 0
+        }
+      },
+      {
+        "id": "adc-x-thermostats",
+        "prices": {
+          "wsf": null,
+          "gold": 0,
+          "default": 1.25,
+          "connected": null,
+          "automation": 0,
+          "commercialPlus": 0
+        }
+      },
+      {
+        "id": "adc-x-locks",
+        "prices": {
+          "wsf": null,
+          "gold": 0,
+          "default": 1.25,
+          "connected": null,
+          "automation": 0,
+          "commercialPlus": 0
+        }
+      },
+      {
+        "id": "adc-x-energy-monitoring",
+        "prices": {
+          "wsf": null,
+          "gold": 0,
+          "default": 2.5,
+          "connected": null,
+          "automation": 0,
+          "commercialPlus": 0
+        }
+      },
+      {
+        "id": "adc-x-lutron-integration",
+        "prices": {
+          "wsf": null,
+          "gold": 0,
+          "default": 1,
+          "connected": null,
+          "automation": 0,
+          "commercialPlus": 0
+        }
+      },
+      {
+        "id": "adc-x-audio-integration",
+        "prices": {
+          "wsf": null,
+          "gold": 0,
+          "default": 0.5,
+          "connected": null,
+          "automation": 0,
+          "commercialPlus": 0
+        }
+      },
+      {
+        "id": "adc-x-garage-door-and-gate",
+        "prices": {
+          "wsf": null,
+          "gold": 0,
+          "default": 0.35,
+          "connected": null,
+          "automation": 0,
+          "commercialPlus": 0
+        }
+      },
+      {
+        "id": "adc-x-liftmaster-integration",
+        "prices": {
+          "wsf": null,
+          "gold": 0,
+          "default": 0.65,
+          "connected": null,
+          "automation": 0,
+          "commercialPlus": 0
+        }
+      },
+      {
+        "id": "adc-x-water-management",
+        "prices": {
+          "wsf": null,
+          "gold": 0,
+          "default": 1.25,
+          "connected": null,
+          "automation": 0,
+          "commercialPlus": 0
+        }
+      },
+      {
+        "id": "adc-x-solar-integration",
+        "prices": {
+          "wsf": null,
+          "gold": 0,
+          "default": 2.5,
+          "connected": null,
+          "automation": 0,
+          "commercialPlus": 0
+        }
+      },
+      {
+        "id": "adc-x-enphase-integration",
+        "prices": {
+          "wsf": null,
+          "gold": 0,
+          "default": 1,
+          "automation": 0
+        }
+      },
+      {
+        "id": "adc-x-irrigation-control",
+        "prices": {
+          "wsf": null,
+          "gold": 0,
+          "default": 0.5,
+          "connected": null,
+          "automation": 0,
+          "commercialPlus": 0
+        }
+      },
+      {
+        "id": "adc-x-voice-notifications-alarms",
+        "prices": {
+          "wsf": null,
+          "default": 1
+        }
+      },
+      {
+        "id": "adc-x-voice-notifications-non-alarms",
+        "prices": {
+          "wsf": null,
+          "default": 3
+        }
+      },
+      {
+        "id": "adc-x-weather-to-panel",
+        "prices": {
+          "wsf": null,
+          "gold": 0,
+          "default": 0.25,
+          "connected": null,
+          "commercialPlus": 0
+        }
+      },
+      {
+        "id": "adc-x-severe-weather-alerts",
+        "prices": {
+          "wsf": null,
+          "gold": 0,
+          "default": 0.25,
+          "connected": null,
+          "automation": 0,
+          "commercialPlus": 0
+        }
+      },
+      {
+        "id": "adc-scheduled-arm-cb",
+        "prices": {
+          "wsf": null,
+          "default": 4,
+          "commercial": 0,
+          "commercialPlus": 0
+        }
+      },
+      {
+        "id": "adc-x-commercial-supervision-ul",
+        "prices": {
+          "default": 10
+        }
+      },
+      {
+        "id": "adc-x-wireless-two-way-voice",
+        "prices": {
+          "default": 0
+        }
+      },
+      {
+        "id": "adc-wellness-cb",
+        "prices": {
+          "wsf": null,
+          "default": 3.5
+        }
+      },
+      {
+        "id": "adc-x-water-management-plus",
+        "prices": {
+          "wsf": null,
+          "default": 1
+        }
+      },
+      {
+        "id": "adc-x-my-circle",
+        "prices": {
+          "wsf": null,
+          "default": 0.25
+        }
+      }
+    ],
+    "videoNA": [
+      "wsf"
+    ],
+    "packages": [
+      {
+        "id": "gold",
+        "cost": 8.95,
+        "name": "Interactive Gold",
+        "segment": "res"
+      },
+      {
+        "id": "interactive",
+        "cost": 7.15,
+        "name": "Interactive",
+        "segment": "res"
+      },
+      {
+        "id": "automation",
+        "cost": 8.15,
+        "name": "Interactive + Automation",
+        "segment": "res"
+      },
+      {
+        "id": "connected",
+        "cost": 5.7,
+        "name": "Connected Installation",
+        "segment": "res"
+      },
+      {
+        "id": "fire",
+        "cost": 11,
+        "name": "Interactive Fire",
+        "segment": "both"
+      },
+      {
+        "id": "commercial",
+        "cost": 11.5,
+        "name": "Commercial",
+        "segment": "com"
+      },
+      {
+        "id": "commercialPlus",
+        "cost": 13.95,
+        "name": "Commercial Plus",
+        "segment": "com"
+      },
+      {
+        "id": "wsf",
+        "cost": 4.25,
+        "name": "Wireless Signal Forwarding",
+        "segment": "both"
+      }
+    ],
+    "videoScope": {
+      "Doorbell Cameras": [
+        "cv",
+        "cvplus",
+        "pro",
+        "proa3000",
+        "premium"
+      ],
+      "Third-Party Cameras": [
+        "cv",
+        "cvplus"
+      ],
+      "Business Activity Analytics": [
+        "cv",
+        "cvplus"
+      ],
+      "Audio for Non-doorbell Cameras": [
+        "cv",
+        "cvplus",
+        "pro",
+        "proa3000",
+        "premium"
+      ],
+      "Onboard Recording with Smart View": [
+        "cv",
+        "cvplus"
+      ],
+      "Digital Input Triggered Video Uploads": [
+        "cv",
+        "cvplus",
+        "pro",
+        "proa3000",
+        "premium"
+      ]
+    },
+    "aidPerBlock": 2,
+    "supervision": {
+      "hourly": {
+        "default": 0.75,
+        "commercialPlus": 0
+      },
+      "sixHour": {
+        "gold": 0,
+        "default": 0.15,
+        "connected": 0,
+        "commercial": 0,
+        "commercialPlus": 0
+      }
+    },
+    "videoMatrix": [
+      {
+        "id": "none",
+        "cost": 0,
+        "name": "No Video Selected",
+        "model": "none"
+      },
+      {
+        "id": "proa3000",
+        "aid": true,
+        "cost": 6,
+        "name": "Pro Video with Analytics 3000",
+        "clips": 8000,
+        "model": "expansion",
+        "maxExp": 15,
+        "expCams": 4,
+        "expCost": 4,
+        "baseCams": 4,
+        "includes": [
+          "Onboard Recording with Smart View"
+        ]
+      },
+      {
+        "id": "pro",
+        "aid": false,
+        "cost": 4.5,
+        "name": "Pro Video",
+        "clips": 6000,
+        "model": "expansion",
+        "maxExp": 15,
+        "expCams": 4,
+        "expCost": 4,
+        "baseCams": 4
+      },
+      {
+        "id": "basicdb",
+        "aid": false,
+        "cost": 2.5,
+        "name": "Basic Doorbell",
+        "model": "flat"
+      },
+      {
+        "id": "premium",
+        "aid": true,
+        "cost": 8.5,
+        "name": "Premium Video",
+        "clips": 8000,
+        "model": "expansion",
+        "maxExp": 15,
+        "expCams": 4,
+        "expCost": 4,
+        "baseCams": 4,
+        "includes": [
+          "AI Event Search"
+        ]
+      },
+      {
+        "id": "singledba",
+        "aid": false,
+        "cost": 2.5,
+        "name": "Single Doorbell with Analytics",
+        "model": "flat",
+        "includes": [
+          "AI Event Search"
+        ]
+      },
+      {
+        "id": "cv",
+        "aid": true,
+        "cost": 1.5,
+        "name": "Commercial Video",
+        "model": "perCamera",
+        "maxCams": 256,
+        "clipsPerCam": 1000
+      },
+      {
+        "id": "cvplus",
+        "aid": true,
+        "cost": 3.1,
+        "name": "Commercial Video Plus",
+        "model": "perCamera",
+        "maxCams": 256,
+        "includes": [
+          "AI Event Search"
+        ],
+        "clipsPerCam": 1000
+      },
+      {
+        "id": "premiumdb",
+        "aid": false,
+        "cost": 3.7,
+        "name": "Premium Single Doorbell",
+        "model": "flat",
+        "includes": [
+          "AI Event Search"
+        ]
+      }
+    ],
+    "aidMaxBlocks": 256,
+    "aidBlockEvents": 60,
+    "liftmasterSurcharge": 0.12
+  }
+}

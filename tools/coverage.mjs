@@ -22,7 +22,9 @@
 // "dropped" is a first-class outcome and must carry a reason — some legacy controls
 // SHOULD NOT be ported, and silently omitting them is indistinguishable from missing
 // them.
-import { readFileSync, writeFileSync, existsSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, readdirSync, statSync } from 'node:fs';
+import { dirname, resolve, basename } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 // BOTH legacy files. change-request.js is a separate 1,035-line subsystem that
 // builds its own UI from template strings — scanning only index.html reported zero
@@ -51,6 +53,7 @@ const DYNAMIC_FAMILIES = [
   { id: 'mat-row-*', note: 'Material rows built by addMatRow (:5714). One entry stands for every instance.' },
   { id: 'labor-row-*', note: 'Labour rows built by addPartRow (:6454).' },
   { id: 'tmsub-row-*', note: 'T&M subcontract rows built by addTMSubRow (:5591).' },
+  { id: 'rental-row-*', note: 'Rental equipment rows built by addRentalRow (:5807).' },
 ];
 
 function legacyControls() {
@@ -72,6 +75,75 @@ function legacyControls() {
 function loadMap() {
   if (!existsSync(MAP_PATH)) return {};
   return JSON.parse(readFileSync(MAP_PATH, 'utf8'));
+}
+
+// ── Does the mapped file actually SHIP? ─────────────────────────────────────
+//
+// The count above answers "is this control written down somewhere", which is not the
+// same question as "does an estimator see it". On 14 Sep 2026 this file reported
+// 375/375 (100%) while NINE components and three of their libraries were written,
+// mapped as done, and imported by nothing: AdcPanel + adc.js, MaterialRows,
+// TmSubRows, EstimateDetails and materials.js, BomExport, Subcontractor,
+// InspectionServices, QuoteHeader, and SlaOperations + slaOps.js. 140 controls —
+// the entire one-time half of the quote builder, the full Alarm.com sheet, the SLA
+// operations schedule, the .p1est import and the customer proposal button.
+//
+// `vite build` transformed 29 modules and none of them were these; grepping the
+// built bundle for their strings returns nothing. The map was right and the app was
+// missing most of a tab.
+//
+// So reachability is checked from the real entry point, the same way the bundler
+// resolves it. A component nobody imports is not ported; it is written.
+//
+// ONE SOFTNESS, stated rather than hidden: an entry whose `where` names no src file
+// at all ("AppState", "React conditional rendering — no persisted toggle needed")
+// cannot be checked and is counted as shipping. The figure is therefore a ceiling,
+// not a guarantee — the same way the control count itself is a floor.
+const SRC_ROOT = resolve(fileURLToPath(new URL('../src', import.meta.url)));
+const ENTRY = resolve(SRC_ROOT, 'main.jsx');
+
+function srcFiles(dir = SRC_ROOT, out = new Map()) {
+  for (const name of readdirSync(dir)) {
+    const full = resolve(dir, name);
+    if (statSync(full).isDirectory()) srcFiles(full, out);
+    else if (/[.]jsx?$/.test(name) && !out.has(name)) out.set(name, full);
+  }
+  return out;
+}
+
+/** Files reachable from src/main.jsx by following relative imports. */
+function reachable() {
+  const seen = new Set();
+  const queue = [ENTRY];
+  // Static relative specifiers only — `from './x'`, `import './x'`, `export … from
+  // './x'`. A dynamic import() would be missed, and there are none here; if one
+  // appears, this under-reports rather than over-reports, which is the safe direction.
+  const IMPORT_RE = /(?:from|import)\s*\(?\s*['"](\.[^'"]+)['"]/g;
+  while (queue.length) {
+    const file = queue.pop();
+    if (seen.has(file) || !existsSync(file)) continue;
+    seen.add(file);
+    const text = readFileSync(file, 'utf8');
+    for (const m of text.matchAll(IMPORT_RE)) {
+      const raw = resolve(dirname(file), m[1]);
+      for (const cand of [raw, `${raw}.js`, `${raw}.jsx`, resolve(raw, 'index.js'), resolve(raw, 'index.jsx')]) {
+        if (existsSync(cand) && statSync(cand).isFile()) { queue.push(cand); break; }
+      }
+    }
+  }
+  return seen;
+}
+
+const ALL_SRC = srcFiles();
+const REACHED = existsSync(ENTRY) ? reachable() : new Set();
+const REACHED_NAMES = new Set([...REACHED].map((f) => basename(f)));
+
+/** src files a map entry names, whether or not they are reachable. */
+function referencedFiles(entry) {
+  const where = entry.where || '';
+  return [...where.matchAll(/([A-Za-z0-9_.-]+[.]jsx?)/g)]
+    .map((m) => basename(m[1]))
+    .filter((n) => ALL_SRC.has(n));
 }
 
 const controls = legacyControls();
@@ -121,6 +193,38 @@ console.log(`    todo             ${todo}`);
 console.log(`    unmapped         ${unmapped.length}   (new in legacy — run --sync)`);
 console.log('');
 console.log(`  Accounted for:     ${accounted}/${total}  (${pct}%)`);
+
+// Of the controls called done, how many land in a file the bundle never loads?
+const unshipped = new Map();   // basename -> control ids depending on it
+let shippedDone = 0;
+for (const id of byStatus.done) {
+  const files = referencedFiles(map[id]);
+  const live = files.filter((f) => REACHED_NAMES.has(f));
+  if (files.length && live.length === 0) {
+    for (const f of files) {
+      if (!unshipped.has(f)) unshipped.set(f, []);
+      unshipped.get(f).push(id);
+    }
+  } else {
+    shippedDone++;
+  }
+}
+
+// Printed even when it is clean, so the reader sees the answer rather than inferring
+// it from the absence of a warning.
+console.log(`  Actually shipping: ${shippedDone}/${total}  (${Math.round((shippedDone / total) * 100)}%)`);
+
+if (unshipped.size) {
+  const affected = new Set([...unshipped.values()].flat()).size;
+  console.log('');
+  console.log(`  ${unshipped.size} file(s) are mapped as done but are not reachable from`);
+  console.log(`  src/main.jsx, so ${affected} control(s) are written and not shipped:`);
+  for (const [file, ids] of [...unshipped].sort((a, b) => b[1].length - a[1].length)) {
+    console.log(`    ${file.padEnd(24)} ${String(ids.length).padStart(3)} control(s)`);
+  }
+  console.log('');
+  console.log(`  Import them where they belong, or mark them todo. "Written" is not "ported".`);
+}
 
 if (stale.length) {
   console.log('');

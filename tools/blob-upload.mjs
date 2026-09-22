@@ -73,8 +73,43 @@ const cfg = {
   password: process.env.PGPASSWORD || values.PGPASSWORD || undefined,
 };
 const isAzure = /\.postgres\.database\.azure\.com$/i.test(cfg.host);
-if (/(^|[-._])prod(uction)?([-._]|$)/i.test(cfg.host) || /prod/i.test(ACCOUNT_URL)) {
-  die(`REFUSING: "${cfg.host}" / "${ACCOUNT_URL}" looks like PRODUCTION.`);
+
+// THIS TOOL WRITES TO TWO PLACES: bytes into a storage account, and the row that
+// points at them into a database. So it checks them as a PAIR.
+const dbIsProd = /(^|[-._])prod(uction)?([-._]|$)/i.test(cfg.host);
+const storageIsProd = /prod/i.test(ACCOUNT_URL);
+
+// A mismatched pair is refused whatever the flags say, because no flag makes it
+// sensible. Uploading to the production account while repointing DEV rows leaves
+// production storage holding files nothing references, and dev rows pointing at blobs
+// its own identity cannot read. Neither half fails loudly at the time.
+if (dbIsProd !== storageIsProd) {
+  die(
+    `ENVIRONMENT MISMATCH — refusing regardless of flags.\n\n` +
+      `  database: ${cfg.host}  (${dbIsProd ? 'production' : 'not production'})\n` +
+      `  storage : ${ACCOUNT_URL}  (${storageIsProd ? 'production' : 'not production'})\n\n` +
+      `  Bytes would land in one environment and the rows pointing at them in the other.`,
+  );
+}
+
+// Production, same shape as the importer: reading is free, writing echoes the target
+// back. The account name is what --account already names, so that is what it asks for.
+const PROD_ACK = (argv.find((a) => a.startsWith('--i-am-loading-production=')) || '').split('=')[1];
+const accountName = new URL(ACCOUNT_URL).hostname.split('.')[0];
+
+if (dbIsProd && COMMIT && PROD_ACK !== accountName) {
+  die(
+    `"${accountName}" is PRODUCTION storage.\n\n` +
+      `  A dry run needs no flag and writes nothing:\n` +
+      `      npm run migrate:blob -- --account=${accountName}\n\n` +
+      `  To actually upload, echo the account back exactly:\n` +
+      `      npm run migrate:blob -- --account=${accountName} --commit --i-am-loading-production=${accountName}\n\n` +
+      `  The name is part of the flag on purpose: it cannot be replayed from shell\n` +
+      `  history against a different account, and it cannot be typed by habit.`,
+  );
+}
+if (dbIsProd && !COMMIT) {
+  say(`"${accountName}" is PRODUCTION — dry run only, nothing will be uploaded.`);
 }
 
 async function password() {
@@ -250,4 +285,15 @@ async function main() {
   await client.end();
 }
 
-main().catch((err) => die(`Blob upload failed: ${err.message}`));
+// Include the status and code, not just message. An Azure SDK error often carries an
+// empty message with the useful part in statusCode/code, and "Blob upload failed:"
+// with nothing after it sends you looking in the wrong place.
+main().catch((err) => die(
+  `Blob upload failed: ${err.message || '(no message)'}` +
+  (err.statusCode ? ` [HTTP ${err.statusCode}]` : '') +
+  (err.code ? ` [${err.code}]` : '') +
+  (err.statusCode === 403
+    ? '\n\n  403 is usually a missing DATA-plane role. Owning the subscription does not' +
+      '\n  grant Blob access; you need Storage Blob Data Contributor on the account.'
+    : ''),
+));

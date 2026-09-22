@@ -1,6 +1,5 @@
 import React from 'react';
 import { Card, Field, TextInput, NumInput, Slider, SectionLabel } from '../../components/ui.jsx';
-import { money } from '../../lib/format.js';
 
 // Estimate identity, billing address, and the one-time financial inputs that were
 // not covered elsewhere — the tail of the legacy quote form.
@@ -42,7 +41,7 @@ function BillingAddress({ value, onChange, site }) {
   );
 }
 
-export default function EstimateDetails({ value, onChange, site = {}, oneTime }) {
+export default function EstimateDetails({ value, onChange, site = {} }) {
   const set = (patch) => onChange({ ...value, ...patch });
 
   return (
@@ -72,20 +71,18 @@ export default function EstimateDetails({ value, onChange, site = {}, oneTime })
             onChange={(billing) => set({ billing })} />
         </div>
 
-        <div>
-          <SectionLabel>Annual costs</SectionLabel>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(11rem,1fr))', gap: '0.5rem' }}>
-            {/* A/V maintenance is billed at its own gross margin rather than the
-                service GM — see calc.js:4280-4283 — which is why it is entered
-                separately instead of folded into monitoring costs. */}
-            <Field label="A/V maintenance ($/yr, cost)">
-              <NumInput value={value.avMaintenance} onChange={(v) => set({ avMaintenance: v })} step="0.01" />
-            </Field>
-            <Field label="Annual subcontractor cost">
-              <NumInput value={value.annualSub} onChange={(v) => set({ annualSub: v })} step="0.01" />
-            </Field>
-          </div>
-        </div>
+        {/* NO "ANNUAL COSTS" SECTION, deliberately — it was here and has been removed.
+            Both fields it held are recurring, which contradicts this card's one rule,
+            and both already have a home that owns them:
+
+              annualSub      a visible input in the legacy (:2202), and in QuoteBuilder
+                             it sits beside the subcontractor TYPE it classifies.
+              avMaintenance  a HIDDEN field in the legacy (:2234), written by summing
+                             the A/V part rows (:5677-5680). It is a total, not an
+                             entry. QuoteBuilder's parts list is that sum.
+
+            Rendering either here would give one number two inputs, and the second one
+            an estimator fills in is the one that gets double-counted. */}
 
         <div>
           <SectionLabel>One-time charges</SectionLabel>
@@ -108,42 +105,9 @@ export default function EstimateDetails({ value, onChange, site = {}, oneTime })
           </div>
         </div>
 
-        {oneTime && oneTime.total > 0 && (
-          <div style={{ borderTop: '1px solid var(--border, #d8dbe0)', paddingTop: '0.6rem', fontSize: '0.9rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span>Materials</span><span>{money(oneTime.materialsBilled)}</span>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span>Labor</span><span>{money(oneTime.laborBilled)}</span>
-            </div>
-            {oneTime.subBilled > 0 && (
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span>Subcontract</span><span>{money(oneTime.subBilled)}</span>
-              </div>
-            )}
-            {oneTime.materialTax > 0 && (
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span>Material tax</span><span>{money(oneTime.materialTax)}</span>
-              </div>
-            )}
-            {oneTime.shippingBilled > 0 && (
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span>Shipping</span><span>{money(oneTime.shippingBilled)}</span>
-              </div>
-            )}
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 700, marginTop: '0.3rem' }}>
-              <span>One-time total</span><span>{money(oneTime.total)}</span>
-            </div>
-          </div>
-        )}
       </div>
     </Card>
   );
 }
 
-export const newEstimateDetails = () => ({
-  estimateNumber: '', agreementName: '', estimatorName: '', estimatorEmail: '',
-  billing: { same: false, address: '', city: '', state: '', zip: '' },
-  avMaintenance: '', annualSub: '',
-  shippingCost: '', shippingMarkup: 15, materialTaxRate: '',
-});
+export { newEstimateDetails } from './estimateState.js';

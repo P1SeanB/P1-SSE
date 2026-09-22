@@ -1,0 +1,95 @@
+name: Refresh the lockfile
+
+# Regenerate package-lock.json on LINUX and commit it.
+#
+# WHY THIS CANNOT BE DONE LOCALLY. The lockfile was generated on Windows, where npm
+# resolves a tree that omits what a Linux install needs: `npm ci` on the runner fails
+# with "Missing @emnapi/core@1.11.3 from lock file" while passing on a clean Windows
+# tree. Regenerating on Windows does not fix it and made it worse in testing —
+# @emnapi/runtime disappeared entirely and core resolved to 1.11.1, not the 1.11.3 the
+# runner asked for. The platform that needs the entries is the platform that has to
+# resolve them.
+#
+# It opens a PULL REQUEST rather than pushing to the branch, because a lockfile change
+# alters what every future build installs and deserves the same review as any other
+# dependency change.
+#
+# Triggered by a change to package.json or to this file, NOT only by workflow_dispatch:
+# GitHub offers manual dispatch only for workflows on the DEFAULT branch, which here is
+# main -- the legacy single-file app. Dispatch starts working when main is retired.
+on:
+  push:
+    branches:
+      - development
+    paths:
+      - 'package.json'
+      - '.github/workflows/refresh-lockfile.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  refresh:
+    name: Regenerate on Linux
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          # The version the Function App runs and the deploy workflows build with.
+          # Resolving against a different major would produce a lockfile that is
+          # correct for a Node nobody uses here.
+          node-version: 22
+
+      # THE LOCKFILE IS KEPT, deliberately. Deleting it first forces npm to re-resolve
+      # every range to the newest version it allows: the first attempt did that and
+      # produced 35 version changes — axios 1.19 to 1.20, @vitejs/plugin-react 6.0.3 to
+      # 6.1.0, every @rolldown/binding 1.1.4 to 1.2.6. All semver-compatible, all
+      # probably fine, and all a dependency upgrade smuggled inside a build fix. If
+      # something misbehaves next week, nobody can tell which change caused it.
+      #
+      # Keeping it means npm only ADDS the entries missing for this platform and leaves
+      # existing resolutions alone. Upgrading dependencies stays a separate decision
+      # with its own diff and its own review.
+      - name: Add the missing platform entries
+        run: npm install --package-lock-only --no-audit --no-fund
+
+      # The whole point. If npm ci still fails, the new lockfile is no better than the
+      # old one and must not be proposed as a fix.
+      - name: Prove npm ci works with it
+        run: npm ci
+
+      - name: Prove the app still builds
+        run: npm run build
+
+      # Pushes a BRANCH and prints the link, rather than opening the pull request
+      # itself. This repository has "Actions is not permitted to create or approve pull
+      # requests" set, which is a sensible default worth keeping -- a workflow that can
+      # open pull requests is a workflow that can propose changes to itself. Pushing a
+      # branch needs no such permission, and a person still opens and reviews the PR.
+      - name: Push the branch
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if git diff --quiet package-lock.json; then
+            echo "The regenerated lockfile is identical to the committed one. Nothing to propose."
+            exit 0
+          fi
+          git checkout -b chore/refresh-lockfile
+          git add package-lock.json
+          git commit -m "Regenerate package-lock.json on Linux"
+          git push --force origin chore/refresh-lockfile
+          {
+            echo "### Lockfile regenerated"
+            echo ""
+            echo "npm ci and npm run build both succeeded against it before this branch was pushed."
+            echo ""
+            echo "Open the pull request:"
+            echo "https://github.com/${{ github.repository }}/compare/development...chore/refresh-lockfile?expand=1"
+            echo ""
+            echo "Check the diff is resolution changes only: no new top-level dependencies,"
+            echo "and no version jumps in package.json."
+          } >> "$GITHUB_STEP_SUMMARY"

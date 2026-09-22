@@ -4,11 +4,22 @@ import { computeQuote, calcFireInspection, calcPmInspection, TM_TYPES } from '..
 import { money, pct, num } from '../../lib/format.js';
 import {
   Card, Field, TextInput, NumInput, Slider, MetricRow, BigMetric,
-  SectionLabel, CheckRow, RateSelect, optionPrice,
+  SectionLabel, CheckRow, RateSelect,
 } from '../../components/ui.jsx';
 import {
   FIRE_DEVICES, PM_STANDARD_DEVICES, PM_AV_DEVICES, ESTIMATE_TYPES, blankDeviceState,
 } from './deviceRows.js';
+import EstimateDetails, { newEstimateDetails } from './EstimateDetails.jsx';
+import OneTimeWork from './OneTimeWork.jsx';
+import AdcPanel from './AdcPanel.jsx';
+import MonthlyCosts from './MonthlyCosts.jsx';
+import DeviceGrid from './DeviceGrid.jsx';
+import { useMonthlyCosts } from './useMonthlyCosts.js';
+import Subcontractor, { newSubcontractor } from './Subcontractor.jsx';
+import QuoteHeader from './QuoteHeader.jsx';
+import CustomerQuote from './CustomerQuote.jsx';
+import { gatherEstimate, restoreEstimate, estimateFilename } from './estimateFile.js';
+import { useOneTimeWork } from './useOneTimeWork.js';
 
 // GM gross-profit color bands — legacy/index.html:4456-4459
 function gpColor(gm) {
@@ -28,26 +39,39 @@ export default function QuoteBuilder({ rates }) {
   // ── Estimate meta ─────────────────────────────────────────────────────────
   const [systemType, setSystemType] = useState('');
   const [siteType, setSiteType] = useState('');
-  const [agreementName, setAgreementName] = useState('');
-  const [estimator, setEstimator] = useState({ name: '', email: '', num: '' });
   const [notes, setNotes] = useState('');
 
-  // ── Monthly monitoring / platform costs (legacy COST_IDS, :3491) ─────────
-  const [gcsChecks, setGcsChecks] = useState({ fire: false, burg: false, res: false });
-  const [adc, setAdc] = useState({ enabled: false, base: '', video: '', cameraCount: 1, comms: '', sensors: '', extras: '' });
-  const [connectOne, setConnectOne] = useState({ enabled: false, systems: 1, addon: false, sms: '' });
-  const [alarmNet, setAlarmNet] = useState({ enabled: false, plan: '' });
-  const [accessHosting, setAccessHosting] = useState('');
-  const [checks, setChecks] = useState({ honeywell: false, teleguard: false, br: false, sfburg: false, ulcerts: false, bosch: false });
-  const [boschAmt, setBoschAmt] = useState('');
-  const [customMon, setCustomMon] = useState({ desc: '', cost: '' });
+  // Estimate identity, billing address and the one-time charges (shipping, material
+  // sales tax). One home for each: the identity fields used to be duplicated inline
+  // in the Customer info card AND in EstimateDetails, which is how two inputs end up
+  // disagreeing about the same estimate number.
+  const [details, setDetails] = useState(newEstimateDetails);
+
+  // Materials, installation labour, subcontracted lines and rental equipment.
+  const work = useOneTimeWork(rates);
 
   // ── Labor / inspection ────────────────────────────────────────────────────
   const [fire, setFire] = useState(() => ({ rows: blankDeviceState(FIRE_DEVICES), pmHrs: '', techs: 1 }));
   const [pm, setPm] = useState(() => ({ rows: blankDeviceState([...PM_STANDARD_DEVICES, ...PM_AV_DEVICES], true), extraHrs: '', techs: 1 }));
   const [simpleInspHours, setSimpleInspHours] = useState('');
-  const [annualSub, setAnnualSub] = useState('');
-  const [subType, setSubType] = useState('');
+  // Which inspection worksheets this quote uses — the legacy's cb-nfpa, cb-pm and
+  // cb-pm-av-other (:2043-2045).
+  //
+  // null means "follow the estimate type", which is what the legacy's
+  // dataset.userSet flag tracks (:2043): picking Fire turns NFPA on, and it STAYS
+  // under the estimator's control the moment they touch it. Without the third state
+  // a toggle is either overwritten on every type change or never follows the type at
+  // all, and both read as the checkbox being broken.
+  const [inspOn, setInspOn] = useState({ nfpa: null, pm: null, pmAvOther: null });
+  const [showQuote, setShowQuote] = useState(false);
+  // Anything a .p1est carried that this app does not read, kept so saving an imported
+  // estimate does not strip it — see estimateFile.js.
+  const [passthrough, setPassthrough] = useState({});
+  // Subcontracted work: the annual cost and the TYPE that explains it on a proposal.
+  // One object rather than two loose fields, because the type without the cost is
+  // meaningless and the cost without the type invites the question the type answers.
+  const [sub, setSub] = useState(newSubcontractor);
+  const annualSub = sub.annualCost;
   const [avParts, setAvParts] = useState([]); // {desc, unitCost, qty}
 
   // ── Margin sliders (defaults from the rate profile, legacy :3424-3432) ───
@@ -67,67 +91,18 @@ export default function QuoteBuilder({ rates }) {
   const isTM = TM_TYPES.includes(systemType);
   const isFireType = systemType === 'Fire Monitoring & Services';
   const isAvType = systemType === 'A/V PM Services';
+  const isOtherAll = systemType === 'Other/All Services';
+  const nfpaOn = inspOn.nfpa ?? isFireType;
+  const pmOn = inspOn.pm ?? (isAvType || systemType === 'Burglar Monitoring & Services' || isOtherAll);
+  const pmAv = inspOn.pmAvOther ?? isAvType;
   const isCommercial = siteType === 'Commercial';
   const site1 = sites[0];
 
-  // GCS auto rate by system/site type — legacy :7318-7320, :7408-7411
-  const gcs = useMemo(() => {
-    const g = rates?.gcs || {};
-    if (systemType === 'Fire Monitoring & Services') return Number(g.FireRate) || 0;
-    if (systemType === 'Burglar Monitoring & Services')
-      return isCommercial ? Number(g.BurgRate) || 0 : Number(g.ResidentialRate) || 0;
-    if (systemType === 'Two-Way Monitoring & Services') return Number(g.TwoWayRate) || 0;
-    if (systemType === 'Other/All Services') {
-      return (gcsChecks.fire ? Number(g.FireRate) || 0 : 0)
-        + (gcsChecks.burg ? Number(g.BurgRate) || 0 : 0)
-        + (gcsChecks.res ? Number(g.ResidentialRate) || 0 : 0);
-    }
-    return 0;
-  }, [rates, systemType, isCommercial, gcsChecks]);
+  // ── Monthly monitoring / platform costs (legacy COST_IDS, :3491) ─────────
+  // Owned by useMonthlyCosts, the sibling of useOneTimeWork.
+  const monthly = useMonthlyCosts(rates, { systemType, isCommercial, city: sites[0]?.city });
+  const monthlyCosts = monthly.total;
 
-  // ConnectOne — legacy :3692-3699
-  const connectOneTotal = useMemo(() => {
-    if (!connectOne.enabled) return 0;
-    const systems = Math.max(1, num(connectOne.systems) || 1);
-    const base = (Number(rates?.monitoring?.BaseRate) || 0) * systems;
-    const addon = connectOne.addon ? (Number(rates?.monitoring?.AddonRate) || 0) * systems : 0;
-    const sms = optionPrice(options, 'connectone-sms', connectOne.sms);
-    return base + addon + sms;
-  }, [connectOne, rates, options]);
-
-  // Alarm.com builder (base + selected add-on menus)
-  const adcTotal = useMemo(() => {
-    if (!adc.enabled) return 0;
-    return optionPrice(options, 'adc-base', adc.base)
-      + optionPrice(options, 'adc-video', adc.video) * Math.max(1, num(adc.cameraCount) || 1)
-      + optionPrice(options, 'adc-comms', adc.comms)
-      + optionPrice(options, 'adc-sensors', adc.sensors)
-      + (num(adc.extras) || 0);
-  }, [adc, options]);
-
-  const alarmNetTotal = alarmNet.enabled ? optionPrice(options, 'alarmnet-plan', alarmNet.plan) : 0;
-  const sfBurgRate = isCommercial ? Number(rates?.gcs?.SfBurgCommercial) || 0 : Number(rates?.gcs?.SfBurgResidential) || 0;
-  const isSF = /san francisco/i.test(site1?.city || '');
-
-  // Fixed "Other monthly" rates come from the rate profile (MiscRate keys) —
-  // in the legacy file these were hardcoded in the HTML onchange handlers (:1861-1863).
-  // These now come from misc_rate like every other price. They used to fall back to
-  // 13/25/6 hardcoded here, mirroring the legacy's markup — correct until the day a
-  // price moved, at which point it needed a deploy.
-  const honeywellRate = Number(misc.honeywellComm) || 0;
-  const teleguardRate = Number(misc.telguardComm) || 0;
-  const brRate = Number(misc.buildingReports) || 0;
-  const ulCertsRate = Number(misc.ulCerts) || 0;
-
-  const monthlyCosts =
-    gcs + adcTotal + connectOneTotal + alarmNetTotal + num(accessHosting)
-    + (checks.honeywell ? honeywellRate : 0)
-    + (checks.teleguard ? teleguardRate : 0)
-    + (checks.br ? brRate : 0)
-    + (checks.sfburg ? sfBurgRate : 0)
-    + (checks.ulcerts ? ulCertsRate : 0)
-    + (checks.bosch ? num(boschAmt) : 0)
-    + num(customMon.cost);
 
   // Inspection hours: fire calculator, PM calculator, or simple entry
   const fireCalc = useMemo(() => calcFireInspection(
@@ -135,14 +110,24 @@ export default function QuoteBuilder({ rates }) {
     fire.pmHrs, fire.techs, Number(labor.LaborCostPerHr) || 0, laborRatev,
   ), [fire, labor, laborRatev]);
 
-  const pmDevices = isAvType ? PM_AV_DEVICES : PM_STANDARD_DEVICES;
+  const pmDevices = pmAv ? PM_AV_DEVICES : PM_STANDARD_DEVICES;
   const pmCalc = useMemo(() => calcPmInspection(
     pmDevices.map((d) => pm.rows[d.key]),
     pm.extraHrs, pm.techs, Number(labor.LaborCostPerHr) || 0, laborRatev,
   ), [pm, pmDevices, labor, laborRatev]);
 
-  const inspHours = isFireType ? fireCalc.totalHrs
-    : (isAvType || systemType === 'Burglar Monitoring & Services') && pmCalc.totalHrs > 0 ? pmCalc.totalHrs
+  // Which worksheet supplies the hours — legacy :8113-8120 (PM), :8196-8204 (fire)
+  // and updateCombinedInspHours (:8139-8146).
+  //
+  // ONLY "Other/All Services" ADDS THE TWO TOGETHER. Every other type takes the hours
+  // from whichever worksheet is switched on. This previously read the estimate type
+  // directly and had no branch for Other/All Services at all, so a PM worksheet filled
+  // in on one of those quotes contributed NOTHING — the card rendered, the hours
+  // totalled on screen, and the RMR ignored them.
+  const inspHours = isOtherAll
+    ? (nfpaOn ? fireCalc.totalHrs : 0) + (pmOn ? pmCalc.totalHrs : 0)
+    : nfpaOn ? fireCalc.totalHrs
+    : pmOn ? pmCalc.totalHrs
     : num(simpleInspHours);
 
   const avMaintTotal = avParts.reduce((s, p) => s + num(p.unitCost) * (num(p.qty) || 1), 0);
@@ -163,6 +148,80 @@ export default function QuoteBuilder({ rates }) {
   }, rates), [systemType, siteType, monthlyCosts, inspHours, annualSub, avMaintTotal,
     svcGMv, subMarkupv, avMaintGMv, laborRatev, overheadRatev, ohMethod, quotedMonthlyTotal, rates]);
 
+  // Overhead is applied with the same rate and method the recurring side uses, so a
+  // quote carrying both halves does not answer the overhead question twice.
+  const oneTimeMargin = work.margin(Number(overheadRatev), ohMethod);
+
+  // ── Header actions ────────────────────────────────────────────────────────
+  //
+  // Clear, import, save, print. All four were written in QuoteHeader.jsx in Aug 2026
+  // and wired to nothing; these are the handlers it was waiting for.
+
+  /** Everything the monitoring half of the quote holds — the legacy's clearSystems. */
+  const clearSystems = () => monthly.clear();
+
+  const clearAll = () => {
+    clearSystems();
+    work.clear();
+    setSystemType(''); setSiteType(''); setNotes('');
+    setDetails(newEstimateDetails());
+    setFire({ rows: blankDeviceState(FIRE_DEVICES), pmHrs: '', techs: 1 });
+    setPm({ rows: blankDeviceState([...PM_STANDARD_DEVICES, ...PM_AV_DEVICES], true), extraHrs: '', techs: 1 });
+    setSimpleInspHours(''); setInspOn({ nfpa: null, pm: null, pmAvOther: null });
+    setSub(newSubcontractor()); setAvParts([]);
+    setSvcGM(null); setSubMarkup(null); setAvMaintGM(null); setLaborRate(null);
+    setOverheadRate(null); setOhMethod('revenue');
+    setPassthrough({});
+    updateCustomer({ companyName: '', contactName: '', phone: '', email: '' });
+    updateSite(site1.id, { address: '', city: '', state: '', zip: '', monthlyRate: '' });
+  };
+
+  const snapshot = () => ({
+    customer, sites, systemType, siteType, notes, details,
+    inspHours, avMaintTotal, sub, avParts,
+    adcEnabled: monthly.adcEnabled, adcCfg: monthly.adcCfg,
+    connectOne: monthly.connectOne, alarmNet: monthly.alarmNet,
+    gcsChecks: monthly.gcsChecks, checks: monthly.checks,
+    nfpaOn, pmOn, pmAv,
+    rows: work.rows, tmSubRows: work.tmSubRows, rental: work.rental,
+    matMarkup: work.matMarkup, tmSubGM: work.tmSubGM,
+    svcGM: svcGMv, subMarkup: subMarkupv, avMaintGM: avMaintGMv,
+    laborRate: laborRatev, overheadRate: overheadRatev, ohMethod,
+    passthrough,
+  });
+
+  const exportEstimate = () => {
+    const data = snapshot();
+    const blob = new Blob([JSON.stringify(gatherEstimate(data), null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = estimateFilename(data);
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const importEstimate = (raw) => {
+    const d = restoreEstimate(raw);
+    updateCustomer(d.customer);
+    updateSite(site1.id, d.site);
+    setSystemType(d.systemType); setSiteType(d.siteType); setNotes(d.notes);
+    setDetails(d.details);
+    setSimpleInspHours(d.simpleInspHours);
+    setSub(d.sub); setAvParts(d.avParts);
+    monthly.setAdcEnabled(d.adcEnabled); monthly.setAdcCfg(d.adcCfg);
+    monthly.setConnectOne(d.connectOne); monthly.setAlarmNet(d.alarmNet);
+    monthly.setGcsChecks(d.gcsChecks); monthly.setChecks(d.checks);
+    setInspOn(d.inspOn);
+    work.setRows(d.rows); work.setTmSubRows(d.tmSubRows); work.setRental(d.rental);
+    if (d.sliders.matMarkup != null) work.setMatMarkup(d.sliders.matMarkup);
+    if (d.sliders.tmSubGM != null) work.setTmSubGM(d.sliders.tmSubGM);
+    setSvcGM(d.sliders.svcGM); setSubMarkup(d.sliders.subMarkup);
+    setAvMaintGM(d.sliders.avMaintGM); setLaborRate(d.sliders.laborRate);
+    setOverheadRate(d.sliders.overheadRate); setOhMethod(d.sliders.ohMethod);
+    setPassthrough(d.passthrough);
+  };
+
   const setFireRow = (key, patch) => setFire((f) => ({ ...f, rows: { ...f.rows, [key]: { ...f.rows[key], ...patch } } }));
   const setPmRow = (key, patch) => setPm((p) => ({ ...p, rows: { ...p.rows, [key]: { ...p.rows[key], ...patch } } }));
 
@@ -174,6 +233,14 @@ export default function QuoteBuilder({ rates }) {
   return (
     <div className="qb-layout">
       <div className="qb-left">
+        <QuoteHeader
+          onClearAll={clearAll}
+          onClearSystems={clearSystems}
+          onPrint={() => setShowQuote(true)}
+          onImport={importEstimate}
+          onExport={exportEstimate}
+        />
+
         {/* ── Customer info ── */}
         <Card title="Customer info">
           <div className="grid-2">
@@ -190,7 +257,7 @@ export default function QuoteBuilder({ rates }) {
             <Field label="Phone number"><TextInput value={customer.phone} onChange={(v) => updateCustomer({ phone: v })} placeholder="(555) 555-5555" /></Field>
             <Field label="Email"><TextInput value={customer.email} onChange={(v) => updateCustomer({ email: v })} placeholder="contact@example.com" /></Field>
           </div>
-          <div className="grid-3">
+          <div className="grid-2">
             <Field label="Estimate type">
               <select value={systemType} onChange={(e) => setSystemType(e.target.value)}>
                 <option value="" disabled>— Select One —</option>
@@ -204,12 +271,8 @@ export default function QuoteBuilder({ rates }) {
                 <option>Residential</option>
               </select>
             </Field>
-            <Field label="Estimate or Agreement Name"><TextInput value={agreementName} onChange={setAgreementName} placeholder="Site — Service or Estimate Name" /></Field>
-          </div>
-          <div className="grid-3">
-            <Field label="Estimator name"><TextInput value={estimator.name} onChange={(v) => setEstimator((s) => ({ ...s, name: v }))} placeholder="Full name" /></Field>
-            <Field label="Estimator email"><TextInput value={estimator.email} onChange={(v) => setEstimator((s) => ({ ...s, email: v }))} placeholder="name@point1.com" /></Field>
-            <Field label="Estimate# or Service Ticket#"><TextInput value={estimator.num} onChange={(v) => setEstimator((s) => ({ ...s, num: v }))} placeholder="e.g. EST-2026-001" /></Field>
+            {/* Estimate name, estimator and estimate number live on the Estimate
+                Details card below — see the note beside `details`. */}
           </div>
 
           {/* Sites — shared with Monitoring Contracts */}
@@ -240,121 +303,37 @@ export default function QuoteBuilder({ rates }) {
 
         {/* ── Monthly costs ── */}
         {systemType && !isTM && (
-          <Card title="Monthly costs">
-            <SectionLabel>Monitoring / platform</SectionLabel>
-            <div className="cost-row">
-              <span className="cost-name">GCS monitoring <span className="hint">auto</span></span>
-              <span className="cost-amt">{money(gcs)}</span>
-            </div>
-            {systemType === 'Other/All Services' && (
-              <div className="gcs-other">
-                <CheckRow label="GCS Commercial Fire Monitoring" checked={gcsChecks.fire} onChange={(c) => setGcsChecks((g) => ({ ...g, fire: c }))} amount={Number(rates?.gcs?.FireRate) || 0} />
-                <CheckRow label="GCS Commercial Burg Monitoring" checked={gcsChecks.burg} onChange={(c) => setGcsChecks((g) => ({ ...g, burg: c }))} amount={Number(rates?.gcs?.BurgRate) || 0} />
-                <CheckRow label="GCS Residential Burg Monitoring" checked={gcsChecks.res} onChange={(c) => setGcsChecks((g) => ({ ...g, res: c }))} amount={Number(rates?.gcs?.ResidentialRate) || 0} />
-              </div>
+          <MonthlyCosts m={monthly} rates={rates} systemType={systemType} />
+        )}
+
+        {/* ── Alarm.com package ──
+            Its own card rather than a panel inside Monthly costs: 68 controls across
+            nine collapsible sections, all of them priced by src/lib/adc.js. */}
+        {systemType && !isTM && monthly.adcEnabled && (
+          <AdcPanel value={monthly.adcCfg} onChange={monthly.setAdcCfg} rates={rates || {}} />
+        )}
+
+        {/* ── Labor / inspections ── */}
+        {systemType && !isTM && (
+          <Card title="Inspection services">
+            <CheckRow label="NFPA 72 inspections (itemised worksheet)" checked={nfpaOn}
+              onChange={(on) => setInspOn((i) => ({ ...i, nfpa: on }))} />
+            <CheckRow label="PM inspection services" checked={pmOn}
+              onChange={(on) => setInspOn((i) => ({ ...i, pm: on }))} />
+            {pmOn && (
+              <CheckRow label="A/V devices instead of life-safety devices" checked={pmAv}
+                onChange={(on) => setInspOn((i) => ({ ...i, pmAvOther: on }))} />
             )}
-
-            {/* Alarm.com */}
-            <div className="cost-row">
-              <label className="cost-name check">
-                <input type="checkbox" checked={adc.enabled} onChange={(e) => setAdc((a) => ({ ...a, enabled: e.target.checked }))} />
-                Alarm.com
-              </label>
-              <span className="cost-amt">{money(adcTotal)}</span>
-            </div>
-            {adc.enabled && (
-              <div className="builder-panel">
-                <div className="builder-title">Alarm.com Package Builder</div>
-                <Field label="Base Package"><RateSelect group="adc-base" options={options} value={adc.base} onChange={(v) => setAdc((a) => ({ ...a, base: v }))} /></Field>
-                {adc.base && (
-                  <>
-                    <Field label="Video Monitoring"><RateSelect group="adc-video" options={options} value={adc.video} onChange={(v) => setAdc((a) => ({ ...a, video: v }))} /></Field>
-                    {adc.video && (
-                      <Field label="Number of cameras"><NumInput value={adc.cameraCount} onChange={(v) => setAdc((a) => ({ ...a, cameraCount: v }))} min="1" step="1" /></Field>
-                    )}
-                    <Field label="Wireless Alarm Communications"><RateSelect group="adc-comms" options={options} value={adc.comms} onChange={(v) => setAdc((a) => ({ ...a, comms: v }))} /></Field>
-                    <Field label="Additional Sensors"><RateSelect group="adc-sensors" options={options} value={adc.sensors} onChange={(v) => setAdc((a) => ({ ...a, sensors: v }))} /></Field>
-                    <Field label="Other add-ons ($/mo) — energy, alerts, wellness, fleet">
-                      <NumInput value={adc.extras} onChange={(v) => setAdc((a) => ({ ...a, extras: v }))} step="0.01" />
-                    </Field>
-                  </>
-                )}
-                <div className="builder-total"><span>Total Alarm.com Monthly</span><span>{money(adcTotal)}</span></div>
-              </div>
-            )}
-
-            {/* ConnectOne — hidden while Alarm.com enabled (legacy :3747-3751) */}
-            {!adc.enabled && (
-              <>
-                <div className="cost-row">
-                  <label className="cost-name check">
-                    <input type="checkbox" checked={connectOne.enabled} onChange={(e) => setConnectOne((c) => ({ ...c, enabled: e.target.checked }))} />
-                    ConnectOne
-                  </label>
-                  <span className="cost-amt">{money(connectOneTotal)}</span>
-                </div>
-                {connectOne.enabled && (
-                  <div className="builder-panel">
-                    <div className="builder-title">ConnectOne Package Builder</div>
-                    <Field label={`ESSENTIAL+ base (${money(Number(rates?.monitoring?.BaseRate) || 0)}/system/mo) — number of systems`}>
-                      <NumInput value={connectOne.systems} onChange={(v) => setConnectOne((c) => ({ ...c, systems: v }))} min="1" step="1" />
-                    </Field>
-                    <CheckRow
-                      label="Non-Alarm Zone Status Logging"
-                      checked={connectOne.addon}
-                      onChange={(c) => setConnectOne((s) => ({ ...s, addon: c }))}
-                      amount={(Number(rates?.monitoring?.AddonRate) || 0) * Math.max(1, num(connectOne.systems) || 1)}
-                    />
-                    <Field label="SMS Messages"><RateSelect group="connectone-sms" options={options} value={connectOne.sms} onChange={(v) => setConnectOne((c) => ({ ...c, sms: v }))} /></Field>
-                    <div className="builder-total"><span>Total ConnectOne Monthly</span><span>{money(connectOneTotal)}</span></div>
-                  </div>
-                )}
-              </>
-            )}
-
-            {/* AlarmNet */}
-            <div className="cost-row">
-              <label className="cost-name check">
-                <input type="checkbox" checked={alarmNet.enabled} onChange={(e) => setAlarmNet((a) => ({ ...a, enabled: e.target.checked }))} />
-                AlarmNet / TC2
-              </label>
-              <span className="cost-amt">{money(alarmNetTotal)}</span>
-            </div>
-            {alarmNet.enabled && (
-              <div className="builder-panel">
-                <Field label="AlarmNet / TC2 Plan"><RateSelect group="alarmnet-plan" options={options} value={alarmNet.plan} onChange={(v) => setAlarmNet((a) => ({ ...a, plan: v }))} /></Field>
-              </div>
-            )}
-
-            <div className="cost-row">
-              <span className="cost-name">Access hosting</span>
-              <NumInput value={accessHosting} onChange={setAccessHosting} step="0.01" style={{ width: 90 }} />
-            </div>
-            <div className="cost-row">
-              <TextInput value={customMon.desc} onChange={(v) => setCustomMon((c) => ({ ...c, desc: v }))} placeholder="Other monitoring / platform service…" style={{ flex: 1, marginRight: 8 }} />
-              <NumInput value={customMon.cost} onChange={(v) => setCustomMon((c) => ({ ...c, cost: v }))} step="0.01" style={{ width: 90 }} />
-            </div>
-
-            <SectionLabel>Other monthly</SectionLabel>
-            <CheckRow label="Honeywell Communicator" checked={checks.honeywell} onChange={(c) => setChecks((s) => ({ ...s, honeywell: c }))} amount={honeywellRate} />
-            <CheckRow label="Telguard Communicator" checked={checks.teleguard} onChange={(c) => setChecks((s) => ({ ...s, teleguard: c }))} amount={teleguardRate} />
-            <CheckRow label="BuildingReports.com" checked={checks.br} onChange={(c) => setChecks((s) => ({ ...s, br: c }))} amount={brRate} />
-            {isSF && <CheckRow label="SF Burg permit" checked={checks.sfburg} onChange={(c) => setChecks((s) => ({ ...s, sfburg: c }))} amount={sfBurgRate} />}
-            <CheckRow label="UL certs" checked={checks.ulcerts} onChange={(c) => setChecks((s) => ({ ...s, ulcerts: c }))} amount={ulCertsRate} />
-            {!adc.enabled && (
-              <div className="cb-row">
-                <input type="checkbox" checked={checks.bosch} onChange={(e) => setChecks((s) => ({ ...s, bosch: e.target.checked }))} />
-                <label className="cb-name">Bosch Cloud</label>
-                {checks.bosch
-                  ? <NumInput value={boschAmt} onChange={setBoschAmt} step="0.01" style={{ width: 80 }} />
-                  : <span className="cb-value">$0.00</span>}
-              </div>
+            {isOtherAll && nfpaOn && pmOn && (
+              <p className="hint">
+                Other/All Services adds both worksheets together — {fireCalc.totalHrs.toFixed(2)} fire
+                {' + '}{pmCalc.totalHrs.toFixed(2)} PM = {inspHours.toFixed(2)} hrs/yr.
+              </p>
             )}
           </Card>
         )}
 
-        {/* ── Labor / inspections ── */}
-        {isFireType && (
+        {nfpaOn && !isTM && (
           <Card title="Fire inspection calculator">
             <DeviceGrid
               devices={FIRE_DEVICES} rows={fire.rows} onRow={setFireRow}
@@ -373,7 +352,7 @@ export default function QuoteBuilder({ rates }) {
           </Card>
         )}
 
-        {(isAvType || systemType === 'Burglar Monitoring & Services' || systemType === 'Other/All Services') && (
+        {pmOn && !isTM && (
           <Card title="PM inspection calculator">
             <DeviceGrid
               devices={pmDevices} rows={pm.rows} onRow={setPmRow} withFreq
@@ -392,7 +371,7 @@ export default function QuoteBuilder({ rates }) {
           </Card>
         )}
 
-        {systemType && !isTM && !isFireType && !isAvType && systemType !== 'Burglar Monitoring & Services' && (
+        {systemType && !isTM && !nfpaOn && !pmOn && (
           <Card title="Inspection / PM labor">
             <div className="grid-2">
               <Field label="Annual inspection or PM service labor hrs">
@@ -406,19 +385,7 @@ export default function QuoteBuilder({ rates }) {
         )}
 
         {systemType && !isTM && (
-          <Card title="Annual subcontractor cost">
-            <div className="grid-2">
-              <Field label="Annual subcontractor cost ($)"><NumInput value={annualSub} onChange={setAnnualSub} step="0.01" /></Field>
-              {num(annualSub) > 0 && (
-                <Field label="Subcontractor type">
-                  <select value={subType} onChange={(e) => setSubType(e.target.value)}>
-                    <option value="">— Select —</option>
-                    <option>Sprinkler</option><option>Locksmith</option><option>Other</option>
-                  </select>
-                </Field>
-              )}
-            </div>
-          </Card>
+          <Subcontractor value={sub} onChange={setSub} subMarkup={subMarkupv / 100} />
         )}
 
         {isAvType && (
@@ -435,6 +402,20 @@ export default function QuoteBuilder({ rates }) {
             <div className="builder-total"><span>Total annual parts cost</span><span>{money(avMaintTotal)}</span></div>
           </Card>
         )}
+
+        {/* ── One-time work ──
+            Shown for every estimate type, not only T&M. A monitoring quote routinely
+            carries install work, and gating this on isTM is exactly the mistake the
+            legacy corrected in Aug 2026 (:4890-4893) — install work on a monitoring
+            quote then showed no net figure at all. */}
+        <OneTimeWork
+          work={work}
+          charges={details}
+          rates={rates}
+          jobLabel={[customer.companyName, details.agreementName].filter(Boolean).join(' — ')}
+        />
+
+        <EstimateDetails value={details} onChange={setDetails} site={site1} />
       </div>
 
       {/* ── RIGHT: Margin & RMR Analysis ── */}
@@ -511,6 +492,33 @@ export default function QuoteBuilder({ rates }) {
             </>
           )}
 
+          {/* ── Combined one-time ──
+              Legacy :4890-4922. Shown for EVERY estimate type, which is the point:
+              this used to be gated on the estimate being T&M, so install work on a
+              monitoring quote never showed overhead or a net figure.
+
+              Tax and shipping are absent here on purpose. Neither is Point 1's margin
+              to make, so neither belongs in one — see computeOneTimeMargin. */}
+          {oneTimeMargin.hasOneTime && (
+            <>
+              <SectionLabel>One-time work</SectionLabel>
+              <div className="big-metrics">
+                <BigMetric label="One-time billed" value={money(oneTimeMargin.billed)}
+                  sub={oneTimeMargin.markupPct != null ? `${Math.round(oneTimeMargin.markupPct)}% over cost` : '—'} />
+                <BigMetric label="Gross margin"
+                  value={oneTimeMargin.gmPct != null ? pct(oneTimeMargin.gmPct) : '—'}
+                  sub={money(oneTimeMargin.gp) + ' gross profit'}
+                  color={gpColor(oneTimeMargin.gmPct)} />
+              </div>
+              <MetricRow label="One-time cost" value={money(oneTimeMargin.cost)} />
+              <MetricRow label={`Overhead (${Math.round(overheadRatev * 100)}% of ${ohMethod === 'cost' ? 'cost' : 'billed'})`}
+                value={money(oneTimeMargin.overhead)} />
+              <MetricRow label="Net profit" value={money(oneTimeMargin.netProfit)} />
+              <MetricRow total label="Net margin"
+                value={oneTimeMargin.netMarginPct != null ? pct(oneTimeMargin.netMarginPct) : '—'} />
+            </>
+          )}
+
           {/* Quote summary */}
           <div className="quote-summary">
             <div className="quote-summary-title">Quote summary</div>
@@ -529,51 +537,21 @@ export default function QuoteBuilder({ rates }) {
                 <MetricRow total label="Net margin" value={q.nm != null ? pct(q.nm) : '—'} />
               </>
             )}
-            {isTM && <p className="hint">T&amp;M / flat-rate estimate — RMR analysis not applicable. Materials &amp; labor line-item builder is tracked as a follow-up port.</p>}
+            {isTM && <p className="hint">T&amp;M / flat-rate estimate — RMR analysis not applicable. The job prices from the one-time work above.</p>}
           </div>
         </Card>
       </div>
-    </div>
-  );
-}
 
-// Shared device-hours grid used by both inspection calculators
-function DeviceGrid({ devices, rows, onRow, withFreq, extra, results }) {
-  return (
-    <div className="device-grid-wrap">
-      <div className="device-grid">
-        <div className={'device-head' + (withFreq ? ' freq' : '')}>
-          <span>Device</span><span>Hrs</span><span>Min</span><span>Count</span>{withFreq && <span>Freq</span>}
-        </div>
-        {devices.map((d) => {
-          const r = rows[d.key];
-          return (
-            <div className={'device-row' + (withFreq ? ' freq' : '')} key={d.key}>
-              <span className="cost-name">{d.label}{d.semi && <span className="hint"> semi-ann.</span>}</span>
-              <NumInput value={r.hrs} onChange={(v) => onRow(d.key, { hrs: v })} step="1" />
-              <NumInput value={r.mins} onChange={(v) => onRow(d.key, { mins: v })} step="1" max="59" />
-              <NumInput value={r.count} onChange={(v) => onRow(d.key, { count: v })} step="1" placeholder="0" />
-              {withFreq && (
-                <select value={r.freq} onChange={(e) => onRow(d.key, { freq: Number(e.target.value) })}>
-                  <option value={1}>Annual</option><option value={2}>Biannual</option><option value={4}>Quarterly</option>
-                </select>
-              )}
-            </div>
-          );
-        })}
-        {extra.map((x) => (
-          <div className="device-extra" key={x.label}>
-            <span className="cost-name">{x.label}</span>
-            <NumInput value={x.value} onChange={x.onChange} min={x.min ?? 0} step={x.step ?? 0.5} />
-          </div>
-        ))}
-      </div>
-      <div className="device-results">
-        <div className="section-label">Calculated hours</div>
-        {results.map(([label, value], i) => (
-          <MetricRow key={label} label={label} value={value} total={i === results.length - 3} />
-        ))}
-      </div>
+      {showQuote && (
+        <CustomerQuote
+          customer={customer} site={site1} details={details}
+          systemType={systemType} siteType={siteType}
+          quote={q}
+          monthlyBilled={q.rmrIsManual ? quotedMonthlyTotal : q.rmrEff}
+          work={work} charges={details}
+          onClose={() => setShowQuote(false)}
+        />
+      )}
     </div>
   );
 }

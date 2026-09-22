@@ -8,7 +8,7 @@ import React, { useRef, useState } from 'react';
 // else here is ported as-is, and this is the one place where matching the legacy
 // exactly would preserve a hazard rather than a behaviour.
 
-export default function QuoteHeader({ onClearAll, onClearSystems, onPrint, onImport }) {
+export default function QuoteHeader({ onClearAll, onClearSystems, onPrint, onImport, onExport }) {
   const fileRef = useRef(null);
   const [confirming, setConfirming] = useState('');
 
@@ -47,6 +47,9 @@ export default function QuoteHeader({ onClearAll, onClearSystems, onPrint, onImp
       <button type="button" onClick={onPrint}>Customer quote</button>
 
       <button type="button" onClick={() => fileRef.current?.click()}>Import .p1est</button>
+      {/* The other half of import. A tool that opens the team's saved estimates and
+          cannot save one back is a viewer, not a replacement. */}
+      <button type="button" onClick={onExport}>Save .p1est</button>
       {/* The team has months of estimates on OneDrive; being able to open them is the
           biggest single reason to adopt this tool over the old page. */}
       <input ref={fileRef} type="file" accept=".p1est,application/json"
