@@ -5186,6 +5186,7 @@ updateADCPanel();
   var qSitesSec = document.getElementById('q-sites-section'); if(qSitesSec) qSitesSec.style.display = 'none';
   var qSitesTot = document.getElementById('q-sites-total'); if(qSitesTot) qSitesTot.textContent = '—';
   var qMatBox = document.getElementById('q-mat-box'); if(qMatBox) qMatBox.style.display = 'none';
+  var qAltBox = document.getElementById('q-alt-box'); if(qAltBox) qAltBox.style.display = 'none';
   var qSigBlock = document.getElementById('q-signature-block'); if(qSigBlock) qSigBlock.style.display = 'none';
   var qRmrBox = document.querySelector('.q-rmr-box'); if(qRmrBox) qRmrBox.style.display = '';
   var qRmrVal = document.getElementById('q-rmr-value'); if(qRmrVal) qRmrVal.textContent = '—';
@@ -5695,7 +5696,7 @@ function addTMSubRow() {
   var rowId = 'tmsub-row-' + tmSubRowCount;
   var row = document.createElement('div');
   row.id = rowId;
-  row.style.cssText = 'display:grid;grid-template-columns:1fr 120px 90px 90px 24px;gap:6px 8px;align-items:center;margin-bottom:6px;';
+  row.style.cssText = 'display:grid;grid-template-columns:1fr 120px 90px 90px 96px 24px;gap:6px 8px;align-items:center;margin-bottom:6px;padding:2px;border:1px solid transparent;border-radius:6px;';
 
   var inp = 'font-size:12px;padding:5px 8px;border:1px solid #ccc;border-radius:6px;background:#fff;color:#1c1c1c;box-sizing:border-box;width:100%;';
 
@@ -5726,6 +5727,7 @@ function addTMSubRow() {
 
   row.appendChild(descEl); row.appendChild(costEl);
   row.appendChild(costDisp); row.appendChild(billedDisp);
+  row.appendChild(p1MakeAltBtn(row, syncTMSubRows));
   row.appendChild(removeBtn);
 
   var container = document.getElementById('tm-sub-rows');
@@ -5744,8 +5746,9 @@ function syncTMSubRows() {
       var base = costEl.id.replace('-cost','');
       var cost = parseFloat(costEl.value) || 0;
       var billed = cost * (1 + markup);
-      totalCost += cost; totalBilled += billed;
-      if (!firstDesc) { firstDesc = (document.getElementById(base+'-desc')||{}).value || ''; firstCost = cost; }
+      var subAlt = (document.getElementById(base.replace('tmsub-','tmsub-row-'))||{dataset:{}}).dataset.alt === '1';
+      if (!subAlt) { totalCost += cost; totalBilled += billed; }
+      if (!firstDesc && !subAlt) { firstDesc = (document.getElementById(base+'-desc')||{}).value || ''; firstCost = cost; }
       var cd = document.getElementById(base+'-cost-disp'); if(cd) cd.textContent = cost > 0 ? money(cost) : '—';
       var bd = document.getElementById(base+'-billed-disp'); if(bd) bd.textContent = cost > 0 ? money(billed) : '—';
     });
@@ -5760,7 +5763,9 @@ function syncTMSubRows() {
   calc();
 }
 
-function getTMSubRows() {
+// Base sub lines only; Alt/Add lines come from getTMSubRowsAll().
+function getTMSubRows() { return getTMSubRowsAll().filter(function(i){ return !i.alt; }); }
+function getTMSubRowsAll() {
   var gmSlider = document.getElementById('tmSubGMSlider');
   var markup = gmSlider ? parseInt(gmSlider.value) / 100 : 0.32;
   var items = [];
@@ -5770,7 +5775,8 @@ function getTMSubRows() {
       var base = costEl.id.replace('-cost','');
       var desc = (document.getElementById(base+'-desc')||{}).value || '';
       var cost = parseFloat(costEl.value) || 0;
-      if (desc || cost > 0) items.push({ desc: desc||'Subcontractor', cost: cost, billed: cost*(1+markup) });
+      var rowEl = document.getElementById(base.replace('tmsub-','tmsub-row-'));
+      if (desc || cost > 0) items.push({ desc: desc||'Subcontractor', cost: cost, billed: cost*(1+markup), alt: !!(rowEl && rowEl.dataset.alt === '1') });
     });
   }
   return items;
@@ -5878,10 +5884,16 @@ function addRentalRow(preset){
   fields.appendChild(extEl); fields.appendChild(billEl); fields.appendChild(rm);
   wrap.appendChild(fields);
 
+  var rAltBar = document.createElement('div');
+  rAltBar.style.cssText = 'margin-top:6px;';
+  rAltBar.appendChild(p1MakeAltBtn(wrap, syncRentalRows));
+  wrap.appendChild(rAltBar);
+
   if (preset){
     descEl.value = preset.desc||''; venEl.value = preset.vendor||''; partEl.value = preset.part||'';
     qtyEl.value = (preset.qty!=null?preset.qty:1); unitEl.value = preset.unit||'Day';
     costEl.value = (preset.cost!=null?preset.cost:'');
+    if (preset.alt) wrap._setAlt(true);
   }
 
   var container = document.getElementById('rental-rows');
@@ -5906,7 +5918,8 @@ function syncRentalRows(){
       var qty  = parseFloat((document.getElementById(base+'-qty')||{}).value) || 0;
       var cost = parseFloat(costEl.value) || 0;
       var ext  = qty * cost;
-      equipCost += ext;
+      var rAlt = (document.getElementById(base.replace('rental-','rental-row-'))||{dataset:{}}).dataset.alt === '1';
+      if (!rAlt) equipCost += ext;
       var e = document.getElementById(base+'-ext');  if(e) e.textContent = ext>0 ? money(ext) : '—';
       var b = document.getElementById(base+'-bill'); if(b) b.textContent = ext>0 ? money(ext*(1+markup)) : '—';
     });
@@ -5923,7 +5936,9 @@ function syncRentalRows(){
   if (typeof calc === 'function') calc();
 }
 
-function getRentalRows(){
+// Base rental lines only; Alt/Add lines come from getRentalRowsAll().
+function getRentalRows(){ return getRentalRowsAll().filter(function(i){ return !i.alt; }); }
+function getRentalRowsAll(){
   var items = [];
   var rows = document.getElementById('rental-rows');
   if (rows){
@@ -5935,7 +5950,8 @@ function getRentalRows(){
       var qty    = parseFloat((document.getElementById(base+'-qty')||{}).value) || 0;
       var unit   = (document.getElementById(base+'-unit')||{}).value || 'Day';
       var cost   = parseFloat(costEl.value) || 0;
-      if (desc || cost > 0) items.push({ desc:desc, vendor:vendor, part:part, qty:qty, unit:unit, cost:cost });
+      var rowEl = document.getElementById(base.replace('rental-','rental-row-'));
+      if (desc || cost > 0) items.push({ desc:desc, vendor:vendor, part:part, qty:qty, unit:unit, cost:cost, alt: !!(rowEl && rowEl.dataset.alt === '1') });
     });
   }
   return items;
@@ -5977,6 +5993,30 @@ function toggleMatPanel() {
   if (open) resetMatPanel();
   else if (!document.getElementById('mat-rows').children.length) addMatRow();
   calc();
+}
+
+// Alt/Add toggle button shared by material, sub and rental rows.
+// `el` gets data-alt="1" when ON; `onChange` re-runs that section's totals.
+function p1MakeAltBtn(el, onChange){
+  var b = document.createElement('button');
+  b.type = 'button';
+  b.title = 'OFF = included in the quote. ON = listed separately as an optional Alt/Add (not in the totals).';
+  function paint(on){
+    b.textContent = on ? 'Alt/Add: ON' : 'Alt/Add: OFF';
+    b.style.cssText = on
+      ? 'background:var(--orange-light);border:1px solid #e8620a;color:#e8620a;font-weight:700;cursor:pointer;font-size:11px;padding:3px 8px;border-radius:var(--radius-sm);white-space:nowrap;'
+      : 'background:transparent;border:1px dashed var(--border2);color:var(--text2);cursor:pointer;font-size:11px;padding:3px 8px;border-radius:var(--radius-sm);white-space:nowrap;';
+    el.style.borderColor = on ? '#e8620a' : '';
+    el.style.borderStyle = on ? 'dashed' : '';
+  }
+  el._setAlt = function(on){
+    if (on) el.dataset.alt = '1'; else delete el.dataset.alt;
+    paint(!!on);
+    if (onChange) onChange();
+  };
+  b.onclick = function(){ el._setAlt(el.dataset.alt !== '1'); };
+  paint(el.dataset.alt === '1');
+  return b;
 }
 
 function addMatRow() {
@@ -6363,6 +6403,7 @@ function addMatRow() {
   leftBtns.appendChild(imgBtn);
   leftBtns.appendChild(lpBtn);
   leftBtns.appendChild(pkgBtn);
+  leftBtns.appendChild(p1MakeAltBtn(wrapper, function(){ updateMatTotal(); calc(); }));
   bottomBar.appendChild(leftBtns);
   bottomBar.appendChild(rmBtn);
 
@@ -6471,6 +6512,7 @@ function updateMatTotal() {
   document.getElementById('mat-rows').querySelectorAll('[data-type]').forEach(function(rowEl) {
     const type = rowEl.dataset.type;
     const base = rowEl.id.replace('mat-row-','mat-');
+    const isAltRow = rowEl.dataset.alt === '1';   // Alt/Add rows display but never enter totals
     if (type==='material') {
       const cost = parseFloat((document.getElementById(base+'-cost')||{}).value)||0;
       const qty  = parseFloat((document.getElementById(base+'-qty')||{}).value)||1;
@@ -6481,13 +6523,13 @@ function updateMatTotal() {
       const pkg = p1ReadPkg(base);
       const mc = p1MatCompute({ cost:cost, qty:qty, unit:unit, matMarkup:matMarkup, lpHrs:lpHrs,
                                 waste:pkg.waste, pkgSize:pkg.pkgSize, costBy:pkg.costBy, manualCost:pkg.manualCost });
-      totalMatCost += mc.jobCost; totalMatSell += mc.totalSell;
+      if (!isAltRow) { totalMatCost += mc.jobCost; totalMatSell += mc.totalSell; }
       const uEl=document.getElementById(base+'-unitsell'); if(uEl) uEl.textContent = cost>0 ? '$'+mc.unitSellVal.toFixed(2)+'/'+p1UnitLabel(unit) : '';
       const sEl=document.getElementById(base+'-sell');     if(sEl) sEl.textContent = mc.totalSell>0 ? '$'+mc.totalSell.toFixed(2) : '';
       // Attached labor (from adjusted usage) — counts as installation labor
       const lpTotEl = document.getElementById(base+'-lp-total');
       if (lpHrs > 0) {
-        totalLaborCost += lpRate*mc.labHrs; totalLaborSell += lpSell*mc.labHrs;
+        if (!isAltRow) { totalLaborCost += lpRate*mc.labHrs; totalLaborSell += lpSell*mc.labHrs; }
         if (lpTotEl) lpTotEl.textContent = (+mc.labHrs.toFixed(2))+' hrs · $'+(lpSell*mc.labHrs).toFixed(2);
       } else if (lpTotEl) lpTotEl.textContent = '';
       // "+ Labor" button doubles as a summary chip when labor is set
@@ -6544,7 +6586,7 @@ function updateMatTotal() {
       const rate     = parseFloat((document.getElementById(base+'-rate')    ||{}).value)||P1_RATES.laborCostPerHr;
       const sellRate = parseFloat((document.getElementById(base+'-sellrate')||{}).value)||P1_RATES.laborSellDefault;
       const totalSell = sellRate * hrs;
-      totalLaborCost += rate * hrs; totalLaborSell += totalSell;
+      if (!isAltRow) { totalLaborCost += rate * hrs; totalLaborSell += totalSell; }
       const sEl=document.getElementById(base+'-labor-sell'); if(sEl) sEl.textContent = totalSell>0 ? '$'+totalSell.toFixed(2) : '';
       const hHintEl=document.getElementById(base+'-basis-hint'); if(hHintEl) hHintEl.style.display='none';
     }
@@ -6659,7 +6701,13 @@ function getTotalMatSell(){
   return getMatData().filter(function(i){ return i.type==='material'; }).reduce(function(s,r){ return s+(r.totalSell||0); },0);
 }
 
-function getMatData() {
+// Base quote items only — Alt/Add lines are excluded so every total, tax calc,
+// BOM and summary automatically ignores them until the toggle is turned off.
+function getMatData() { return getMatDataAll().filter(function(i){ return !i.alt; }); }
+// Optional Alt/Add lines (shown on the proposal as separate priced options).
+function getAltData() { return getMatDataAll().filter(function(i){ return i.alt; }); }
+
+function getMatDataAll() {
   const rows = document.getElementById('mat-rows');
   if (!rows) return [];
   const matMarkup     = document.getElementById('matMarkupSlider')   ? parseInt(document.getElementById('matMarkupSlider').value)/100   : 0.69;
@@ -6669,6 +6717,8 @@ function getMatData() {
     const type = rowEl.dataset.type;
     const base = rowEl.id.replace('mat-row-','mat-');
     const desc = ((document.getElementById(base+'-desc')||{}).value||'').trim();
+    const isAlt = rowEl.dataset.alt === '1';
+    const _n0 = items.length;
     if (type==='material') {
       const cost = parseFloat((document.getElementById(base+'-cost')||{}).value)||0;
       const qty  = parseFloat((document.getElementById(base+'-qty')||{}).value)||1;
@@ -6699,6 +6749,7 @@ function getMatData() {
       const sellRate = parseFloat((document.getElementById(base+'-sellrate')||{}).value)||P1_RATES.laborSellDefault;
       if (desc||hrs>0) items.push({ type:'labor', base:base, desc:desc||'Labor', hrs:hrs, rate:rate, sellPerHr:sellRate, lineTotal:rate*hrs, totalSell:sellRate*hrs, image: rowEl._imageData || null });
     }
+    if (isAlt) for (let k=_n0; k<items.length; k++) items[k].alt = true;
   });
   return items;
 }
@@ -7118,20 +7169,21 @@ function gatherEstimateData() {
   data.parts = getPartsData();
 
   // T&M subcontractor rows
-  data.tmSubRows = getTMSubRows ? getTMSubRows() : [];
+  data.tmSubRows = (typeof getTMSubRowsAll === 'function') ? getTMSubRowsAll() : [];
   data.tmSubPanelOpen = document.getElementById('tm-sub-panel') ?
     document.getElementById('tm-sub-panel').style.display !== 'none' : false;
 
   // Rental equipment rows
-  data.rentalRows = (typeof getRentalRows === 'function') ? getRentalRows() : [];
+  data.rentalRows = (typeof getRentalRowsAll === 'function') ? getRentalRowsAll() : [];
   data.rentalDelivery = parseFloat((document.getElementById('rentalDelivery')||{}).value) || 0;
   data.rentalMarkup = parseFloat((document.getElementById('rentalMarkup')||{}).value) || 15;
   data.rentalPanelOpen = document.getElementById('rental-panel') ?
     document.getElementById('rental-panel').style.display !== 'none' : false;
 
   // Mat rows
-  data.matRows = getMatData().filter(function(m){ return !m.attached; }).map(function(m) {
+  data.matRows = getMatDataAll().filter(function(m){ return !m.attached; }).map(function(m) {
     var r = { type: m.type, desc: m.desc };
+    if (m.alt) r.alt = true;
     if (m.type === 'material') {
       r.cost = m.cost; r.qty = m.qty;
       if (m.unit && m.unit !== 'ea') r.unit = m.unit;
@@ -7516,6 +7568,7 @@ function restoreEstimateData(data) {
         if (rowEl) {
           rowEl.dataset.type = m.type;
           var base = 'mat-' + matRowCount;
+          if (m.alt && rowEl._setAlt) rowEl._setAlt(true);
           var dEl = document.getElementById(base+'-desc'); if(dEl) dEl.value = m.desc || '';
           if (m.type === 'material') {
             var cEl = document.getElementById(base+'-cost'); if(cEl) cEl.value = m.cost || '';
@@ -7601,6 +7654,8 @@ function restoreEstimateData(data) {
           var base = 'tmsub-' + tmSubRowCount;
           var dEl = document.getElementById(base+'-desc'); if(dEl) dEl.value = sub.desc || '';
           var cEl = document.getElementById(base+'-cost'); if(cEl) { cEl.value = sub.cost || ''; }
+          var sRow = document.getElementById('tmsub-row-' + tmSubRowCount);
+          if (sub.alt && sRow && sRow._setAlt) sRow._setAlt(true);
         });
         if (typeof syncTMSubRows === 'function') syncTMSubRows();
       }
@@ -8907,6 +8962,52 @@ function generateCustomerQuote() {
     notesSection.style.display = 'none';
   }
 
+  // Optional Add-Ons box (Alt/Add lines — separate from the base quote total)
+  (function(){
+    var altBox = document.getElementById('q-alt-box'), altLines = document.getElementById('q-alt-lines'), altNote = document.getElementById('q-alt-note');
+    if (!altBox || !altLines) return;
+    var allAlt = getAltData();
+    var attachedByBase = {};
+    allAlt.forEach(function(i){ if (i.attached) attachedByBase[i.base] = i; });
+    var lines = [];   // {label, price, taxable}
+    allAlt.filter(function(i){ return !i.attached; }).forEach(function(item){
+      var att = attachedByBase[item.base];
+      var price = (item.totalSell||0) + (att ? att.totalSell||0 : 0);   // material + its attached install labor
+      var label = item.desc;
+      if (item.type === 'material') {
+        var u = item.unit || 'ea';
+        label += (u !== 'ea' ? ' ('+item.qty+' ft)' : (item.qty > 1 ? ' (Qty: '+item.qty+')' : ''));
+        if (att) label += ' — installed';
+      } else label += (item.hrs ? ' ('+item.hrs+' hrs)' : '');
+      lines.push({ label:label, price:price, taxable:item.type==='material' });
+    });
+    var subMk = (function(){ var sl=document.getElementById('tmSubGMSlider'); return sl ? parseInt(sl.value)/100 : 0.32; })();
+    ((typeof getTMSubRowsAll==='function') ? getTMSubRowsAll() : []).filter(function(i){ return i.alt; }).forEach(function(sub){
+      lines.push({ label:(sub.desc||'Subcontractor Services')+' (Point 1 Provided LSP/Subcontractor)', price:sub.billed, taxable:false });
+    });
+    var rMk = (typeof rentalMarkupVal==='function') ? rentalMarkupVal() : 0.15;
+    ((typeof getRentalRowsAll==='function') ? getRentalRowsAll() : []).filter(function(i){ return i.alt; }).forEach(function(r){
+      lines.push({ label:(r.desc||'Rental Equipment')+(r.qty ? ' ('+r.qty+' × '+r.unit+')' : '')+' — Rental', price:(r.qty||0)*(r.cost||0)*(1+rMk), taxable:false });
+    });
+    altLines.innerHTML = '';
+    if (!lines.length) { altBox.style.display = 'none'; if (altNote) altNote.style.display = 'none'; return; }
+    var taxPct = parseFloat((document.getElementById('matTaxRate')||{value:'0'}).value) || 0;
+    var hasTaxable = false;
+    lines.forEach(function(L){
+      if (L.taxable) hasTaxable = true;
+      var row = document.createElement('div');
+      row.style.cssText = 'display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:3px 0;border-bottom:1px solid #eee;font-size:12px;';
+      var n = document.createElement('span'); n.style.color = '#444'; n.textContent = L.label;
+      var t = document.createElement('span'); t.style.cssText = 'font-family:monospace;font-weight:700;white-space:nowrap;'; t.textContent = money(L.price);
+      row.appendChild(n); row.appendChild(t); altLines.appendChild(row);
+    });
+    if (altNote) {
+      if (taxPct > 0 && hasTaxable) { altNote.textContent = 'Prices shown before sales tax ('+taxPct.toFixed(2)+'%) on materials.'; altNote.style.display = ''; }
+      else altNote.style.display = 'none';
+    }
+    altBox.style.display = '';
+  })();
+
   // Materials one-time box
   const matItems     = getMatData();
   const matMarkupGen = document.getElementById('matMarkupSlider')   ? parseInt(document.getElementById('matMarkupSlider').value)/100   : 0.69;
@@ -9441,6 +9542,14 @@ function doIOSPrint() {
       <span id="q-mat-total-label" style="font-size:12px;font-weight:700;color:#1c1c1c;">One-Time Labor/Material Total</span>
       <span style="font-family:'DM Mono',monospace;font-size:16px;font-weight:700;color:#1c1c1c;" id="q-mat-total">—</span>
     </div>
+  </div>
+
+  <!-- Optional Alt/Add items — priced separately, NOT in the totals above -->
+  <div id="q-alt-box" style="display:none;margin:12px 0;background:#fff;border:1px dashed #e8620a;border-left:4px solid #e8620a;border-radius:8px;padding:12px 20px;break-inside:avoid;page-break-inside:avoid;">
+    <div style="font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#e8620a;margin-bottom:2px;">Optional Add-Ons</div>
+    <div style="font-size:10px;color:#777;margin-bottom:8px;">Not included in the totals above. Available upon customer request.</div>
+    <div id="q-alt-lines" style="font-size:12px;color:#444;"></div>
+    <div id="q-alt-note" style="display:none;font-size:10px;color:#777;font-style:italic;margin-top:6px;"></div>
   </div>
 
   <!-- Signature area — shown for T&M only -->
