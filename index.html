@@ -2269,7 +2269,7 @@
                titles sat the full width of the panel away from their own figures. -->
           <div style="margin-top:10px;padding-top:8px;border-top:1px solid var(--border);display:grid;
                       grid-template-columns:auto auto auto;justify-content:end;gap:5px 22px;font-size:13px;">
-            <span style="font-weight:600;color:var(--text2);text-align:right;">Labor cost</span>
+            <span style="font-weight:600;color:var(--text2);text-align:right;">Labor cost<span id="mat-labor-hrs-display" style="font-family:'DM Mono',monospace;font-weight:500;font-size:12px;color:var(--text3);margin-left:8px;"></span></span>
             <span style="font-family:'DM Mono',monospace;font-weight:600;color:var(--text2);text-align:right;" id="mat-labor-cost-display">$0.00</span>
             <span style="font-family:'DM Mono',monospace;font-weight:700;color:#e8620a;text-align:right;" id="mat-labor-sell-display">$0.00</span>
             <span style="font-weight:600;color:var(--text2);text-align:right;">Material cost</span>
@@ -6595,6 +6595,10 @@ function updateMatTotal() {
   const set = function(id,v){ const el=document.getElementById(id); if(el) el.textContent='$'+v.toFixed(2); };
   set('mat-labor-cost-display', totalLaborCost);
   set('mat-labor-sell-display', totalLaborSell);
+  // Total labor hours (base quote only; Alt/Add lines excluded) shown beside Labor cost
+  var totalLaborHrs = getMatData().filter(function(i){ return i.type==='labor'; }).reduce(function(h,i){ return h+(i.hrs||0); },0);
+  var lhEl = document.getElementById('mat-labor-hrs-display');
+  if (lhEl) lhEl.textContent = totalLaborHrs > 0 ? '(' + (+totalLaborHrs.toFixed(2)).toLocaleString('en-US') + ' hrs)' : '';
   set('mat-total-display',      totalMatCost);
   set('mat-total-sell',         totalMatSell);
   set('mat-grand-sell-display', totalLaborSell+totalMatSell);
@@ -6768,6 +6772,7 @@ function resetMatPanel() {
   ['mat-labor-cost-display','mat-labor-sell-display','mat-total-display','mat-total-sell','mat-grand-sell-display'].forEach(function(id){
     const el=document.getElementById(id); if(el) el.textContent='$0.00';
   });
+  var lhReset=document.getElementById('mat-labor-hrs-display'); if(lhReset) lhReset.textContent='';
 }
 
 function addPartRow() {
@@ -9053,6 +9058,21 @@ function generateCustomerQuote() {
         }
         if (matLinesEl) matLinesEl.appendChild(row);
       });
+      // Total labor hours — hidden where per-line hours are hidden (flat rate / labor detail off)
+      const hrsIsFlat = qSystem === 'Flat Rate Estimate';
+      const hrsUsesToggle = (qSystem === 'Time & Material Only' || qSystem === 'Other/All Services' || qSystem === 'Budget Estimate');
+      const showTotalHrs = hrsIsFlat ? false
+        : hrsUsesToggle ? !!(document.getElementById('budget-show-labor') && document.getElementById('budget-show-labor').checked)
+        : true;
+      const totalLaborHrsQ = laborItems.reduce(function(h,i){ return h + (i.hrs||0); }, 0);
+      if (showTotalHrs && totalLaborHrsQ > 0 && matLinesEl) {
+        const hr = document.createElement('div');
+        hr.style.cssText = 'display:flex;justify-content:space-between;align-items:baseline;padding:4px 0;font-size:12px;font-weight:700;color:#1c1c1c;';
+        const hl = document.createElement('span'); hl.textContent = 'Total Labor Hours';
+        const hv = document.createElement('span'); hv.style.cssText = 'font-family:monospace;white-space:nowrap;'; hv.textContent = (+totalLaborHrsQ.toFixed(2)).toLocaleString('en-US') + ' hrs';
+        hr.appendChild(hl); hr.appendChild(hv);
+        matLinesEl.appendChild(hr);
+      }
     }
     // Section: Materials
     const matOnlyItems = matItems.filter(function(i){ return i.type==='material'; });
