@@ -2649,6 +2649,10 @@
           </div>
         </div>
         <div class="metric-row">
+          <span class="metric-label">Total labor hours</span>
+          <span class="metric-value" id="s-inst-labor-hrs">0 hrs</span>
+        </div>
+        <div class="metric-row">
           <span class="metric-label">Billed to customer</span>
           <span class="metric-value" id="s-inst-labor-billed">$0.00</span>
         </div>
@@ -4775,6 +4779,11 @@ function calc() {
   const sInstLaborTotal  = document.getElementById('s-inst-labor-total');  if(sInstLaborTotal)  sInstLaborTotal.textContent  = laborCostTotal > 0 ? money(instLaborBilledAmt) : '—';
   const sInstLaborMargin = document.getElementById('s-inst-labor-margin'); if(sInstLaborMargin){ sInstLaborMargin.textContent = instLaborMarginPct !== null ? pct(instLaborMarginPct) : '—'; sInstLaborMargin.style.color = instLaborMarginPct !== null && instLaborMarginPct > 0 ? 'var(--green)' : 'var(--text)'; }
   const sInstLaborCost   = document.getElementById('s-inst-labor-cost');   if(sInstLaborCost)   sInstLaborCost.textContent   = money(laborCostTotal);
+  const sInstLaborHrs = document.getElementById('s-inst-labor-hrs');
+  if (sInstLaborHrs) {
+    const _lh = getMatData().filter(function(i){ return i.type==='labor'; }).reduce(function(h,i){ return h+(i.hrs||0); },0);
+    sInstLaborHrs.textContent = (+_lh.toFixed(2)).toLocaleString('en-US') + ' hrs';
+  }
   const sInstLaborBilled = document.getElementById('s-inst-labor-billed'); if(sInstLaborBilled) sInstLaborBilled.textContent = money(instLaborBilledAmt);
   const sInstLaborGP     = document.getElementById('s-inst-labor-gp');     if(sInstLaborGP){    sInstLaborGP.textContent     = money(instLaborGP); sInstLaborGP.style.color = instLaborGP > 0 ? 'var(--green)' : 'var(--text)'; }
   const instLaborGMLblEl = document.getElementById('instLaborGMLabel'); if(instLaborGMLblEl) instLaborGMLblEl.textContent = laborCostTotal > 0 ? Math.round(instLaborGM*100)+'%' : '—';
