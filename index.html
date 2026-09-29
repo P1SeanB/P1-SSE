@@ -6703,7 +6703,8 @@ function p1MatCompute(o){
     else jobCost=mc;
   }
   if(effMode==='actual') jobCost=usageCost;
-  var labHrs=(o.lpHrs||0)*units;
+  // Waste applies to material only; install labor is on the quantity actually installed.
+  var labHrs=(o.lpHrs||0)*((o.qty||0)/uDiv);
   return { adjQty:adjQty, units:units, unitSellVal:unitSellVal, totalSell:totalSell,
            usageCost:usageCost, jobCost:jobCost, packages:packages, labHrs:labHrs,
            err:err, effMode:effMode };
