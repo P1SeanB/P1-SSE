@@ -9061,7 +9061,9 @@ function generateCustomerQuote() {
       sec.textContent = 'Installation Labor';
       if (matLinesEl) matLinesEl.appendChild(sec);
       laborItems.forEach(function(item) {
-        const lineBilled = item.hrs * item.sellPerHr;
+        // Use the line's exact sell (same figure the tool totals use). Attached-labor hours are
+        // rounded to 2 decimals for display, so hrs × rate can differ from the true line by cents.
+        const lineBilled = (item.totalSell != null) ? item.totalSell : item.hrs * item.sellPerHr;
         grandTotal += lineBilled;
         const row = document.createElement('div');
         const isFlatRate = qSystem === 'Flat Rate Estimate';
