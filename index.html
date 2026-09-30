@@ -2852,6 +2852,13 @@
               <span id="mat-total-with-tax-label" style="font-weight:700;color:var(--text);border-top:1px solid var(--border);padding-top:4px;margin-top:2px;display:none;">Total with S&amp;H &amp; Tax</span>
               <span></span>
               <span id="mat-total-with-tax" style="font-family:'DM Mono',monospace;font-size:13px;font-weight:700;color:#e8620a;text-align:right;border-top:1px solid var(--border);padding-top:4px;margin-top:2px;display:none;"></span>
+              <!-- Subcontractor / Rental billed — added to the One-Time total below (untaxed) -->
+              <span id="mat-ot-sub-label" style="font-weight:600;color:var(--text2);display:none;">Subcontractor</span>
+              <span></span>
+              <span id="mat-ot-sub-amount" style="font-family:'DM Mono',monospace;font-weight:700;color:var(--text);text-align:right;display:none;"></span>
+              <span id="mat-ot-rental-label" style="font-weight:600;color:var(--text2);display:none;">Rental Equipment</span>
+              <span></span>
+              <span id="mat-ot-rental-amount" style="font-family:'DM Mono',monospace;font-weight:700;color:var(--text);text-align:right;display:none;"></span>
             </div>
             <input type="hidden" id="matTaxRate" value="10.25">
           </div>
@@ -4702,6 +4709,13 @@ function calc() {
   const shMarkupCalc  = (function(){ var el=document.getElementById('shMarkupSlider'); return el ? (parseInt(el.value)||15)/100 : 0.15; })();
   const shBilledCalc  = shCostCalc * (1 + shMarkupCalc);
   const oneTimeTotal  = laborBilledForGM + matBilled + tmSubBilledAmt + rentalBilledAmt + matTaxAmt + shBilledCalc;
+  // Show sub / rental on the One-Time card so the lines add straight down to the total
+  [['sub',tmSubBilledAmt],['rental',rentalBilledAmt]].forEach(function(r){
+    var on = r[1] > 0;
+    var l=document.getElementById('mat-ot-'+r[0]+'-label'), a=document.getElementById('mat-ot-'+r[0]+'-amount');
+    if (l) l.style.display = on ? '' : 'none';
+    if (a) { a.style.display = on ? '' : 'none'; a.textContent = on ? money(r[1]) : ''; }
+  });
   const hOnetimeWrap = document.getElementById('h-onetime-wrap');
   const hOnetime = document.getElementById('h-onetime');
   if (hOnetimeWrap) hOnetimeWrap.style.display = oneTimeTotal > 0 ? '' : 'none';
