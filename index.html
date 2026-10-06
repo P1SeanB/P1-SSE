@@ -17149,17 +17149,31 @@ html.p1m #mat-rows > [id^="mat-row-"] > div:last-child{ border-top:1px solid #f0
 html.p1m #mat-rows > [id^="mat-row-"] > div:last-child button:not(.p1m-danger){ border-radius:6px !important;
   box-shadow:inset 0 1px 0 rgba(255,255,255,.95), inset 0 -1px 1px rgba(16,24,40,.06), 0 1px 2px rgba(16,24,40,.16) !important;
   transition:background .12s, border-color .12s, box-shadow .12s, transform .06s !important; }
-html.p1m #mat-rows > [id^="mat-row-"] > div:last-child button:not(.p1m-danger)[style*="dashed"], html.p1m #mat-rows > [id^="mat-row-"] > div:last-child button:not(.p1m-danger).p1lc-chip:not(.p1lc-paste):not(.ok){
+html.p1m #mat-rows > [id^="mat-row-"] > div:last-child button:not(.p1m-danger)[style*="dashed"]:not(.p1m-on), html.p1m #mat-rows > [id^="mat-row-"] > div:last-child button:not(.p1m-danger).p1lc-chip:not(.p1lc-paste):not(.ok){
   background:linear-gradient(180deg,#ffffff 0%,#f1f3f6 55%,#e6e9ee 100%) !important;
   border:1px solid #c2c8d1 !important; color:var(--text) !important; }
-html.p1m #mat-rows > [id^="mat-row-"] > div:last-child button:not(.p1m-danger)[style*="dashed"]:hover, html.p1m #mat-rows > [id^="mat-row-"] > div:last-child button:not(.p1m-danger).p1lc-chip:not(.p1lc-paste):not(.ok):hover{
+html.p1m #mat-rows > [id^="mat-row-"] > div:last-child button:not(.p1m-danger)[style*="dashed"]:not(.p1m-on):hover, html.p1m #mat-rows > [id^="mat-row-"] > div:last-child button:not(.p1m-danger).p1lc-chip:not(.p1lc-paste):not(.ok):hover{
   background:linear-gradient(180deg,#ffffff 0%,#f6f7f9 55%,#eceff3 100%) !important; border-color:#a9b1bc !important;
   box-shadow:inset 0 1px 0 #fff, inset 0 -1px 1px rgba(16,24,40,.06), 0 2px 4px rgba(16,24,40,.18) !important; }
-html.p1m #mat-rows > [id^="mat-row-"] > div:last-child button:not(.p1m-danger):not([style*="dashed"]):not(.p1lc-chip), html.p1m #mat-rows > [id^="mat-row-"] > div:last-child button:not(.p1m-danger).p1lc-chip.p1lc-paste, html.p1m #mat-rows > [id^="mat-row-"] > div:last-child button:not(.p1m-danger).p1lc-chip.ok{
+html.p1m #mat-rows > [id^="mat-row-"] > div:last-child button:not(.p1m-danger):not([style*="dashed"]):not(.p1lc-chip):not(.p1m-on), html.p1m #mat-rows > [id^="mat-row-"] > div:last-child button:not(.p1m-danger).p1lc-chip.ok{
   background-image:linear-gradient(180deg,rgba(255,255,255,.75) 0%,rgba(255,255,255,.15) 55%,rgba(0,0,0,.03) 100%) !important;
   box-shadow:inset 0 1px 0 rgba(255,255,255,.9), 0 1px 2px rgba(16,24,40,.18), 0 0 0 1px rgba(255,255,255,.4) !important; }
-html.p1m #mat-rows > [id^="mat-row-"] > div:last-child button:not(.p1m-danger):active{ transform:translateY(1px);
-  box-shadow:inset 0 1px 2px rgba(16,24,40,.22) !important; }
+
+/* switched on / open = one colour: raised Point 1 orange key (Labor, Package,
+   Details when open or filled in; Alt/Add when ON; Paste when a line is copied) */
+html.p1m #mat-rows > [id^="mat-row-"] > div:last-child button:not(.p1m-danger).p1m-on.p1m-on, html.p1m #mat-rows > [id^="mat-row-"] > div:last-child button:not(.p1m-danger).p1lc-chip.p1lc-paste.p1lc-paste{
+  background:linear-gradient(180deg,#fff6ef 0%,#fde3cf 55%,#f9d2b4 100%) !important;
+  border:1px solid #e8620a !important; color:#b34a04 !important; font-weight:600 !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.85), inset 0 -1px 1px rgba(150,55,0,.12), 0 1px 2px rgba(150,55,0,.22) !important; }
+html.p1m #mat-rows > [id^="mat-row-"] > div:last-child button:not(.p1m-danger).p1m-on:hover, html.p1m #mat-rows > [id^="mat-row-"] > div:last-child button:not(.p1m-danger).p1lc-chip.p1lc-paste:hover{
+  background:linear-gradient(180deg,#fff9f4 0%,#feead9 55%,#fbdbc1 100%) !important; border-color:#d1560a !important; }
+/* the click itself: a quick press — darker and sunk — on every key */
+html.p1m #mat-rows > [id^="mat-row-"] > div:last-child button:not(.p1m-danger):active{ transform:translateY(1px) !important;
+  background:linear-gradient(180deg,#e2e5ea 0%,#d9dde3 100%) !important;
+  box-shadow:inset 0 2px 3px rgba(16,24,40,.25) !important; }
+html.p1m #mat-rows > [id^="mat-row-"] > div:last-child button:not(.p1m-danger).p1m-on:active, html.p1m #mat-rows > [id^="mat-row-"] > div:last-child button:not(.p1m-danger).p1lc-chip.p1lc-paste:active{
+  background:linear-gradient(180deg,#f7c39b 0%,#f3b182 100%) !important;
+  box-shadow:inset 0 2px 3px rgba(120,44,0,.3) !important; }
 
 /* sheet totals */
 html.p1m #mat-labor-sell-display, html.p1m #mat-total-sell{ color:var(--text) !important; }
@@ -17214,8 +17228,30 @@ html.p1m .summary-col div[style*="uppercase"][style*="e8620a"]{ color:var(--text
       if(/^(×|✕)\s*Remove\b/.test(t) || /^Remove( image)?$/.test(t)) b.classList.add('p1m-danger');
     }
   }
+  // Line buttons that are switched on / open get .p1m-on (one colour for "on")
+  function vis(el){ return !!(el && el.style.display !== 'none' && el.offsetParent !== null); }
+  function val(id){ var e=document.getElementById(id); return e ? (e.value||'') : ''; }
+  function setOn(b, on){ if(b) b.classList.toggle('p1m-on', !!on); }
+  function states(){
+    var rows=document.querySelectorAll('#mat-rows > [id^="mat-row-"]');
+    for(var i=0;i<rows.length;i++){
+      var row=rows[i], base=row.id.replace('mat-row-','mat-');
+      setOn(document.getElementById(base+'-lpbtn'),
+            vis(document.getElementById(base+'-lprow')) || parseFloat(val(base+'-lphrs'))>0);
+      var pk = (typeof p1ReadPkg==='function') ? p1ReadPkg(base).active : false;
+      setOn(document.getElementById(base+'-pkgbtn'), vis(document.getElementById(base+'-pkgrow')) || pk);
+      var pb=document.getElementById(base+'-pbtn');
+      setOn(pb, vis(document.getElementById(base+'-pricerow')) || (pb && pb.textContent.indexOf('\u2022')>=0));
+      var bar=row.lastElementChild, bs=bar ? bar.querySelectorAll('button') : [];
+      for(var j=0;j<bs.length;j++) if(/^Alt\/Add/.test((bs[j].textContent||'').trim())) setOn(bs[j], row.dataset.alt==='1');
+    }
+  }
   var pending=false;
-  function soon(){ if(pending) return; pending=true; setTimeout(function(){ pending=false; tag(); },120); }
+  function soon(){ if(pending) return; pending=true; setTimeout(function(){ pending=false; tag(); states(); },120); }
+  ['click','input','change'].forEach(function(ev){
+    document.addEventListener(ev, function(e){ if(e.target && e.target.closest && e.target.closest('#mat-rows')) setTimeout(states,0); }, true);
+  });
+  setInterval(states, 1000);
   if(window.MutationObserver) new MutationObserver(soon).observe(document.body,{childList:true,subtree:true});
   tag();
 })();
