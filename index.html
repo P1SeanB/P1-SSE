@@ -2106,6 +2106,40 @@
 
       </div>
 
+      <!-- Installation Labor & Materials sits first: it is the most-used input section -->
+      <div id="mat-wrap" style="display:none;margin-top:12px;">
+        <hr class="divider" style="margin-bottom:10px;">
+        <button type="button" id="btn-mat-toggle" onclick="toggleMatPanel()"
+          style="display:flex;align-items:center;gap:8px;background:transparent;border:1px solid var(--border2);border-radius:var(--radius-sm);padding:7px 14px;font-size:12px;font-weight:600;color:var(--text2);cursor:pointer;font-family:'DM Sans',sans-serif;width:100%;text-align:left;transition:border-color 0.15s,color 0.15s;">
+          <span id="btn-mat-icon" style="font-size:16px;line-height:1;color:var(--text3);">+</span>
+          <span id="btn-mat-label">Add Installation Labor/Materials</span>
+        </button>
+        <div id="mat-panel" style="display:none;margin-top:8px;background:var(--surface2);border-radius:var(--radius-sm);padding:10px 12px;border-left:3px solid #e8620a;">
+          <div id="mat-panel-title" style="font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#e8620a;margin-bottom:10px;">Installation Labor / Materials</div>
+          <!-- Column headers — dynamic, shown per row type via JS -->
+          <div id="mat-rows"></div>
+          <div style="display:flex;gap:6px;margin-top:6px;">
+            <button type="button" onclick="addMatRow()" style="flex:1;background:transparent;border:1px dashed var(--border2);border-radius:var(--radius-sm);padding:5px 12px;font-size:11px;color:var(--text2);cursor:pointer;font-family:'DM Sans',sans-serif;">+ Add line</button>
+            <button type="button" id="p1-paste-line-btn" onclick="p1LineCopy.pasteAtEnd()" style="display:none;flex:1;min-width:0;background:var(--orange-light);border:1px solid #e8620a;border-radius:var(--radius-sm);padding:5px 12px;font-size:11px;color:#e8620a;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></button>
+          </div>
+          <!-- Totals footer — Sales Tax & S&H controls moved to Quote Summary (right column) -->
+          <!-- Totals cluster hugs the right edge: with a 1fr label column the
+               titles sat the full width of the panel away from their own figures. -->
+          <div style="margin-top:10px;padding-top:8px;border-top:1px solid var(--border);display:grid;
+                      grid-template-columns:auto auto auto;justify-content:end;gap:5px 22px;font-size:13px;">
+            <span style="font-weight:600;color:var(--text2);text-align:right;">Labor cost<span id="mat-labor-hrs-display" style="font-family:'DM Mono',monospace;font-weight:500;font-size:12px;color:var(--text3);margin-left:8px;"></span></span>
+            <span style="font-family:'DM Mono',monospace;font-weight:600;color:var(--text2);text-align:right;" id="mat-labor-cost-display">$0.00</span>
+            <span style="font-family:'DM Mono',monospace;font-weight:700;color:#e8620a;text-align:right;" id="mat-labor-sell-display">$0.00</span>
+            <span style="font-weight:600;color:var(--text2);text-align:right;">Material cost</span>
+            <span style="font-family:'DM Mono',monospace;font-weight:600;color:var(--text2);text-align:right;" id="mat-total-display">$0.00</span>
+            <span style="font-family:'DM Mono',monospace;font-weight:700;color:#e8620a;text-align:right;" id="mat-total-sell">$0.00</span>
+            <span style="font-weight:700;font-size:14px;color:var(--text);text-align:right;border-top:1px solid var(--border);padding-top:5px;margin-top:2px;">Subtotal</span>
+            <span style="border-top:1px solid var(--border);margin-top:2px;"></span>
+            <span style="font-family:'DM Mono',monospace;font-size:15px;font-weight:700;color:#e8620a;text-align:right;border-top:1px solid var(--border);padding-top:5px;margin-top:2px;" id="mat-grand-sell-display">$0.00</span>
+          </div>
+        </div>
+      </div>
+
       <div id="insp-wrap" style="display:none;">
       <!-- Simple inspection (non-Fire) -->
       <div id="simple-insp-section">
@@ -2253,38 +2287,6 @@
       </div><!-- /maint-wrap -->
 
 
-      <div id="mat-wrap" style="display:none;margin-top:12px;">
-        <hr class="divider" style="margin-bottom:10px;">
-        <button type="button" id="btn-mat-toggle" onclick="toggleMatPanel()"
-          style="display:flex;align-items:center;gap:8px;background:transparent;border:1px solid var(--border2);border-radius:var(--radius-sm);padding:7px 14px;font-size:12px;font-weight:600;color:var(--text2);cursor:pointer;font-family:'DM Sans',sans-serif;width:100%;text-align:left;transition:border-color 0.15s,color 0.15s;">
-          <span id="btn-mat-icon" style="font-size:16px;line-height:1;color:var(--text3);">+</span>
-          <span id="btn-mat-label">Add Installation Labor/Materials</span>
-        </button>
-        <div id="mat-panel" style="display:none;margin-top:8px;background:var(--surface2);border-radius:var(--radius-sm);padding:10px 12px;border-left:3px solid #e8620a;">
-          <div id="mat-panel-title" style="font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#e8620a;margin-bottom:10px;">Installation Labor / Materials</div>
-          <!-- Column headers — dynamic, shown per row type via JS -->
-          <div id="mat-rows"></div>
-          <div style="display:flex;gap:6px;margin-top:6px;">
-            <button type="button" onclick="addMatRow()" style="flex:1;background:transparent;border:1px dashed var(--border2);border-radius:var(--radius-sm);padding:5px 12px;font-size:11px;color:var(--text2);cursor:pointer;font-family:'DM Sans',sans-serif;">+ Add line</button>
-            <button type="button" id="p1-paste-line-btn" onclick="p1LineCopy.pasteAtEnd()" style="display:none;flex:1;min-width:0;background:var(--orange-light);border:1px solid #e8620a;border-radius:var(--radius-sm);padding:5px 12px;font-size:11px;color:#e8620a;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></button>
-          </div>
-          <!-- Totals footer — Sales Tax & S&H controls moved to Quote Summary (right column) -->
-          <!-- Totals cluster hugs the right edge: with a 1fr label column the
-               titles sat the full width of the panel away from their own figures. -->
-          <div style="margin-top:10px;padding-top:8px;border-top:1px solid var(--border);display:grid;
-                      grid-template-columns:auto auto auto;justify-content:end;gap:5px 22px;font-size:13px;">
-            <span style="font-weight:600;color:var(--text2);text-align:right;">Labor cost<span id="mat-labor-hrs-display" style="font-family:'DM Mono',monospace;font-weight:500;font-size:12px;color:var(--text3);margin-left:8px;"></span></span>
-            <span style="font-family:'DM Mono',monospace;font-weight:600;color:var(--text2);text-align:right;" id="mat-labor-cost-display">$0.00</span>
-            <span style="font-family:'DM Mono',monospace;font-weight:700;color:#e8620a;text-align:right;" id="mat-labor-sell-display">$0.00</span>
-            <span style="font-weight:600;color:var(--text2);text-align:right;">Material cost</span>
-            <span style="font-family:'DM Mono',monospace;font-weight:600;color:var(--text2);text-align:right;" id="mat-total-display">$0.00</span>
-            <span style="font-family:'DM Mono',monospace;font-weight:700;color:#e8620a;text-align:right;" id="mat-total-sell">$0.00</span>
-            <span style="font-weight:700;font-size:14px;color:var(--text);text-align:right;border-top:1px solid var(--border);padding-top:5px;margin-top:2px;">Subtotal</span>
-            <span style="border-top:1px solid var(--border);margin-top:2px;"></span>
-            <span style="font-family:'DM Mono',monospace;font-size:15px;font-weight:700;color:#e8620a;text-align:right;border-top:1px solid var(--border);padding-top:5px;margin-top:2px;" id="mat-grand-sell-display">$0.00</span>
-          </div>
-        </div>
-      </div>
     </div>
 
       <!-- T&M Subcontractor Flat Rate -->
