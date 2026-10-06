@@ -17142,6 +17142,25 @@ html.p1m #mat-rows [id$="-lprow"]{ background:var(--surface2) !important; border
 html.p1m #mat-rows [id$="-sellrate"], html.p1m #mat-rows [id$="-lpsellrate"]{ color:var(--text) !important; font-weight:600 !important; }
 /* line action bar */
 html.p1m #mat-rows > [id^="mat-row-"] > div:last-child{ border-top:1px solid #f0f1f4; padding-top:8px; margin-top:8px !important; }
+/* line action bar: raised keys, same family as the Material / Labor switch.
+   Same size and padding as before; only the surface changes. Neutral keys are
+   brushed white; keys that are switched on keep their own colour and get the
+   same bevel on top of it. */
+html.p1m #mat-rows > [id^="mat-row-"] > div:last-child button:not(.p1m-danger){ border-radius:6px !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.95), inset 0 -1px 1px rgba(16,24,40,.06), 0 1px 2px rgba(16,24,40,.16) !important;
+  transition:background .12s, border-color .12s, box-shadow .12s, transform .06s !important; }
+html.p1m #mat-rows > [id^="mat-row-"] > div:last-child button:not(.p1m-danger)[style*="dashed"], html.p1m #mat-rows > [id^="mat-row-"] > div:last-child button:not(.p1m-danger).p1lc-chip:not(.p1lc-paste):not(.ok){
+  background:linear-gradient(180deg,#ffffff 0%,#f1f3f6 55%,#e6e9ee 100%) !important;
+  border:1px solid #c2c8d1 !important; color:var(--text) !important; }
+html.p1m #mat-rows > [id^="mat-row-"] > div:last-child button:not(.p1m-danger)[style*="dashed"]:hover, html.p1m #mat-rows > [id^="mat-row-"] > div:last-child button:not(.p1m-danger).p1lc-chip:not(.p1lc-paste):not(.ok):hover{
+  background:linear-gradient(180deg,#ffffff 0%,#f6f7f9 55%,#eceff3 100%) !important; border-color:#a9b1bc !important;
+  box-shadow:inset 0 1px 0 #fff, inset 0 -1px 1px rgba(16,24,40,.06), 0 2px 4px rgba(16,24,40,.18) !important; }
+html.p1m #mat-rows > [id^="mat-row-"] > div:last-child button:not(.p1m-danger):not([style*="dashed"]):not(.p1lc-chip), html.p1m #mat-rows > [id^="mat-row-"] > div:last-child button:not(.p1m-danger).p1lc-chip.p1lc-paste, html.p1m #mat-rows > [id^="mat-row-"] > div:last-child button:not(.p1m-danger).p1lc-chip.ok{
+  background-image:linear-gradient(180deg,rgba(255,255,255,.75) 0%,rgba(255,255,255,.15) 55%,rgba(0,0,0,.03) 100%) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.9), 0 1px 2px rgba(16,24,40,.18), 0 0 0 1px rgba(255,255,255,.4) !important; }
+html.p1m #mat-rows > [id^="mat-row-"] > div:last-child button:not(.p1m-danger):active{ transform:translateY(1px);
+  box-shadow:inset 0 1px 2px rgba(16,24,40,.22) !important; }
+
 /* sheet totals */
 html.p1m #mat-labor-sell-display, html.p1m #mat-total-sell{ color:var(--text) !important; }
 html.p1m #mat-grand-sell-display{ color:var(--orange) !important; font-weight:700 !important; }
