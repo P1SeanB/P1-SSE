@@ -7376,7 +7376,17 @@ function p1BuildMatRowFromData(m) {
   return rowEl;
 }
 
+// Opening a saved quote starts from a blank quote, so nothing from the quote that
+// was already on screen (subcontractor, rental, lines, parts, SLA settings...)
+// carries over into the one being opened. Same reset as "Clear all fields",
+// without its confirmation prompt.
+function p1ResetBeforeImport() {
+  try { if (typeof clearForm === 'function') clearForm(); } catch (e) { console.warn('reset before import:', e); }
+  try { if (typeof slaClearNonCustomer === 'function') slaClearNonCustomer(); } catch (e) { console.warn('SLA reset before import:', e); }
+}
+
 function restoreEstimateData(data) {
+  p1ResetBeforeImport();
   window._importing = true; // suppress resetAllMonthlyServices for entire import
 
   // STEP 1: Restore all plain fields
