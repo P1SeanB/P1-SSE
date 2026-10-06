@@ -1374,6 +1374,7 @@
   }
 </style>
 
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
 <div id="p1-login-overlay">
@@ -16912,6 +16913,248 @@ window.getCurrentExport = function () {
                       copyRow:copyRow, refresh:paintAll };
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',function(){ sweep(); paintAll(); });
   else { sweep(); paintAll(); }
+})();
+</script>
+
+<style id="p1-modern-css">
+/* ════════════════════════════════════════════════════════════════════════
+   P1-SSE · Modern look (Oct 2026)
+   A single visual layer on top of the existing app. Every rule is scoped to
+   html.p1m and to the screen, so:
+     · removing this block (or the p1m class) restores the classic look exactly
+     · printing / generated proposals are untouched
+   Nothing here changes layout, columns, field order, IDs or behaviour.
+   ════════════════════════════════════════════════════════════════════════ */
+@media screen {
+
+/* ── 1. Tokens ─────────────────────────────────────────────────────────── */
+html.p1m{
+  --bg:#edeff2;            /* steel canvas */
+  --surface:#ffffff;       /* paper */
+  --surface2:#f5f6f8;      /* recessed panels, read-only fields */
+  --border:#e1e4e9;        /* hairline */
+  --border2:#c9ced6;       /* control edge */
+  --field:#d6dbe2;         /* input edge */
+  --text:#171a1f;          /* ink */
+  --text2:#4d5562;         /* slate */
+  --text3:#7a8392;         /* mist */
+  --accent:#1b1f26;        /* graphite (header) */
+  --orange:#e8620a;        /* Point 1 orange: primary action, active, key totals */
+  --orange-hover:#d1560a;
+  --orange-light:#fdf0e6;
+  --green:#13795b;  --green-bg:#e6f4ee;
+  --amber:#9a6200;  --amber-bg:#fcf3dc;
+  --red:#b42318;    --red-bg:#fdecea;
+  --blue:#1f57c3;   --blue-bg:#e9effc;
+  --radius:12px;
+  --radius-sm:6px;
+  --ring:0 0 0 3px rgba(232,98,10,.16);
+}
+
+/* ── 2. Type: one family, tabular figures, sentence case ───────────────── */
+html.p1m body{ font-family:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif; font-size:13.5px;
+  -webkit-font-smoothing:antialiased; background:var(--bg); color:var(--text); }
+html.p1m body *:not(#p1-login-overlay *):not([contenteditable] *):not([contenteditable]):not(header):not(header *){
+  font-family:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif !important;
+  font-variant-numeric:tabular-nums;
+  text-transform:none !important;
+  letter-spacing:normal !important;
+  text-shadow:none !important;
+}
+/* the old 9–10px uppercase micro-labels become readable 11px sentence-case labels */
+html.p1m body [style*="font-size:9px"]:not(#p1-login-overlay *):not(header *), html.p1m body [style*="font-size: 9px"]:not(#p1-login-overlay *):not(header *),
+html.p1m body [style*="font-size:10px"]:not(#p1-login-overlay *):not(header *), html.p1m body [style*="font-size: 10px"]:not(#p1-login-overlay *):not(header *),
+html.p1m body [style*="font-size:8px"]:not(#p1-login-overlay *):not(header *), html.p1m body [style*="font-size: 8px"]:not(#p1-login-overlay *):not(header *),
+html.p1m .cost-group-label, html.p1m .big-metric-label{
+  font-size:11px !important;
+}
+html.p1m label:not(header label){ font-size:12px; font-weight:500; color:var(--text2); }
+
+/* ── 3. Header: left exactly as the classic look (by request) ───────── */
+html.p1m header{ --bg:#f4f4f4; --surface:#ffffff; --surface2:#eaeaea; --border:#e0e0e0; --border2:#cccccc;
+  --text:#1c1c1c; --text2:#555555; --text3:#6b6b6b; --accent:#1c1c1c; --orange-light:#fff0e8;
+  --green:#1a6b4a; --green-bg:#e8f5ef; --amber:#8a5a00; --amber-bg:#fef3da; --red:#8a1f1f; --red-bg:#fdeaea;
+  --blue:#1954b0; --blue-bg:#e8effd; --radius:10px; --radius-sm:6px;
+  font-family:'DM Sans',sans-serif; font-size:14px; -webkit-font-smoothing:auto; }
+
+/* ── 4. Page + cards ───────────────────────────────────────────────────── */
+html.p1m .container{ padding:24px 24px 48px; }
+html.p1m .left-col{ gap:14px; }
+html.p1m .summary-col{ background:var(--bg); border-left:1px solid var(--border); }
+html.p1m .card, html.p1m .p1-wrapcard{ background:var(--surface); border:1px solid var(--border) !important;
+  border-radius:var(--radius); box-shadow:none !important; padding:20px 22px; }
+html.p1m .p1f::before{ width:3px; border-radius:12px 0 0 12px; }
+html.p1m .p1f.p1f-on{ border-color:#f1c9ab !important; }
+
+/* section headings */
+html.p1m .card-title, html.p1m .p1-wrapcard > .card-title{ font-size:15px !important; font-weight:600 !important;
+  color:var(--text) !important; margin-bottom:16px; gap:10px; }
+html.p1m .card-title::after, html.p1m .p1-wrapcard > .card-title::after{ display:none; }
+html.p1m .p1f-tag{ font-size:12px; font-weight:500; padding:2px 10px; border-radius:999px; margin-left:auto;
+  color:var(--text3); background:var(--surface2); }
+html.p1m .p1f-ok .p1f-tag{ color:var(--green); background:var(--green-bg); }
+html.p1m .p1f-cv{ font-size:12px; }
+html.p1m .divider{ border-top-color:var(--border); }
+
+/* ── 5. Fields ─────────────────────────────────────────────────────────── */
+html.p1m .container input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=hidden]),
+html.p1m .container select, html.p1m .container textarea,
+html.p1m .summary-col input:not([type=checkbox]):not([type=radio]):not([type=range]),
+html.p1m .summary-col select{
+  border-color:var(--field) !important; border-radius:var(--radius-sm) !important; color:var(--text);
+  box-shadow:none; }
+html.p1m .container input:not([readonly]):not(:disabled):not([type=checkbox]):not([type=radio]):not([type=range]),
+html.p1m .container select:not(:disabled), html.p1m .container textarea:not([readonly]),
+html.p1m .p1-set{ background-color:#fff !important; }
+html.p1m .container input:hover:not(:focus):not(:disabled), html.p1m .container select:hover:not(:focus){ border-color:#b9c0ca !important; }
+html.p1m input:focus, html.p1m select:focus, html.p1m textarea:focus{ border-color:var(--orange) !important; box-shadow:var(--ring) !important; outline:none; }
+html.p1m .p1-need{ border-color:var(--orange) !important; box-shadow:inset 3px 0 0 var(--orange) !important; }
+html.p1m input::placeholder, html.p1m textarea::placeholder{ color:#a3aab5; }
+
+/* ── 6. Buttons in the page: three weights ─────────────────────────────── */
+/* Secondary: white, 1px edge. Covers every dashed "+ Add …" / chip button. */
+html.p1m .container button[style*="dashed"],
+html.p1m .container button[style*="dashed"]:not(.p1m-keep){
+  border:1px solid var(--field) !important; background:#fff !important; color:var(--text2) !important;
+  border-radius:var(--radius-sm) !important; font-weight:500 !important; }
+html.p1m .container button[style*="dashed"]:hover{ border-color:#aab2bd !important; color:var(--text) !important; background:#fafbfc !important; }
+html.p1m .p1lc-chip{ border:1px solid var(--field) !important; background:#fff; color:var(--text2); border-radius:var(--radius-sm); font-weight:500; }
+html.p1m .p1lc-chip:hover{ border-color:#aab2bd !important; color:var(--text) !important; }
+html.p1m .p1lc-chip.p1lc-paste, html.p1m #p1-paste-line-btn.p1lc-has{ border-color:#f0b48a !important; background:var(--orange-light) !important; color:#b54a05 !important; }
+/* "Add …" section openers (full-width outline buttons) */
+html.p1m .container button[id^="btn-"][id$="-toggle"]{ background:#fff !important; border:1px solid var(--field) !important;
+  color:var(--text) !important; border-radius:8px !important; font-size:13px !important; font-weight:500 !important; padding:9px 14px !important; }
+html.p1m .container button[id^="btn-"][id$="-toggle"]:hover{ border-color:#aab2bd !important; }
+html.p1m .container button[id^="btn-"][id$="-toggle"] > span:first-child{ color:var(--orange) !important; font-weight:600; }
+/* Quiet/danger: text-only Remove actions (tagged by the script below) */
+html.p1m .p1m-danger{ color:var(--text3) !important; font-weight:500 !important; }
+html.p1m .p1m-danger:hover{ color:var(--red) !important; }
+/* Generic content buttons that used the old bevel/gradient */
+html.p1m .clear-btn, html.p1m .sla-btn-secondary, html.p1m .mc-remove-btn{ box-shadow:none !important; background-image:none !important;
+  border:1px solid var(--field) !important; background-color:#fff !important; border-radius:var(--radius-sm) !important; }
+
+/* ── 7. Installation labor / materials sheet ───────────────────────────── */
+html.p1m #mat-panel{ background:var(--surface2) !important; border-left:0 !important; border:1px solid var(--border) !important;
+  border-radius:10px !important; padding:12px !important; }
+html.p1m #mat-panel-title{ font-size:13px !important; font-weight:600 !important; color:var(--text2) !important; margin-bottom:10px !important; }
+html.p1m #mat-rows > [id^="mat-row-"]{ border:1px solid var(--border) !important; border-radius:9px !important;
+  padding:10px 12px !important; margin-bottom:8px !important; background:#fff !important; transition:border-color .12s; }
+html.p1m #mat-rows > [id^="mat-row-"]:hover{ border-color:#c3c9d2 !important; }
+html.p1m #mat-rows > [id^="mat-row-"][data-alt="1"]{ border:1px dashed #eea06b !important; }
+
+/* Material / Labor type switch → recessed track, raised active key.
+   Same family as the header buttons (bevel + soft glow), but only on the
+   selected side: Material = graphite, Labor = Point 1 orange (labor is orange
+   everywhere else in the line: the Labor chip and the attached-labor panel). */
+html.p1m #mat-rows > [id^="mat-row-"] > div:first-child{ max-width:260px; padding:3px; gap:3px !important; margin-bottom:8px !important;
+  background:linear-gradient(180deg,#e3e6eb,#eef0f3); border-radius:8px;
+  box-shadow:inset 0 1px 2px rgba(16,24,40,.18), inset 0 0 0 1px rgba(16,24,40,.06); }
+html.p1m [data-row-type]{ background:transparent !important; color:var(--text3) !important; border:0 !important;
+  border-radius:6px !important; font-size:12px !important; font-weight:500 !important; padding:5px 0 !important;
+  transition:background .15s, color .15s, box-shadow .15s !important; }
+html.p1m [data-row-type]:hover{ color:var(--text) !important; background:rgba(255,255,255,.55) !important; }
+html.p1m [data-row-type="material"][style*="rgb(28, 28, 28)"], html.p1m [data-row-type="material"][style*="#1c1c1c"]{
+  background:linear-gradient(180deg,#4a4f58 0%,#2a2e35 50%,#1c1f24 100%) !important; color:#fff !important; font-weight:600 !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.22), inset 0 -1px 2px rgba(0,0,0,.35), 0 1px 3px rgba(0,0,0,.35) !important; }
+html.p1m [data-row-type="labor"][style*="rgb(28, 28, 28)"], html.p1m [data-row-type="labor"][style*="#1c1c1c"]{
+  background:linear-gradient(180deg,#ff9040 0%,#ef6a10 50%,#cf5506 100%) !important; color:#fff !important; font-weight:600 !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.4), inset 0 -1px 2px rgba(150,55,0,.4), 0 1px 3px rgba(0,0,0,.3), 0 0 6px rgba(232,98,10,.35) !important; }
+
+/* description */
+html.p1m #mat-rows [id$="-desc"]{ font-size:14px !important; font-weight:500; padding:7px 10px !important; margin-bottom:8px !important; }
+/* column labels */
+html.p1m #mat-rows > [id^="mat-row-"] span[style*="uppercase"]{ color:var(--text3) !important; font-weight:500 !important; }
+/* inputs in a line: a touch taller, numbers right where they belong */
+html.p1m #mat-rows input:not([type=hidden]), html.p1m #mat-rows select{ font-size:13px !important; padding:4px 6px !important; min-height:30px; }
+/* ea / ft / 100ft / 1000ft basis switch */
+html.p1m #mat-rows div[style*="height: 27px"], html.p1m #mat-rows div[style*="height:27px"]{ height:30px !important; background:#eef0f3; border-color:#eef0f3 !important; border-radius:7px !important; padding:2px; gap:2px; }
+html.p1m #mat-rows div[style*="height: 27px"] > button, html.p1m #mat-rows div[style*="height:27px"] > button{
+  background:transparent !important; color:var(--text3) !important; border-radius:5px !important; font-size:11px !important; font-weight:500 !important; }
+html.p1m #mat-rows div[style*="height: 27px"] > button[style*="rgb(28, 28, 28)"], html.p1m #mat-rows div[style*="height:27px"] > button[style*="#1c1c1c"]{
+  background:#fff !important; color:var(--text) !important; font-weight:600 !important; box-shadow:0 1px 2px rgba(16,24,40,.12); }
+/* money: unit sell quiet, line total ink — orange is kept for the subtotal */
+html.p1m #mat-rows [id$="-unitsell"]{ color:var(--text3) !important; opacity:1 !important; font-size:12px !important; }
+html.p1m #mat-rows [id$="-sell"], html.p1m #mat-rows [id$="-lp-total"], html.p1m #mat-rows [id$="-total"]{ color:var(--text) !important; font-weight:600 !important; font-size:13.5px !important; }
+/* attached labor panel */
+html.p1m #mat-rows [id$="-lprow"]{ background:var(--surface2) !important; border:1px solid var(--border) !important;
+  border-left:2px solid var(--orange) !important; border-radius:7px !important; }
+html.p1m #mat-rows [id$="-sellrate"], html.p1m #mat-rows [id$="-lpsellrate"]{ color:var(--text) !important; font-weight:600 !important; }
+/* line action bar */
+html.p1m #mat-rows > [id^="mat-row-"] > div:last-child{ border-top:1px solid #f0f1f4; padding-top:8px; margin-top:8px !important; }
+/* sheet totals */
+html.p1m #mat-labor-sell-display, html.p1m #mat-total-sell{ color:var(--text) !important; }
+html.p1m #mat-grand-sell-display{ color:var(--orange) !important; font-weight:700 !important; }
+
+/* ── 8. Right-hand summary rail ────────────────────────────────────────── */
+html.p1m .summary-col .card{ padding:18px; }
+html.p1m .big-metric{ background:#fff; border:1px solid var(--border); border-radius:8px; }
+html.p1m .big-metric-label{ color:var(--text3); font-weight:500; margin-bottom:6px; }
+html.p1m .big-metric-value{ font-size:20px; font-weight:600; }
+html.p1m .metric-row{ padding:9px 0; font-size:13.5px; }
+html.p1m .metric-value{ font-weight:600; }
+html.p1m .summary-col .card-title{ font-size:13px !important; color:var(--text2) !important; }
+
+/* ── 9. Small things ───────────────────────────────────────────────────── */
+html.p1m #toast{ border-radius:8px; font-weight:500; }
+html.p1m ::selection{ background:#fbd9bf; }
+html.p1m :focus-visible{ outline:2px solid var(--orange); outline-offset:2px; }
+html.p1m button:focus:not(:focus-visible){ outline:none; }
+
+
+/* ── 10. SLA Creator + Monitoring Contracts ────────────────────────────── */
+html.p1m .sla-section-head{ border-bottom:1px solid var(--border) !important; padding-bottom:10px; margin-bottom:14px; gap:10px; }
+html.p1m .sla-section-title{ font-size:15px !important; font-weight:600 !important; color:var(--text) !important; }
+html.p1m .sla-section-num{ border-radius:6px; font-size:11px; width:22px; height:22px; }
+html.p1m .sla-field label{ font-size:12px !important; font-weight:500 !important; color:var(--text2) !important; }
+html.p1m .p1f-tag:empty{ display:none; }
+html.p1m .p1f.p1f-on{ box-shadow:none !important; }
+html.p1m .mc-add-btn{ background:#fff !important; color:var(--text) !important; border:1px solid var(--field) !important;
+  border-radius:var(--radius-sm) !important; font-weight:500 !important; box-shadow:none !important; }
+html.p1m .mc-add-btn:hover{ border-color:#aab2bd !important; background:#fafbfc !important; }
+html.p1m .mc-add-btn::first-letter{ color:var(--orange); }
+/* summary-rail group titles: ink, not orange */
+html.p1m .summary-col div[style*="uppercase"][style*="e8620a"]{ color:var(--text) !important; font-size:13px !important; font-weight:600 !important; }
+
+} /* @media screen */
+
+/* review switch (bottom-left) */
+#p1m-switch{position:fixed;left:14px;bottom:14px;z-index:9998;display:flex;align-items:center;gap:8px;
+  background:#1b1f26;color:#fff;border:0;border-radius:999px;padding:7px 12px 7px 10px;cursor:pointer;
+  font:500 12px 'IBM Plex Sans',system-ui,sans-serif;box-shadow:0 4px 14px rgba(0,0,0,.22)}
+#p1m-switch i{width:26px;height:15px;border-radius:999px;background:#5a606b;position:relative;display:inline-block;transition:background .15s}
+#p1m-switch i::after{content:'';position:absolute;top:2px;left:2px;width:11px;height:11px;border-radius:50%;background:#fff;transition:left .15s}
+html.p1m #p1m-switch i{background:#e8620a} html.p1m #p1m-switch i::after{left:13px}
+@media print{ #p1m-switch{display:none} }
+</style>
+<script id="p1-modern">
+/* Modern look: turns the p1m class on, tags a few buttons by role, and adds a
+   bottom-left switch to compare against the classic look while reviewing. */
+(function(){
+  var KEY='p1sse_look';
+  var root=document.documentElement;
+  function pref(){ try{ return localStorage.getItem(KEY); }catch(e){ return null; } }
+  function apply(on){ root.classList.toggle('p1m', on); try{ localStorage.setItem(KEY, on?'modern':'classic'); }catch(e){} }
+  apply(pref()!=='classic');
+
+  // role tags: plain text "× Remove" / "Remove image" style actions read as quiet text buttons
+  function tag(){
+    var bs=document.querySelectorAll('.container button:not([data-p1m])');
+    for(var i=0;i<bs.length;i++){
+      var b=bs[i], t=(b.textContent||'').trim();
+      b.setAttribute('data-p1m','1');
+      if(/^(×|✕)\s*Remove\b/.test(t) || /^Remove( image)?$/.test(t)) b.classList.add('p1m-danger');
+    }
+  }
+  var pending=false;
+  function soon(){ if(pending) return; pending=true; setTimeout(function(){ pending=false; tag(); },120); }
+  if(window.MutationObserver) new MutationObserver(soon).observe(document.body,{childList:true,subtree:true});
+  tag();
+
+  var sw=document.createElement('button');
+  sw.type='button'; sw.id='p1m-switch'; sw.title='Switch between the modern and classic look';
+  sw.innerHTML='<i></i><span>Modern look</span>';
+  sw.onclick=function(){ apply(!root.classList.contains('p1m')); };
+  document.body.appendChild(sw);
 })();
 </script>
 
