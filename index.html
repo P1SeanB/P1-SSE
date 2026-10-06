@@ -6952,6 +6952,20 @@ function estimatorKeydown(event) {
 
 // ─── EXPORT / IMPORT ─────────────────────────────────────────────────────────
 
+// Saved-quote file name: the Estimate or Agreement Name, then today's date,
+// e.g. "Shepherd's Gate - Brentwood - Smart Lock Access Control 2026-10-06.p1est".
+// Falls back to the customer name, then "Estimate", when the name is blank.
+// Only characters Windows / OneDrive refuse in a file name are removed.
+function p1EstimateFileName() {
+  var v = function(id){ return ((document.getElementById(id) || {}).value || '').trim(); };
+  var name = v('agreementName') || v('custName') || 'Estimate';
+  name = name.replace(/[\\/:*?"<>|\u0000-\u001f]/g, '-').replace(/\s+/g, ' ').replace(/[ .]+$/, '').trim() || 'Estimate';
+  if (name.length > 150) name = name.slice(0, 150).trim();
+  var d = new Date();
+  var date = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  return name + ' ' + date + '.p1est';
+}
+
 function exportEstimate() {
   var data = gatherEstimateData();
   data.custName   = (document.getElementById('custName')    ||{}).value || '(no customer)';
@@ -6959,11 +6973,7 @@ function exportEstimate() {
   data.exportedAt = new Date().toLocaleString();
   data.rmr        = (document.getElementById('rmr53')||{}).textContent || '';
 
-  var estNum  = ((document.getElementById('estimateNum')||{}).value || 'NoNum').replace(/[^a-zA-Z0-9-]/g, '-').replace(/-+/g,'-').replace(/^-|-$/g,'');
-  var cust    = data.custName.replace(/[^a-zA-Z0-9]/g, '-').replace(/-+/g,'-').replace(/^-|-$/g,'');
-  var agrName = ((document.getElementById('agreementName')||{}).value || '').replace(/[^a-zA-Z0-9]/g, '-').replace(/-+/g,'-').replace(/^-|-$/g,'');
-  var parts   = [estNum, cust, agrName].filter(function(s){ return s && s.length > 0; });
-  var filename = parts.join('_') + '.p1est';
+  var filename = p1EstimateFileName();
 
   var blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
   var url  = URL.createObjectURL(blob);
@@ -16602,7 +16612,7 @@ window.getCurrentExport = function () {
 
     return {
       blob: new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }),
-      filename: [estNum, cust].filter(Boolean).join('_') + '.p1est',
+      filename: (typeof p1EstimateFileName === 'function') ? p1EstimateFileName() : [estNum, cust].filter(Boolean).join('_') + '.p1est',
       mimeType: 'application/json',
       generatedAt: new Date().toISOString()
     };
@@ -17166,26 +17176,15 @@ html.p1m .summary-col div[style*="uppercase"][style*="e8620a"]{ color:var(--text
 
 } /* @media screen */
 
-/* review switch (bottom-left) */
-#p1m-switch{position:fixed;left:14px;bottom:14px;z-index:9998;display:flex;align-items:center;gap:8px;
-  background:#1b1f26;color:#fff;border:0;border-radius:999px;padding:7px 12px 7px 10px;cursor:pointer;
-  font:500 12px 'IBM Plex Sans',system-ui,sans-serif;box-shadow:0 4px 14px rgba(0,0,0,.22)}
-#p1m-switch i{width:26px;height:15px;border-radius:999px;background:#5a606b;position:relative;display:inline-block;transition:background .15s}
-#p1m-switch i::after{content:'';position:absolute;top:2px;left:2px;width:11px;height:11px;border-radius:50%;background:#fff;transition:left .15s}
-html.p1m #p1m-switch i{background:#e8620a} html.p1m #p1m-switch i::after{left:13px}
-@media print{ #p1m-switch{display:none} }
+
 </style>
 <script id="p1-modern">
-/* Modern look: turns the p1m class on, tags a few buttons by role, and adds a
-   bottom-left switch to compare against the classic look while reviewing. */
+/* Modern look: always on. Tags a few buttons by role so the stylesheet can
+   style them (text-only Remove actions). */
 (function(){
-  var KEY='p1sse_look';
-  var root=document.documentElement;
-  function pref(){ try{ return localStorage.getItem(KEY); }catch(e){ return null; } }
-  function apply(on){ root.classList.toggle('p1m', on); try{ localStorage.setItem(KEY, on?'modern':'classic'); }catch(e){} }
-  apply(pref()!=='classic');
+  document.documentElement.classList.add('p1m');
+  try{ localStorage.removeItem('p1sse_look'); }catch(e){}   // drop the old review-switch setting
 
-  // role tags: plain text "× Remove" / "Remove image" style actions read as quiet text buttons
   function tag(){
     var bs=document.querySelectorAll('.container button:not([data-p1m])');
     for(var i=0;i<bs.length;i++){
@@ -17198,12 +17197,6 @@ html.p1m #p1m-switch i{background:#e8620a} html.p1m #p1m-switch i::after{left:13
   function soon(){ if(pending) return; pending=true; setTimeout(function(){ pending=false; tag(); },120); }
   if(window.MutationObserver) new MutationObserver(soon).observe(document.body,{childList:true,subtree:true});
   tag();
-
-  var sw=document.createElement('button');
-  sw.type='button'; sw.id='p1m-switch'; sw.title='Switch between the modern and classic look';
-  sw.innerHTML='<i></i><span>Modern look</span>';
-  sw.onclick=function(){ apply(!root.classList.contains('p1m')); };
-  document.body.appendChild(sw);
 })();
 </script>
 
