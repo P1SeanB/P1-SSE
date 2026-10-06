@@ -8620,6 +8620,40 @@ function initAppAfterRates() {
 }
 window.initAppAfterRates = initAppAfterRates;
 
+// Proposal: labor / materials / other subtotals right above the One-Time total.
+// Only shown when the one-time box carries two or more kinds of cost, and only
+// when the subtotals add back to the printed total to the cent. The sales-tax
+// line moves into this block so every figure above the total sums to it.
+function p1RenderCostSummary(sum, grandTotal, matLinesEl) {
+  var el = document.getElementById('q-cost-summary'); if (!el) return;
+  el.innerHTML = ''; el.style.display = 'none';
+  var rows = [];
+  if (sum.labor  > 0) rows.push(['Labor', sum.labor]);
+  if (sum.mat    > 0) rows.push(['Materials', sum.mat]);
+  if (sum.sub    > 0) rows.push(['Subcontractor', sum.sub]);
+  if (sum.rental > 0) rows.push(['Rental equipment', sum.rental]);
+  if (sum.sh     > 0) rows.push(['Shipping & handling', sum.sh]);
+  if (rows.length < 2) return;
+  var check = rows.reduce(function(a,r){ return a + r[1]; }, 0) + (sum.tax || 0);
+  if (Math.abs(check - grandTotal) > 0.005) return;          // never print figures that don't add up
+  var taxLine = matLinesEl ? matLinesEl.querySelector('.q-tax-line') : null;
+  if (taxLine) taxLine.remove();
+  if (sum.tax > 0) rows.push(['Sales tax (' + sum.taxRate.toFixed(2) + '%) — materials only', sum.tax, true]);
+  el.style.cssText = 'margin:6px 0 8px;padding:6px 0 2px;border-top:1px solid #ddd;break-inside:avoid;page-break-inside:avoid;';
+  rows.forEach(function(r){
+    var row = document.createElement('div');
+    row.style.cssText = 'display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:3px 0;font-size:12px;';
+    var n = document.createElement('span');
+    n.style.cssText = r[2] ? 'color:#555;font-style:italic;' : 'color:#1c1c1c;font-weight:600;';
+    n.textContent = r[0];
+    var v = document.createElement('span');
+    v.style.cssText = 'font-family:monospace;white-space:nowrap;' + (r[2] ? 'font-weight:600;color:#555;' : 'font-weight:700;color:#1c1c1c;');
+    v.textContent = money(r[1]);
+    row.appendChild(n); row.appendChild(v); el.appendChild(row);
+  });
+  el.style.display = '';
+}
+
 function generateCustomerQuote() {
   // Always clear all containers first so stale data never shows
   ['q-services-list','q-mat-lines','q-labor-lines','q-tm-sub-lines','q-sites-lines'].forEach(function(id) {
@@ -9066,8 +9100,11 @@ function generateCustomerQuote() {
   var hasTMSubQ_main  = ((typeof getTMSubRows === 'function') && getTMSubRows().length > 0) ||
                         ((parseFloat((document.getElementById('tmSubRate')||{value:'0'}).value) || 0) > 0);
   var hasRentalQ_main = (typeof getRentalRows === 'function') && getRentalRows().length > 0;
+  var qSumEl = document.getElementById('q-cost-summary');
+  if (qSumEl) { qSumEl.innerHTML = ''; qSumEl.style.display = 'none'; }
   if (matItems.length > 0 || hasTMSubQ_main || hasRentalQ_main) {
     let grandTotal = 0;
+    var qSum = { labor:0, mat:0, sub:0, rental:0, sh:0, tax:0, taxRate:0 };
     if (matLinesEl) matLinesEl.innerHTML = '';
     // Section: Labor
     const laborItems = matItems.filter(function(i){ return i.type==='labor'; });
@@ -9080,7 +9117,7 @@ function generateCustomerQuote() {
         // Use the line's exact sell (same figure the tool totals use). Attached-labor hours are
         // rounded to 2 decimals for display, so hrs × rate can differ from the true line by cents.
         const lineBilled = (item.totalSell != null) ? item.totalSell : item.hrs * item.sellPerHr;
-        grandTotal += lineBilled;
+        grandTotal += lineBilled; qSum.labor += lineBilled;
         const row = document.createElement('div');
         const isFlatRate = qSystem === 'Flat Rate Estimate';
         const usesToggle = (qSystem === 'Time & Material Only' || qSystem === 'Other/All Services' || qSystem === 'Budget Estimate');
@@ -9125,7 +9162,7 @@ function generateCustomerQuote() {
       if (matLinesEl) matLinesEl.appendChild(sec);
       matOnlyItems.forEach(function(item) {
         const lineBilled = item.totalSell;
-        grandTotal += lineBilled;
+        grandTotal += lineBilled; qSum.mat += lineBilled;
         const row = document.createElement('div');
         row.style.cssText = 'display:grid;grid-template-columns:1fr auto auto;gap:12px;align-items:baseline;padding:3px 0;border-bottom:1px solid #eee;font-size:12px;';
         const itemUnit = item.unit || 'ea';
@@ -9145,7 +9182,7 @@ function generateCustomerQuote() {
       var subHdr=document.createElement('div'); subHdr.style.cssText='font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#555;margin:8px 0 3px;'; subHdr.textContent='Point 1 Provided LSP/Subcontractor';
       tmSubLinesEl2.appendChild(subHdr);
       tmSubItems.forEach(function(sub) {
-        grandTotal += sub.billed;
+        grandTotal += sub.billed; qSum.sub += sub.billed;
         var row=document.createElement('div'); row.style.cssText='display:flex;justify-content:space-between;align-items:baseline;padding:3px 0;border-bottom:1px solid #eee;font-size:12px;';
         var rn=document.createElement('span'); rn.style.color='#444'; rn.textContent=sub.desc||'Subcontractor Services';
         var rt=document.createElement('span'); rt.style.cssText='font-family:monospace;font-weight:700;white-space:nowrap;'; rt.textContent=money(sub.billed);
@@ -9158,7 +9195,7 @@ function generateCustomerQuote() {
       var tmSubGMV = tmSubGMSlEl ? parseInt(tmSubGMSlEl.value)/100 : 0.32;
       var tmSubBillV = parseFloat((document.getElementById('tmSubBilled')||{value:'0'}).value) || (tmSubGMV < 1 ? tmSubV / (1 - tmSubGMV) : tmSubV);
       var tmSubDescV = (document.getElementById('tmSubDesc')||{}).value || 'Subcontractor Services';
-      grandTotal += tmSubBillV;
+      grandTotal += tmSubBillV; qSum.sub += tmSubBillV;
       var hdr2=document.createElement('div'); hdr2.style.cssText='font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#555;margin:8px 0 3px;'; hdr2.textContent='Point 1 Provided LSP/Subcontractor';
       var row2=document.createElement('div'); row2.style.cssText='display:flex;justify-content:space-between;align-items:baseline;padding:3px 0;border-bottom:1px solid #eee;font-size:12px;';
       var rn2=document.createElement('span'); rn2.style.color='#444'; rn2.textContent=tmSubDescV;
@@ -9174,7 +9211,7 @@ function generateCustomerQuote() {
       tmSubLinesEl2.appendChild(rHdr);
       rentalItemsQ.forEach(function(it){
         var ext=(it.qty||0)*(it.cost||0); var bill=ext*(1+rmkQ);
-        grandTotal += bill;
+        grandTotal += bill; qSum.rental += bill;
         var row=document.createElement('div'); row.style.cssText='display:flex;justify-content:space-between;align-items:baseline;padding:3px 0;border-bottom:1px solid #eee;font-size:12px;';
         var rn=document.createElement('span'); rn.style.color='#444'; rn.textContent=(it.desc||'Rental Equipment')+(it.qty ? ' ('+it.qty+' × '+it.unit+')' : '');
         var rt=document.createElement('span'); rt.style.cssText='font-family:monospace;font-weight:700;white-space:nowrap;'; rt.textContent=money(bill);
@@ -9182,7 +9219,7 @@ function generateCustomerQuote() {
       });
       var delQ=parseFloat((document.getElementById('rentalDelivery')||{}).value)||0;
       if (delQ>0){
-        var delBill=delQ*(1+rmkQ); grandTotal += delBill;
+        var delBill=delQ*(1+rmkQ); grandTotal += delBill; qSum.rental += delBill;
         var drow=document.createElement('div'); drow.style.cssText='display:flex;justify-content:space-between;align-items:baseline;padding:3px 0;border-bottom:1px solid #eee;font-size:12px;';
         var dn=document.createElement('span'); dn.style.color='#444'; dn.textContent='Pickup / drop-off';
         var dt=document.createElement('span'); dt.style.cssText='font-family:monospace;font-weight:700;white-space:nowrap;'; dt.textContent=money(delBill);
@@ -9194,7 +9231,7 @@ function generateCustomerQuote() {
     var shMarkupQ  = parseInt((document.getElementById('shMarkupSlider')||{value:'15'}).value) || 15;
     var shBilledQ  = shCostQ * (1 + shMarkupQ/100);
     if (shCostQ > 0 && matLinesEl) {
-      grandTotal += shBilledQ;
+      grandTotal += shBilledQ; qSum.sh += shBilledQ;
       var shRow = document.createElement('div');
       shRow.style.cssText = 'display:flex;justify-content:space-between;align-items:baseline;padding:3px 0;border-bottom:1px solid #eee;font-size:12px;';
       var shLbl = document.createElement('span'); shLbl.style.color='#444'; shLbl.textContent='Shipping & Handling';
@@ -9214,7 +9251,7 @@ function generateCustomerQuote() {
     if (existingTaxLine) existingTaxLine.remove();
 
     if (taxRateQ > 0 && matSellQ > 0) {
-      grandTotal += taxAmtQ;
+      grandTotal += taxAmtQ; qSum.tax = taxAmtQ; qSum.taxRate = taxRateQ;
       // Build tax line in the mat box
       if (matLinesEl) {
         var taxRow = document.createElement('div');
@@ -9231,6 +9268,7 @@ function generateCustomerQuote() {
       }
     }
     if (matTotalEl) matTotalEl.textContent = money(grandTotal);
+    if (typeof p1RenderCostSummary === 'function') p1RenderCostSummary(qSum, grandTotal, matLinesEl);
     if (matBox) matBox.style.display = '';
     var qMatHdr = document.getElementById('q-mat-header');
     if (qMatHdr) {
@@ -9600,6 +9638,7 @@ function doIOSPrint() {
     <div id="q-mat-header" style="font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#1c1c1c;margin-bottom:8px;">Installation Labor/Materials — One-Time</div>
     <div id="q-mat-lines" style="font-size:12px;color:#444;margin-bottom:8px;"></div>
     <div id="q-tm-sub-lines"></div>
+    <div id="q-cost-summary" style="display:none;"></div>
     <div style="border-top:1px solid #ddd;padding-top:8px;display:flex;justify-content:space-between;align-items:center;">
       <span id="q-mat-total-label" style="font-size:12px;font-weight:700;color:#1c1c1c;">One-Time Labor/Material Total</span>
       <span style="font-family:'DM Mono',monospace;font-size:16px;font-weight:700;color:#1c1c1c;" id="q-mat-total">—</span>
@@ -16954,7 +16993,7 @@ html.p1m{
 /* ── 2. Type: one family, tabular figures, sentence case ───────────────── */
 html.p1m body{ font-family:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif; font-size:13.5px;
   -webkit-font-smoothing:antialiased; background:var(--bg); color:var(--text); }
-html.p1m body *:not(#p1-login-overlay *):not([contenteditable] *):not([contenteditable]):not(header):not(header *){
+html.p1m body *:not(#p1-login-overlay):not(#p1-login-overlay *):not(#customer-quote-overlay):not(#customer-quote-overlay *):not(#sla-print-overlay):not(#sla-print-overlay *):not([contenteditable] *):not([contenteditable]):not(header):not(header *){
   font-family:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif !important;
   font-variant-numeric:tabular-nums;
   text-transform:none !important;
@@ -16962,16 +17001,16 @@ html.p1m body *:not(#p1-login-overlay *):not([contenteditable] *):not([contented
   text-shadow:none !important;
 }
 /* the old 9–10px uppercase micro-labels become readable 11px sentence-case labels */
-html.p1m body [style*="font-size:9px"]:not(#p1-login-overlay *):not(header *), html.p1m body [style*="font-size: 9px"]:not(#p1-login-overlay *):not(header *),
-html.p1m body [style*="font-size:10px"]:not(#p1-login-overlay *):not(header *), html.p1m body [style*="font-size: 10px"]:not(#p1-login-overlay *):not(header *),
-html.p1m body [style*="font-size:8px"]:not(#p1-login-overlay *):not(header *), html.p1m body [style*="font-size: 8px"]:not(#p1-login-overlay *):not(header *),
+html.p1m body [style*="font-size:9px"]:not(#p1-login-overlay *):not(#customer-quote-overlay *):not(#sla-print-overlay *):not(header *), html.p1m body [style*="font-size: 9px"]:not(#p1-login-overlay *):not(#customer-quote-overlay *):not(#sla-print-overlay *):not(header *),
+html.p1m body [style*="font-size:10px"]:not(#p1-login-overlay *):not(#customer-quote-overlay *):not(#sla-print-overlay *):not(header *), html.p1m body [style*="font-size: 10px"]:not(#p1-login-overlay *):not(#customer-quote-overlay *):not(#sla-print-overlay *):not(header *),
+html.p1m body [style*="font-size:8px"]:not(#p1-login-overlay *):not(#customer-quote-overlay *):not(#sla-print-overlay *):not(header *), html.p1m body [style*="font-size: 8px"]:not(#p1-login-overlay *):not(#customer-quote-overlay *):not(#sla-print-overlay *):not(header *),
 html.p1m .cost-group-label, html.p1m .big-metric-label{
   font-size:11px !important;
 }
-html.p1m label:not(header label){ font-size:12px; font-weight:500; color:var(--text2); }
+html.p1m label:not(header label):not(#customer-quote-overlay label):not(#sla-print-overlay label){ font-size:12px; font-weight:500; color:var(--text2); }
 
 /* ── 3. Header: left exactly as the classic look (by request) ───────── */
-html.p1m header{ --bg:#f4f4f4; --surface:#ffffff; --surface2:#eaeaea; --border:#e0e0e0; --border2:#cccccc;
+html.p1m header, html.p1m #customer-quote-overlay, html.p1m #sla-print-overlay{ --bg:#f4f4f4; --surface:#ffffff; --surface2:#eaeaea; --border:#e0e0e0; --border2:#cccccc;
   --text:#1c1c1c; --text2:#555555; --text3:#6b6b6b; --accent:#1c1c1c; --orange-light:#fff0e8;
   --green:#1a6b4a; --green-bg:#e8f5ef; --amber:#8a5a00; --amber-bg:#fef3da; --red:#8a1f1f; --red-bg:#fdeaea;
   --blue:#1954b0; --blue-bg:#e8effd; --radius:10px; --radius-sm:6px;
