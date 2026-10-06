@@ -2263,7 +2263,10 @@
           <div id="mat-panel-title" style="font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#e8620a;margin-bottom:10px;">Installation Labor / Materials</div>
           <!-- Column headers — dynamic, shown per row type via JS -->
           <div id="mat-rows"></div>
-          <button type="button" onclick="addMatRow()" style="margin-top:6px;background:transparent;border:1px dashed var(--border2);border-radius:var(--radius-sm);padding:5px 12px;font-size:11px;color:var(--text2);cursor:pointer;font-family:'DM Sans',sans-serif;width:100%;">+ Add line</button>
+          <div style="display:flex;gap:6px;margin-top:6px;">
+            <button type="button" onclick="addMatRow()" style="flex:1;background:transparent;border:1px dashed var(--border2);border-radius:var(--radius-sm);padding:5px 12px;font-size:11px;color:var(--text2);cursor:pointer;font-family:'DM Sans',sans-serif;">+ Add line</button>
+            <button type="button" id="p1-paste-line-btn" onclick="p1LineCopy.pasteAtEnd()" style="display:none;flex:1;min-width:0;background:var(--orange-light);border:1px solid #e8620a;border-radius:var(--radius-sm);padding:5px 12px;font-size:11px;color:#e8620a;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></button>
+          </div>
           <!-- Totals footer — Sales Tax & S&H controls moved to Quote Summary (right column) -->
           <!-- Totals cluster hugs the right edge: with a 1fr label column the
                titles sat the full width of the panel away from their own figures. -->
@@ -6417,7 +6420,10 @@ function addMatRow() {
   const rmBtn = document.createElement('button');
   rmBtn.type='button'; rmBtn.textContent='× Remove';
   rmBtn.style.cssText='background:transparent;border:none;color:var(--text3);cursor:pointer;font-size:11px;padding:0;';
-  rmBtn.onclick=function(){ wrapper.remove(); updateMatTotal(); calc(); };
+  rmBtn.onclick=function(){
+    if (window.p1LineCopy) p1LineCopy.removeRow(wrapper);
+    else { wrapper.remove(); updateMatTotal(); calc(); }
+  };
 
   const bottomBar = document.createElement('div');
   bottomBar.style.cssText='display:flex;justify-content:space-between;align-items:center;margin-top:6px;';
@@ -6427,6 +6433,7 @@ function addMatRow() {
   leftBtns.appendChild(lpBtn);
   leftBtns.appendChild(pkgBtn);
   leftBtns.appendChild(p1MakeAltBtn(wrapper, function(){ updateMatTotal(); calc(); }));
+  if (window.p1LineCopy) p1LineCopy.addRowChips(wrapper, leftBtns);
   bottomBar.appendChild(leftBtns);
   bottomBar.appendChild(rmBtn);
 
@@ -7108,6 +7115,27 @@ function filterImportList() {
 
 
 
+// One Installation Labor/Materials line -> plain save record (used by Save and by Copy Line)
+function p1SerializeMatItem(m) {
+  var r = { type: m.type, desc: m.desc };
+  if (m.alt) r.alt = true;
+  if (m.type === 'material') {
+    r.cost = m.cost; r.qty = m.qty;
+    if (m.unit && m.unit !== 'ea') r.unit = m.unit;
+    if (m.laborHrs > 0) { r.laborHrs = m.laborHrs; r.laborRate = m.laborRate; r.laborSellRate = m.laborSellRate; }
+    if (m.pkgSize > 0) r.pkgSize = m.pkgSize;
+    if (m.pkgUnit) r.pkgUnit = m.pkgUnit;
+    if (m.waste > 0) r.waste = m.waste;
+    if (m.costBy && m.costBy !== 'actual') r.costBy = m.costBy;
+    if (m.costBy === 'manual' && m.manualCost !== '' && m.manualCost != null) r.manualCost = m.manualCost;
+    if (m.adjQty && m.adjQty !== m.qty) r.adjQty = +m.adjQty.toFixed(4);
+    if (m.packages > 0) r.packages = m.packages;
+  }
+  else { r.hrs = m.hrs; r.rate = m.rate; r.sellRate = m.sellPerHr; }
+  if (m.image) r.image = m.image;
+  return r;
+}
+
 function gatherEstimateData() {
   // Collect all form field values
   var fields = [
@@ -7210,25 +7238,7 @@ function gatherEstimateData() {
     document.getElementById('rental-panel').style.display !== 'none' : false;
 
   // Mat rows
-  data.matRows = getMatDataAll().filter(function(m){ return !m.attached; }).map(function(m) {
-    var r = { type: m.type, desc: m.desc };
-    if (m.alt) r.alt = true;
-    if (m.type === 'material') {
-      r.cost = m.cost; r.qty = m.qty;
-      if (m.unit && m.unit !== 'ea') r.unit = m.unit;
-      if (m.laborHrs > 0) { r.laborHrs = m.laborHrs; r.laborRate = m.laborRate; r.laborSellRate = m.laborSellRate; }
-      if (m.pkgSize > 0) r.pkgSize = m.pkgSize;
-      if (m.pkgUnit) r.pkgUnit = m.pkgUnit;
-      if (m.waste > 0) r.waste = m.waste;
-      if (m.costBy && m.costBy !== 'actual') r.costBy = m.costBy;
-      if (m.costBy === 'manual' && m.manualCost !== '' && m.manualCost != null) r.manualCost = m.manualCost;
-      if (m.adjQty && m.adjQty !== m.qty) r.adjQty = +m.adjQty.toFixed(4);
-      if (m.packages > 0) r.packages = m.packages;
-    }
-    else { r.hrs = m.hrs; r.rate = m.rate; r.sellRate = m.sellPerHr; }
-    if (m.image) r.image = m.image;
-    return r;
-  });
+  data.matRows = getMatDataAll().filter(function(m){ return !m.attached; }).map(p1SerializeMatItem);
 
   // Fire inspection fields
   var fiKeys = ['panels','pull','smokes','waterflows','tamper','duct','notify','power','floors'];
@@ -7307,6 +7317,63 @@ function gatherEstimateData() {
 // defined above, which disabled the multi-file import picker. The version
 // above handles BOTH a single file (loads it directly) and multiple files
 // (shows the picker modal so you can choose which estimate to load).
+
+// Save record -> new Installation Labor/Materials line appended to #mat-rows.
+// Used when opening a saved quote and by Paste Line. Returns the new row element.
+function p1BuildMatRowFromData(m) {
+  addMatRow();
+  var rid = 'mat-row-' + matRowCount;
+  var rowEl = document.getElementById(rid);
+  if (rowEl) {
+    rowEl.dataset.type = m.type;
+    var base = 'mat-' + matRowCount;
+    if (m.alt && rowEl._setAlt) rowEl._setAlt(true);
+    var dEl = document.getElementById(base+'-desc'); if(dEl) dEl.value = m.desc || '';
+    if (m.type === 'material') {
+      var cEl = document.getElementById(base+'-cost'); if(cEl) cEl.value = m.cost || '';
+      var qEl = document.getElementById(base+'-qty');  if(qEl) qEl.value = m.qty  || 1;
+      var uSel = document.getElementById(base+'-unit');
+      if (uSel && m.unit) { uSel.value = m.unit; if (uSel.onchange) uSel.onchange(); }
+      if (m.laborHrs > 0) {
+        var lhEl = document.getElementById(base+'-lphrs');     if(lhEl) lhEl.value = m.laborHrs;
+        var lrEl = document.getElementById(base+'-lprate');    if(lrEl && m.laborRate)     lrEl.value = m.laborRate;
+        var lsEl = document.getElementById(base+'-lpsellrate');if(lsEl && m.laborSellRate) lsEl.value = m.laborSellRate;
+        // auto-expand the labor panel so imported labor is visible
+        var lpRowEl = document.getElementById(base+'-lprow');
+        if (lpRowEl) { lpRowEl.style.display='block'; rowEl._lpOpen = true; }
+      }
+      // Package / waste settings (absent on older files → safe defaults)
+      if (m.pkgSize > 0 || m.waste > 0 || (m.costBy && m.costBy !== 'actual') || m.pkgUnit) {
+        var psEl = document.getElementById(base+'-pkgsize');   if(psEl && m.pkgSize) psEl.value = m.pkgSize;
+        var puEl = document.getElementById(base+'-pkgunit');   if(puEl && m.pkgUnit) puEl.value = m.pkgUnit;
+        var waEl = document.getElementById(base+'-waste');     if(waEl && m.waste)   waEl.value = m.waste;
+        var cbEl = document.getElementById(base+'-costby');
+        if (cbEl && m.costBy) { cbEl.value = m.costBy; if (cbEl.onchange) cbEl.onchange(); }
+        var mcEl = document.getElementById(base+'-manualcost');
+        if (mcEl && m.manualCost !== '' && m.manualCost != null) mcEl.value = m.manualCost;
+        var pkRowEl = document.getElementById(base+'-pkgrow');
+        if (pkRowEl) { pkRowEl.style.display='block'; rowEl._pkgOpen = true; }
+      }
+      rowEl.querySelectorAll('button[data-row-type]').forEach(function(b) {
+        var active = b.dataset.rowType === 'material';
+        b.style.background  = active ? '#1c1c1c' : 'var(--surface2)';
+        b.style.color       = active ? '#fff'    : 'var(--text2)';
+        b.style.borderColor = active ? '#1c1c1c' : 'var(--border2)';
+      });
+    } else {
+      // Click Labor button FIRST to switch the row UI to labor mode
+      rowEl.dataset.type = 'labor';
+      var laborBtn = rowEl.querySelector('button[data-row-type="labor"]');
+      if (laborBtn) laborBtn.click();
+      // THEN set values (after button click resets defaults)
+      var hEl = document.getElementById(base+'-hrs');      if(hEl) hEl.value = m.hrs      || '';
+      var rEl = document.getElementById(base+'-rate');     if(rEl) rEl.value = m.rate     || 120;
+      var sEl = document.getElementById(base+'-sellrate'); if(sEl) sEl.value = m.sellRate || P1_RATES.laborSellDefault;
+    }
+    if (m.image && typeof p1SetImage === 'function') p1SetImage(rowEl, m.image);
+  }
+  return rowEl;
+}
 
 function restoreEstimateData(data) {
   window._importing = true; // suppress resetAllMonthlyServices for entire import
@@ -7590,59 +7657,7 @@ function restoreEstimateData(data) {
     if (matRows && data.matRows && data.matRows.length > 0) {
       matRows.innerHTML = '';
       matRowCount = 0;
-      data.matRows.forEach(function(m) {
-        addMatRow();
-        var rid = 'mat-row-' + matRowCount;
-        var rowEl = document.getElementById(rid);
-        if (rowEl) {
-          rowEl.dataset.type = m.type;
-          var base = 'mat-' + matRowCount;
-          if (m.alt && rowEl._setAlt) rowEl._setAlt(true);
-          var dEl = document.getElementById(base+'-desc'); if(dEl) dEl.value = m.desc || '';
-          if (m.type === 'material') {
-            var cEl = document.getElementById(base+'-cost'); if(cEl) cEl.value = m.cost || '';
-            var qEl = document.getElementById(base+'-qty');  if(qEl) qEl.value = m.qty  || 1;
-            var uSel = document.getElementById(base+'-unit');
-            if (uSel && m.unit) { uSel.value = m.unit; if (uSel.onchange) uSel.onchange(); }
-            if (m.laborHrs > 0) {
-              var lhEl = document.getElementById(base+'-lphrs');     if(lhEl) lhEl.value = m.laborHrs;
-              var lrEl = document.getElementById(base+'-lprate');    if(lrEl && m.laborRate)     lrEl.value = m.laborRate;
-              var lsEl = document.getElementById(base+'-lpsellrate');if(lsEl && m.laborSellRate) lsEl.value = m.laborSellRate;
-              // auto-expand the labor panel so imported labor is visible
-              var lpRowEl = document.getElementById(base+'-lprow');
-              if (lpRowEl) { lpRowEl.style.display='block'; rowEl._lpOpen = true; }
-            }
-            // Package / waste settings (absent on older files → safe defaults)
-            if (m.pkgSize > 0 || m.waste > 0 || (m.costBy && m.costBy !== 'actual') || m.pkgUnit) {
-              var psEl = document.getElementById(base+'-pkgsize');   if(psEl && m.pkgSize) psEl.value = m.pkgSize;
-              var puEl = document.getElementById(base+'-pkgunit');   if(puEl && m.pkgUnit) puEl.value = m.pkgUnit;
-              var waEl = document.getElementById(base+'-waste');     if(waEl && m.waste)   waEl.value = m.waste;
-              var cbEl = document.getElementById(base+'-costby');
-              if (cbEl && m.costBy) { cbEl.value = m.costBy; if (cbEl.onchange) cbEl.onchange(); }
-              var mcEl = document.getElementById(base+'-manualcost');
-              if (mcEl && m.manualCost !== '' && m.manualCost != null) mcEl.value = m.manualCost;
-              var pkRowEl = document.getElementById(base+'-pkgrow');
-              if (pkRowEl) { pkRowEl.style.display='block'; rowEl._pkgOpen = true; }
-            }
-            rowEl.querySelectorAll('button[data-row-type]').forEach(function(b) {
-              var active = b.dataset.rowType === 'material';
-              b.style.background  = active ? '#1c1c1c' : 'var(--surface2)';
-              b.style.color       = active ? '#fff'    : 'var(--text2)';
-              b.style.borderColor = active ? '#1c1c1c' : 'var(--border2)';
-            });
-          } else {
-            // Click Labor button FIRST to switch the row UI to labor mode
-            rowEl.dataset.type = 'labor';
-            var laborBtn = rowEl.querySelector('button[data-row-type="labor"]');
-            if (laborBtn) laborBtn.click();
-            // THEN set values (after button click resets defaults)
-            var hEl = document.getElementById(base+'-hrs');      if(hEl) hEl.value = m.hrs      || '';
-            var rEl = document.getElementById(base+'-rate');     if(rEl) rEl.value = m.rate     || 120;
-            var sEl = document.getElementById(base+'-sellrate'); if(sEl) sEl.value = m.sellRate || P1_RATES.laborSellDefault;
-          }
-          if (m.image && typeof p1SetImage === 'function') p1SetImage(rowEl, m.image);
-        }
-      });
+      data.matRows.forEach(function(m) { p1BuildMatRowFromData(m); });
       if (typeof updateMatTotal === 'function') updateMatTotal();
     }
   }
@@ -15542,6 +15557,10 @@ document.addEventListener('click', function(e){
     paintRow(base);
   }
 
+  // Line copy/paste reads and writes the same extra fields
+  window.p1PriceSrcIO={ read:function(base){ return readRow(base); },
+                        write:function(base,o){ sweep(); writeRow(base,o); } };
+
   var _gather=window.gatherEstimateData;
   if(typeof _gather==='function'){
     window.gatherEstimateData=function(){
@@ -16573,5 +16592,328 @@ window.getCurrentExport = function () {
 })();
 </script>
 <!-- ═══════════════════════════════ end block ═══════════════════════════ -->
+<style id="p1-line-copy-css">
+  .p1lc-chip{background:transparent;border:1px dashed var(--border2);color:var(--text2);cursor:pointer;
+    font-size:11px;padding:3px 8px;border-radius:var(--radius-sm);white-space:nowrap;font-family:inherit}
+  .p1lc-chip:hover{border-color:#e8620a;color:#e8620a}
+  .p1lc-chip.ok{border-style:solid;border-color:#1f7a4d;color:#1f7a4d}
+  .p1lc-paste{border-style:solid;border-color:#e8620a;color:#e8620a;background:var(--orange-light)}
+  #p1-paste-line-btn{border:1px dashed var(--border2)!important;color:var(--text2)!important;background:transparent!important;font-weight:400!important}
+  #p1-paste-line-btn.p1lc-has{border:1px solid #e8620a!important;color:#e8620a!important;background:var(--orange-light)!important;font-weight:600!important}
+  .p1lc-wrap{position:relative;display:inline-block}
+  .p1lc-menu{position:absolute;left:0;bottom:calc(100% + 4px);z-index:60;min-width:260px;max-width:340px;
+    background:var(--surface);border:1px solid var(--border2);border-radius:6px;
+    box-shadow:0 6px 22px rgba(0,0,0,.16);padding:4px;font-size:12px}
+  .p1lc-menu .hd{padding:6px 8px 7px;font-size:10px;color:var(--text3);border-bottom:1px solid var(--border);
+    margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .p1lc-menu .hd b{color:var(--text);font-weight:600}
+  .p1lc-menu button{display:block;width:100%;text-align:left;background:transparent;border:0;cursor:pointer;
+    padding:7px 8px;border-radius:4px;font-size:12px;color:var(--text);font-family:inherit}
+  .p1lc-menu button:hover{background:var(--surface2)}
+  .p1lc-menu button.warn{color:#b8470a}
+  .p1lc-menu .sub{display:block;font-size:10px;color:var(--text3);margin-top:1px}
+  .p1lc-flash{animation:p1lcFlash 1.6s ease-out}
+  @keyframes p1lcFlash{0%{box-shadow:0 0 0 3px #e8620a}100%{box-shadow:0 0 0 0 rgba(232,98,10,0)}}
+  #p1lc-undo{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:9999;display:none;
+    align-items:center;gap:14px;background:#1c1c1c;color:#fff;padding:10px 12px 10px 16px;border-radius:8px;
+    box-shadow:0 8px 28px rgba(0,0,0,.28);font-size:13px;font-family:'DM Sans',sans-serif;max-width:92vw}
+  #p1lc-undo .msg{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:52vw}
+  #p1lc-undo button{background:#e8620a;color:#fff;border:0;border-radius:5px;padding:6px 14px;font-weight:700;
+    cursor:pointer;font-size:12px;font-family:inherit}
+  #p1lc-undo .x{background:transparent;color:#aaa;padding:4px 6px;font-weight:400}
+</style>
+<script id="p1-line-copy">
+/* Installation Labor/Materials — Copy Line / Paste / Undo
+   ------------------------------------------------------------------------
+   Copy Line stores the line (same record the .p1est save uses, plus Vendor /
+   Part # / Details and the image) under one localStorage key. Every window or
+   tab of the tool in this browser shares it, so copy in one quote, paste in
+   another. It is also put on the system clipboard as a backup in case browser storage
+   is full.
+   Remove and Replace are undoable for 8 seconds from the bar at the bottom. */
+(function(){
+  var KEY='p1sse_line_clip_v1', MARK='P1SSE-LINE:';
+  var mem=null;                                      // fallback if storage throws
+
+  function esc(t){ return String(t==null?'':t).replace(/[&<>"]/g,function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+  function short(t,n){ t=String(t||'').trim()||'(no description)'; n=n||48;
+    return t.length>n ? t.slice(0,n-1)+'…' : t; }
+  function money(n){ return '$'+(+n||0).toFixed(2); }
+  function refresh(){ if(typeof updateMatTotal==='function') updateMatTotal();
+                      if(typeof calc==='function') calc(); }
+
+  /* ── clipboard store ─────────────────────────────────────────────
+     1st choice: browser storage (shared by every P1-SSE window, no prompt).
+     Always also: the system clipboard — a readable summary as plain text plus
+     the full line in a private format, so a paste still works if browser
+     storage is full (other Point 1 tools on the same site share that space). */
+  var WEBTYPE='web application/x-p1sse-line';
+  function readClip(){
+    try{ var s=localStorage.getItem(KEY); if(s){ var o=JSON.parse(s); if(o&&o.row) return o; } }catch(e){}
+    return (mem && mem.row) ? mem : null;
+  }
+  function toSystemClipboard(o){
+    var json=JSON.stringify(o), summary='P1-SSE line: '+o.label;
+    try{
+      if(window.ClipboardItem && navigator.clipboard && navigator.clipboard.write &&
+         (!ClipboardItem.supports || ClipboardItem.supports(WEBTYPE))){
+        var item={}; item['text/plain']=new Blob([summary],{type:'text/plain'});
+        item[WEBTYPE]=new Blob([json],{type:WEBTYPE});
+        return navigator.clipboard.write([new ClipboardItem(item)])
+          .catch(function(){ return navigator.clipboard.writeText(MARK+json); }).catch(function(){});
+      }
+      if(navigator.clipboard && navigator.clipboard.writeText)
+        return navigator.clipboard.writeText(MARK+json).catch(function(){});
+    }catch(e){}
+  }
+  function writeClip(o){
+    mem=o; var ok=true;
+    try{ localStorage.setItem(KEY, JSON.stringify(o)); }
+    catch(e){
+      ok=false;
+      // never leave an older copied line behind to be pasted by mistake
+      try{ localStorage.removeItem(KEY); }catch(e2){}
+      try{ localStorage.setItem(KEY, JSON.stringify({ts:o.ts,label:o.label,onClipboard:true,row:null})); }catch(e3){}
+    }
+    toSystemClipboard(o);
+    paintAll();
+    return ok;
+  }
+  function meta(){
+    var c=readClip(); if(c) return c;
+    try{ var s=localStorage.getItem(KEY); if(s){ var o=JSON.parse(s); if(o&&o.label) return o; } }catch(e){}
+    return null;
+  }
+  function fromSystemClipboard(){
+    if(!navigator.clipboard) return Promise.resolve(null);
+    var viaRead = navigator.clipboard.read
+      ? navigator.clipboard.read().then(function(items){
+          for(var i=0;i<items.length;i++) if(items[i].types.indexOf(WEBTYPE)>=0)
+            return items[i].getType(WEBTYPE).then(function(b){ return b.text(); })
+                   .then(function(t){ var o=JSON.parse(t); return (o&&o.row)?o:null; });
+          return null;
+        }).catch(function(){ return null; })
+      : Promise.resolve(null);
+    return viaRead.then(function(o){
+      if(o || !navigator.clipboard.readText) return o;
+      return navigator.clipboard.readText().then(function(t){
+        if(t && t.indexOf(MARK)===0){ var x=JSON.parse(t.slice(MARK.length)); if(x&&x.row) return x; }
+        return null;
+      }).catch(function(){ return null; });
+    });
+  }
+  // Resolve the full copied line, then hand it to cb
+  function getFull(cb){
+    var c=readClip(); if(c) return cb(c);
+    fromSystemClipboard().then(function(o){
+      if(o){ mem=o; paintAll(); return cb(o); }
+      toast('No copied line found — click "Copy Line" on a line first (if the browser asks, allow clipboard access).');
+    });
+  }
+
+  /* ── read one row ────────────────────────────────────────────────── */
+  function baseOf(row){ return (row.id||'').replace('mat-row-','mat-'); }
+  function serialize(row){
+    var base=baseOf(row);
+    var items=(typeof getMatDataAll==='function'?getMatDataAll():[]);
+    var it=null;
+    for(var i=0;i<items.length;i++) if(items[i].base===base && !items[i].attached){ it=items[i]; break; }
+    if(!it) return null;
+    var r=p1SerializeMatItem(it);
+    if(r.type==='material' && window.p1PriceSrcIO){
+      try{ var ps=p1PriceSrcIO.read(base); if(ps) r.priceSrc=ps; }catch(e){}
+    }
+    return r;
+  }
+  function labelFor(r){
+    if(r.type==='material'){
+      var s=short(r.desc,60)+' — qty '+(r.qty||1)+' @ '+money(r.cost);
+      if(r.laborHrs>0) s+=' + '+r.laborHrs+' hr labor';
+      return s;
+    }
+    return short(r.desc,60)+' — '+(r.hrs||0)+' hrs labor';
+  }
+
+  /* ── build a pasted row ──────────────────────────────────────────── */
+  function build(r){
+    var row=p1BuildMatRowFromData(r);
+    if(row && r.priceSrc && window.p1PriceSrcIO){
+      try{ p1PriceSrcIO.write(baseOf(row), r.priceSrc); }catch(e){}
+    }
+    return row;
+  }
+  function flash(row){
+    if(!row) return;
+    row.classList.remove('p1lc-flash'); void row.offsetWidth; row.classList.add('p1lc-flash');
+    try{ row.scrollIntoView({block:'nearest',behavior:'smooth'}); }catch(e){}
+  }
+  function isBlank(row){
+    var b=baseOf(row);
+    var d=(document.getElementById(b+'-desc')||{}).value||'';
+    var c=(document.getElementById(b+'-cost')||{}).value||'';
+    var h=(document.getElementById(b+'-hrs')||{}).value||'';
+    return !d.trim() && !(parseFloat(c)>0) && !(parseFloat(h)>0) && !row._imageData;
+  }
+
+  /* ── undo bar ────────────────────────────────────────────────────── */
+  var undoFn=null, undoTimer=null, bar=null;
+  function ensureBar(){
+    if(bar) return bar;
+    bar=document.createElement('div'); bar.id='p1lc-undo';
+    bar.innerHTML='<span class="msg"></span><button type="button" class="u">Undo</button><button type="button" class="x" title="Dismiss">✕</button>';
+    document.body.appendChild(bar);
+    bar.querySelector('.u').onclick=function(){ var f=undoFn; hideBar(); if(f) f(); };
+    bar.querySelector('.x').onclick=hideBar;
+    return bar;
+  }
+  function showUndo(msg, fn){
+    ensureBar(); undoFn=fn;
+    bar.querySelector('.msg').textContent=msg;
+    bar.style.display='flex';
+    clearTimeout(undoTimer); undoTimer=setTimeout(hideBar, 8000);
+  }
+  function hideBar(){ clearTimeout(undoTimer); undoFn=null; if(bar) bar.style.display='none'; }
+  function toast(m){ if(typeof showToast==='function') showToast(m); }
+
+  // Put a detached row back where it was (refuses if the quote was reloaded meanwhile)
+  function putBack(rec){
+    if(document.getElementById(rec.el.id)){ toast('Can’t undo — the quote was reloaded.'); return false; }
+    var host=document.getElementById('mat-rows'); if(!host) return false;
+    if(rec.next && rec.next.parentNode===host) host.insertBefore(rec.el, rec.next);
+    else if(rec.prev && rec.prev.parentNode===host) host.insertBefore(rec.el, rec.prev.nextSibling);
+    else host.appendChild(rec.el);
+    return true;
+  }
+
+  /* ── actions ─────────────────────────────────────────────────────── */
+  function copyRow(row, btn){
+    var r=serialize(row);
+    if(!r){ toast('This line is empty — nothing to copy.'); return; }
+    writeClip({ ts:Date.now(), label:labelFor(r), row:r });
+    toast('Line copied — paste it into any open quote');
+    if(btn){ btn.textContent='✓ Copied'; btn.classList.add('ok');
+      clearTimeout(btn._t); btn._t=setTimeout(function(){ btn.textContent='⧉ Copy Line'; btn.classList.remove('ok'); },1800); }
+  }
+  function insertBelow(target){
+    getFull(function(c){
+      var row=build(c.row); if(!row) return;
+      target.parentNode.insertBefore(row, target.nextSibling);
+      refresh(); flash(row); toast('Line pasted');
+    });
+  }
+  function insertAbove(target){
+    getFull(function(c){
+      var row=build(c.row); if(!row) return;
+      target.parentNode.insertBefore(row, target);
+      refresh(); flash(row); toast('Line pasted');
+    });
+  }
+  function replaceRow(target){
+    getFull(function(c){
+      var host=target.parentNode;
+      var row=build(c.row); if(!row) return;
+      host.insertBefore(row, target.nextSibling);
+      var rec={ el:target, next:row, prev:target.previousSibling };
+      var oldLabel=short(((document.getElementById(baseOf(target)+'-desc')||{}).value),40);
+      target.remove();
+      refresh(); flash(row);
+      showUndo('Line replaced: '+oldLabel, function(){
+        rec.next=row.nextSibling; rec.prev=row.previousSibling;
+        if(putBack(rec)){ row.remove(); refresh(); flash(target); }
+      });
+    });
+  }
+  function pasteAtEnd(){
+    getFull(function(c){
+      var host=document.getElementById('mat-rows'); if(!host) return;
+      // a lone untouched blank line (the one opening the panel creates) is swapped out
+      var lone=(host.children.length===1 && isBlank(host.children[0])) ? host.children[0] : null;
+      var row=build(c.row); if(!row) return;
+      if(lone) lone.remove();
+      refresh(); flash(row); toast('Line pasted');
+    });
+  }
+  function removeRow(row){
+    var host=row.parentNode; if(!host) return;
+    var rec={ el:row, next:row.nextSibling, prev:row.previousSibling };
+    var lbl=short(((document.getElementById(baseOf(row)+'-desc')||{}).value),40);
+    row.remove(); refresh();
+    showUndo('Line removed: '+lbl, function(){ if(putBack(rec)){ refresh(); flash(row); } });
+  }
+
+  /* ── per-row chips ───────────────────────────────────────────────── */
+  var openMenu=null;
+  function closeMenu(){ if(openMenu){ openMenu.remove(); openMenu=null; } }
+  document.addEventListener('mousedown',function(e){
+    if(openMenu && !openMenu.contains(e.target) && !(e.target.closest && e.target.closest('.p1lc-wrap'))) closeMenu();
+  });
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape') closeMenu(); });
+
+  function addRowChips(row, holder){
+    if(row.dataset.p1lc) return; row.dataset.p1lc='1';
+    var cp=document.createElement('button');
+    cp.type='button'; cp.className='p1lc-chip'; cp.textContent='⧉ Copy Line';
+    cp.title='Copy this line so it can be pasted into this or any other open quote';
+    cp.onclick=function(){ copyRow(row, cp); };
+
+    var wrap=document.createElement('span'); wrap.className='p1lc-wrap';
+    var ps=document.createElement('button');
+    ps.type='button'; ps.className='p1lc-chip p1lc-pastechip'; ps.textContent='Paste ▾';
+    ps.title='Paste the copied line here';
+    ps.onclick=function(e){
+      e.stopPropagation();
+      if(openMenu && openMenu.parentNode===wrap){ closeMenu(); return; }
+      closeMenu();
+      getFull(function(m){
+        var menu=document.createElement('div'); menu.className='p1lc-menu';
+        menu.innerHTML='<div class="hd">Copied: <b>'+esc(m.label)+'</b></div>'
+          +'<button type="button" class="abv">⇧ Insert above this line<span class="sub">Adds the copied line right over this one</span></button>'
+          +'<button type="button" class="rep warn">⇄ Replace this line<span class="sub">Overwrites this line (you can Undo)</span></button>'
+          +'<button type="button" class="ins">⇩ Insert below this line<span class="sub">Adds the copied line right under this one</span></button>';
+        menu.querySelector('.abv').onclick=function(){ closeMenu(); insertAbove(row); };
+        menu.querySelector('.ins').onclick=function(){ closeMenu(); insertBelow(row); };
+        menu.querySelector('.rep').onclick=function(){ closeMenu(); replaceRow(row); };
+        wrap.appendChild(menu); openMenu=menu;
+      });
+    };
+    wrap.appendChild(ps);
+    holder.appendChild(cp);
+    holder.appendChild(wrap);
+  }
+
+  /* ── keep every Paste control in sync (this window and the others) ─ */
+  function paintAll(){
+    var m=meta();
+    var chips=document.querySelectorAll('.p1lc-pastechip');
+    for(var i=0;i<chips.length;i++){ chips[i].style.display=''; chips[i].classList.toggle('p1lc-paste', !!m); }
+    var b=document.getElementById('p1-paste-line-btn');
+    if(b){ b.style.display='';
+      b.classList.toggle('p1lc-has', !!m);
+      b.textContent = m ? '⇩ Paste Line: '+short(m.label,70) : '⇩ Paste Line';
+      b.title = m ? 'Add the copied line to the end of this list\n'+m.label
+                  : 'Paste a line copied with "Copy Line" (from this or another quote window)'; }
+  }
+  window.addEventListener('storage',function(e){ if(e.key===KEY){ mem=null; paintAll(); } });
+  window.addEventListener('focus',paintAll);
+
+  // rows that existed before this script loaded (e.g. restored on page load)
+  function sweep(){
+    var rows=document.querySelectorAll('#mat-rows > [id^="mat-row-"]');
+    for(var i=0;i<rows.length;i++){
+      if(rows[i].dataset.p1lc) continue;
+      var bars=rows[i].children, last=bars[bars.length-1];
+      var left=last && last.firstElementChild;
+      if(left) addRowChips(rows[i], left);
+    }
+  }
+
+  window.p1LineCopy={ addRowChips:addRowChips, removeRow:removeRow, pasteAtEnd:pasteAtEnd,
+                      copyRow:copyRow, refresh:paintAll };
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',function(){ sweep(); paintAll(); });
+  else { sweep(); paintAll(); }
+})();
+</script>
+
 </body>
 </html>
