@@ -1022,6 +1022,31 @@
   .sla-resp-select:focus { border-color: #e8620a; }
   .sla-resp-select.tier-modified { border-color: #e8620a; background-color: #fff8f4; }
 
+  /* Package commitments strip (section 6) */
+  .sla-pkg-commit { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; }
+  .sla-pkg-commit-item { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 7px 10px; }
+  .sla-pkg-commit-lbl { font-size: 9px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text3); margin-bottom: 2px; }
+  .sla-pkg-commit-val { font-size: 12px; font-weight: 600; color: var(--text); }
+  .sla-locked-tag { display: inline-block; font-size: 9px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text3); border: 1px solid var(--border); border-radius: 3px; padding: 1px 6px; margin-left: 8px; vertical-align: middle; }
+
+  /* Customer priority mapping */
+  .sla-map-row { display: grid; grid-template-columns: 1fr 2fr 1fr 28px; gap: 6px; align-items: center; margin-bottom: 6px; }
+  .sla-map-row input, .sla-map-row select { width: 100%; font-size: 12px; }
+  .sla-map-rm { background: none; border: 1px solid var(--border); border-radius: 4px; cursor: pointer; color: var(--text3); font-size: 14px; line-height: 1; height: 28px; }
+  .sla-map-rm:hover { color: #8a1f1f; border-color: #8a1f1f; }
+  .sla-map-head { display: grid; grid-template-columns: 1fr 2fr 1fr 28px; gap: 6px; font-size: 9px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text3); margin-bottom: 4px; }
+  .sla-map-add { font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 600; color: #e8620a; background: none; border: 1px dashed #e8620a; border-radius: 4px; padding: 5px 12px; cursor: pointer; }
+
+  /* Service budget total + package minimum */
+  .sla-bud-summary { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-top: 8px; padding: 8px 12px; border-radius: var(--radius-sm); background: var(--surface2); border: 1px solid var(--border); font-size: 12px; }
+  .sla-bud-summary strong { font-family: 'DM Mono', monospace; font-size: 14px; }
+  .sla-bud-min { font-size: 11px; font-weight: 600; }
+  .sla-bud-min.ok { color: var(--green); }
+  .sla-bud-min.short { color: var(--red); }
+  .sla-bud-min.na { color: var(--text3); font-weight: 500; }
+  .sla-sheet-select { font-size: 11px; padding: 2px 6px; margin-left: 4px; width: auto !important; display: inline-block !important; }
+  .sla-rate-warn { color: var(--red); font-weight: 600; }
+
   /* Exclusions table */
   .sla-excl-table { width: 100%; border-collapse: collapse; font-size: 11px; }
   .sla-excl-table th { font-family: 'DM Mono', monospace; font-size: 9px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em; color: #fff; background: #333; padding: 6px 10px; text-align: left; }
@@ -1283,31 +1308,13 @@
   .rte:empty:before{content:attr(data-ph);color:var(--text3);pointer-events:none;}
 </style>
 <style id="slaops-css">
-  .slaops-sel{width:100%;font-size:13px;font-family:'DM Sans',sans-serif;padding:7px 9px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface2);color:var(--text);outline:none;box-sizing:border-box;}
-  .slaops-sel:focus{border-color:#e8620a;}
   .sla-ms{display:flex;flex-wrap:wrap;gap:6px;margin-top:3px;}
   .sla-ms label{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--text);background:var(--surface2);border:1px solid var(--border);border-radius:999px;padding:5px 11px;cursor:pointer;user-select:none;}
   .sla-ms label:hover{border-color:var(--text3);}
   .sla-ms input:checked + span{font-weight:600;color:#e8620a;}
   .sla-ms input{accent-color:#e8620a;margin:0;}
-  .slaops-sub{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;margin-top:8px;}
-  .slaops-btn{margin-left:auto;background:#e8620a;color:#fff;border:none;border-radius:var(--radius-sm);padding:6px 12px;font-size:11px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;}
-  .slaops-btn:hover{background:#cf560a;}
-  .slaops-module .sla-section-title:before{content:'';}
   .slapm-sys{margin-bottom:12px;}
   .slapm-sys-name{font-size:11px;font-weight:700;color:#e8620a;text-transform:uppercase;letter-spacing:.04em;margin-bottom:5px;}
-  .sla-co-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;margin-bottom:8px;}
-  .sla-co-card label{display:block;font-size:9px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--text3);margin-bottom:3px;}
-  .sla-co-card input,.sla-co-card select{width:100%;font-size:12px;font-family:'DM Sans',sans-serif;padding:6px 8px;border:1px solid var(--border);border-radius:6px;background:#fff;color:var(--text);box-sizing:border-box;outline:none;}
-  .sla-co-card input:focus,.sla-co-card select:focus{border-color:#e8620a;}
-  .sla-co-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px;}
-  .sla-co-grid.g4{grid-template-columns:1fr 1fr 1fr 1fr;}
-  .sla-co-amt{font-family:'DM Mono',monospace;font-size:14px;font-weight:600;color:#1a6b4a;padding:5px 0;}
-  .sla-co-head{display:flex;gap:8px;align-items:center;margin-bottom:8px;}
-  .sla-co-rm{background:transparent;border:1px solid var(--border);border-radius:6px;color:#b33;width:28px;height:28px;cursor:pointer;font-size:16px;flex:0 0 auto;line-height:1;}
-  .sla-co-incl{flex:0 0 auto;width:auto!important;font-size:11px!important;padding:6px 8px;border:1px solid var(--border);border-radius:6px;background:#fff;}
-  .sla-co-add{margin-top:8px;background:transparent;border:1px dashed var(--border);border-radius:var(--radius-sm);padding:7px 14px;font-size:12px;color:var(--text2);cursor:pointer;font-family:'DM Sans',sans-serif;width:100%;}
-  .sla-co-add:hover{border-color:#e8620a;color:#e8620a;}
   .sla-dd{position:relative;}
   .sla-dd-btn{width:100%;text-align:left;font-size:13px;font-family:'DM Sans',sans-serif;padding:7px 9px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface2);color:var(--text);cursor:pointer;display:flex;justify-content:space-between;align-items:center;box-sizing:border-box;}
   .sla-dd-btn:after{content:'\25BE';color:var(--text3);font-size:10px;margin-left:8px;}
@@ -3010,118 +3017,40 @@
         </div>
       </div>
 
-      <!-- 3. SERVICE TIER -->
+      <!-- 3. SERVICE PACKAGE -->
       <div class="sla-section">
         <div class="sla-section-head">
           <div class="sla-section-num">3</div>
-          <div class="sla-section-title">Service Tier</div>
+          <div class="sla-section-title">Service Package</div>
         </div>
+        <div style="font-size:11px;color:var(--text3);margin-bottom:8px;line-height:1.5;">Every package includes all three request types (General, Expedited, Emergency) at T&amp;M rate sheet rates. Packages differ in what's included, never in response times or rates.</div>
         <div class="sla-tier-grid">
-          <div class="sla-tier-card" onclick="slaSelectTier(this)">
+          <div class="sla-tier-card" data-pkg="essential" onclick="slaSelectTier(this)">
             <div class="sla-tier-head">
               <div class="sla-tier-name">Essential</div>
-              <div class="sla-tier-sub">Standard T&amp;M · 1, 2, or 4× PM</div>
+              <div class="sla-tier-sub">Tier I</div>
             </div>
-            <div class="sla-tier-body">
-              <div class="sla-tier-row"><span>PM visits</span><strong>1, 2, or 4× per year</strong></div>
-              <div class="sla-tier-row"><span>Response</span><strong>Standard business hrs</strong></div>
-              <div class="sla-tier-row"><span>Labor rate</span><strong>Standard T&amp;M</strong></div>
-              <div class="sla-tier-row"><span>Parts</span><strong>At cost</strong></div>
-              <div class="sla-tier-row"><span>Hosted server</span><strong>Not included</strong></div>
-            </div>
+            <div class="sla-tier-body"></div>
           </div>
-          <div class="sla-tier-card active" onclick="slaSelectTier(this)">
+          <div class="sla-tier-card active" data-pkg="priority" onclick="slaSelectTier(this)">
             <div class="sla-tier-head">
               <div class="sla-tier-name">Priority</div>
-              <div class="sla-tier-sub">Priority T&amp;M · 1, 2, or 4× PM</div>
+              <div class="sla-tier-sub">Tier II</div>
             </div>
-            <div class="sla-tier-body">
-              <div class="sla-tier-row"><span>PM visits</span><strong>1× per year</strong></div>
-              <div class="sla-tier-row"><span>Response</span><strong>4–8 hr priority</strong></div>
-              <div class="sla-tier-row"><span>Labor rate</span><strong>Priority T&amp;M</strong></div>
-              <div class="sla-tier-row"><span>Parts</span><strong>At cost</strong></div>
-              <div class="sla-tier-row"><span>Hosted server</span><strong>Add-on</strong></div>
-            </div>
+            <div class="sla-tier-body"></div>
           </div>
-          <div class="sla-tier-card" onclick="slaSelectTier(this)">
+          <div class="sla-tier-card" data-pkg="premier" onclick="slaSelectTier(this)">
             <div class="sla-tier-head">
               <div class="sla-tier-name">Premier</div>
-              <div class="sla-tier-sub">Priority T&amp;M · 2 or 4× annual PM</div>
+              <div class="sla-tier-sub">Tier III</div>
             </div>
-            <div class="sla-tier-body">
-              <div class="sla-tier-row"><span>PM visits</span><strong>2 or 4× per year</strong></div>
-              <div class="sla-tier-row"><span>Response</span><strong>2–4 hr, 24/7</strong></div>
-              <div class="sla-tier-row"><span>Labor rate</span><strong>Priority T&amp;M</strong></div>
-              <div class="sla-tier-row"><span>Parts</span><strong>At cost</strong></div>
-              <div class="sla-tier-row"><span>Hosted server</span><strong>Add-on</strong></div>
-            </div>
+            <div class="sla-tier-body"></div>
           </div>
         </div>
       </div>
 
-      <!-- 3b. OPERATIONAL REQUIREMENTS (Phase 1 configurator) -->
-      <div class="sla-section" id="slaops-sec-opreq">
-        <div class="sla-section-head">
-          <div class="sla-section-num">+</div>
-          <div class="sla-section-title">Operational Requirements</div>
-          <button type="button" class="slaops-btn" onclick="slaLoadSanBruno()">Load San&nbsp;Bruno defaults</button>
-        </div>
-        <div class="sla-grid3" style="margin-bottom:10px;">
-          <div class="sla-field"><label>Industry Type</label><select id="slaops-industry" class="slaops-sel" data-opts="industry"></select></div>
-          <div class="sla-field"><label>Operational Criticality</label><select id="slaops-criticality" class="slaops-sel" data-opts="criticality"></select></div>
-          <div class="sla-field"><label>Primary PM Objective</label><div class="sla-dd" data-single="1"><button type="button" class="sla-dd-btn" data-for="slaops-pmobjective"><span class="sla-dd-ph">— Select —</span></button><input type="hidden" id="slaops-pmobjective"><div class="sla-dd-panel" style="overflow:visible;"><div class="sla-dd-opts" id="slaops-pmobjective-opts"></div></div></div></div>
-        </div>
-        <div class="sla-field"><label>Operational Requirement &mdash; select all that apply</label><div class="sla-dd" data-ms="1"><button type="button" class="sla-dd-btn" data-for="slaops-opreq"><span class="sla-dd-ph">Select all that apply…</span></button><div class="sla-dd-panel"><div class="sla-ms-list" id="slaops-opreq" data-opts="opReq"></div></div></div></div>
-      </div>
-
-      <!-- Scheduled Meeting Support (conditional) -->
-      <div class="sla-section slaops-module" id="slaops-sec-meeting" style="display:none;">
-        <div class="sla-section-head"><div class="sla-section-num">+</div><div class="sla-section-title">Scheduled Meeting Support</div></div>
-        <div class="sla-grid3" style="margin-bottom:10px;">
-          <div class="sla-field" style="grid-column:span 2;"><label>Include Scheduled Meeting Support?</label><select id="slaops-meeting-include" class="slaops-sel" data-opts="meetingInclude"></select></div>
-          <div class="sla-field"><label>Meeting Schedule Source</label><select id="slaops-meeting-source" class="slaops-sel" data-opts="scheduleSource"></select></div>
-        </div>
-        <div class="sla-field" style="margin-bottom:10px;"><label>Meeting Types Covered</label><div class="sla-dd" data-ms="1"><button type="button" class="sla-dd-btn" data-for="slaops-meeting-types"><span class="sla-dd-ph">Select all that apply…</span></button><div class="sla-dd-panel"><div class="sla-ms-list" id="slaops-meeting-types" data-opts="meetingTypes"></div></div></div></div>
-        <div class="sla-grid3" style="margin-bottom:10px;">
-          <div class="sla-field"><label>Meeting Frequency</label><select id="slaops-meeting-freq" class="slaops-sel" data-opts="frequency"></select></div>
-          <div class="sla-field"><label>Estimated Duration</label><select id="slaops-meeting-duration" class="slaops-sel" data-opts="duration"></select></div>
-          <div class="sla-field"><label>Support Window</label><select id="slaops-meeting-window" class="slaops-sel" data-opts="supportWindow"></select></div>
-        </div>
-        <div class="sla-grid3" style="margin-bottom:10px;">
-          <div class="sla-field"><label>Remote Response (during meetings)</label><select id="slaops-meeting-remoteresp" class="slaops-sel" data-opts="remoteResp"></select></div>
-          <div class="sla-field"><label>Onsite Dispatch (during meetings)</label><select id="slaops-meeting-onsite" class="slaops-sel" data-opts="onsiteDispatch"></select></div>
-          <div class="sla-field"><label>Remote Hands Available?</label><select id="slaops-meeting-remotehands" class="slaops-sel" data-opts="remoteHands"></select></div>
-        </div>
-        <div class="sla-field"><label>Remote Support Method</label><div class="sla-dd" data-ms="1"><button type="button" class="sla-dd-btn" data-for="slaops-meeting-method"><span class="sla-dd-ph">Select all that apply…</span></button><div class="sla-dd-panel"><div class="sla-ms-list" id="slaops-meeting-method" data-opts="remoteMethod"></div></div></div></div>
-      </div>
-
-      <!-- Customer Workflow (conditional) -->
-      <div class="sla-section slaops-module" id="slaops-sec-workflow" style="display:none;">
-        <div class="sla-section-head"><div class="sla-section-num">+</div><div class="sla-section-title">Customer Workflow</div></div>
-        <div class="sla-grid3" style="margin-bottom:10px;">
-          <div class="sla-field"><label>Meeting Setup Performed By</label><select id="slaops-wf-setup" class="slaops-sel" data-opts="setupBy"></select></div>
-          <div class="sla-field"><label>Initial System Check By</label><select id="slaops-wf-check" class="slaops-sel" data-opts="checkBy"></select></div>
-          <div class="sla-field"><label>Point 1 Role</label><select id="slaops-wf-role" class="slaops-sel" data-opts="p1Role"></select></div>
-        </div>
-        <div class="sla-field"><label>Customer Responsibilities</label><div class="sla-dd" data-ms="1"><button type="button" class="sla-dd-btn" data-for="slaops-custresp"><span class="sla-dd-ph">Select all that apply…</span></button><div class="sla-dd-panel"><div class="sla-ms-list" id="slaops-custresp" data-opts="custResp"></div></div></div></div>
-      </div>
-
-      <!-- Hot Spare / Material Strategy -->
-      <div class="sla-section" id="slaops-sec-hotspare">
-        <div class="sla-section-head"><div class="sla-section-num">+</div><div class="sla-section-title">Customer-Owned Hot Spare Inventory Program</div></div>
-        <div class="sla-field"><label>Material Strategy</label><select id="slaops-material" class="slaops-sel" data-opts="materialStrategy"></select></div>
-        <div class="slaops-sub" id="slaops-hotspare-detail" style="display:none;">
-          <div class="sla-grid3">
-            <div class="sla-field"><label>Inventory Audit Frequency</label><select id="slaops-audit" class="slaops-sel" data-opts="auditFreq"></select></div>
-            <div class="sla-field" style="grid-column:span 2;"><label>&nbsp;</label>
-              <div class="sla-dd" data-ms="1"><button type="button" class="sla-dd-btn" data-for="slaops-hotspare-opts"><span class="sla-dd-ph">Select all that apply…</span></button><div class="sla-dd-panel"><div class="sla-ms-list" id="slaops-hotspare-opts" data-opts="hotSpareOpts"></div></div></div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- 4. RMR / PRICING -->
-      <div class="sla-section">
+      <!-- 4. SERVICE BUDGET -->
+      <div class="sla-section" id="sla-budget-section">
         <div class="sla-section-head">
           <div class="sla-section-num">4</div>
           <div class="sla-section-title">Service Budget</div>
@@ -3135,7 +3064,6 @@
               <div class="sla-rate-toggle-wrap">
                 <button class="sla-rate-btn active" data-freq="monthly"  onclick="slaSetFreq('monthly')">Mo</button>
                 <button class="sla-rate-btn"        data-freq="quarterly" onclick="slaSetFreq('quarterly')">Qtr</button>
-                <button class="sla-rate-btn"        data-freq="annual"   onclick="slaSetFreq('annual')">Ann</button>
               </div>
             </div>
             <div class="sla-rmr-val"><input type="text" id="sla-rmr-monthly" placeholder="$0.00" oninput="slaRateInput()"></div>
@@ -3144,78 +3072,70 @@
           <div class="sla-rmr-card">
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:3px;">
               <div class="sla-rmr-label">PM Visit Hours</div>
-              <!-- Visit count selector — shown for Priority (1-2) and Premier (2-4) -->
               <div id="sla-pm-visit-wrap" style="display:flex;align-items:center;gap:5px;">
                 <span style="font-size:9px;font-weight:600;color:var(--text3);letter-spacing:0.06em;text-transform:uppercase;">Visits/yr</span>
-                <div class="sla-rate-toggle-wrap">
-                  <button class="sla-rate-btn active" id="sla-visit-btn-1" data-visits="1" onclick="slaPMSetVisits(1)">1</button>
-                  <button class="sla-rate-btn" id="sla-visit-btn-2" data-visits="2" onclick="slaPMSetVisits(2)">2</button>
-                  <button class="sla-rate-btn" id="sla-visit-btn-3" data-visits="3" onclick="slaPMSetVisits(3)" style="display:none;">3</button>
-                  <button class="sla-rate-btn" id="sla-visit-btn-4" data-visits="4" onclick="slaPMSetVisits(4)" style="display:none;">4</button>
-                </div>
+                <span id="sla-pm-visits-lbl" style="font-family:'DM Mono',monospace;font-size:12px;font-weight:600;color:var(--text);" title="Set by the service package">2</span>
               </div>
             </div>
             <div style="display:flex;align-items:center;gap:6px;">
               <div class="sla-rmr-val" style="flex:1;"><input type="number" id="sla-rmr-pm" placeholder="0" min="0" step="0.5" oninput="slaBudgetCalc()" style="font-family:'DM Mono',monospace;font-size:18px;font-weight:500;"></div>
               <div style="font-size:10px;color:var(--text3);white-space:nowrap;">hrs / visit</div>
             </div>
-            <div class="sla-rmr-sub" id="sla-pm-calc-sub">Calculated at straight time</div>
+            <div class="sla-rmr-sub" id="sla-pm-calc-sub">Billed separately · General straight time</div>
           </div>
         </div>
 
-        <!-- Row 2: Annual budget allocation -->
-        <div style="font-size:9px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3);margin-bottom:6px;">Annual Labor &amp; Materials Budget Allocation</div>
+        <!-- Row 2: Annual service budget (recommended mix) -->
+        <div style="font-size:9px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3);margin-bottom:6px;">Annual Service Budget &mdash; recommended mix (for planning purposes)</div>
         <table class="sla-budget-table">
           <thead>
             <tr>
-              <th style="width:22%">Category</th>
-              <th style="width:30%">SLA Rate Applied</th>
-              <th style="width:18%">Hours allotted</th>
-              <th style="width:30%">Calculated total</th>
+              <th style="width:22%">Request Type</th>
+              <th style="width:34%">Rate Sheet Rate</th>
+              <th style="width:16%">Hours</th>
+              <th style="width:28%">Calculated total</th>
             </tr>
           </thead>
           <tbody>
-            <!-- Regular time -->
             <tr>
-              <td class="sla-budget-cat"><div class="sla-budget-dot" style="background:#1a6b4a;"></div>Regular time</td>
-              <td>
-                <select class="sla-rate-select" id="sla-bud-reg-rate" onchange="slaBudgetCalc()"><!-- options loaded from Supabase after login --></select>
-              </td>
-              <td><input type="number" class="sla-budget-input" id="sla-bud-reg-hrs" placeholder="0" min="0" step="0.5" oninput="slaBudgetCalc()"></td>
-              <td><div class="sla-budget-total" id="sla-bud-reg-amt">—</div></td>
+              <td class="sla-budget-cat"><div class="sla-budget-dot" style="background:#1a6b4a;"></div>General</td>
+              <td><select class="sla-rate-select sla-bud-tc" id="sla-bud-gen-tc" data-req="general" onchange="slaBudgetCalc()"></select></td>
+              <td><input type="number" class="sla-budget-input" id="sla-bud-gen-hrs" placeholder="0" min="0" step="0.5" oninput="slaBudgetCalc()"></td>
+              <td><div class="sla-budget-total" id="sla-bud-gen-amt">—</div></td>
             </tr>
-            <!-- After hours -->
             <tr>
-              <td class="sla-budget-cat"><div class="sla-budget-dot" style="background:#8a5a00;"></div>After hours</td>
-              <td>
-                <select class="sla-rate-select" id="sla-bud-ah-rate" onchange="slaBudgetCalc()"><!-- options loaded from Supabase after login --></select>
-              </td>
-              <td><input type="number" class="sla-budget-input" id="sla-bud-ah-hrs" placeholder="0" min="0" step="0.5" oninput="slaBudgetCalc()"></td>
-              <td><div class="sla-budget-total" id="sla-bud-ah-amt">—</div></td>
+              <td class="sla-budget-cat"><div class="sla-budget-dot" style="background:#8a5a00;"></div>Expedited</td>
+              <td><select class="sla-rate-select sla-bud-tc" id="sla-bud-exp-tc" data-req="expedited" onchange="slaBudgetCalc()"></select></td>
+              <td><input type="number" class="sla-budget-input" id="sla-bud-exp-hrs" placeholder="0" min="0" step="0.5" oninput="slaBudgetCalc()"></td>
+              <td><div class="sla-budget-total" id="sla-bud-exp-amt">—</div></td>
             </tr>
-            <!-- Emergency / Double time -->
             <tr>
               <td class="sla-budget-cat"><div class="sla-budget-dot" style="background:#8a1f1f;"></div>Emergency</td>
-              <td>
-                <select class="sla-rate-select" id="sla-bud-em-rate" onchange="slaBudgetCalc()"><!-- options loaded from Supabase after login --></select>
-              </td>
-              <td><input type="number" class="sla-budget-input" id="sla-bud-em-hrs" placeholder="0" min="0" step="0.5" oninput="slaBudgetCalc()"></td>
-              <td><div class="sla-budget-total" id="sla-bud-em-amt">—</div></td>
+              <td><select class="sla-rate-select sla-bud-tc" id="sla-bud-emg-tc" data-req="emergency" onchange="slaBudgetCalc()"></select></td>
+              <td><input type="number" class="sla-budget-input" id="sla-bud-emg-hrs" placeholder="0" min="0" step="0.5" oninput="slaBudgetCalc()"></td>
+              <td><div class="sla-budget-total" id="sla-bud-emg-amt">—</div></td>
             </tr>
-            <!-- Materials -->
             <tr>
               <td class="sla-budget-cat"><div class="sla-budget-dot" style="background:#1a4a8a;"></div>Materials</td>
-              <td style="background:var(--surface2);color:var(--text3);font-size:11px;font-style:italic;padding:7px 10px;">Not rate-based</td>
+              <td style="background:var(--surface2);color:var(--text3);font-size:11px;font-style:italic;padding:7px 10px;">Optional allowance &middot; not part of the service budget</td>
               <td style="background:var(--surface2);"></td>
               <td><input type="text" class="sla-budget-mat-total" id="sla-bud-mat-amt" placeholder="$0.00" oninput="slaBudgetCalc()" onblur="slaFormatCurrency(this)"></td>
             </tr>
           </tbody>
         </table>
+        <div class="sla-bud-summary">
+          <div>Annual service budget &nbsp;<strong id="sla-bud-total">$0.00</strong></div>
+          <div class="sla-bud-min na" id="sla-bud-min">Budget optional for Essential</div>
+        </div>
+        <div style="font-size:10px;color:var(--text3);margin-top:6px;line-height:1.5;">The hours above only size the budget. Service is drawn down at the rate sheet rate for each call&rsquo;s request type and time classification, whatever the actual mix. Unused budget is forfeited at the end of each agreement year. PM labor is billed separately and never counts against the budget.</div>
         <!-- Rate reference note -->
         <div class="sla-rate-note">
-          <strong>SLA Labor Rates<span id="slaRateNoteLabel"></span>:</strong>
+          <strong>Rate sheet:</strong>
+          <select id="sla-rate-sheet" class="sla-sheet-select" onchange="this.dataset.userSet='1'; slaRatesChanged()">
+            <option value="standard">Standard</option>
+            <option value="sf">San Francisco Local 6 (SF fire alarm only)</option>
+          </select>
           <span id="slaRateNoteDyn">&nbsp; Loading rates&hellip;</span>
-          &nbsp;|&nbsp; Min. trip: 4 hrs · Remote min.: 2 hrs
         </div>
 
       </div>
@@ -3310,136 +3230,50 @@
         <label style="display:inline-flex;align-items:center;gap:8px;font-size:12px;color:var(--text);margin-top:10px;cursor:pointer;"><input type="checkbox" id="slapm-annual" checked style="accent-color:#e8620a;"> Include annual manufacturer-recommended services in the proposal</label>
       </div>
 
-      <!-- 6. RESPONSE TIME SLA -->
-      <div class="sla-section">
+      <!-- 6. RESPONSE COMMITMENTS -->
+      <div class="sla-section" id="sla-resp-section">
         <div class="sla-section-head">
           <div class="sla-section-num">6</div>
-          <div class="sla-section-title">Response Time Commitments</div>
+          <div class="sla-section-title">Response Commitments</div>
+          <span class="sla-locked-tag">Standard &middot; not editable</span>
         </div>
         <div class="sla-resp-note" style="font-size:11px;color:#555;margin-bottom:10px;line-height:1.5;">
-          Set the maximum commitments Company will hold for each call-out type. <strong>Triage</strong> is the acknowledgment window — the time from call receipt to a callback or ticket open by a qualified person. <strong>Onsite Deployment</strong> is the time from acknowledgment to a technician physically on site (where remote resolution is not possible). Defaults are pre-set based on the selected Service Tier and may be adjusted per customer.
+          Every package can use all three request types. Response windows and rates come from the T&amp;M rate sheet and are the same for every customer. <strong>Triage</strong> is the acknowledgment window &mdash; the time from call receipt to a callback or ticket opened by a qualified person &mdash; and is set by the package.
         </div>
         <table class="sla-resp-table">
           <thead>
             <tr>
-              <th style="width:18%">Call-Out Type</th>
-              <th style="width:21%">Triage (Acknowledgment)</th>
-              <th style="width:21%">Onsite Deployment</th>
-              <th>Trigger Conditions / Coverage</th>
+              <th style="width:20%">Request Type</th>
+              <th style="width:38%">Response</th>
+              <th>Billed At</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td><span class="sla-badge sla-badge-green">Regular Time</span></td>
-              <td>
-                <select id="sla-resp-reg-triage" class="sla-resp-select" onchange="slaUpdateRespCustom()"><option value="15 minutes">15 minutes</option><option value="30 minutes">30 minutes</option><option value="45 minutes">45 minutes</option>
-                  <option value="1 hour">1 hour</option>
-                  <option value="2 hours">2 hours</option>
-                  <option value="4 hours" selected>4 hours</option>
-                  <option value="8 hours">8 hours</option>
-                  <option value="Same day">Same day</option>
-                  <option value="Next business day">Next business day</option>
-                  <option value="2 business days">2 business days</option>
-                  <option value="3 business days">3 business days</option>
-                  <option value="4 business days">4 business days</option>
-                  <option value="Best effort">Best effort</option>
-                </select>
-              </td>
-              <td>
-                <select id="sla-resp-reg-onsite" class="sla-resp-select" onchange="slaUpdateRespCustom()">
-                  <option value="2 hours">2 hours</option>
-                  <option value="4 hours">4 hours</option>
-                  <option value="6 hours">6 hours</option>
-                  <option value="8 hours">8 hours</option>
-                  <option value="12 hours">12 hours</option>
-                  <option value="24 hours">24 hours</option>
-                  <option value="Same day">Same day</option>
-                  <option value="Next business day">Next business day</option>
-                  <option value="2 business days">2 business days</option>
-                  <option value="3 business days" selected>3 business days</option>
-                  <option value="4 business days">4 business days</option>
-                  <option value="Best effort">Best effort</option>
-                </select>
-              </td>
-              <td>Calls placed during business hours (M–F 7 am–5 pm), non-emergency conditions</td>
+              <td><span class="sla-badge sla-badge-green">General</span></td>
+              <td>Scheduled at the next available date</td>
+              <td>General rate for the time classification of the work</td>
             </tr>
             <tr>
-              <td><span class="sla-badge sla-badge-amber">After Hours</span></td>
-              <td>
-                <select id="sla-resp-ah-triage" class="sla-resp-select" onchange="slaUpdateRespCustom()"><option value="15 minutes">15 minutes</option><option value="30 minutes">30 minutes</option><option value="45 minutes">45 minutes</option>
-                  <option value="1 hour">1 hour</option>
-                  <option value="2 hours">2 hours</option>
-                  <option value="4 hours" selected>4 hours</option>
-                  <option value="8 hours">8 hours</option>
-                  <option value="Same day">Same day</option>
-                  <option value="Next business day">Next business day</option>
-                  <option value="2 business days">2 business days</option>
-                  <option value="3 business days">3 business days</option>
-                  <option value="4 business days">4 business days</option>
-                  <option value="Best effort">Best effort</option>
-                  <option value="Not included">Not included</option>
-                </select>
-              </td>
-              <td>
-                <select id="sla-resp-ah-onsite" class="sla-resp-select" onchange="slaUpdateRespCustom()">
-                  <option value="2 hours">2 hours</option>
-                  <option value="4 hours">4 hours</option>
-                  <option value="6 hours">6 hours</option>
-                  <option value="8 hours">8 hours</option>
-                  <option value="12 hours">12 hours</option>
-                  <option value="24 hours">24 hours</option>
-                  <option value="Same day">Same day</option>
-                  <option value="Next business day" selected>Next business day</option>
-                  <option value="2 business days">2 business days</option>
-                  <option value="3 business days">3 business days</option>
-                  <option value="4 business days">4 business days</option>
-                  <option value="Best effort">Best effort</option>
-                  <option value="Not included">Not included</option>
-                </select>
-              </td>
-              <td>Calls placed evenings, weekends, or observed holidays — non-critical</td>
+              <td><span class="sla-badge sla-badge-amber">Expedited</span></td>
+              <td>Service completed within 4 business days</td>
+              <td>Expedited rate for the time classification of the work</td>
             </tr>
             <tr>
               <td><span class="sla-badge sla-badge-red">Emergency</span></td>
-              <td>
-                <select id="sla-resp-em-triage" class="sla-resp-select" onchange="slaUpdateRespCustom()"><option value="15 minutes">15 minutes</option><option value="30 minutes">30 minutes</option><option value="45 minutes">45 minutes</option>
-                  <option value="1 hour">1 hour</option>
-                  <option value="2 hours">2 hours</option>
-                  <option value="4 hours" selected>4 hours</option>
-                  <option value="8 hours">8 hours</option>
-                  <option value="Same day">Same day</option>
-                  <option value="Next business day">Next business day</option>
-                  <option value="2 business days">2 business days</option>
-                  <option value="3 business days">3 business days</option>
-                  <option value="4 business days">4 business days</option>
-                  <option value="Best effort">Best effort</option>
-                </select>
-              </td>
-              <td>
-                <select id="sla-resp-em-onsite" class="sla-resp-select" onchange="slaUpdateRespCustom()">
-                  <option value="2 hours">2 hours</option>
-                  <option value="4 hours">4 hours</option>
-                  <option value="6 hours">6 hours</option>
-                  <option value="8 hours" selected>8 hours</option>
-                  <option value="12 hours">12 hours</option>
-                  <option value="24 hours">24 hours</option>
-                  <option value="Same day">Same day</option>
-                  <option value="Next business day">Next business day</option>
-                  <option value="2 business days">2 business days</option>
-                  <option value="3 business days">3 business days</option>
-                  <option value="4 business days">4 business days</option>
-                  <option value="Best effort">Best effort</option>
-                </select>
-              </td>
-              <td>System down, life-safety failure, access breach, panel offline — any time</td>
+              <td>Same-day service</td>
+              <td>Emergency rate for the time classification of the work &middot; portal to portal</td>
             </tr>
           </tbody>
         </table>
-        <div style="margin-top:12px;">
-          <div style="font-size:10px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#e8620a;margin-bottom:6px;">Custom Call-Outs</div>
-          <div style="font-size:11px;color:var(--text3);margin-bottom:8px;line-height:1.5;">Add named response commitments outside the standard tiers (meeting support, lockdown response, etc.). Rate &times; hours is spread into the SLA rate and billing frequency, and each prints on the proposal as its own response and budget line.</div>
-          <div id="sla-co-list"></div>
-          <button type="button" class="sla-co-add" onclick="slaCoAdd()">+ Add custom call-out</button>
+        <div class="sla-pkg-commit" id="sla-pkg-commit"></div>
+
+        <div style="margin-top:14px;">
+          <div style="font-size:10px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#e8620a;margin-bottom:6px;">Customer Priority Mapping <span style="color:var(--text3);font-weight:500;text-transform:none;letter-spacing:0;">(optional)</span></div>
+          <div style="font-size:11px;color:var(--text3);margin-bottom:8px;line-height:1.5;">When a customer brings its own priority levels (for example P1&ndash;P4), map each one to a Point 1 request type. The mapping prints on the proposal and agreement; the response windows and rates stay standard.</div>
+          <div class="sla-map-head" id="sla-map-head" style="display:none;"><div>Customer priority</div><div>Customer description</div><div>Point 1 request type</div><div></div></div>
+          <div id="sla-map-list"></div>
+          <button type="button" class="sla-map-add" onclick="slaMapAdd()">+ Add customer priority</button>
         </div>
       </div>
 
@@ -3454,9 +3288,9 @@
           <tbody>
             <tr><td>User-caused damage</td><td>Broken keypads, cut wires, physical damage, vandalism — billed T&amp;M outside SLA scope</td></tr>
             <tr><td>Third-party failures</td><td>ISP outages, utility power failures, customer-managed network or IT infrastructure</td></tr>
-            <tr><td>Consumables</td><td>Replacement batteries (beyond first), fobs, cards — billed separately unless Full Coverage tier</td></tr>
+            <tr><td>Consumables</td><td>Replacement batteries (beyond first), fobs, cards — billed separately</td></tr>
             <tr><td>Additions &amp; expansions</td><td>New doors, cameras, zones, or upgrades are separate change orders not covered under existing SLA</td></tr>
-            <tr><td>After-hours surcharge</td><td>Standard and Basic tier dispatch outside M–F 8 am–5 pm is subject to 1.5× labor rate</td></tr>
+            <tr><td>After-hours work</td><td>Work performed outside M–F 7:00 am–3:30 pm (excluding holidays) is billed at the time-and-a-half or double-time rate on the T&amp;M rate sheet</td></tr>
             <tr><td>False alarm fines</td><td>Customer is solely responsible for all municipal or county false alarm fines or permit fees</td></tr>
           </tbody>
         </table>
@@ -3539,7 +3373,6 @@
             <select id="sla-billing-cycle" onchange="slaBillingCycleChanged()">
               <option value="monthly">Monthly</option>
               <option value="quarterly">Quarterly</option>
-              <option value="annual">Annual (prepaid)</option>
             </select>
           </div>
           <div class="sla-field">
@@ -3772,22 +3605,8 @@ function applyRateDefaults(){
       brNotes[bi].textContent = '@ $' + P1_RATES.laborBillDefault + '/hr';
     }
   }
-  var tr = P1_RATES.tierRates;
-  var lblEl = document.getElementById('slaRateNoteLabel');
-  if (lblEl) lblEl.textContent = P1_RATES.tierRatesLabel ? ' (' + P1_RATES.tierRatesLabel + ')' : '';
-  var noteEl = document.getElementById('slaRateNoteDyn');
-  if (noteEl && tr && tr.essential && tr.priority && tr.premier){
-    function _tierTxt(name, t){
-      return '\u00A0 <u>' + name + ':</u> Straight $' + Number(t.st).toFixed(2) +
-             ' \u00B7 T&amp;H $' + Number(t.th).toFixed(2) +
-             ' \u00B7 DT $' + Number(t.dt).toFixed(2) + '/hr';
-    }
-    noteEl.innerHTML =
-      _tierTxt('Essential', tr.essential) +
-      '\u00A0|\u00A0' + _tierTxt('Priority', tr.priority) +
-      '\u00A0|\u00A0' + _tierTxt('Premier', tr.premier) +
-      '\u00A0|\u00A0 <u>PM visits (all tiers):</u> $' + Number(P1_RATES.pmVisitRate||0).toFixed(2) + '/hr';
-  }
+  // SLA Creator rate note — built from the T&M rate sheet (see slaRenderRateNote)
+  if (typeof slaRenderRateNote === 'function') slaRenderRateNote();
 }
 const num = id => { const el = $(id); return el ? (parseFloat(el.value) || 0) : 0; };
 const money = v => {
@@ -7269,7 +7088,7 @@ function gatherEstimateData() {
 
   // ── SLA Creator data ──
   var slaFields = ['sla-agr-num','sla-agr-date','sla-cs-acct','sla-rmr-monthly','sla-rmr-pm',
-    'sla-bud-reg-hrs','sla-bud-ah-hrs','sla-bud-em-hrs','sla-bud-mat-amt',
+    'sla-bud-gen-hrs','sla-bud-exp-hrs','sla-bud-emg-hrs','sla-bud-mat-amt',
     'sla-start-date','sla-end-date','sla-custom-months','sla-notes'];
   data.slaFields = {};
   slaFields.forEach(function(id) {
@@ -7278,20 +7097,18 @@ function gatherEstimateData() {
   });
 
   var slaSelects = ['sla-agr-term','sla-duration','sla-billing-cycle','sla-auto-renew',
-    'sla-bud-reg-rate','sla-bud-ah-rate','sla-bud-em-rate',
-    'sla-resp-reg-triage','sla-resp-reg-onsite',
-    'sla-resp-ah-triage','sla-resp-ah-onsite',
-    'sla-resp-em-triage','sla-resp-em-onsite'];
+    'sla-bud-gen-tc','sla-bud-exp-tc','sla-bud-emg-tc','sla-rate-sheet'];
   data.slaSelects = {};
   slaSelects.forEach(function(id) {
     var el = document.getElementById(id);
     if (el) data.slaSelects[id] = el.value;
   });
+  var _sheetEl = document.getElementById('sla-rate-sheet');
+  data.slaSheetUserSet = !!(_sheetEl && _sheetEl.dataset.userSet === '1');
 
-  // Operational configurator (Phase 1)
-  if (typeof slaOpsGather === 'function') data.slaOps = slaOpsGather();
+  // PM Builder + customer priority mapping
   if (typeof slaPmGather === 'function') data.slaPm = slaPmGather();
-  if (typeof slaCoGather === 'function') data.slaCallouts = slaCoGather();
+  if (typeof slaMapGather === 'function') data.slaPriorityMap = slaMapGather();
 
   // Active tier
   var activeTierCard = document.querySelector('.sla-tier-card.active');
@@ -7782,6 +7599,16 @@ function restoreEstimateData(data) {
 
   // ── Restore SLA Creator data ──
   if (data.slaFields) {
+    // Older files used Regular / After-hours / Emergency budget rows priced at package rates.
+    // Carry their hours onto the rate-sheet rows: Regular → General (straight time),
+    // After hours → General (time and a half) when General is otherwise empty,
+    // Emergency → Emergency (double time).
+    var _f = data.slaFields, _sl = data.slaSelects = data.slaSelects || {};
+    if (_f['sla-bud-gen-hrs'] == null && (_f['sla-bud-reg-hrs'] || _f['sla-bud-ah-hrs'] || _f['sla-bud-em-hrs'])) {
+      if (_f['sla-bud-reg-hrs']) { _f['sla-bud-gen-hrs'] = _f['sla-bud-reg-hrs']; _sl['sla-bud-gen-tc'] = 'st'; }
+      else if (_f['sla-bud-ah-hrs']) { _f['sla-bud-gen-hrs'] = _f['sla-bud-ah-hrs']; _sl['sla-bud-gen-tc'] = 'th'; }
+      if (_f['sla-bud-em-hrs']) { _f['sla-bud-emg-hrs'] = _f['sla-bud-em-hrs']; _sl['sla-bud-emg-tc'] = 'dt'; }
+    }
     Object.keys(data.slaFields).forEach(function(id) {
       var el = document.getElementById(id);
       if (!el) return;
@@ -7795,10 +7622,25 @@ function restoreEstimateData(data) {
   }
   if (data.slaSelects) {
     Object.keys(data.slaSelects).forEach(function(id) {
-      var el = document.getElementById(id); if (el) el.value = data.slaSelects[id];
+      var el = document.getElementById(id); if (!el) return;
+      var v = data.slaSelects[id];
+      if (id === 'sla-billing-cycle' && v === 'annual') v = 'quarterly';   // annual prepaid retired
+      if (el.classList && el.classList.contains('sla-bud-tc')) el.setAttribute('data-pending', v);
+      el.value = v;
     });
+    var _sh = document.getElementById('sla-rate-sheet');
+    if (_sh) _sh.dataset.userSet = data.slaSheetUserSet ? '1' : '';
+    // Sync the Mo/Qtr toggle to the saved billing cycle without converting the saved rate.
+    var _cyc = (document.getElementById('sla-billing-cycle')||{}).value === 'quarterly' ? 'quarterly' : 'monthly';
+    if (typeof _slaFreqState === 'object') _slaFreqState.freq = _cyc;
+    document.querySelectorAll('.sla-rate-btn[data-freq]').forEach(function(btn){
+      btn.classList.toggle('active', btn.getAttribute('data-freq') === _cyc);
+    });
+    var _rl = document.getElementById('sla-rate-label');
+    if (_rl) _rl.textContent = _cyc === 'quarterly' ? 'Quarterly SLA Rate' : 'Monthly SLA Rate';
   }
-  // Restore active tier
+  if (typeof slaBuildRateSelects === 'function') { slaBuildRateSelects(); slaRenderRateNote(); }
+  // Restore active package
   if (data.slaTier) {
     document.querySelectorAll('.sla-tier-card').forEach(function(card) {
       var _cn = card.querySelector('.sla-tier-name').textContent.trim();
@@ -7806,43 +7648,9 @@ function restoreEstimateData(data) {
     });
     var activeTC = document.querySelector('.sla-tier-card.active');
     if (activeTC && typeof slaSelectTier === 'function') slaSelectTier(activeTC);
-    // slaSelectTier resets response-time dropdowns to tier defaults — re-apply the
-    // user's saved values so customizations survive a reload.
-    if (data.slaSelects) {
-      var respIds = ['sla-resp-reg-triage','sla-resp-reg-onsite',
-                     'sla-resp-ah-triage','sla-resp-ah-onsite',
-                     'sla-resp-em-triage','sla-resp-em-onsite'];
-      var tierDefaults = {
-        'Essential': {
-          'sla-resp-reg-triage':'Next business day', 'sla-resp-reg-onsite':'Best effort',
-          'sla-resp-ah-triage':'Same day',           'sla-resp-ah-onsite':'Best effort',
-          'sla-resp-em-triage':'Same day',           'sla-resp-em-onsite':'Best effort'
-        },
-        'Priority': {
-          'sla-resp-reg-triage':'4 hours',      'sla-resp-reg-onsite':'3 business days',
-          'sla-resp-ah-triage':'4 hours',       'sla-resp-ah-onsite':'Next business day',
-          'sla-resp-em-triage':'4 hours',       'sla-resp-em-onsite':'8 hours'
-        },
-        'Premier': {
-          'sla-resp-reg-triage':'2 hours',      'sla-resp-reg-onsite':'12 hours',
-          'sla-resp-ah-triage':'2 hours',       'sla-resp-ah-onsite':'6 hours',
-          'sla-resp-em-triage':'2 hours',       'sla-resp-em-onsite':'4 hours'
-        }
-      };
-      respIds.forEach(function(id){
-        var el = document.getElementById(id);
-        if (el && data.slaSelects[id]) {
-          el.value = data.slaSelects[id];
-          var def = (tierDefaults[data.slaTier] || {})[id];
-          if (def && def !== data.slaSelects[id]) el.classList.add('tier-modified');
-        }
-      });
-    }
   }
-  // Restore active systems + PM blocks
-  if (data.slaOps && typeof slaOpsRestore === 'function') slaOpsRestore(data.slaOps);
   if (data.slaPm && typeof slaPmRestore === 'function') slaPmRestore(data.slaPm);
-  if (data.slaCallouts && typeof slaCoRestore === 'function') slaCoRestore(data.slaCallouts);
+  if (typeof slaMapRestore === 'function') slaMapRestore(data.slaPriorityMap || []);
   if (window.slaRevealAll) setTimeout(window.slaRevealAll, 30);
   if (typeof slaUpdateRunningTotal === 'function') setTimeout(slaUpdateRunningTotal, 50);
 
@@ -8619,17 +8427,12 @@ function rebuildDropdowns() {
 }
 function initAppAfterRates() {
   rebuildDropdowns();
-  // P1_RATES is now loaded from Supabase — rebuild the SLA rate table from it.
-  if (typeof SLA_RATES !== 'undefined') {
-    SLA_RATES.stdStraight    = P1_RATES.svcStraight;
-    SLA_RATES.stdTimeAndHalf = P1_RATES.svcTimeAndHalf;
-    SLA_RATES.stdDoubleTime  = P1_RATES.svcDoubleTime;
-    SLA_RATES.priStraight    = P1_RATES.svcStraight    * P1_RATES.priorityMultiplier;
-    SLA_RATES.priTimeAndHalf = P1_RATES.svcTimeAndHalf * P1_RATES.priorityMultiplier;
-    SLA_RATES.priDoubleTime  = P1_RATES.svcDoubleTime  * P1_RATES.priorityMultiplier;
-    SLA_RATES.premStraight    = P1_RATES.svcStraight    * P1_RATES.premierMultiplier;
-    SLA_RATES.premTimeAndHalf = P1_RATES.svcTimeAndHalf * P1_RATES.premierMultiplier;
-    SLA_RATES.premDoubleTime  = P1_RATES.svcDoubleTime  * P1_RATES.premierMultiplier;
+  // P1_RATES is now loaded from Supabase — the SLA Creator prices from the T&M rate sheet in it.
+  if (typeof slaBuildRateSelects === 'function') {
+    slaBuildRateSelects();
+    slaRenderPackages();
+    var _pk = document.querySelector('.sla-tier-card.active');
+    if (_pk) slaSelectTier(_pk);
   }
   applyRateDefaults();
   updateFireFields();
@@ -9786,6 +9589,9 @@ function slaUpdateRunningTotal() {
 }
 
 function slaSetFreq(newFreq) {
+  // SLA billing is monthly or quarterly only (annual prepaid was retired).
+  if (newFreq === 'annual') newFreq = 'quarterly';
+  if (newFreq !== 'quarterly') newFreq = 'monthly';
   var input     = document.getElementById('sla-rmr-monthly');
   var labelEl   = document.getElementById('sla-rate-label');
   var subEl     = document.getElementById('sla-rate-sub');
@@ -9867,8 +9673,329 @@ function slaRateInput() {
   if (typeof slaUpdateRunningTotal === 'function') slaUpdateRunningTotal();
 }
 
-// ── SLA RATE CONSTANTS (Dec 2025–Nov 2026) ──
-var SLA_RATES = {};  // populated by initAppAfterRates() once P1_RATES is loaded from Supabase
+// ── SLA RATE CONSTANTS (legacy holder — the SLA Creator now reads the T&M rate sheet below) ──
+var SLA_RATES = {};
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  SLA PACKAGES + T&M RATE SHEET
+//  Packages (Essential / Priority / Premier) set what's included. Every package
+//  can use all three request types. Every rate comes from the T&M rate sheet —
+//  the package never changes a rate.
+// ═══════════════════════════════════════════════════════════════════════════
+var SLA_PACKAGE_DEFAULTS = {
+  essential: { key:'essential', name:'Essential', tier:'Tier I',   pmVisits:1,
+               triage:'Next business day', emergencyCoverage:'Business hours',
+               scheduling:'Standard queue', budgetRequired:false, budgetMinHours:0,
+               reporting:'PM report', addons:'Add-on' },
+  priority:  { key:'priority',  name:'Priority',  tier:'Tier II',  pmVisits:2,
+               triage:'4 business hours', emergencyCoverage:'Business hours + after hours',
+               scheduling:'Ahead of T&M customers', budgetRequired:true, budgetMinHours:40,
+               reporting:'PM report + annual system health review', addons:'Add-on' },
+  premier:   { key:'premier',   name:'Premier',   tier:'Tier III', pmVisits:4,
+               triage:'2 hours, 24/7', emergencyCoverage:'24/7/365',
+               scheduling:'Front of queue', budgetRequired:true, budgetMinHours:96,
+               reporting:'Quarterly account review + firmware/lifecycle plan', addons:'Add-on' }
+};
+var SLA_REQ_TYPES = [
+  { key:'general',   id:'gen', name:'General',   response:'Scheduled at the next available date' },
+  { key:'expedited', id:'exp', name:'Expedited', response:'Service completed within 4 business days' },
+  { key:'emergency', id:'emg', name:'Emergency', response:'Same-day service' }
+];
+var SLA_TIME_CLASSES = [
+  { key:'st', name:'Straight time' },
+  { key:'th', name:'Time and a half' },
+  { key:'dt', name:'Double time' }
+];
+var SLA_MINIMUMS_TEXT = 'General and Expedited Service are billed from arrival onsite to departure, with a four-hour minimum and no separate travel charge. Emergency Service is billed portal to portal with a four-hour minimum. Remote service is billed at a two-hour minimum.';
+
+// Package definitions — Supabase config (P1_RATES.slaPackages) can override any field.
+function slaPackage(key){
+  var base = SLA_PACKAGE_DEFAULTS[key] || SLA_PACKAGE_DEFAULTS.priority;
+  var ov = (P1_RATES && P1_RATES.slaPackages && P1_RATES.slaPackages[base.key]) || {};
+  var out = {}; Object.keys(base).forEach(function(k){ out[k] = base[k]; });
+  Object.keys(ov).forEach(function(k){ out[k] = ov[k]; });
+  return out;
+}
+function slaActivePkgKey(){
+  var card = document.querySelector('.sla-tier-card.active');
+  if (!card) return 'priority';
+  var k = card.getAttribute('data-pkg');
+  if (k) return k;
+  var n = (card.querySelector('.sla-tier-name')||{}).textContent || '';
+  n = n.trim().toLowerCase();
+  return n.indexOf('essential')>=0 ? 'essential' : n.indexOf('premier')>=0 ? 'premier' : 'priority';
+}
+function slaActivePkg(){ return slaPackage(slaActivePkgKey()); }
+
+// ── Rate sheet ────────────────────────────────────────────────────────────
+// Preferred source: P1_RATES.tmRateSheet (Supabase app_rates config):
+//   { standard: [ {label, start:'YYYY-MM-DD', end:'YYYY-MM-DD',
+//                  general:{st,th,dt}, expedited:{st,th,dt}, emergency:{st,th,dt}} , ... ],
+//     sf:       [ same shape, Local 6 rates ] }
+// Fallback (until that key is added): the legacy tierRates, read as
+//   essential → General, priority → Expedited, premier → Emergency.
+function slaParseISO(s){
+  var m = String(s||'').match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+  return m ? new Date(+m[1], +m[2]-1, +m[3]) : null;
+}
+function slaParseMDY(s){
+  var p = String(s||'').replace(/[^0-9]/g,'/').split('/').filter(Boolean);
+  if (p.length < 3) return null;
+  var m=+p[0], d=+p[1], y=+p[2];
+  if (!m || !d || !y || y < 2000) return null;
+  return new Date(y, m-1, d);
+}
+function slaFmtDateLong(dt){
+  if (!dt) return '';
+  var M=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  return M[dt.getMonth()] + ' ' + dt.getDate() + ', ' + dt.getFullYear();
+}
+function slaSheetKey(){
+  var el = document.getElementById('sla-rate-sheet');
+  return (el && el.value === 'sf') ? 'sf' : 'standard';
+}
+function slaSheetName(k){ return (k||slaSheetKey()) === 'sf' ? 'San Francisco (Local 6)' : 'Standard'; }
+function slaRateSource(){
+  var cfg = P1_RATES && P1_RATES.tmRateSheet;
+  return (cfg && cfg.standard && cfg.standard.length) ? 'sheet' : 'legacy';
+}
+function slaRatePeriods(sheetKey){
+  sheetKey = sheetKey || slaSheetKey();
+  var cfg = P1_RATES && P1_RATES.tmRateSheet;
+  function norm(p, i){
+    function r(x){ x = x||{}; return { st:Number(x.st)||0, th:Number(x.th)||0, dt:Number(x.dt)||0 }; }
+    return { label: p.label || ('Period ' + (i+1)), start: slaParseISO(p.start), end: slaParseISO(p.end),
+             general: r(p.general), expedited: r(p.expedited), emergency: r(p.emergency) };
+  }
+  if (cfg && cfg.standard && cfg.standard.length){
+    var list = (sheetKey === 'sf' && cfg.sf && cfg.sf.length) ? cfg.sf : cfg.standard;
+    return list.map(norm).sort(function(a,b){ return (a.start||0) - (b.start||0); });
+  }
+  var tr = (P1_RATES && P1_RATES.tierRates) || {};
+  return [ norm({ label: P1_RATES && P1_RATES.tierRatesLabel ? P1_RATES.tierRatesLabel : 'Current rates',
+                  general: tr.essential, expedited: tr.priority, emergency: tr.premier }, 0) ];
+}
+function slaPeriodFor(dt, sheetKey){
+  var ps = slaRatePeriods(sheetKey);
+  if (!ps.length) return null;
+  dt = dt || new Date();
+  for (var i = 0; i < ps.length; i++){
+    var p = ps[i];
+    if ((!p.start || p.start <= dt) && (!p.end || dt <= p.end)) return p;
+  }
+  // Outside every published period: before the first → first; after the last → last.
+  if (ps[0].start && dt < ps[0].start) return ps[0];
+  return ps[ps.length-1];
+}
+function slaStartDate(){
+  var el = document.getElementById('sla-start-date');
+  return slaParseMDY(el && el.value) || new Date();
+}
+function slaEndDate(){
+  var el = document.getElementById('sla-end-date');
+  return slaParseMDY(el && el.value);
+}
+function slaCurrentPeriod(){ return slaPeriodFor(slaStartDate()); }
+// Rate for a request type + time classification, from the period covering the agreement start.
+function slaRate(reqKey, tcKey, period){
+  period = period || slaCurrentPeriod();
+  if (!period || !period[reqKey]) return 0;
+  return Number(period[reqKey][tcKey]) || 0;
+}
+// Every period the agreement term touches (start → end), for the rate schedule.
+function slaTermPeriods(){
+  var ps = slaRatePeriods();
+  var s = slaStartDate(), e = slaEndDate() || s;
+  var out = ps.filter(function(p){
+    return (!p.end || p.end >= s) && (!p.start || p.start <= e);
+  });
+  if (!out.length){ var p0 = slaPeriodFor(s); if (p0) out = [p0]; }
+  return out;
+}
+function slaTermExtendsPastSheet(){
+  var ps = slaRatePeriods(), e = slaEndDate();
+  if (!ps.length || !e) return false;
+  var last = ps[ps.length-1];
+  return !!(last.end && e > last.end);
+}
+function slaMoney(n){ return '$' + (Number(n)||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+function slaPeriodRange(p){
+  if (!p || !p.start || !p.end) return '';
+  var M=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  function f(d){ return M[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear(); }
+  return f(p.start) + ' – ' + f(p.end);
+}
+
+// PM labor: General straight time from the rate sheet.
+function slaPmRate(){ return slaRate('general','st'); }
+
+// Budget minimum for the active package, valued at General straight time.
+function slaBudgetMinCheck(){
+  var pkg = slaActivePkg();
+  var stRate = slaRate('general','st');
+  var min = pkg.budgetRequired ? (Number(pkg.budgetMinHours)||0) * stRate : 0;
+  var budget = slaServiceBudget();
+  return { pkg:pkg, required:!!pkg.budgetRequired, min:min, minHours:Number(pkg.budgetMinHours)||0,
+           budget:budget, ok: !pkg.budgetRequired || (budget + 0.005) >= min };
+}
+
+// Build the time-classification selects in the budget table (value = st/th/dt, label shows the sheet rate).
+function slaBuildRateSelects(){
+  var period = slaCurrentPeriod();
+  document.querySelectorAll('select.sla-bud-tc').forEach(function(sel){
+    var req = sel.getAttribute('data-req');
+    var cur = sel.value || sel.getAttribute('data-pending') || 'st';
+    sel.removeAttribute('data-pending');
+    sel.innerHTML = SLA_TIME_CLASSES.map(function(tc){
+      var r = slaRate(req, tc.key, period);
+      return '<option value="'+tc.key+'">'+tc.name+' · '+slaMoney(r)+'</option>';
+    }).join('');
+    sel.value = (['st','th','dt'].indexOf(cur) >= 0) ? cur : 'st';
+  });
+}
+
+// One-line rate sheet note under the budget table.
+function slaRenderRateNote(){
+  var el = document.getElementById('slaRateNoteDyn');
+  if (!el) return;
+  var p = slaCurrentPeriod();
+  if (!p){ el.innerHTML = '&nbsp; Rates not loaded.'; return; }
+  function trio(r){ return slaMoney(r.st) + ' / ' + slaMoney(r.th) + ' / ' + slaMoney(r.dt); }
+  var warn = '';
+  if (slaRateSource() === 'legacy')
+    warn = ' <span class="sla-rate-warn">&middot; Rate sheet not found in config &mdash; using legacy tier rates. Add <code>tmRateSheet</code> to app_rates.</span>';
+  else if (slaSheetKey() === 'sf' && !(P1_RATES.tmRateSheet.sf && P1_RATES.tmRateSheet.sf.length))
+    warn = ' <span class="sla-rate-warn">&middot; SF rates missing from config &mdash; showing Standard.</span>';
+  if (slaSheetKey() === 'sf' && !slaIsLocal6Job())
+    warn += ' <span class="sla-rate-warn">&middot; Local 6 rates apply only to fire alarm services in San Francisco.</span>';
+  el.innerHTML = '&nbsp; ' + (p.label||'') + (slaPeriodRange(p) ? ' (' + slaPeriodRange(p) + ')' : '') +
+    ' &nbsp;|&nbsp; <u>General</u> ' + trio(p.general) +
+    ' &nbsp;|&nbsp; <u>Expedited</u> ' + trio(p.expedited) +
+    ' &nbsp;|&nbsp; <u>Emergency</u> ' + trio(p.emergency) +
+    ' <span style="color:var(--text3);">(ST / TH / DT per hr)</span>' +
+    ' &nbsp;|&nbsp; Min: 4 hrs per call &middot; Emergency portal to portal &middot; Remote 2 hrs' + warn;
+}
+
+// Package card bodies + section 6 commitments strip.
+function slaRenderPackages(){
+  document.querySelectorAll('.sla-tier-card').forEach(function(card){
+    var pkg = slaPackage(card.getAttribute('data-pkg'));
+    var body = card.querySelector('.sla-tier-body');
+    var sub  = card.querySelector('.sla-tier-sub');
+    if (sub) sub.textContent = pkg.tier;
+    if (!body) return;
+    function row(l, v){ return '<div class="sla-tier-row"><span>'+l+'</span><strong>'+v+'</strong></div>'; }
+    var budget = pkg.budgetRequired ? ('Required &middot; min ' + pkg.budgetMinHours + ' hrs') : 'Optional';
+    body.innerHTML =
+      row('PM visits', pkg.pmVisits + '× per year') +
+      row('Triage', pkg.triage) +
+      row('Emergency coverage', pkg.emergencyCoverage) +
+      row('Scheduling', pkg.scheduling) +
+      row('Service budget', budget) +
+      row('Reporting', pkg.reporting) +
+      row('Hosted server &amp; add-ons', pkg.addons);
+  });
+  var strip = document.getElementById('sla-pkg-commit');
+  if (strip){
+    var a = slaActivePkg();
+    function item(l, v){ return '<div class="sla-pkg-commit-item"><div class="sla-pkg-commit-lbl">'+l+'</div><div class="sla-pkg-commit-val">'+v+'</div></div>'; }
+    strip.innerHTML = item('Triage &middot; ' + a.name, a.triage) +
+                      item('Emergency coverage', a.emergencyCoverage) +
+                      item('Scheduling', a.scheduling);
+  }
+}
+
+// Called when the start date or rate sheet changes — re-price everything from the sheet.
+function slaRatesChanged(){
+  slaBuildRateSelects();
+  slaRenderRateNote();
+  slaBudgetCalc();
+}
+
+// Local 6 (SF) rates apply only when BOTH are true: the site is in San Francisco AND the
+// work is fire alarm services (Quote Builder system type = Fire Monitoring & Services).
+// Everything else uses the Standard sheet. Auto-picked unless the rep set it by hand.
+function slaIsLocal6Job(){
+  var city = ((document.getElementById('siteCity')||{}).value || '').trim();
+  var sys  = ((document.getElementById('systemType')||{}).value || '').trim();
+  return /^san\s*francisco$|^sf$/i.test(city) && sys === 'Fire Monitoring & Services';
+}
+function slaAutoSheet(){
+  var sel = document.getElementById('sla-rate-sheet');
+  if (!sel || sel.dataset.userSet === '1') return;
+  var want = slaIsLocal6Job() ? 'sf' : 'standard';
+  if (sel.value !== want){ sel.value = want; slaRatesChanged(); }
+}
+
+// ── Customer priority mapping ─────────────────────────────────────────────
+function slaMapEsc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function slaMapAdd(d){
+  d = d || {};
+  var list = document.getElementById('sla-map-list'); if (!list) return;
+  var row = document.createElement('div');
+  row.className = 'sla-map-row';
+  row.innerHTML =
+    '<input type="text" class="sla-map-label" placeholder="e.g. P1" value="'+slaMapEsc(d.label)+'">' +
+    '<input type="text" class="sla-map-desc" placeholder="Customer’s description (optional)" value="'+slaMapEsc(d.desc)+'">' +
+    '<select class="sla-map-type">' + SLA_REQ_TYPES.map(function(t){
+      return '<option value="'+t.key+'"'+(d.type===t.key?' selected':'')+'>'+t.name+'</option>'; }).join('') + '</select>' +
+    '<button type="button" class="sla-map-rm" title="Remove" onclick="slaMapRemove(this)">×</button>';
+  list.appendChild(row);
+  slaMapHead();
+}
+function slaMapRemove(btn){ var r = btn.closest('.sla-map-row'); if (r) r.remove(); slaMapHead(); }
+function slaMapHead(){
+  var h = document.getElementById('sla-map-head');
+  if (h) h.style.display = document.querySelector('#sla-map-list .sla-map-row') ? '' : 'none';
+}
+function slaMapGather(){
+  return [].slice.call(document.querySelectorAll('#sla-map-list .sla-map-row')).map(function(r){
+    return { label:(r.querySelector('.sla-map-label').value||'').trim(),
+             desc:(r.querySelector('.sla-map-desc').value||'').trim(),
+             type:r.querySelector('.sla-map-type').value };
+  }).filter(function(m){ return m.label; });
+}
+function slaMapRestore(arr){
+  var list = document.getElementById('sla-map-list'); if (!list) return;
+  list.innerHTML = '';
+  (arr||[]).forEach(function(d){ slaMapAdd(d); });
+  slaMapHead();
+}
+function slaReqName(k){ for (var i=0;i<SLA_REQ_TYPES.length;i++) if (SLA_REQ_TYPES[i].key===k) return SLA_REQ_TYPES[i].name; return k; }
+
+// Service budget rows: [{req, name, tc, tcName, hrs, rate, amt}]
+function slaBudgetRows(){
+  var period = slaCurrentPeriod();
+  return SLA_REQ_TYPES.map(function(t){
+    var sel = document.getElementById('sla-bud-'+t.id+'-tc');
+    var hrsEl = document.getElementById('sla-bud-'+t.id+'-hrs');
+    var tc = (sel && sel.value) || 'st';
+    var hrs = hrsEl ? (parseFloat(hrsEl.value) || 0) : 0;
+    var rate = slaRate(t.key, tc, period);
+    var tcName = (SLA_TIME_CLASSES.filter(function(x){ return x.key===tc; })[0]||{}).name || '';
+    return { req:t.key, name:t.name, tc:tc, tcName:tcName, hrs:hrs, rate:rate, amt: hrs * rate };
+  });
+}
+function slaServiceBudget(){
+  return slaBudgetRows().reduce(function(a,r){ return a + r.amt; }, 0);
+}
+function slaMaterialsAmt(){
+  var el = document.getElementById('sla-bud-mat-amt');
+  return el ? (parseFloat((el.value||'').replace(/[^0-9.]/g,'')) || 0) : 0;
+}
+
+// Stop proposal/agreement generation when a required budget is below the package minimum.
+function slaGuardBudget(){
+  var c = slaBudgetMinCheck();
+  if (c.ok) return true;
+  var msg = c.pkg.name + ' requires an annual service budget of at least ' + slaMoney(c.min) +
+            ' (' + c.minHours + ' hrs at General straight time). Current budget: ' + slaMoney(c.budget) + '.';
+  if (typeof showToast === 'function') showToast(msg);
+  var sec = document.getElementById('sla-budget-section');
+  if (sec && sec.scrollIntoView) sec.scrollIntoView({behavior:'smooth', block:'center'});
+  var m = document.getElementById('sla-bud-min'); if (m){ m.classList.add('short'); }
+  return false;
+}
 
 function slaFormatCurrency(input) {
   var raw = parseFloat((input.value || '').replace(/[$,]/g,''));
@@ -9878,73 +10005,73 @@ function slaFormatCurrency(input) {
 }
 
 function slaBudgetCalc() {
-  function calcRow(rateId, hrsId, totalId) {
-    var rateEl  = document.getElementById(rateId);
-    var hrsEl   = document.getElementById(hrsId);
-    var totalEl = document.getElementById(totalId);
-    if (!rateEl || !hrsEl || !totalEl) return 0;
-    var rate = parseFloat(rateEl.value) || 0;
-    var hrs  = parseFloat(hrsEl.value)  || 0;
-    if (rate > 0 && hrs > 0) {
-      var total = rate * hrs;
-      totalEl.textContent = '$' + total.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
+  // Service budget rows — priced from the T&M rate sheet for the period covering the start date.
+  var rows = slaBudgetRows();
+  SLA_REQ_TYPES.forEach(function(t, i){
+    var totalEl = document.getElementById('sla-bud-'+t.id+'-amt');
+    if (!totalEl) return;
+    var r = rows[i];
+    if (r.amt > 0){
+      totalEl.textContent = slaMoney(r.amt);
       totalEl.style.color = 'var(--text)';
-      return total;
     } else {
-      totalEl.textContent = '—';
+      totalEl.textContent = '\u2014';
       totalEl.style.color = 'var(--text3)';
-      return 0;
+    }
+  });
+  var svcBudget = rows.reduce(function(a,r){ return a + r.amt; }, 0);
+  var totEl = document.getElementById('sla-bud-total');
+  if (totEl) totEl.textContent = slaMoney(svcBudget);
+
+  // Package minimum status
+  var c = slaBudgetMinCheck();
+  var minEl = document.getElementById('sla-bud-min');
+  if (minEl){
+    minEl.classList.remove('ok','short','na');
+    if (!c.required){
+      minEl.classList.add('na');
+      minEl.textContent = 'Budget optional for ' + c.pkg.name;
+    } else if (c.ok){
+      minEl.classList.add('ok');
+      minEl.textContent = '\u2713 Meets ' + c.pkg.name + ' minimum of ' + slaMoney(c.min) + ' (' + c.minHours + ' hrs at General ST)';
+    } else {
+      minEl.classList.add('short');
+      minEl.textContent = 'Below ' + c.pkg.name + ' minimum of ' + slaMoney(c.min) + ' (' + c.minHours + ' hrs at General ST)';
     }
   }
-  var regTotal = calcRow('sla-bud-reg-rate', 'sla-bud-reg-hrs', 'sla-bud-reg-amt');
-  var ahTotal  = calcRow('sla-bud-ah-rate',  'sla-bud-ah-hrs',  'sla-bud-ah-amt');
-  var emTotal  = calcRow('sla-bud-em-rate',  'sla-bud-em-hrs',  'sla-bud-em-amt');
 
-  // Auto-calculate the SLA Rate from all budget components
-  slaCalcSLARate(regTotal, ahTotal, emTotal);
+  slaCalcSLARate(svcBudget);
 }
 
-function slaCalcSLARate(regTotal, ahTotal, emTotal) {
-  // Determine straight time rate and visit count from selected tier
-  var tierCard    = document.querySelector('.sla-tier-card.active');
-  var tierName    = tierCard ? tierCard.querySelector('.sla-tier-name').textContent.trim().toLowerCase() : '';
-  var isEssential = tierName.indexOf('essential') >= 0;
-  var isPriority  = tierName.indexOf('priority')  >= 0;
-  var isPremier   = tierName.indexOf('premier')   >= 0;
-  // PM visits always billed at the standard straight rate regardless of tier
-  var pmStraightRate = P1_RATES.pmVisitRate;
-  // All tiers now support selectable visit counts
-  var visitCount = _slaPMVisits || 1;
+function slaCalcSLARate(svcBudget) {
+  // PM: visits set by the package, billed separately at General straight time.
+  var pkg = slaActivePkg();
+  var pmStraightRate = slaPmRate();
+  var visitCount = _slaPMVisits || pkg.pmVisits || 1;
 
   var pmEl   = document.getElementById('sla-rmr-pm');
   var pmHrs  = pmEl ? (parseFloat(pmEl.value) || 0) : 0;
   var pmVal  = pmHrs * visitCount * pmStraightRate;
 
-  // Update PM sub-label
   var pmSub = document.getElementById('sla-pm-calc-sub');
   if (pmSub) {
     if (pmHrs > 0) {
-      var visitLabel = visitCount > 1 ? visitCount + ' visits × ' + pmHrs + ' hrs' : pmHrs + ' hrs';
-      pmSub.textContent = visitLabel + ' × $' + pmStraightRate.toFixed(2) + ' = $' + pmVal.toFixed(2);
+      pmSub.textContent = visitCount + ' visit' + (visitCount > 1 ? 's' : '') + ' \u00D7 ' + pmHrs + ' hrs \u00D7 ' + slaMoney(pmStraightRate) + ' = ' + slaMoney(pmVal) + ' \u00B7 billed separately';
     } else {
-      pmSub.textContent = 'Hrs/visit × ' + visitCount + ' visit' + (visitCount > 1 ? 's' : '') + ' × $' + Number(P1_RATES.pmVisitRate||0).toFixed(2) + '/hr straight';
+      pmSub.textContent = 'Hrs/visit \u00D7 ' + visitCount + ' visit' + (visitCount > 1 ? 's' : '') + ' \u00D7 ' + slaMoney(pmStraightRate) + '/hr General ST \u00B7 billed separately';
     }
   }
 
-  var matEl  = document.getElementById('sla-bud-mat-amt');
-  var matVal = matEl ? (parseFloat(matEl.value.replace(/[^0-9.]/g,'')) || 0) : 0;
-
-  var annualTotal = pmVal + (regTotal || 0) + (ahTotal || 0) + (emTotal || 0) + matVal + (typeof slaCalloutTotal==='function'?slaCalloutTotal():0);
+  var matVal = slaMaterialsAmt();
+  var annualTotal = pmVal + (svcBudget || 0) + matVal;
   if (annualTotal <= 0) return;
 
   // Convert annual total to monthly base, then display per selected frequency
   var monthlyBase = annualTotal / 12;
   _slaFreqState.monthlyBase = monthlyBase;
 
-  var freq = _slaFreqState.freq;
-  var displayVal = freq === 'monthly'   ? monthlyBase :
-                   freq === 'quarterly' ? monthlyBase * 3 :
-                   monthlyBase * 12;
+  var freq = _slaFreqState.freq === 'quarterly' ? 'quarterly' : 'monthly';
+  var displayVal = freq === 'monthly' ? monthlyBase : monthlyBase * 3;
 
   var input = document.getElementById('sla-rmr-monthly');
   if (input) {
@@ -9955,8 +10082,8 @@ function slaCalcSLARate(regTotal, ahTotal, emTotal) {
   }
   var subEl = document.getElementById('sla-rate-sub');
   if (subEl) {
-    var freqLabel = freq === 'monthly' ? 'per month' : freq === 'quarterly' ? 'per quarter' : 'per year';
-    subEl.textContent = 'Auto-calculated from budget · ' + freqLabel;
+    var freqLabel = freq === 'monthly' ? 'per month' : 'per quarter';
+    subEl.textContent = 'Auto-calculated from budget + PM \u00B7 ' + freqLabel;
   }
   if (typeof slaUpdateRunningTotal === 'function') slaUpdateRunningTotal();
 }
@@ -10096,6 +10223,8 @@ function slaCalNextMonth() {
 }
 
 function slaCalcEndDate() {
+  // The rate period follows the agreement start date — re-price from the sheet.
+  if (typeof slaRatesChanged === 'function') setTimeout(slaRatesChanged, 0);
   var startRaw  = (document.getElementById('sla-start-date') || {}).value || '';
   var durSelect = document.getElementById('sla-duration');
   var durVal    = durSelect ? durSelect.value : '';
@@ -10200,6 +10329,7 @@ function slaSyncCustomer() {
     numEl.value = 'SLA-' + d.getFullYear() + '-' + slug + '-' +
                   Math.floor(Math.random()*900+100);
   }
+  if (typeof slaAutoSheet === 'function') slaAutoSheet();
 }
 
 function slaToggleSys(card) {
@@ -10242,138 +10372,38 @@ function slaPMToggle(headerEl) {
   if (body) body.style.display = isOpen ? 'none' : 'block';
 }
 
-var _slaPMVisits = 1; // default — all tiers start at 1 visit
+var _slaPMVisits = 2; // set by the package (Essential 1, Priority 2, Premier 4)
 
 function slaPMSetVisits(n) {
   _slaPMVisits = n;
-  document.querySelectorAll('[data-visits]').forEach(function(btn) {
-    btn.classList.toggle('active', parseInt(btn.getAttribute('data-visits')) === n);
-  });
+  var lbl = document.getElementById('sla-pm-visits-lbl');
+  if (lbl) lbl.textContent = String(n);
   slaBudgetCalc();
 }
 
 function slaSelectTier(card) {
-  document.querySelectorAll('.sla-tier-card').forEach(c => c.classList.remove('active'));
+  document.querySelectorAll('.sla-tier-card').forEach(function(c){ c.classList.remove('active'); });
   card.classList.add('active');
-
-  var tierName    = card.querySelector('.sla-tier-name').textContent.trim().toLowerCase();
-  var isEssential = tierName.indexOf('essential') >= 0;
-  var isPriority  = tierName.indexOf('priority')  >= 0;
-  var isPremier   = tierName.indexOf('premier')   >= 0;
-
-  // Show/configure visit count selector for Priority (1-2) and Premier (2-4)
-  var visitWrap = document.getElementById('sla-pm-visit-wrap');
-  var btn1 = document.getElementById('sla-visit-btn-1');
-  var btn3 = document.getElementById('sla-visit-btn-3');
-  var btn4 = document.getElementById('sla-visit-btn-4');
-
-  if (visitWrap) visitWrap.style.display = 'flex'; // show for all tiers
-
-  if (isEssential) {
-    // Essential: 1, 2, or 4 visits — show buttons 1, 2 & 4, hide 3
-    if (btn1) btn1.style.display = '';
-    if (btn3) btn3.style.display = 'none';
-    if (btn4) btn4.style.display = '';
-    _slaPMVisits = 1;
-    slaPMSetVisits(1);
-  } else if (isPriority) {
-    // Priority: 1, 2, or 4 visits — show buttons 1, 2 & 4, hide 3
-    if (btn1) btn1.style.display = '';
-    if (btn3) btn3.style.display = 'none';
-    if (btn4) btn4.style.display = '';
-    _slaPMVisits = 1;
-    slaPMSetVisits(1);
-  } else if (isPremier) {
-    // Premier: 2 or 4 visits only — hide buttons 1 and 3
-    if (btn1) btn1.style.display = 'none';
-    if (btn3) btn3.style.display = 'none';
-    if (btn4) btn4.style.display = '';
-    _slaPMVisits = 2;
-    slaPMSetVisits(2);
-  }
-
-  // Rate defaults per tier (auto-set when tier is selected):
-  // Tier labor rates by service level (Straight / T&H / DT) — loaded from Supabase config (tierRates)
-  var _trCfg = P1_RATES.tierRates || {};
-  var _trSel = (isEssential ? _trCfg.essential : isPremier ? _trCfg.premier : _trCfg.priority) || {};
-  var regRate = Number(_trSel.st || 0).toFixed(2);
-  var ahRate  = Number(_trSel.th || 0).toFixed(2);
-  var emRate  = Number(_trSel.dt || 0).toFixed(2);
-
-  function setSelect(id, val) {
-    var el = document.getElementById(id);
-    if (!el) return;
-    for (var i = 0; i < el.options.length; i++) {
-      if (el.options[i].value === val) { el.selectedIndex = i; break; }
-    }
-  }
-  setSelect('sla-bud-reg-rate', regRate);
-  setSelect('sla-bud-ah-rate',  ahRate);
-  setSelect('sla-bud-em-rate',  emRate);
-
-  // Response time defaults per tier (auto-set when tier is selected).
-  // Triage = acknowledgment / callback / ticket-open by qualified staff.
-  // Onsite = technician physically on site (where remote can't resolve).
-  //   Essential — business-hours only; no after-hours commitment
-  //   Priority  — priority response with after-hours coverage
-  //   Premier   — fastest triage, 24/7 onsite emergency coverage
-  var respDefaults = isEssential ? {
-    regTriage: 'Next business day', regOnsite: 'Best effort',
-    ahTriage:  'Same day',          ahOnsite:  'Best effort',
-    emTriage:  'Same day',          emOnsite:  'Best effort'
-  } : isPremier ? {
-    regTriage: '2 hours',         regOnsite: '12 hours',
-    ahTriage:  '2 hours',         ahOnsite:  '6 hours',
-    emTriage:  '2 hours',         emOnsite:  '4 hours'
-  } : {  // Priority (default)
-    regTriage: '4 hours',         regOnsite: '3 business days',
-    ahTriage:  '4 hours',         ahOnsite:  'Next business day',
-    emTriage:  '4 hours',         emOnsite:  '8 hours'
-  };
-  setSelect('sla-resp-reg-triage', respDefaults.regTriage);
-  setSelect('sla-resp-reg-onsite', respDefaults.regOnsite);
-  setSelect('sla-resp-ah-triage',  respDefaults.ahTriage);
-  setSelect('sla-resp-ah-onsite',  respDefaults.ahOnsite);
-  setSelect('sla-resp-em-triage',  respDefaults.emTriage);
-  setSelect('sla-resp-em-onsite',  respDefaults.emOnsite);
-  // Clear any "modified" visual indicators since these are tier defaults now
-  ['sla-resp-reg-triage','sla-resp-reg-onsite',
-   'sla-resp-ah-triage','sla-resp-ah-onsite',
-   'sla-resp-em-triage','sla-resp-em-onsite'].forEach(function(id){
-    var el = document.getElementById(id);
-    if (el) el.classList.remove('tier-modified');
-  });
-
-  // Recalculate totals with new rates
+  var pkg = slaActivePkg();
+  // PM visit count is fixed by the package.
+  _slaPMVisits = Number(pkg.pmVisits) || 1;
+  var lbl = document.getElementById('sla-pm-visits-lbl');
+  if (lbl) lbl.textContent = String(_slaPMVisits);
+  slaRenderPackages();
   slaBudgetCalc();
-}
-
-// Visual cue when user changes a response target from the tier default
-function slaUpdateRespCustom() {
-  // Just adds a subtle orange tint to indicate the value was customized.
-  // Selecting a new tier will overwrite and clear this indicator.
-  ['sla-resp-reg-triage','sla-resp-reg-onsite',
-   'sla-resp-ah-triage','sla-resp-ah-onsite',
-   'sla-resp-em-triage','sla-resp-em-onsite'].forEach(function(id){
-    var el = document.getElementById(id);
-    if (el) el.classList.add('tier-modified');
-  });
 }
 
 function slaClearNonCustomer() {
   if (window.slaRevealReset) setTimeout(window.slaRevealReset, 0);
   // Reset SLA-specific inputs (not the synced customer fields)
-  // Reset SLA rate frequency back to monthly
   _slaFreqState = { freq: 'monthly', monthlyBase: 0 };
-  // Restrict to freq-toggle buttons (PM visit buttons share .sla-rate-btn class)
   document.querySelectorAll('.sla-rate-btn[data-freq]').forEach(function(btn) {
     btn.classList.toggle('active', btn.getAttribute('data-freq') === 'monthly');
   });
   var labelEl = document.getElementById('sla-rate-label');
   var subEl   = document.getElementById('sla-rate-sub');
   if (labelEl) labelEl.textContent = 'Monthly SLA Rate';
-  if (subEl)   subEl.textContent   = 'Support · per month';
-  // Reset SLA rate field styling
+  if (subEl)   subEl.textContent   = 'Support \u00B7 per month';
   var rateInput = document.getElementById('sla-rmr-monthly');
   if (rateInput) {
     rateInput.style.background  = '';
@@ -10393,43 +10423,21 @@ function slaClearNonCustomer() {
 
   ['sla-agr-num','sla-agr-date',
    'sla-rmr-monthly','sla-rmr-pm',
-   'sla-bud-reg-hrs','sla-bud-ah-hrs','sla-bud-em-hrs','sla-bud-mat-amt',
+   'sla-bud-gen-hrs','sla-bud-exp-hrs','sla-bud-emg-hrs','sla-bud-mat-amt',
    'sla-start-date','sla-end-date','sla-custom-months','sla-notes'].forEach(function(id) {
     var el = document.getElementById(id);
     if (el) el.value = '';
   });
   if(typeof rteRehydrate==='function')rteRehydrate();
-  // Reset computed total displays
-  ['sla-bud-reg-amt','sla-bud-ah-amt','sla-bud-em-amt'].forEach(function(id) {
-    var el = document.getElementById(id);
-    if (el) { el.textContent = '—'; el.style.color = 'var(--text3)'; }
+  ['sla-bud-gen-tc','sla-bud-exp-tc','sla-bud-emg-tc'].forEach(function(id){
+    var el = document.getElementById(id); if (el) el.value = 'st';
   });
-  // Reset rate selectors to blank
-  // Reset agreement # reference display
+  var sheetEl = document.getElementById('sla-rate-sheet');
+  if (sheetEl){ sheetEl.dataset.userSet = ''; sheetEl.value = 'standard'; }
+  slaMapRestore([]);
   var csAcctEl = document.getElementById('sla-cs-acct');
-  if (csAcctEl) { csAcctEl.textContent = '—'; csAcctEl.style.color = 'var(--text3)'; }
+  if (csAcctEl) { csAcctEl.textContent = '\u2014'; csAcctEl.style.color = 'var(--text3)'; }
 
-  // Reset PM visit count to 1
-  _slaPMVisits = 1;
-  var visitWrap = document.getElementById('sla-pm-visit-wrap');
-  if (visitWrap) visitWrap.style.display = 'flex';
-  // Show buttons 1, 2 & 4, hide 3 (Essential default state)
-  ['sla-visit-btn-1','sla-visit-btn-2','sla-visit-btn-4'].forEach(function(id) {
-    var b = document.getElementById(id); if (b) b.style.display = '';
-  });
-  ['sla-visit-btn-3'].forEach(function(id) {
-    var b = document.getElementById(id); if (b) b.style.display = 'none';
-  });
-  document.querySelectorAll('[data-visits]').forEach(function(btn) {
-    btn.classList.toggle('active', btn.getAttribute('data-visits') === '1');
-  });
-
-  var regRate = document.getElementById('sla-bud-reg-rate');
-  if (regRate) regRate.selectedIndex = 0;
-  var ahRate = document.getElementById('sla-bud-ah-rate');
-  if (ahRate) ahRate.selectedIndex = 0;
-  var emRate = document.getElementById('sla-bud-em-rate');
-  if (emRate) emRate.selectedIndex = 0;
   const termEl = document.getElementById('sla-agr-term');
   if (termEl) termEl.selectedIndex = 0;
   document.querySelectorAll('.sla-sys-card').forEach(c => c.classList.remove('active'));
@@ -10442,15 +10450,14 @@ function slaClearNonCustomer() {
   });
   var pmGrid = document.getElementById('sla-pm-grid');
   if (pmGrid) pmGrid.style.display = 'none';
-  document.querySelectorAll('.sla-tier-card').forEach((c,i) => {
-    c.classList.toggle('active', i === 1); // default: Priority
-  });
   document.querySelectorAll('.sla-pm-cb').forEach(cb => cb.checked = false);
-  // Reapply Priority defaults (rates, PM visit options, and response-time dropdowns)
-  var defaultTierCard = document.querySelectorAll('.sla-tier-card')[1];
-  if (defaultTierCard && typeof slaSelectTier === 'function') slaSelectTier(defaultTierCard);
-  // Re-sync customer data
+  // Default package: Priority
+  var defaultTierCard = document.querySelector('.sla-tier-card[data-pkg="priority"]') || document.querySelectorAll('.sla-tier-card')[1];
   slaSyncCustomer();
+  slaAutoSheet();
+  slaBuildRateSelects();
+  slaRenderRateNote();
+  if (defaultTierCard) slaSelectTier(defaultTierCard);
 }
 
 // Sync Agreement # to the Customer Info reference field
@@ -10882,8 +10889,72 @@ function parseDollar(s) {
   return parseFloat(s.replace(/[$,]/g,''))||0;
 }
 
+// ── Shared data for the SLA proposal + agreement (all pricing from the T&M rate sheet) ──
+var SLA_BUDGET_CLAUSE = 'The Annual Service Budget is based on a recommended mix of service hours for planning purposes only. Actual service will be billed against the budget at the T&amp;M rates in effect for the request type (General, Expedited, Emergency) and time classification of each call. Any unused budget is forfeited at the end of each agreement year. Service beyond the budget is billed at the published T&amp;M rates, and all package benefits remain in effect.';
+var SLA_PM_CLAUSE = 'Preventive maintenance labor is billed separately from the Annual Service Budget and does not draw down the budget.';
+var SLA_EARLY_TERM_CLAUSE = 'If this Agreement is terminated before the end of an agreement year, any service used beyond the budget amount paid to date will be billed at the published T&amp;M rates.';
+function slaClassText(sheetKey){
+  return sheetKey === 'sf'
+    ? 'Straight time applies Monday to Friday, 7:00 AM – 3:30 PM, excluding holidays. Time and a half applies on weekdays after 3:30 PM and on Saturdays (all day). Double time applies on Sundays and holidays, and when work exceeds 12 continuous hours in a shift.'
+    : 'Straight time applies to work performed between 7:00 AM and 3:30 PM, Monday through Friday, excluding holidays. Time and a half applies to work performed outside those hours Monday through Saturday. Double time applies to work performed on Sundays and Point 1-observed holidays, and as otherwise required by applicable labor agreements or law.';
+}
+function slaDocData(){
+  var pkg = slaActivePkg();
+  var pmEl = document.getElementById('sla-rmr-pm');
+  var pmHrs = pmEl ? (parseFloat(pmEl.value) || 0) : 0;
+  var pmVisits = _slaPMVisits || pkg.pmVisits || 1;
+  var pmRate = slaPmRate();
+  var rows = slaBudgetRows();
+  var svcBudget = rows.reduce(function(a,r){ return a + r.amt; }, 0);
+  var mat = slaMaterialsAmt();
+  var sheetKey = (slaRateSource() === 'sheet' && slaSheetKey() === 'sf' && P1_RATES.tmRateSheet.sf && P1_RATES.tmRateSheet.sf.length) ? 'sf' : 'standard';
+  return {
+    pkg: pkg, pmHrs: pmHrs, pmVisits: pmVisits, pmRate: pmRate, pmTotal: pmHrs * pmVisits * pmRate,
+    rows: rows, usedRows: rows.filter(function(r){ return r.hrs > 0; }),
+    svcBudget: svcBudget, mat: mat,
+    sheetKey: sheetKey, sheetName: slaSheetName(sheetKey),
+    periods: slaTermPeriods(), pastSheet: slaTermExtendsPastSheet(),
+    map: slaMapGather()
+  };
+}
+// Rate schedule table(s) — one per rate period the agreement term touches.
+function slaRateScheduleHTML(d, style){
+  var th = style === 'fa'
+    ? 'font-family:\'DM Mono\',monospace;font-size:8px;font-weight:500;text-transform:uppercase;letter-spacing:0.07em;color:#fff;background:#1c1c1c;padding:5px 9px;'
+    : 'font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#fff;background:#1c1c1c;padding:6px 10px;';
+  var td = 'padding:5px 9px;border-bottom:1px solid #e8e8e8;font-size:' + (style==='fa'?'10px':'11px') + ';';
+  var num = td + 'text-align:right;font-family:\'DM Mono\',monospace;';
+  var out = '';
+  d.periods.forEach(function(p){
+    var range = slaPeriodRange(p);
+    out += '<div style="font-size:' + (style==='fa'?'9.5px':'11px') + ';font-weight:700;color:#1c1c1c;margin:6px 0 3px;">' +
+           (p.label||'') + (range ? ' · ' + range : '') + '</div>';
+    out += '<table style="width:100%;border-collapse:collapse;margin-bottom:6px;"><thead><tr>' +
+      '<th style="'+th+'text-align:left;width:31%;">Request Type</th>' +
+      '<th style="'+th+'text-align:right;">Straight Time</th>' +
+      '<th style="'+th+'text-align:right;">Time and a Half</th>' +
+      '<th style="'+th+'text-align:right;">Double Time</th></tr></thead><tbody>';
+    SLA_REQ_TYPES.forEach(function(t){
+      var r = p[t.key] || {};
+      out += '<tr><td style="'+td+'font-weight:600;">'+t.name+'</td>' +
+             '<td style="'+num+'">'+slaMoney(r.st)+'</td>' +
+             '<td style="'+num+'">'+slaMoney(r.th)+'</td>' +
+             '<td style="'+num+'">'+slaMoney(r.dt)+'</td></tr>';
+    });
+    out += '</tbody></table>';
+  });
+  var small = 'font-size:' + (style==='fa'?'9.5px':'10.5px') + ';color:#555;line-height:1.5;margin:3px 0;';
+  out += '<div style="'+small+'"><strong>Rate classifications.</strong> ' + slaClassText(d.sheetKey) + '</div>';
+  out += '<div style="'+small+'"><strong>Minimum charges.</strong> ' + SLA_MINIMUMS_TEXT + '</div>';
+  out += '<div style="'+small+'">Rate years run December 1 – November 30. Rates shown per hour.' +
+         (d.pastSheet ? ' Work in any period not shown is billed at Company’s published T&amp;M rate sheet in effect when the work is performed.' : '') + '</div>';
+  return out;
+}
+
 function generateSLAProposal() {
   slaSyncCustomer();
+  if (!slaGuardBudget()) return;
+  var D = slaDocData();
 
   // ── Helpers ──
   function tv(id) { var e=document.getElementById(id); return e?(e.textContent||'').trim():''; }
@@ -10910,68 +10981,39 @@ function generateSLAProposal() {
   var termDisplay= blk((endInput&&endInput.getAttribute('data-term'))||iv('sla-agr-term'));
   var autoRenew  = (function(){ var e=document.getElementById('sla-auto-renew'); return e&&e.value?e.value:'Yes — 30-day written cancellation required'; })();
   var billing    = (function(){ var e=document.getElementById('sla-billing-cycle'); return e&&e.value?e.value:'monthly'; })();
-  var billingLbl = billing==='quarterly'?'Quarterly':billing==='annual'?'Annual (prepaid)':'Monthly';
+  billing = billing==='quarterly' ? 'quarterly' : 'monthly';   // SLA billing: monthly or quarterly
+  var billingLbl = billing==='quarterly'?'Quarterly':'Monthly';
   var notes      = iv('sla-notes');
   var rateLabel  = tv('sla-rate-label') || 'Monthly SLA Rate';
   var rateVal    = iv('sla-rmr-monthly');
 
-  // ── Tier detection ──
-  var tierCard   = document.querySelector('.sla-tier-card.active');
-  var tierName   = tierCard ? tierCard.querySelector('.sla-tier-name').textContent.trim() : 'Priority';
-  var isEssential= tierName.toLowerCase().indexOf('essential') >= 0;
-  var isPriority = tierName.toLowerCase().indexOf('priority')  >= 0;
-  var isPremier  = tierName.toLowerCase().indexOf('premier')   >= 0;
+  // ── Package ──
+  var pkg        = D.pkg;
+  var tierName   = pkg.name;
+  var isEssential= pkg.key === 'essential';
+  var isPriority = pkg.key === 'priority';
+  var isPremier  = pkg.key === 'premier';
 
-  // ── PM data ──
-  var pmHrsRaw   = iv('sla-rmr-pm');
-  var pmHrsNum   = parseFloat(pmHrsRaw) || 0;
-  var pmVisits   = _slaPMVisits || 1;
-  var pmTotal    = pmHrsNum * pmVisits * P1_RATES.pmVisitRate;
-  var pmHrsLabel = pmVisits + ' visit' + (pmVisits === 1 ? '' : 's');
-  var pmTotalFmt = pmTotal > 0 ? fmt(pmTotal) : '—';
-
-  // ── Budget data ──
-  var regHrs = iv('sla-bud-reg-hrs') || '—';
-  var regAmt = (function(){ var e=document.getElementById('sla-bud-reg-amt'); return e&&e.textContent&&e.textContent!=='—'?e.textContent:'—'; })();
-  var ahHrs  = iv('sla-bud-ah-hrs')  || '—';
-  var ahAmt  = (function(){ var e=document.getElementById('sla-bud-ah-amt');  return e&&e.textContent&&e.textContent!=='—'?e.textContent:'—'; })();
-  var emHrs  = iv('sla-bud-em-hrs')  || '—';
-  var emAmt  = (function(){ var e=document.getElementById('sla-bud-em-amt');  return e&&e.textContent&&e.textContent!=='—'?e.textContent:'—'; })();
-  var matAmt = (function(){
-    var raw = iv('sla-bud-mat-amt');
-    var num = parseFloat((raw||'').replace(/[$,]/g,''));
-    return num > 0 ? '$' + num.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}) : '—';
-  })();
+  // ── PM data (billed separately, General straight time) ──
+  var pmHrsNum   = D.pmHrs;
+  var pmVisits   = D.pmVisits;
+  var pmTotal    = D.pmTotal;
 
   // ── Financial calculations ──
-  var laborBudget  = parseDollar(regAmt) + parseDollar(ahAmt) + parseDollar(emAmt);
-  var matBudget    = parseDollar(matAmt);
-  var annualBudget = pmTotal + laborBudget + matBudget + (typeof slaCalloutTotal==='function'?slaCalloutTotal():0);
   var freqState    = _slaFreqState.freq || billing;
   var slaRateNum   = parseDollar(rateVal);
-  var monthlyBase  = freqState==='monthly' ? slaRateNum : freqState==='quarterly' ? slaRateNum/3 : slaRateNum/12;
-  var perInvoice   = billing==='quarterly' ? monthlyBase*3 : billing==='annual' ? monthlyBase*12 : monthlyBase;
-  // Total Annual Commitment = the billed SLA rate × periods/yr, so it always
-  // reconciles to the recurring rate (which already folds in PM, labor, materials
-  // and any included custom call-outs).
-  var totalAnnual  = Math.round(perInvoice*100)/100 * (billing==='quarterly' ? 4 : billing==='annual' ? 1 : 12);
+  var monthlyBase  = freqState==='quarterly' ? slaRateNum/3 : freqState==='annual' ? slaRateNum/12 : slaRateNum;
+  var perInvoice   = billing==='quarterly' ? monthlyBase*3 : monthlyBase;
+  // Total Annual Commitment = the billed SLA rate × periods/yr (PM + service budget + materials).
+  var totalAnnual  = Math.round(perInvoice*100)/100 * (billing==='quarterly' ? 4 : 12);
 
   // ── Systems ──
   var sysCards = Array.from(document.querySelectorAll('.sla-sys-card.active'));
   var sysList  = sysCards.map(function(c){ return c.querySelector('.sla-sys-name').textContent.trim(); });
 
-  // ── Response time commitments (from dropdowns) ──
-  function rv(id) { var e=document.getElementById(id); return e?e.value:'—'; }
-  var respRegTri = rv('sla-resp-reg-triage');
-  var respRegOn  = rv('sla-resp-reg-onsite');
-  var respAhTri  = rv('sla-resp-ah-triage');
-  var respAhOn   = rv('sla-resp-ah-onsite');
-  var respEmTri  = rv('sla-resp-em-triage');
-  var respEmOn   = rv('sla-resp-em-onsite');
-
   // ── PM visit phrasing ──
   var pmVisitWords = {1:'one (1)',2:'two (2)',3:'three (3)',4:'four (4)'};
-  var pmFreqText = pmVisitWords[_slaPMVisits] || (_slaPMVisits + ' (' + _slaPMVisits + ')');
+  var pmFreqText = pmVisitWords[pmVisits] || (pmVisits + ' (' + pmVisits + ')');
 
   // ── Date string ──
   var d=new Date();
@@ -11003,10 +11045,9 @@ function generateSLAProposal() {
   '</div>';
 
   // Title
-  var docTitle = isEssential ? 'Service Plan Proposal'
+  var docTitle = isEssential ? 'Essential Service Proposal'
               : isPremier   ? 'Premier Service Proposal'
-              : isPriority  ? 'Priority Service Proposal'
-              : 'Service Level Proposal';
+              : 'Priority Service Proposal';
   html += '<div class="q-title">'+docTitle+'</div>';
   html += '<div class="q-subtitle">'+subtitle+'</div>';
 
@@ -11035,28 +11076,16 @@ function generateSLAProposal() {
     '</div>' +
   '</div>';
 
-  // Service Tier — dedicated section calling out the selected plan
-  var tierTagline = isEssential
-        ? '1, 2, or 4 PM visits per year · Business-hours response'
-      : isPremier
-        ? '2 or 4 PM visits per year · 24/7 emergency coverage'
-      : isPriority
-        ? '1, 2, or 4 PM visits per year · After-hours dispatch available'
-      : 'Custom service tier';
-  var tierHighlights = isEssential
-        ? [
-            ['PM Visits',    pmFreqText + ' per year'],
-            ['Coverage',     'Business hours (M–F, 7 am–5 pm)']
-          ]
-      : isPremier
-        ? [
-            ['PM Visits',    pmFreqText + ' per year'],
-            ['Coverage',     '24 hours / 7 days, including emergencies']
-          ]
-      : [  // Priority
-            ['PM Visits',    pmFreqText + ' per year'],
-            ['Coverage',     'Business hours + after-hours dispatch available']
-          ];
+  // Service Package — dedicated section calling out the selected package
+  var tierTagline = pmFreqText + ' PM visits per year · ' + pkg.triage + ' triage · Emergency coverage: ' + pkg.emergencyCoverage;
+  var tierHighlights = [
+    ['PM Visits',          pmFreqText + ' per year'],
+    ['Triage',             pkg.triage],
+    ['Emergency Coverage', pkg.emergencyCoverage],
+    ['Scheduling',         pkg.scheduling],
+    ['Service Budget',     pkg.budgetRequired ? 'Annual service budget included' : (D.svcBudget > 0 ? 'Annual service budget included' : 'Billed T&amp;M as used')],
+    ['Reporting',          pkg.reporting]
+  ];
   var tierHighlightHtml = tierHighlights.map(function(row){
     return '<div class="q-field" style="margin-bottom:4px;">' +
              '<div class="q-label">'+row[0]+'</div>' +
@@ -11065,109 +11094,85 @@ function generateSLAProposal() {
   }).join('');
 
   html += '<div class="q-section">' +
-    '<div class="q-section-title">Service Tier</div>' +
-    // Branded callout card
+    '<div class="q-section-title">Service Package</div>' +
     '<div style="background:#1c1c1c;border-left:4px solid #e8620a;border-radius:6px;padding:10px 16px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;gap:14px;">' +
       '<div>' +
-        '<div style="font-family:\'DM Mono\',monospace;font-size:9px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.55);margin-bottom:3px;">Selected Plan</div>' +
+        '<div style="font-family:\'DM Mono\',monospace;font-size:9px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.55);margin-bottom:3px;">Selected Package</div>' +
         '<div style="font-size:18px;font-weight:700;color:#fff;letter-spacing:0.01em;">'+tierName+'</div>' +
         '<div style="font-size:10px;color:rgba(255,255,255,0.65);margin-top:3px;">'+tierTagline+'</div>' +
       '</div>' +
       '<div style="font-family:\'DM Mono\',monospace;font-size:10px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:#e8620a;background:rgba(232,98,10,0.15);padding:5px 10px;border-radius:4px;white-space:nowrap;">' +
-        (isPremier ? 'Tier III' : isPriority ? 'Tier II' : 'Tier I') +
+        pkg.tier +
       '</div>' +
     '</div>' +
-    // Tier highlights grid (uses same q-grid two-column layout)
     '<div class="q-grid">'+tierHighlightHtml+'</div>' +
   '</div>';
 
   // Covered Systems & Services Included
+  function svcRow(name, right){
+    return '<div class="q-service-row"><div class="q-service-name">'+name+'</div><div class="q-service-price" style="font-size:10px;color:#666;font-weight:500;text-align:right;">'+right+'</div></div>';
+  }
   var sysRows = '';
-  if (sysList.length > 0) {
-    sysList.forEach(function(s){
-      sysRows += '<div class="q-service-row"><div class="q-service-name">'+s+'</div><div class="q-service-price" style="font-size:10px;color:#666;font-weight:500;">Covered</div></div>';
-    });
-  }
-  // Service feature lines — Triage (acknowledgment) and Onsite (tech on site) per call-out type
-  function respLine(label, tri, on) {
-    function _none(v){ return !v || v === '—' || v.toLowerCase().indexOf('not included') >= 0; }
-    var right;
-    if (_none(tri) && _none(on)) {
-      right = '<span style="color:#888;">Not covered under this plan</span>';
-    } else {
-      var bits = [];
-      if (!_none(tri)) bits.push('<span style="color:#888;">Triage:</span> '+tri);
-      if (!_none(on))  bits.push('<span style="color:#888;">Onsite:</span> '+on);
-      right = bits.join('<span style="color:#ccc;margin:0 6px;">|</span>');
-    }
-    return '<div class="q-service-row"><div class="q-service-name">'+label+'</div>' +
-      '<div class="q-service-price" style="font-size:10px;color:#666;font-weight:500;text-align:right;">' +
-        right +
-      '</div></div>';
-  }
-  sysRows += respLine('Regular-Time Response', respRegTri, respRegOn);
-  sysRows += respLine('After-Hours Response',  respAhTri,  respAhOn);
-  sysRows += respLine('Emergency Response',    respEmTri,  respEmOn);
-  if (typeof slaCoRespRows === 'function') sysRows += slaCoRespRows();
-  if (pmHrsNum > 0) {
-    sysRows += '<div class="q-service-row"><div class="q-service-name">Preventive Maintenance Visits</div><div class="q-service-price" style="font-size:10px;color:#666;font-weight:500;">'+pmFreqText+' per year</div></div>';
-  }
-  sysRows += '<div class="q-service-row"><div class="q-service-name">Unscheduled Service &amp; Repair Coverage</div><div class="q-service-price" style="font-size:10px;color:#666;font-weight:500;">Included per budget</div></div>';
+  sysList.forEach(function(s){ sysRows += svcRow(s, 'Covered'); });
+  SLA_REQ_TYPES.forEach(function(t){ sysRows += svcRow(t.name + ' Service', t.response); });
+  sysRows += svcRow('Triage (callback or ticket opened)', pkg.triage);
+  if (pmHrsNum > 0) sysRows += svcRow('Preventive Maintenance Visits', pmFreqText + ' per year');
+  sysRows += svcRow('Unscheduled Service &amp; Repair', D.svcBudget > 0 ? 'Drawn from the annual service budget' : 'Billed at T&amp;M rate sheet rates');
 
   html += '<div class="q-section">' +
     '<div class="q-section-title">Services Included</div>' +
+    '<div style="font-size:11px;color:#666;margin-bottom:6px;">All three request types are available under every package. Response windows and rates follow Point 1&rsquo;s published T&amp;M rate sheet.</div>' +
     sysRows +
   '</div>';
 
-  // Annual Budget Allocation
-  var hasAnyBudget = pmTotal > 0 || parseDollar(regAmt) > 0 || parseDollar(ahAmt) > 0 || parseDollar(emAmt) > 0 || parseDollar(matAmt) > 0;
-  if (hasAnyBudget) {
+  // Customer priority mapping
+  if (D.map.length) {
+    var mapRows = D.map.map(function(m){
+      return '<div class="q-service-row"><div class="q-service-name">'+slaMapEsc(m.label)+(m.desc?' <span style="color:#888;font-size:10px;">('+slaMapEsc(m.desc)+')</span>':'')+'</div>' +
+             '<div class="q-service-price" style="font-size:11px;font-weight:600;">'+slaReqName(m.type)+' Service</div></div>';
+    }).join('');
+    html += '<div class="q-section">' +
+      '<div class="q-section-title">Customer Priority Mapping</div>' +
+      '<div style="font-size:11px;color:#666;margin-bottom:6px;">Customer priority levels are handled as the Point 1 request types below, with the standard response windows and rates for each.</div>' +
+      mapRows +
+    '</div>';
+  }
+
+  // Annual Service Budget
+  if (D.svcBudget > 0 || pmTotal > 0 || D.mat > 0) {
     var budgetRows = '';
+    D.usedRows.forEach(function(r){
+      budgetRows += '<div class="q-service-row"><div class="q-service-name">'+r.name+' <span style="color:#888;font-size:10px;">('+r.hrs+' hrs · '+r.tcName.toLowerCase()+' @ '+slaMoney(r.rate)+')</span></div><div class="q-service-price">'+slaMoney(r.amt)+'</div></div>';
+    });
+    if (D.svcBudget > 0) {
+      budgetRows += '<div class="q-service-row" style="border-top:1.5px solid #1c1c1c;"><div class="q-service-name" style="font-weight:700;">Annual Service Budget</div><div class="q-service-price" style="font-weight:700;">'+slaMoney(D.svcBudget)+'</div></div>';
+    }
     if (pmTotal > 0) {
-      budgetRows += '<div class="q-service-row"><div class="q-service-name">PM Visit Labor <span style="color:#888;font-size:10px;">('+pmHrsLabel+')</span></div><div class="q-service-price">'+pmTotalFmt+'</div></div>';
+      budgetRows += '<div class="q-service-row"><div class="q-service-name">Preventive Maintenance Labor <span style="color:#888;font-size:10px;">('+pmVisits+' visit'+(pmVisits===1?'':'s')+' × '+pmHrsNum+' hrs · billed separately)</span></div><div class="q-service-price">'+slaMoney(pmTotal)+'</div></div>';
     }
-    if (parseDollar(regAmt) > 0) {
-      budgetRows += '<div class="q-service-row"><div class="q-service-name">Regular Time Labor <span style="color:#888;font-size:10px;">('+regHrs+' hrs)</span></div><div class="q-service-price">'+regAmt+'</div></div>';
+    if (D.mat > 0) {
+      budgetRows += '<div class="q-service-row"><div class="q-service-name">Materials Allowance</div><div class="q-service-price">'+slaMoney(D.mat)+'</div></div>';
     }
-    if (parseDollar(ahAmt) > 0) {
-      budgetRows += '<div class="q-service-row"><div class="q-service-name">After-Hours Labor <span style="color:#888;font-size:10px;">('+ahHrs+' hrs)</span></div><div class="q-service-price">'+ahAmt+'</div></div>';
-    }
-    if (parseDollar(emAmt) > 0) {
-      budgetRows += '<div class="q-service-row"><div class="q-service-name">Emergency Labor <span style="color:#888;font-size:10px;">('+emHrs+' hrs)</span></div><div class="q-service-price">'+emAmt+'</div></div>';
-    }
-    if (parseDollar(matAmt) > 0) {
-      budgetRows += '<div class="q-service-row"><div class="q-service-name">Materials Budget</div><div class="q-service-price">'+matAmt+'</div></div>';
-    }
-    if (typeof slaCoBudgetRows === 'function') budgetRows += slaCoBudgetRows();
     html += '<div class="q-section">' +
-      '<div class="q-section-title">Annual Budget Allocation</div>' +
+      '<div class="q-section-title">Annual Service Budget</div>' +
+      (D.svcBudget > 0 ? '<div style="font-size:11px;color:#666;margin-bottom:6px;">Recommended mix of service hours, for planning purposes only.</div>' : '') +
       budgetRows +
+      (D.svcBudget > 0 ? '<div style="font-size:10.5px;color:#555;line-height:1.5;margin-top:6px;">'+SLA_BUDGET_CLAUSE+' '+SLA_PM_CLAUSE+'</div>' : '') +
     '</div>';
   }
 
-  // Service rate schedule — always shown, based on the selected tier (+ custom call-out rates)
-  {
-    var _trQ = P1_RATES.tierRates || {};
-    var _tq  = (isEssential ? _trQ.essential : isPremier ? _trQ.premier : _trQ.priority) || {};
-    var tmR = { st:'$'+Number(_tq.st||0).toFixed(2), th:'$'+Number(_tq.th||0).toFixed(2), dt:'$'+Number(_tq.dt||0).toFixed(2) };
-    var _noBud = (parseDollar(regAmt) === 0 && parseDollar(ahAmt) === 0 && parseDollar(emAmt) === 0);
-    var _rNote = _noBud
-      ? 'No pre-allocated unscheduled service &amp; repair labor budget. Unscheduled work is billed on a time-and-materials basis at the rates below.'
-      : 'Labor rates applicable to work performed outside the allocated service budget, billed at the rates below.';
-    var _coR = (typeof slaCoRateRowsQ === 'function') ? slaCoRateRowsQ() : '';
-    html += '<div class="q-section">' +
-      '<div class="q-section-title">Service Rate Schedule \u2014 '+tierName+'</div>' +
-      '<div style="font-size:11px;color:#666;margin-bottom:6px;">'+_rNote+'</div>' +
-      '<div class="q-service-row"><div class="q-service-name">Regular Time (straight)</div><div class="q-service-price">'+tmR.st+' / hr</div></div>' +
-      '<div class="q-service-row"><div class="q-service-name">After-Hours (time &amp; one-half)</div><div class="q-service-price">'+tmR.th+' / hr</div></div>' +
-      '<div class="q-service-row"><div class="q-service-name">Emergency (double time)</div><div class="q-service-price">'+tmR.dt+' / hr</div></div>' +
-      '<div class="q-service-row"><div class="q-service-name">Preventive Maintenance Labor</div><div class="q-service-price">$'+Number(P1_RATES.pmVisitRate||0).toFixed(2)+' / hr</div></div>' +
-      _coR +
-    '</div>';
-  }
+  // Service rate schedule — the T&M rate sheet for each period the term covers
+  html += '<div class="q-section">' +
+    '<div class="q-section-title">Service Rate Schedule — '+D.sheetName+' T&amp;M Rates</div>' +
+    '<div style="font-size:11px;color:#666;margin-bottom:4px;">'+(D.svcBudget > 0
+        ? 'Service is drawn from the annual service budget at these rates. Service beyond the budget is billed at these rates.'
+        : 'Unscheduled service &amp; repair is billed on a time-and-materials basis at these rates.')+
+      ' Preventive maintenance labor is billed at the General straight-time rate.</div>' +
+    slaRateScheduleHTML(D, 'q') +
+  '</div>';
 
-  // Operational modules (Phase 1) — only the sections the user selected
-  if (typeof slaOpsProposalHTML === 'function') html += slaOpsProposalHTML();
+  // PM Builder scope (manufacturer-driven)
+  if (typeof slaPmProposalHTML === 'function') html += slaPmProposalHTML();
 
   // Notes
   if (notes) {
@@ -11239,6 +11244,8 @@ function generateSLAProposal() {
 
 function generateSLAPrint() {
   slaSyncCustomer();
+  if (!slaGuardBudget()) return;
+  var D = slaDocData();
 
   // ── Helpers ──
   function tv(id) { var e=document.getElementById(id); return e?(e.textContent||'').trim():''; }
@@ -11263,52 +11270,35 @@ function generateSLAPrint() {
   var termDisplay= blk((endInput&&endInput.getAttribute('data-term'))||iv('sla-agr-term'));
   var autoRenew  = (function(){ var e=document.getElementById('sla-auto-renew'); return e&&e.value?e.value:'Yes — 30-day written cancellation required'; })();
   var billing    = (function(){ var e=document.getElementById('sla-billing-cycle'); return e&&e.value?e.value:'monthly'; })();
-  var billingLbl = billing==='quarterly'?'Quarterly':billing==='annual'?'Annual (prepaid)':'Monthly';
+  billing = billing==='quarterly' ? 'quarterly' : 'monthly';   // SLA billing: monthly or quarterly
+  var billingLbl = billing==='quarterly'?'Quarterly':'Monthly';
   var notes      = iv('sla-notes');
   var rateLabel  = tv('sla-rate-label') || 'Monthly SLA Rate';
   var rateVal    = iv('sla-rmr-monthly');
 
-  // ── Tier detection ──
-  var tierCard   = document.querySelector('.sla-tier-card.active');
-  var tierName   = tierCard ? tierCard.querySelector('.sla-tier-name').textContent.trim() : 'Priority';
-  var isEssential= tierName.toLowerCase().indexOf('essential') >= 0;
-  var isPriority = tierName.toLowerCase().indexOf('priority')  >= 0;
-  var isPremier  = tierName.toLowerCase().indexOf('premier')   >= 0;
+  // ── Package ──
+  var pkg        = D.pkg;
+  var tierName   = pkg.name;
+  var isEssential= pkg.key === 'essential';
+  var isPriority = pkg.key === 'priority';
+  var isPremier  = pkg.key === 'premier';
 
-  // ── PM data ──
-  var pmHrsRaw   = iv('sla-rmr-pm');
-  var pmHrsNum   = parseFloat(pmHrsRaw) || 0;
-  var pmVisits   = _slaPMVisits || 1;
-  var pmTotal    = pmHrsNum * pmVisits * P1_RATES.pmVisitRate;
-  var pmHrsLabel = pmVisits + ' visit' + (pmVisits === 1 ? '' : 's');
+  // ── PM data (billed separately, General straight time) ──
+  var pmHrsNum   = D.pmHrs;
+  var pmVisits   = D.pmVisits;
+  var pmTotal    = D.pmTotal;
   var pmTotalFmt = pmTotal > 0 ? fmt(pmTotal) : '—';
-
-  // ── Budget data ──
-  var regHrs = iv('sla-bud-reg-hrs') || '—';
-  var regAmt = (function(){ var e=document.getElementById('sla-bud-reg-amt'); return e&&e.textContent&&e.textContent!=='—'?e.textContent:'—'; })();
-  var ahHrs  = iv('sla-bud-ah-hrs')  || '—';
-  var ahAmt  = (function(){ var e=document.getElementById('sla-bud-ah-amt');  return e&&e.textContent&&e.textContent!=='—'?e.textContent:'—'; })();
-  var emHrs  = iv('sla-bud-em-hrs')  || '—';
-  var emAmt  = (function(){ var e=document.getElementById('sla-bud-em-amt');  return e&&e.textContent&&e.textContent!=='—'?e.textContent:'—'; })();
-  var matAmt = (function(){
-    var raw = iv('sla-bud-mat-amt');
-    var num = parseFloat((raw||'').replace(/[$,]/g,''));
-    return num > 0 ? '$' + num.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}) : '—';
-  })();
+  var pmVisitWords = {1:'one (1)',2:'two (2)',3:'three (3)',4:'four (4)'};
+  var pmFreqText = pmVisitWords[pmVisits] || (pmVisits + ' (' + pmVisits + ')');
 
   // ── Financial calculations ──
-  var laborBudget  = parseDollar(regAmt) + parseDollar(ahAmt) + parseDollar(emAmt);
-  var matBudget    = parseDollar(matAmt);
-  var annualBudget = pmTotal + laborBudget + matBudget + (typeof slaCalloutTotal==='function'?slaCalloutTotal():0);
-
-  // Total Annual Commitment = the billed SLA rate × periods/yr. The recurring rate
-  // already includes PM, labor budget, materials and any included custom call-outs,
-  // so the annual figure always reconciles to the rate the customer actually pays.
+  // Total Annual Commitment = the billed SLA rate × periods/yr (PM + service budget + materials).
   var freqState    = _slaFreqState.freq || billing;
   var slaRateNum   = parseDollar(rateVal);
-  var monthlyBase  = freqState==='monthly' ? slaRateNum : freqState==='quarterly' ? slaRateNum/3 : slaRateNum/12;
-  var perInvoice   = billing==='quarterly' ? monthlyBase*3 : billing==='annual' ? monthlyBase*12 : monthlyBase;
-  var totalAnnual  = Math.round(perInvoice*100)/100 * (billing==='quarterly' ? 4 : billing==='annual' ? 1 : 12);
+  var monthlyBase  = freqState==='quarterly' ? slaRateNum/3 : freqState==='annual' ? slaRateNum/12 : slaRateNum;
+  var perInvoice   = billing==='quarterly' ? monthlyBase*3 : monthlyBase;
+  var totalAnnual  = Math.round(perInvoice*100)/100 * (billing==='quarterly' ? 4 : 12);
+  var matAmt       = D.mat > 0 ? fmt(D.mat) : '—';
 
   // ── Systems ──
   var sysCards = Array.from(document.querySelectorAll('.sla-sys-card.active'));
@@ -11370,52 +11360,40 @@ function generateSLAPrint() {
   html += '<div class="fa-section"><div class="fa-section-head"><span class="fa-section-num">§1</span><span class="fa-section-title">Scope of Services</span></div>' +
     '<p class="fa-body">Company agrees to provide unscheduled service & repair and scheduled preventive maintenance for the systems listed below ("<strong>Covered Systems</strong>") at the following location. All services shall be performed by qualified, licensed technicians in compliance with applicable laws and regulations.</p>' +
     '<div class="fa-sys-list">'+sysListHtml+'</div>' +
-    '<p class="fa-body" style="margin-top:6px;"><strong>Service Address:</strong> '+address+' &nbsp;|&nbsp; <strong>Site Type:</strong> '+siteType+' &nbsp;|&nbsp; <strong>Service Plan:</strong> '+tierName+'</p>' +
+    '<p class="fa-body" style="margin-top:6px;"><strong>Service Address:</strong> '+address+' &nbsp;|&nbsp; <strong>Site Type:</strong> '+siteType+' &nbsp;|&nbsp; <strong>Service Package:</strong> '+tierName+'</p>' +
     scopeParas +
   '</div>';
 
-  // ── §2 SERVICE PLAN ──
-  var pmVisitWords = {1:'one (1)',2:'two (2)',3:'three (3)',4:'four (4)'};
-  var pmFreqText = pmVisitWords[_slaPMVisits] || (_slaPMVisits + ' (' + _slaPMVisits + ')');
-  // Response time commitments — pulled from the user-adjustable dropdowns
-  function _rv(id) { var e=document.getElementById(id); return e?e.value:'—'; }
-  var respRegTri = _rv('sla-resp-reg-triage'), respRegOn = _rv('sla-resp-reg-onsite');
-  var respAhTri  = _rv('sla-resp-ah-triage'),  respAhOn  = _rv('sla-resp-ah-onsite');
-  var respEmTri  = _rv('sla-resp-em-triage'),  respEmOn  = _rv('sla-resp-em-onsite');
-  // Build the §2 summary directly from the (possibly adjusted) dropdown values so it
-  // always mirrors the §4 table — both triage AND onsite deployment for every call-out
-  // type, with a clean fallback when a category is set to "Not included".
-  function _respNone(v){ return !v || v === '—' || v.toLowerCase().indexOf('not included') >= 0; }
-  function _respPhrase(label, tri, on){
-    if (_respNone(tri) && _respNone(on)) return label + ' — not covered under this plan';
-    var parts = [];
-    if (!_respNone(tri)) parts.push('<strong>'+tri+'</strong> triage');
-    if (!_respNone(on))  parts.push('<strong>'+on+'</strong> onsite deployment');
-    return label + ' — ' + parts.join(' and ');
-  }
-  var responseSummary =
-    _respPhrase('emergency', respEmTri, respEmOn) + '; ' +
-    _respPhrase('regular-time', respRegTri, respRegOn) + '; and ' +
-    _respPhrase('after-hours', respAhTri, respAhOn);
-
-  html += '<div class="fa-section"><div class="fa-section-head"><span class="fa-section-num">§2</span><span class="fa-section-title">Service Plan — '+tierName+'</span></div>' +
-    '<p class="fa-body">Customer has selected the <strong>'+tierName+'</strong>. Under this plan:</p>' +
+  // ── §2 SERVICE PACKAGE ──
+  var budgetLine = D.svcBudget > 0
+    ? 'An Annual Service Budget of <strong>'+fmt(D.svcBudget)+'</strong> applies to unscheduled service &amp; repair, as set forth in §3.'
+    : 'No Annual Service Budget is established; unscheduled service &amp; repair is billed at the published T&amp;M rates set forth in §3.';
+  html += '<div class="fa-section"><div class="fa-section-head"><span class="fa-section-num">§2</span><span class="fa-section-title">Service Package — '+tierName+'</span></div>' +
+    '<p class="fa-body">Customer has selected the <strong>'+tierName+'</strong> service package. Under this package:</p>' +
     '<ul class="fa-tc-list" style="border:1px solid #e8e8e8;border-radius:3px;overflow:hidden;">' +
       '<li><span class="fa-tc-num">PM VISITS</span><span>Company shall perform <strong>'+pmFreqText+'</strong> scheduled preventive maintenance visits per contract year at the Service Address, to be mutually scheduled in advance. Company shall provide a written inspection report and deficiency log following each visit.</span></li>' +
-      '<li><span class="fa-tc-num">RESPONSE</span><span>Company commits to the following maximum response targets — '+responseSummary+'. Call-out trigger conditions and coverage windows are set forth in §4 below.</span></li>' +
-      '<li><span class="fa-tc-num">LABOR</span><span>All unscheduled service &amp; repair labor is billed at Company\'s then-current published rate schedule applicable to the selected service plan. All preventive maintenance labor is billed at the standard straight-time rate.</span></li>' +
-      '<li><span class="fa-tc-num">MATERIALS</span><span>Parts and materials required for corrective repairs are billed at cost plus a reasonable handling fee and require advance Customer authorization when exceeding the annual materials budget allocation.</span></li>' +
+      '<li><span class="fa-tc-num">REQUEST TYPES</span><span>Customer may request <strong>General</strong> (scheduled at the next available date), <strong>Expedited</strong> (service completed within four (4) business days), or <strong>Emergency</strong> (same-day) service, as set forth in §4.</span></li>' +
+      '<li><span class="fa-tc-num">TRIAGE</span><span>Company shall acknowledge each service request by callback or ticket opened by a qualified person within <strong>'+pkg.triage+'</strong>.</span></li>' +
+      '<li><span class="fa-tc-num">EMERGENCY COVERAGE</span><span>'+pkg.emergencyCoverage+'.</span></li>' +
+      '<li><span class="fa-tc-num">SCHEDULING</span><span>'+pkg.scheduling+'.</span></li>' +
+      '<li><span class="fa-tc-num">REPORTING</span><span>'+pkg.reporting+'.</span></li>' +
+      '<li><span class="fa-tc-num">LABOR</span><span>All unscheduled service &amp; repair labor is billed at Company\'s published T&amp;M rates for the request type and time classification of the work. The service package does not change these rates. Preventive maintenance labor is billed at the General straight-time rate. '+budgetLine+'</span></li>' +
+      '<li><span class="fa-tc-num">MATERIALS</span><span>Parts and materials required for corrective repairs are billed at cost plus a reasonable handling fee and require advance Customer authorization'+(D.mat > 0 ? ' when exceeding the annual materials allowance' : '')+'.</span></li>' +
     '</ul>' +
   '</div>';
 
   // ── §3 FEES & FINANCIAL COMMITMENT ──
-  var budgetRows =
-    '<tr><td>PM Visit Labor</td><td style="text-align:center;">'+pmHrsLabel+'</td><td style="text-align:right;">'+pmTotalFmt+'</td></tr>' +
-    '<tr><td><span class="fa-bcat-dot" style="background:#1a6b4a;"></span>Regular Time Labor</td><td style="text-align:center;">'+regHrs+'</td><td style="text-align:right;">'+regAmt+'</td></tr>' +
-    '<tr><td><span class="fa-bcat-dot" style="background:#8a5a00;"></span>After-Hours Labor</td><td style="text-align:center;">'+ahHrs+'</td><td style="text-align:right;">'+ahAmt+'</td></tr>' +
-    '<tr><td><span class="fa-bcat-dot" style="background:#8a1f1f;"></span>Emergency Labor</td><td style="text-align:center;">'+emHrs+'</td><td style="text-align:right;">'+emAmt+'</td></tr>' +
-    '<tr><td><span class="fa-bcat-dot" style="background:#1a4a8a;"></span>Materials Budget</td><td style="text-align:center;">—</td><td style="text-align:right;">'+(matAmt||'—')+'</td></tr>' +
-    (typeof slaCoBudgetRowsTr === 'function' ? slaCoBudgetRowsTr() : '');
+  var budgetRows = '';
+  D.usedRows.forEach(function(r, i){
+    var dot = r.req==='general' ? '#1a6b4a' : r.req==='expedited' ? '#8a5a00' : '#8a1f1f';
+    budgetRows += '<tr><td><span class="fa-bcat-dot" style="background:'+dot+';"></span>'+r.name+' &middot; '+r.tcName+'</td><td style="text-align:center;">'+r.hrs+'</td><td style="text-align:right;">'+fmt(r.rate)+' / hr</td><td style="text-align:right;">'+fmt(r.amt)+'</td></tr>';
+  });
+  if (D.svcBudget > 0) {
+    budgetRows += '<tr style="border-top:1.5px solid #1c1c1c;"><td style="font-weight:700;">Annual Service Budget</td><td></td><td></td><td style="text-align:right;font-weight:700;">'+fmt(D.svcBudget)+'</td></tr>';
+  }
+  var otherRows =
+    '<tr><td>Preventive Maintenance Labor (billed separately)</td><td style="text-align:center;">'+(pmHrsNum>0 ? (pmVisits+' × '+pmHrsNum+' hrs') : '—')+'</td><td style="text-align:right;">'+fmt(D.pmRate)+' / hr</td><td style="text-align:right;">'+pmTotalFmt+'</td></tr>' +
+    (D.mat > 0 ? '<tr><td><span class="fa-bcat-dot" style="background:#1a4a8a;"></span>Materials Allowance</td><td style="text-align:center;">—</td><td></td><td style="text-align:right;">'+matAmt+'</td></tr>' : '');
 
   var summaryRows = '';
   if (perInvoice > 0) {
@@ -11425,34 +11403,18 @@ function generateSLAPrint() {
     summaryRows += '<tr style="border-top:2px solid #1c1c1c;"><td style="font-weight:700;color:#1c1c1c;padding:7px 12px;">Total Annual Commitment</td><td colspan="2" style="text-align:right;font-family:\'DM Mono\',monospace;font-weight:700;font-size:13px;padding:7px 12px;color:#1c1c1c;">'+fmt(totalAnnual)+' / yr</td></tr>';
     if (billing !== 'monthly')   summaryRows += '<tr><td style="color:#aaa;font-size:9px;padding:3px 12px;">Monthly equivalent</td><td colspan="2" style="text-align:right;font-family:\'DM Mono\',monospace;font-size:9px;color:#aaa;padding:3px 12px;">'+fmt(totalAnnual/12)+' / mo</td></tr>';
     if (billing !== 'quarterly') summaryRows += '<tr><td style="color:#aaa;font-size:9px;padding:3px 12px;">Quarterly equivalent</td><td colspan="2" style="text-align:right;font-family:\'DM Mono\',monospace;font-size:9px;color:#aaa;padding:3px 12px;">'+fmt(totalAnnual/4)+' / qtr</td></tr>';
-    if (billing !== 'annual')    summaryRows += '<tr><td style="color:#aaa;font-size:9px;padding:3px 12px;">Annual equivalent</td><td colspan="2" style="text-align:right;font-family:\'DM Mono\',monospace;font-size:9px;color:#aaa;padding:3px 12px;">'+fmt(totalAnnual)+' / yr</td></tr>';
   }
 
-  // ── T&M rate schedule (shown when no unscheduled labor budget hours are allocated) ──
-  var _trA = P1_RATES.tierRates || {};
-  var _ta  = (isEssential ? _trA.essential : isPremier ? _trA.premier : _trA.priority) || {};
-  var tmRates = { st:'$'+Number(_ta.st||0).toFixed(2), th:'$'+Number(_ta.th||0).toFixed(2), dt:'$'+Number(_ta.dt||0).toFixed(2) };
-  var _tmNote = (laborBudget === 0)
-    ? 'No pre-allocated unscheduled service &amp; repair labor budget has been established under this Agreement. Unscheduled service &amp; repair labor will be billed on a time-and-materials basis at Company\'s then-current published rates for the <strong>'+tierName+'</strong>, as set forth below:'
-    : 'Labor performed outside the allocated service budget will be billed at Company\'s then-current published rates for the <strong>'+tierName+'</strong>, as set forth below:';
-  var _coTr = (typeof slaCoRateRowsTr === 'function') ? slaCoRateRowsTr() : '';
-  var tmRateTable =
-    '<p class="fa-body" style="margin-top:8px;">'+_tmNote+'</p>' +
-    '<table class="fa-budget-table"><thead><tr><th style="width:60%">Service Labor Rate — '+tierName+'</th><th style="text-align:right;">Rate per Hour</th></tr></thead><tbody>' +
-      '<tr><td><span class="fa-bcat-dot" style="background:#1a6b4a;"></span>Regular Time (straight)</td><td style="text-align:right;">'+tmRates.st+' / hr</td></tr>' +
-      '<tr><td><span class="fa-bcat-dot" style="background:#8a5a00;"></span>After-Hours (time &amp; one-half)</td><td style="text-align:right;">'+tmRates.th+' / hr</td></tr>' +
-      '<tr><td><span class="fa-bcat-dot" style="background:#8a1f1f;"></span>Emergency (double time)</td><td style="text-align:right;">'+tmRates.dt+' / hr</td></tr>' +
-      '<tr><td>Preventive Maintenance Labor</td><td style="text-align:right;">$'+Number(P1_RATES.pmVisitRate||0).toFixed(2)+' / hr</td></tr>' +
-      _coTr +
-    '</tbody></table>';
+  var _rateIntro = D.svcBudget > 0
+    ? 'Service is drawn from the Annual Service Budget at the following published T&amp;M rates ('+D.sheetName+' rate sheet). Service beyond the budget is billed at the same rates:'
+    : 'Unscheduled service &amp; repair is billed on a time-and-materials basis at the following published T&amp;M rates ('+D.sheetName+' rate sheet):';
 
-  html += '<div class="fa-section"><div class="fa-section-head"><span class="fa-section-num">§3</span><span class="fa-section-title">Service Fees &amp; Annual Budget</span></div>' +
-    '<p class="fa-body">The recurring service fee and annual labor and materials budget allocation established under this Agreement are set forth below. The SLA fee is a fixed recurring charge billed on a <strong>'+billingLbl.toLowerCase()+'</strong> basis regardless of service volume. Budget allocations represent the maximum included value per contract year; hours or amounts exceeding these allocations require advance written authorization and will be invoiced separately.</p>' +
-    // SLA fee card
+  html += '<div class="fa-section"><div class="fa-section-head"><span class="fa-section-num">§3</span><span class="fa-section-title">Service Fees &amp; Annual Service Budget</span></div>' +
+    '<p class="fa-body">The recurring SLA fee is billed on a <strong>'+billingLbl.toLowerCase()+'</strong> basis and covers '+(function(){ var parts=[]; if(D.svcBudget>0) parts.push('the Annual Service Budget'); parts.push('preventive maintenance labor'); if(D.mat>0) parts.push('the materials allowance'); return parts.length>2 ? parts.slice(0,-1).join(', ')+', and '+parts[parts.length-1] : parts.join(' and '); })()+', as set forth below.'+(D.svcBudget > 0 ? ' '+SLA_BUDGET_CLAUSE : '')+'</p>' +
     (slaRateNum > 0 ?
       '<div style="display:flex;gap:10px;margin-bottom:10px;">' +
         '<div style="flex:1;background:#f7f7f5;border:1px solid #e0e0e0;border-radius:4px;padding:10px 14px;">' +
-          '<div style="font-size:8px;font-weight:700;color:#999;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:4px;">'+rateLabel+'</div>' +
+          '<div style="font-size:8px;font-weight:700;color:#999;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:4px;">'+billingLbl+' SLA Rate</div>' +
           '<div style="font-family:\'DM Mono\',monospace;font-size:20px;font-weight:600;color:#1c1c1c;">'+fmt(perInvoice)+'</div>' +
           '<div style="font-size:10px;color:#888;margin-top:2px;">billed '+billingLbl.toLowerCase()+' · '+startDate+' through '+endDate+'</div>' +
         '</div>' +
@@ -11463,10 +11425,10 @@ function generateSLAPrint() {
         '</div>' +
       '</div>'
     : '') +
-    // Budget allocation table
-    '<table class="fa-budget-table"><thead><tr><th style="width:40%">Service Budget Category</th><th style="width:18%;text-align:center;">Hours Allotted</th><th style="text-align:right;">Annual Budget</th></tr></thead><tbody>' + budgetRows + '</tbody></table>' +
-    tmRateTable +
-    // Financial summary
+    (D.svcBudget > 0 ? '<div style="font-size:9.5px;font-weight:700;color:#1c1c1c;margin:4px 0 3px;">ANNUAL SERVICE BUDGET — recommended mix, for planning purposes only</div>' : '') +
+    '<table class="fa-budget-table"><thead><tr><th style="width:40%">Item</th><th style="width:16%;text-align:center;">Hours</th><th style="text-align:right;">Rate</th><th style="text-align:right;">Annual Amount</th></tr></thead><tbody>' + budgetRows + otherRows + '</tbody></table>' +
+    '<p class="fa-body" style="margin-top:8px;">'+_rateIntro+'</p>' +
+    slaRateScheduleHTML(D, 'fa') +
     (summaryRows ?
       '<div style="margin-top:10px;border:1.5px solid #1c1c1c;border-radius:4px;overflow:hidden;">' +
         '<div style="background:#1c1c1c;padding:6px 12px;font-family:\'DM Mono\',monospace;font-size:9px;font-weight:500;color:rgba(255,255,255,0.7);letter-spacing:0.08em;text-transform:uppercase;">Financial Commitment Summary</div>' +
@@ -11475,29 +11437,33 @@ function generateSLAPrint() {
     : '') +
   '</div>';
 
-  // ── §4 RESPONSE TIMES ──
-  var coverage = isPremier ? '24 hours per day, 7 days per week' : 'standard business hours (Monday–Friday, 7:00 a.m.–5:00 p.m., excluding observed holidays)';
-  var ahCovered = (respAhTri && respAhTri.toLowerCase().indexOf('not included') < 0);
+  // ── §4 RESPONSE COMMITMENTS ──
+  var mapHtml = '';
+  if (D.map.length) {
+    mapHtml = '<p class="fa-body" style="margin-top:8px;"><strong>Customer Priority Mapping.</strong> Customer\'s priority levels are handled as the following Company request types, with the standard response windows and rates for each:</p>' +
+      '<table class="fa-resp-table"><thead><tr><th style="width:22%">Customer Priority</th><th>Customer Description</th><th style="width:24%">Company Request Type</th></tr></thead><tbody>' +
+      D.map.map(function(m){ return '<tr><td><strong>'+slaMapEsc(m.label)+'</strong></td><td>'+(slaMapEsc(m.desc)||'—')+'</td><td><strong>'+slaReqName(m.type)+'</strong></td></tr>'; }).join('') +
+      '</tbody></table>';
+  }
   html += '<div class="fa-section"><div class="fa-section-head"><span class="fa-section-num">§4</span><span class="fa-section-title">Service Response Commitments</span></div>' +
-    '<p class="fa-body">Company shall respond to service requests in accordance with the call-out categories below, measured by two commitments. "<strong>Triage</strong>" means acknowledgment of the request by a qualified person via callback or ticket open (often resulting in remote resolution without a site visit). "<strong>Onsite Deployment</strong>" means the arrival of a qualified technician at the Service Address where the issue cannot be resolved remotely. Regular-time response applies during '+coverage+'.'+(ahCovered?' After-hours response applies to non-critical calls placed outside business hours.':' After-hours non-emergency calls are not included under this plan.')+' Emergency response applies twenty-four (24) hours per day to system-down and life-safety conditions. Response times are targets, not guarantees, and do not apply to delays caused by Customer unavailability, third-party infrastructure failures, or force majeure.</p>' +
+    '<p class="fa-body">Customer may place any service request as one of the three request types below. Each request is acknowledged ("<strong>Triage</strong>": a callback or ticket opened by a qualified person) within <strong>'+pkg.triage+'</strong>. Emergency coverage under the '+tierName+' package: <strong>'+pkg.emergencyCoverage+'</strong>. Business hours are Monday–Friday, 7:00 a.m.–3:30 p.m., excluding observed holidays. Response windows do not apply to delays caused by Customer unavailability, third-party infrastructure failures, or force majeure.</p>' +
     '<table class="fa-resp-table"><thead><tr>' +
-      '<th style="width:16%">Call-Out Type</th>' +
-      '<th style="width:14%">Triage</th>' +
-      '<th style="width:14%">Onsite</th>' +
-      '<th>Trigger Conditions</th>' +
-      '<th style="width:18%">Coverage Window</th>' +
+      '<th style="width:18%">Request Type</th>' +
+      '<th style="width:34%">Response</th>' +
+      '<th>Billed At</th>' +
     '</tr></thead><tbody>' +
-    '<tr><td><span class="fa-rbadge fa-rbadge-green">Regular Time</span></td><td><strong>'+respRegTri+'</strong></td><td><strong>'+respRegOn+'</strong></td><td>Non-emergency service requests, programming changes, troubleshooting, scheduled call-outs</td><td>Business hours (M–F 7 am–5 pm)</td></tr>' +
-    '<tr><td><span class="fa-rbadge fa-rbadge-amber">After Hours</span></td><td><strong>'+respAhTri+'</strong></td><td><strong>'+respAhOn+'</strong></td><td>Non-critical service requests placed evenings, weekends, or observed holidays</td><td>'+(ahCovered?'Outside business hours':'Not covered')+'</td></tr>' +
-    '<tr><td><span class="fa-rbadge fa-rbadge-red">Emergency</span></td><td><strong>'+respEmTri+'</strong></td><td><strong>'+respEmOn+'</strong></td><td>Complete system failure, life-safety condition, access breach, panel offline or uncommunicative</td><td>24 hours / 7 days</td></tr>' +
+    '<tr><td><span class="fa-rbadge fa-rbadge-green">General</span></td><td><strong>Scheduled at the next available date</strong></td><td>General rate for the time classification of the work</td></tr>' +
+    '<tr><td><span class="fa-rbadge fa-rbadge-amber">Expedited</span></td><td><strong>Service completed within four (4) business days</strong></td><td>Expedited rate for the time classification of the work</td></tr>' +
+    '<tr><td><span class="fa-rbadge fa-rbadge-red">Emergency</span></td><td><strong>Same-day service</strong></td><td>Emergency rate for the time classification of the work, billed portal to portal</td></tr>' +
     '</tbody></table>' +
+    mapHtml +
   '</div>';
 
   // ── §5 PM SCOPE (only if systems selected) ──
   if (pmScopeRows) {
-    var pmVisitText = pmVisitWords[_slaPMVisits] || (_slaPMVisits + ' (' + _slaPMVisits + ')');
+    var pmVisitText = pmFreqText;
     html += '<div class="fa-section"><div class="fa-section-head"><span class="fa-section-num">§5</span><span class="fa-section-title">Preventive Maintenance Scope</span></div>' +
-      '<p class="fa-body">Company shall perform <strong>'+pmVisitText+'</strong> scheduled preventive maintenance visits per contract year. Visits shall be scheduled in advance by mutual agreement during normal business hours (Monday–Friday, 7:00 a.m.–5:00 p.m.). Company shall provide a written inspection report and deficiency log following each visit. Deficiencies requiring additional parts or labor beyond the contracted scope shall be documented, quoted, and authorized in writing before work commences.</p>' +
+      '<p class="fa-body">Company shall perform <strong>'+pmVisitText+'</strong> scheduled preventive maintenance visits per contract year. Visits shall be scheduled in advance by mutual agreement during normal business hours (Monday–Friday, 7:00 a.m.–3:30 p.m., excluding holidays). Company shall provide a written inspection report and deficiency log following each visit. Deficiencies requiring additional parts or labor beyond the contracted scope shall be documented, quoted, and authorized in writing before work commences.</p>' +
       '<table class="fa-pm-scope"><thead><tr><th style="width:22%">System</th><th>Preventive Maintenance Tasks</th></tr></thead><tbody>'+pmScopeRows+'</tbody></table>' +
     '</div>';
   }
@@ -11507,7 +11473,11 @@ function generateSLAPrint() {
   var tcItems = [
     ['TERM','This Agreement commences on <strong>'+startDate+'</strong> and continues for a period of <strong>'+termDisplay+'</strong> through <strong>'+endDate+'</strong> ("<strong>Initial Term</strong>"). '+(autoRenew.toLowerCase().indexOf('yes')>=0?'Upon expiration, this Agreement automatically renews for successive one (1) year periods unless either party provides written notice of non-renewal at least thirty (30) days prior to the then-current expiration date.':'This Agreement does not automatically renew. A new agreement must be executed prior to expiration to continue services.')],
     ['FEES &amp; PAYMENT','The '+rateLabel+' of <strong>'+fmt(perInvoice)+'</strong> is billed <strong>'+billingLbl.toLowerCase()+'</strong> and is due within thirty (30) days of invoice. A late charge of 1.5% per month applies to balances outstanding beyond thirty (30) days. Company may suspend services upon thirty (30) days\' written notice of non-payment.'],
-    ['SERVICE BUDGET','Annual budget allocations for unscheduled service &amp; repair labor and materials under this Agreement are as follows — PM labor: '+pmTotalFmt+'; Regular time labor: '+regAmt+' ('+regHrs+' hrs); After-hours labor: '+ahAmt+' ('+ahHrs+' hrs); Emergency labor: '+emAmt+' ('+emHrs+' hrs); Materials: '+(matAmt||'—')+'. These are maximum annual allotments. Unscheduled service &amp; repair hours or material amounts exceeding these allocations require advance written Customer authorization and will be invoiced at the applicable T&amp;M rate.'],
+    ['ANNUAL SERVICE BUDGET', (D.svcBudget > 0
+        ? 'The Annual Service Budget under this Agreement is <strong>'+fmt(D.svcBudget)+'</strong>. '+SLA_BUDGET_CLAUSE
+        : 'No Annual Service Budget is established under this Agreement. Unscheduled service &amp; repair is billed at the published T&amp;M rates for the request type and time classification of each call.')],
+    ['PREVENTIVE MAINTENANCE', SLA_PM_CLAUSE],
+    ['EARLY TERMINATION', SLA_EARLY_TERM_CLAUSE],
     ['MONITORING — SEPARATE AGREEMENT','Central station monitoring services are <strong>not</strong> included in or governed by this Agreement. Monitoring obligations are set forth exclusively in Customer\'s separate Point 1 Customer Installation, Monitoring &amp; Service Agreement.'],
     ['EXCLUSIONS','This Agreement does not cover: (a) damage from misuse, abuse, negligence, acts of God, power surges, or unauthorized modifications; (b) failures caused by third-party providers including ISPs, carriers, or utilities; (c) consumable items including batteries beyond the first replacement per device per year, fobs, and cards; (d) additions, relocations, or system expansions, which require a separate change order; (e) false alarm fines or permits, which are Customer\'s sole responsibility; (f) painting, patching, or structural repairs.'],
     ['LIMITATION OF LIABILITY','COMPANY\'S LIABILITY FOR ANY CLAIM ARISING FROM THIS AGREEMENT SHALL NOT EXCEED THE LESSER OF: (A) TOTAL FEES PAID BY CUSTOMER IN THE SIX (6) MONTHS PRECEDING THE CLAIM, OR (B) $1,500.00. IN NO EVENT SHALL COMPANY BE LIABLE FOR INDIRECT, INCIDENTAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES. THIS AGREEMENT COVERS UNSCHEDULED SERVICE &amp; REPAIR AND PREVENTIVE MAINTENANCE ONLY — COMPANY IS NOT AN INSURER.'],
@@ -13337,246 +13307,18 @@ function qbRenderQuoteSites(){
 })();
 </script>
 <script>
-/* ── SLA Operational Configurator (v2: dropdowns + system/industry filtering) ── */
+/* ── SLA dropdown panels (used by the PM Builder manufacturer pickers) ── */
 (function(){
-  // System-aware + industry-aware option model. sys/ind = 'all' or array.
-  var OPREQ=[
-    {l:'Standard Preventive Maintenance',sys:'all',ind:'all'},
-    {l:'Meeting Support',sys:['av'],ind:'all'},
-    {l:'Scheduled Public Meetings',sys:['av'],ind:['Municipality / Government','Education']},
-    {l:'City Council / Board Meetings',sys:['av'],ind:['Municipality / Government']},
-    {l:'Planning Commission Meetings',sys:['av'],ind:['Municipality / Government']},
-    {l:'Public Hearings',sys:['av'],ind:['Municipality / Government']},
-    {l:'Training Room Support',sys:['av'],ind:['Education','Commercial','Healthcare','Municipality / Government','Mixed Use']},
-    {l:'Presentation / Event Support',sys:['av'],ind:['Hospitality','Commercial','Mixed Use','Education']},
-    {l:'Credential & Access Administration',sys:['ac'],ind:'all'},
-    {l:'After-Hours Access Management',sys:['ac'],ind:'all'},
-    {l:'Lockdown / Emergency Egress Readiness',sys:['ac'],ind:['Education','Healthcare','Municipality / Government']},
-    {l:'Visitor / Tenant Access Support',sys:['ac'],ind:['Commercial','Mixed Use','Hospitality']},
-    {l:'Intrusion Detection Readiness',sys:['ba'],ind:'all'},
-    {l:'Alarm Response & Dispatch Support',sys:['ba'],ind:'all'},
-    {l:'Surveillance Continuity',sys:['cc'],ind:'all'},
-    {l:'Recording / Evidence Integrity',sys:['cc'],ind:['Municipality / Government','Financial','Retail','Education','Transportation']},
-    {l:'Remote Video Verification',sys:['cc'],ind:'all'},
-    {l:'Security Operations',sys:['ac','ba','cc'],ind:'all'},
-    {l:'After-Hours Security Coverage',sys:['ac','ba','cc'],ind:'all'},
-    {l:'Dispatch Center Support',sys:['ac','ba','cc'],ind:['Municipality / Government','Transportation','Healthcare']},
-    {l:'Emergency Operations',sys:'all',ind:'all'},
-    {l:'Healthcare Operations',sys:'all',ind:['Healthcare']},
-    {l:'Production Support',sys:'all',ind:['Industrial','Manufacturing','Warehouse']},
-    {l:'Network Dependent System',sys:'all',ind:'all'},
-    {l:'Custom',sys:'all',ind:'all'}
-  ];
-  var PMOBJ=[
-    {l:'Equipment Health',sys:'all',ind:'all',d:'Focuses on the long-term reliability and lifespan of the covered equipment through scheduled inspection, testing, and manufacturer-recommended maintenance.'},
-    {l:'Operational Readiness',sys:'all',ind:'all',d:'Keeps the covered systems operational, properly configured, and ready to support day-to-day facility operations throughout the year.'},
-    {l:'Meeting Readiness',sys:['av'],ind:'all',d:'Ensures A/V systems are operational and ready ahead of scheduled meetings, presentations, training sessions, and public events.'},
-    {l:'Public Meeting Continuity',sys:['av'],ind:['Municipality / Government','Education'],d:'Maintains A/V continuity specifically for public and government meetings on the customer-provided calendar (council, commission, hearings).'},
-    {l:'Life Safety Readiness',sys:['ba','ac'],ind:['Healthcare','Education','Municipality / Government'],d:'Maintains the covered systems in continuous readiness for life-safety, lockdown, and emergency operations.'},
-    {l:'Production Continuity',sys:'all',ind:['Industrial','Manufacturing','Warehouse','Hospitality'],d:'Sustains production and operational continuity by keeping the covered systems online and minimizing unplanned downtime.'},
-    {l:'Security Readiness',sys:['ac','ba','cc'],ind:'all',d:'Keeps access control, intrusion, and video systems operational, monitored, and ready to support continuous facility protection.'},
-    {l:'Custom',sys:'all',ind:'all',d:'Define a custom program objective for this customer.'}
-  ];
-  // static multi-select option lists
-  var OPS={
-    meetingTypes:['City Council Meetings','Planning Commission Meetings','Board Meetings','Public Hearings','Community Meetings','Training Sessions','Other Scheduled Events','Custom'],
-    remoteMethod:['Phone support','Microsoft Teams','Zoom','VPN','TeamViewer','ScreenConnect','Crestron remote access','Manufacturer portal','Other'],
-    custResp:['Provide meeting calendar','Provide remote access','Provide onsite contact','Provide access to equipment rooms','Maintain hot spare inventory onsite','Perform basic setup before meetings','Contact Point 1 when support is needed','Provide network / IT support when required'],
-    hotSpareOpts:['Manufacturer-recommended spare list (jointly developed)','Quarterly inspection, testing & firmware synchronization','Lifecycle & replenishment recommendations','Spare equipment purchased and owned by Customer','Deployment labor under Included Annual Service Coverage']
-  };
-  var SEL={
-    industry:['Commercial','Municipality / Government','Education','Healthcare','Industrial','Warehouse','Manufacturing','Financial','Data Center','Transportation','Hospitality','Retail','Mixed Use','Custom'],
-    criticality:['Standard','Business Critical','Mission Critical','Life Safety','Public Meeting Critical','Custom'],
-    meetingInclude:['No','Yes \u2013 Remote Support Only','Yes \u2013 Technician Standby','Yes \u2013 Onsite Technician Coverage','Yes \u2013 Hybrid Remote / Onsite Support'],
-    scheduleSource:['Customer-provided annual calendar','Customer-provided monthly calendar','Recurring schedule','Manual entry','As requested / quoted separately'],
-    frequency:['1 meeting per month','2 meetings per month','3 meetings per month','4 meetings per month','Custom'],
-    duration:['1 hour','2 hours','3 hours','4 hours','5 hours','Custom'],
-    supportWindow:['Setup only','First hour only','First two hours','Full meeting duration','Custom'],
-    remoteResp:['15 minutes','30 minutes','45 minutes','60 minutes','Custom'],
-    onsiteDispatch:['Not included','Immediate dispatch','Within 30 minutes','Within 45 minutes','Within 60 minutes','Custom','Quoted separately'],
-    remoteHands:['Yes \u2013 Customer IT','Yes \u2013 Customer AV Operator','Yes \u2013 Third-party operator','No','Unknown'],
-    setupBy:['Customer','Customer IT','Third-party AV operator','Point 1','Shared responsibility','Not applicable'],
-    checkBy:['Customer','Customer IT','Third-party AV operator','Point 1','Shared responsibility','Not applicable'],
-    p1Role:['Preventive maintenance only','Remote escalation support','Technician standby','Onsite operator support','Full meeting support','Custom'],
-    materialStrategy:['Annual material allowance','Customer-owned hot spare inventory','Point 1-managed hot spare inventory','Hybrid: material allowance + hot spares','Materials billed as needed','Custom'],
-    auditFreq:['Quarterly','Semi-annual','Annual','During PM visits','Custom']
-  };
-  var PM_TXT={};PMOBJ.forEach(function(o){PM_TXT[o.l]=o.d;});
-  var MEETING_RE=/meeting|hearing|council|commission/i;
-  var MEETING_BODY='Point 1 Electrical Systems, Inc. shall provide scheduled technical support for customer-designated meetings and critical facility usage dates identified by the Customer. This support is intended to assist the Customer with maintaining operational readiness during scheduled public meetings, board meetings, planning commission meetings, public hearings, training sessions, or other critical events identified by the Customer. During covered scheduled meetings, Point 1 will provide the selected level of support, which may include remote technical assistance, technician standby, guided troubleshooting with Customer IT or AV operators, and onsite dispatch when included within the selected service option. Covered meetings shall be based on the Customer-provided meeting calendar. Meetings not included on the provided calendar, emergency meetings, special meetings, or events added after the agreed scheduling window may be subject to separate scheduling, availability, and billing.';
-  function hsSysLabel(){
-    var m={ac:'Access Control',ba:'Intrusion',cc:'Video Surveillance',av:'Audio Visual'};
-    var s=(typeof curSystems==='function'?curSystems():[]).map(function(x){return m[x];}).filter(Boolean);
-    return s.length?s.join(' / '):'covered';
-  }
-  function hotSpareBody(){
-    var X=hsSysLabel();
-    return 'This Service Level Agreement does NOT include replacement '+X+' equipment. Point 1 will work collaboratively with the Customer to identify manufacturer-recommended spare equipment based on equipment criticality, lead times, lifecycle, historical failures and operational objectives. The Customer is responsible for purchasing and owning the mutually agreed-upon spare equipment and maintaining it onsite or at another approved location. During each quarterly Preventive Maintenance visit Point 1 will inspect, configure, synchronize firmware and programming, functionally test, document, and maintain the Customer-Owned Hot Spare Inventory so it remains deployment-ready and matches the production '+X+' system where applicable. Customer-owned spare equipment may be deployed during Preventive Maintenance, Corrective Maintenance, Scheduled Public Meeting Support, After-Hours Service or Emergency Service. Labor associated with deployment utilizes the Included Annual Service Coverage.';
-  }
-
-  function $id(id){return document.getElementById(id);}
-  function val(id){var e=$id(id);return e?e.value:'';}
-  function setVal(id,v){var e=$id(id);if(e)e.value=v||'';}
-  function show(id,on){var e=$id(id);if(e)e.style.display=on?'':'none';}
-  function esc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
-  function curSystems(){return [].slice.call(document.querySelectorAll('.sla-sys-card.active')).map(function(c){return c.getAttribute('data-sys');});}
-  function matchSys(o,sys){return o.sys==='all'||!sys.length||o.sys.some(function(s){return sys.indexOf(s)>=0;});}
-  function matchInd(o,ind){return o.ind==='all'||!ind||o.ind.indexOf(ind)>=0;}
-  function msVals(id){var c=$id(id);return c?[].slice.call(c.querySelectorAll('input:checked')).map(function(i){return i.value;}):[];}
-  function setMs(id,arr){var c=$id(id);if(!c)return;arr=arr||[];[].slice.call(c.querySelectorAll('input')).forEach(function(i){i.checked=arr.indexOf(i.value)>=0;});msSummary(id);}
-  function btnFor(id){return document.querySelector('.sla-dd-btn[data-for="'+id+'"]');}
-  function msSummary(id){var b=btnFor(id);if(!b)return;var n=msVals(id).length;b.innerHTML=n?('<span>'+n+' selected</span>'):'<span class="sla-dd-ph">Select all that apply\u2026</span>';}
-
-  function fillSelect(sel){var k=sel.getAttribute('data-opts'),o=SEL[k]||[];sel.innerHTML='<option value="">\u2014 Select \u2014</option>'+o.map(function(x){return '<option value="'+esc(x)+'">'+esc(x)+'</option>';}).join('');}
-  function fillMsStatic(box){var k=box.getAttribute('data-opts');if(!OPS[k])return;box.innerHTML=OPS[k].map(function(x){var v=esc(x);return '<label><input type="checkbox" value="'+v+'"><span>'+v+'</span></label>';}).join('');}
-
-  function buildOpReq(){
-    var ind=val('slaops-industry'),sys=curSystems(),box=$id('slaops-opreq');if(!box)return;
-    var prev=msVals('slaops-opreq');
-    var avail=OPREQ.filter(function(o){return matchSys(o,sys)&&matchInd(o,ind);});
-    box.innerHTML=avail.map(function(o){var v=esc(o.l);return '<label><input type="checkbox" value="'+v+'"><span>'+v+'</span></label>';}).join('');
-    setMs('slaops-opreq',prev); // keep still-available picks
-  }
-  function buildPmObj(){
-    var ind=val('slaops-industry'),sys=curSystems(),box=$id('slaops-pmobjective-opts');if(!box)return;
-    var cur=val('slaops-pmobjective');
-    var avail=PMOBJ.filter(function(o){return matchSys(o,sys)&&matchInd(o,ind);});
-    box.innerHTML=avail.map(function(o){return '<div class="sla-dd-opt" data-val="'+esc(o.l)+'" title="'+esc(o.d)+'"><span>'+esc(o.l)+'</span><div class="sla-dd-tip">'+esc(o.d)+'</div></div>';}).join('');
-    setPmObj(avail.some(function(o){return o.l===cur;})?cur:'');
-  }
-  function setPmObj(v){
-    setVal('slaops-pmobjective',v);
-    var b=btnFor('slaops-pmobjective');if(b)b.innerHTML=v?('<span>'+esc(v)+'</span>'):'<span class="sla-dd-ph">\u2014 Select \u2014</span>';
-    var box=$id('slaops-pmobjective-opts');if(box)[].slice.call(box.children).forEach(function(o){o.classList.toggle('sel',o.getAttribute('data-val')===v);});
-  }
-  function applyFilters(){buildOpReq();buildPmObj();refresh();}
-
-  function refresh(){
-    var crit=val('slaops-criticality'),ops=msVals('slaops-opreq');
-    var avCov=curSystems().indexOf('av')>=0;
-    var trigger=avCov&&(ops.some(function(o){return MEETING_RE.test(o);})||crit==='Public Meeting Critical');
-    show('slaops-sec-meeting',trigger);show('slaops-sec-workflow',trigger);
-    var mat=val('slaops-material');
-    show('slaops-hotspare-detail',mat==='Customer-owned hot spare inventory'||mat==='Point 1-managed hot spare inventory'||mat==='Hybrid: material allowance + hot spares');
-  }
-
-  function gather(){return{
-    industry:val('slaops-industry'),criticality:val('slaops-criticality'),pmObjective:val('slaops-pmobjective'),
-    opReq:msVals('slaops-opreq'),
-    meetingInclude:val('slaops-meeting-include'),meetingSource:val('slaops-meeting-source'),
-    meetingTypes:msVals('slaops-meeting-types'),meetingFreq:val('slaops-meeting-freq'),
-    meetingDuration:val('slaops-meeting-duration'),meetingWindow:val('slaops-meeting-window'),
-    meetingRemoteResp:val('slaops-meeting-remoteresp'),meetingOnsite:val('slaops-meeting-onsite'),
-    meetingRemoteHands:val('slaops-meeting-remotehands'),meetingMethod:msVals('slaops-meeting-method'),
-    wfSetup:val('slaops-wf-setup'),wfCheck:val('slaops-wf-check'),wfRole:val('slaops-wf-role'),
-    custResp:msVals('slaops-custresp'),
-    material:val('slaops-material'),audit:val('slaops-audit'),hotSpareOpts:msVals('slaops-hotspare-opts')
-  };}
-  var _pending=null;
-  function restore(d){
-    if(!d)return;_pending=d;
-    setVal('slaops-industry',d.industry);setVal('slaops-criticality',d.criticality);
-    setVal('slaops-meeting-include',d.meetingInclude);setVal('slaops-meeting-source',d.meetingSource);
-    setMs('slaops-meeting-types',d.meetingTypes);setVal('slaops-meeting-freq',d.meetingFreq);
-    setVal('slaops-meeting-duration',d.meetingDuration);setVal('slaops-meeting-window',d.meetingWindow);
-    setVal('slaops-meeting-remoteresp',d.meetingRemoteResp);setVal('slaops-meeting-onsite',d.meetingOnsite);
-    setVal('slaops-meeting-remotehands',d.meetingRemoteHands);setMs('slaops-meeting-method',d.meetingMethod);
-    setVal('slaops-wf-setup',d.wfSetup);setVal('slaops-wf-check',d.wfCheck);setVal('slaops-wf-role',d.wfRole);
-    setMs('slaops-custresp',d.custResp);
-    setVal('slaops-material',d.material);setVal('slaops-audit',d.audit);setMs('slaops-hotspare-opts',d.hotSpareOpts);
-    // defer until systems (restored elsewhere) are active
-    setTimeout(function(){ buildOpReq();buildPmObj(); setMs('slaops-opreq',d.opReq); setPmObj(d.pmObjective); refresh(); },0);
-  }
-
-  function qsec(t,b){return '<div class="q-section"><div class="q-section-title">'+esc(t)+'</div><div style="font-size:12px;color:#444;line-height:1.6;">'+b+'</div></div>';}
-  function bullets(a){return (a&&a.length)?'<ul style="margin:6px 0 0 0;padding-left:18px;">'+a.map(function(x){return '<li>'+esc(x)+'</li>';}).join('')+'</ul>':'';}
-  function proposalHTML(){
-    var out='',d=gather();
-    if(d.pmObjective)out+=qsec('Program Objective',esc(PM_TXT[d.pmObjective]||('The objective of this program is to support '+d.pmObjective+' for the covered systems.')));
-    if(typeof window.slaPmProposalHTML==='function')out+=window.slaPmProposalHTML();
-    var trigger=(curSystems().indexOf('av')>=0)&&((d.opReq||[]).some(function(o){return MEETING_RE.test(o);})||d.criticality==='Public Meeting Critical');
-    var on=trigger&&d.meetingInclude&&d.meetingInclude!=='No'&&d.meetingInclude!=='';
-    if(on){
-      var det='<div style="margin-top:8px;"><strong>Support level:</strong> '+esc(d.meetingInclude.replace(/^Yes\s\u2013\s/,''))+'</div>';
-      if(d.meetingTypes&&d.meetingTypes.length)det+='<div style="margin-top:4px;"><strong>Covered meeting types:</strong></div>'+bullets(d.meetingTypes);
-      var c=[];
-      if(d.meetingRemoteResp)c.push('Remote response during scheduled meetings: '+d.meetingRemoteResp);
-      if(d.meetingOnsite&&d.meetingOnsite!=='Not included')c.push('Onsite dispatch during scheduled meetings: '+d.meetingOnsite);
-      if(d.meetingWindow)c.push('Support window: '+d.meetingWindow);
-      if(d.meetingSource)c.push('Meeting schedule source: '+d.meetingSource);
-      if(c.length)det+='<div style="margin-top:6px;"><strong>Scheduled support commitments:</strong></div>'+bullets(c);
-      out+=qsec('Scheduled Meeting Support',esc(MEETING_BODY)+det);
-    }
-    if(trigger&&(d.wfRole||(d.custResp&&d.custResp.length)||d.wfSetup||d.wfCheck)){
-      var rb='',roles=[];
-      if(d.wfSetup)roles.push('Meeting setup performed by: '+d.wfSetup);
-      if(d.wfCheck)roles.push('Initial system check performed by: '+d.wfCheck);
-      if(d.wfRole)roles.push('Point 1 role: '+d.wfRole);
-      if(roles.length)rb+=bullets(roles);
-      if(d.custResp&&d.custResp.length)rb+='<div style="margin-top:6px;"><strong>Customer responsibilities:</strong></div>'+bullets(d.custResp);
-      out+=qsec('Roles & Responsibilities',rb);
-    }
-    if(d.material==='Customer-owned hot spare inventory'||d.material==='Point 1-managed hot spare inventory'||d.material==='Hybrid: material allowance + hot spares'){
-      var hb=esc(hotSpareBody()),ho=(d.hotSpareOpts||[]).slice();if(d.audit)ho.push('Inventory audit frequency: '+d.audit);
-      out+=qsec('Customer-Owned Hot Spare Inventory Program (Managed Spare Parts Program)',hb+bullets(ho));
-    }
-    return out;
-  }
-
   function init(){
-    if(!$id('slaops-sec-opreq'))return;
-    document.querySelectorAll('.slaops-sel[data-opts]').forEach(fillSelect);
-    document.querySelectorAll('.sla-ms-list[data-opts]').forEach(fillMsStatic);
-    ['slaops-meeting-types','slaops-meeting-method','slaops-custresp','slaops-hotspare-opts'].forEach(msSummary);
-    applyFilters();
-    // industry change -> refilter; criticality/others -> refresh
-    var iSel=$id('slaops-industry');if(iSel)iSel.addEventListener('change',applyFilters);
-    // systems toggles -> refilter (fires after slaToggleSys)
-    document.querySelectorAll('.sla-sys-card').forEach(function(c){c.addEventListener('click',function(){setTimeout(applyFilters,0);});});
-    // multi-select checkbox changes -> summary + refresh
-    document.addEventListener('change',function(e){
-      var list=e.target.closest&&e.target.closest('.sla-ms-list');
-      if(list){msSummary(list.id);refresh();return;}
-      var sec=e.target.closest&&e.target.closest('#slaops-sec-meeting,#slaops-sec-workflow,#slaops-sec-hotspare,#slaops-sec-opreq');
-      if(sec&&e.target.id!=='slaops-industry')refresh();
-    });
-    // dropdown open/close
     document.addEventListener('click',function(e){
       var btn=e.target.closest&&e.target.closest('.sla-dd-btn');
       if(btn){e.preventDefault();var dd=btn.closest('.sla-dd'),open=dd.classList.contains('open');
         document.querySelectorAll('.sla-dd.open').forEach(function(d){d.classList.remove('open');});
         if(!open)dd.classList.add('open');return;}
-      var opt=e.target.closest&&e.target.closest('.sla-dd-opt');
-      if(opt){setPmObj(opt.getAttribute('data-val'));opt.closest('.sla-dd').classList.remove('open');refresh();return;}
       if(e.target.closest&&e.target.closest('.sla-dd-panel'))return;  // keep open while interacting
       document.querySelectorAll('.sla-dd.open').forEach(function(d){d.classList.remove('open');});
     });
   }
-
-  function loadSanBruno(){
-    setVal('slaops-industry','Municipality / Government');
-    setVal('slaops-criticality','Public Meeting Critical');
-    applyFilters();
-    setPmObj('Meeting Readiness');
-    setMs('slaops-opreq',['Scheduled Public Meetings','City Council / Board Meetings','Planning Commission Meetings']);
-    refresh();
-    setVal('slaops-meeting-include','Yes \u2013 Hybrid Remote / Onsite Support');
-    setVal('slaops-meeting-source','Customer-provided annual calendar');
-    setMs('slaops-meeting-types',['City Council Meetings','Planning Commission Meetings']);
-    setVal('slaops-meeting-freq','2 meetings per month');setVal('slaops-meeting-duration','3 hours');
-    setVal('slaops-meeting-window','Full meeting duration');setVal('slaops-meeting-remoteresp','30 minutes');
-    setVal('slaops-meeting-onsite','Immediate dispatch');setVal('slaops-meeting-remotehands','Yes \u2013 Customer IT');
-    setMs('slaops-meeting-method',['Phone support','Microsoft Teams','Crestron remote access']);
-    setVal('slaops-wf-setup','Customer IT');setVal('slaops-wf-check','Customer IT');setVal('slaops-wf-role','Remote escalation support');
-    setMs('slaops-custresp',['Provide meeting calendar','Provide remote access','Provide onsite contact','Provide access to equipment rooms','Maintain hot spare inventory onsite','Contact Point 1 when support is needed','Provide network / IT support when required']);
-    setVal('slaops-material','Customer-owned hot spare inventory');refresh();
-    setVal('slaops-audit','During PM visits');
-    setMs('slaops-hotspare-opts',['Recommended hot spare list included','Inventory tracking included','Replacement recommendations included','Customer purchase responsibility']);
-    refresh();
-  }
-
-  window.slaOpsGather=gather;window.slaOpsRestore=restore;window.slaOpsProposalHTML=proposalHTML;
-  window.slaOpsRefresh=applyFilters;window.slaLoadSanBruno=loadSanBruno;
   if(document.readyState!=='loading')init();else document.addEventListener('DOMContentLoaded',init);
 })();
 </script>
@@ -13833,211 +13575,14 @@ function qbRenderQuoteSites(){
   if(document.readyState!=='loading')init();else document.addEventListener('DOMContentLoaded',init);
 })();
 </script>
-<script>
-/* ── Custom Call-Outs: named response commitments that price into the SLA ── */
-(function(){
-  var TRIAGE=['15 minutes','30 minutes','45 minutes','1 hour','2 hours','4 hours','Same day','Custom\u2026'];
-  var ONSITE=['Not included','Immediate dispatch','30 minutes','45 minutes','60 minutes','Same day','Quoted separately','Custom\u2026'];
-  var TRIGGER=['During pre-scheduled customer-designated critical meetings or events on the Customer-provided calendar',
-               'During scheduled public meetings (council, commission, hearings)',
-               'During emergency or life-safety events',
-               'During after-hours and weekend coverage',
-               'During production / operational hours',
-               'System-down or critical failure conditions',
-               'Custom\u2026'];
-  var INCL=['Included','Optional add-on','Quoted separately'];
-  function esc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
-  function opts(arr,sel){return arr.map(function(o){return '<option'+(o===sel?' selected':'')+'>'+esc(o)+'</option>';}).join('');}
-  function fmt(n){return '$'+(n||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
 
-  // Build rate <option>s from the selected tier (read at runtime from the budget rate dropdown's optgroups)
-  function rateOptions(){
-    var src=document.getElementById('sla-bud-reg-rate'); if(!src)return'';
-    var tierCard=document.querySelector('.sla-tier-card.active');
-    var tier=tierCard?(tierCard.querySelector('.sla-tier-name')||{}).textContent:'';
-    tier=(tier||'').trim().toLowerCase();
-    var groups=src.querySelectorAll('optgroup'), out='';
-    if(groups.length){
-      [].slice.call(groups).forEach(function(g){
-        var lbl=(g.getAttribute('label')||'').toLowerCase();
-        if(!tier || lbl.indexOf(tier)>=0 || tier.indexOf(lbl)>=0){
-          [].slice.call(g.querySelectorAll('option')).forEach(function(o){ if(o.value)out+='<option value="'+o.value+'">'+esc(o.textContent)+'</option>'; });
-        }
-      });
-    }
-    if(!out){ // no optgroups (e.g. flat list) — take all options
-      [].slice.call(src.querySelectorAll('option')).forEach(function(o){ if(o.value)out+='<option value="'+o.value+'">'+esc(o.textContent)+'</option>'; });
-    }
-    return out;
-  }
-  function fillRates(sel,rate,custom){
-    var card=sel.closest('.sla-co-card'), cInput=card.querySelector('.sla-co-rate-c');
-    sel.innerHTML='<option value="">\u2014 Select rate \u2014</option>'+rateOptions()+'<option value="__custom">Custom rate\u2026</option>';
-    if(custom){ sel.value='__custom'; cInput.style.display='block'; if(rate!=null&&rate!=='')cInput.value=rate; return; }
-    if(rate!=null&&rate!==''){
-      sel.value=String(rate);
-      if(sel.value!==String(rate)){ sel.value='__custom'; cInput.style.display='block'; cInput.value=rate; }
-      else cInput.style.display='none';
-    }
-  }
-  function refillAllRates(){
-    document.querySelectorAll('#sla-co-list .sla-co-card').forEach(function(card){
-      var sel=card.querySelector('.sla-co-rate-sel'), cInput=card.querySelector('.sla-co-rate-c');
-      var custom=sel.value==='__custom', rate=custom?cInput.value:sel.value;
-      fillRates(sel,rate,custom);
-    });
-    recalc();
-  }
-  window.slaCoRateChange=function(sel){
-    var card=sel.closest('.sla-co-card'), cInput=card.querySelector('.sla-co-rate-c');
-    cInput.style.display=(sel.value==='__custom')?'block':'none';
-    recalc();
-  };
-
-  function cardHTML(d){
-    d=d||{};
-    return '<div class="sla-co-card">'+
-      '<div class="sla-co-head">'+
-        '<input class="sla-co-name" placeholder="Call-out name \u2014 e.g., City Council Meeting Support" value="'+esc(d.name||'')+'">'+
-        '<select class="sla-co-incl" onchange="slaCoCalc()">'+opts(INCL,d.incl||'Included')+'</select>'+
-        '<button type="button" class="sla-co-rm" title="Remove" onclick="slaCoRemove(this)">\u00d7</button>'+
-      '</div>'+
-      '<div class="sla-co-grid">'+
-        '<div><label>Triage (Acknowledgment)</label><select class="sla-co-triage" onchange="slaCoToggle(this)">'+opts(TRIAGE,d.triage||'30 minutes')+'</select>'+
-          '<input class="sla-co-triage-c" placeholder="Custom triage\u2026" style="margin-top:5px;display:'+(d.triage==='Custom\u2026'?'block':'none')+';" value="'+esc(d.triageC||'')+'"></div>'+
-        '<div><label>Onsite Deployment</label><select class="sla-co-onsite" onchange="slaCoToggle(this)">'+opts(ONSITE,d.onsite||'Immediate dispatch')+'</select>'+
-          '<input class="sla-co-onsite-c" placeholder="Custom onsite\u2026" style="margin-top:5px;display:'+(d.onsite==='Custom\u2026'?'block':'none')+';" value="'+esc(d.onsiteC||'')+'"></div>'+
-        '<div><label>Trigger Condition / Coverage</label><select class="sla-co-trigger" onchange="slaCoToggle(this)">'+opts(TRIGGER,d.trigger||TRIGGER[0])+'</select>'+
-          '<input class="sla-co-trigger-c" placeholder="Type condition\u2026" style="margin-top:5px;display:'+(d.trigger==='Custom\u2026'?'block':'none')+';" value="'+esc(d.triggerC||'')+'"></div>'+
-      '</div>'+
-      '<div class="sla-co-grid g4">'+
-        '<div><label>Rate ($/hr)</label><select class="sla-co-rate-sel" onchange="slaCoRateChange(this)"></select>'+
-          '<input type="number" class="sla-co-rate-c" min="0" step="0.01" placeholder="Custom $/hr" style="margin-top:5px;display:none;" oninput="slaCoCalc()"></div>'+
-        '<div><label>Hours (annual)</label><input type="number" class="sla-co-hrs" min="0" step="0.5" placeholder="0" value="'+(d.hrs||'')+'" oninput="slaCoCalc()"></div>'+
-        '<div><label>Annual Amount</label><div class="sla-co-amt">\u2014</div></div>'+
-        '<div style="font-size:10px;color:var(--text3);align-self:end;padding-bottom:6px;">spreads into the SLA rate</div>'+
-      '</div></div>';
-  }
-
-  window.slaCoAdd=function(d){
-    d=d||{};
-    var list=document.getElementById('sla-co-list'); if(!list)return;
-    var wrap=document.createElement('div'); wrap.innerHTML=cardHTML(d);
-    var card=wrap.firstChild; list.appendChild(card);
-    fillRates(card.querySelector('.sla-co-rate-sel'), d.rate, !!d.rateCustom);
-    recalc();
-  };
-  window.slaCoRemove=function(btn){ var card=btn.closest('.sla-co-card'); if(card)card.remove(); recalc(); };
-  window.slaCoToggle=function(sel){ var c=sel.parentElement.querySelector('input'); if(c)c.style.display=(sel.value==='Custom\u2026')?'block':'none'; };
-
-  function coRate(card){
-    var sel=card.querySelector('.sla-co-rate-sel');
-    if(!sel)return 0;
-    if(sel.value==='__custom')return parseFloat(card.querySelector('.sla-co-rate-c').value)||0;
-    return parseFloat(sel.value)||0;
-  }
-  function rowAmt(card){ return coRate(card)*(parseFloat(card.querySelector('.sla-co-hrs').value)||0); }
-  function recalc(){
-    document.querySelectorAll('#sla-co-list .sla-co-card').forEach(function(card){ card.querySelector('.sla-co-amt').textContent=fmt(rowAmt(card)); });
-    if(typeof slaBudgetCalc==='function')slaBudgetCalc();
-  }
-  window.slaCoCalc=recalc;
-  window.slaCalloutTotal=function(){
-    var t=0;
-    document.querySelectorAll('#sla-co-list .sla-co-card').forEach(function(card){ if(card.querySelector('.sla-co-incl').value==='Included')t+=rowAmt(card); });
-    return t;
-  };
-
-  function eff(card,base){var sel=card.querySelector('.sla-co-'+base),v=sel?sel.value:'';
-    if(v==='Custom\u2026'){var c=card.querySelector('.sla-co-'+base+'-c');return c?(c.value||''):'';}return v;}
-  window.slaCoGather=function(){
-    return [].slice.call(document.querySelectorAll('#sla-co-list .sla-co-card')).map(function(card){
-      function v(c){var e=card.querySelector(c);return e?e.value:'';}
-      var sel=card.querySelector('.sla-co-rate-sel'); var custom=sel&&sel.value==='__custom';
-      return {name:v('.sla-co-name'),incl:v('.sla-co-incl'),
-        triage:v('.sla-co-triage'),triageC:v('.sla-co-triage-c'),
-        onsite:v('.sla-co-onsite'),onsiteC:v('.sla-co-onsite-c'),
-        trigger:v('.sla-co-trigger'),triggerC:v('.sla-co-trigger-c'),
-        rate:String(coRate(card)),rateCustom:!!custom,hrs:v('.sla-co-hrs')};
-    });
-  };
-  window.slaCoRestore=function(arr){
-    var list=document.getElementById('sla-co-list'); if(!list)return; list.innerHTML='';
-    (arr||[]).forEach(function(d){slaCoAdd(d);});
-    recalc();
-  };
-
-  // refresh call-out rate dropdowns when the tier changes
-  document.addEventListener('click',function(e){ if(e.target.closest&&e.target.closest('.sla-tier-card'))setTimeout(refillAllRates,60); });
-
-  // Proposal/agreement output
-  window.slaCoRespRows=function(){
-    var out='';
-    document.querySelectorAll('#sla-co-list .sla-co-card').forEach(function(card){
-      var name=(card.querySelector('.sla-co-name').value||'').trim(); if(!name)return;
-      var incl=card.querySelector('.sla-co-incl').value;
-      var tag=incl==='Included'?'':' <span style="color:#888;font-size:10px;">('+esc(incl.toLowerCase())+')</span>';
-      var tri=eff(card,'triage'),on=eff(card,'onsite'),trg=eff(card,'trigger'),bits=[];
-      if(tri)bits.push('<span style="color:#888;">Triage:</span> '+esc(tri));
-      if(on && on!=='Not included')bits.push('<span style="color:#888;">Onsite:</span> '+esc(on));
-      out+='<div class="q-service-row"><div class="q-service-name">'+esc(name)+tag+'</div>'+
-           '<div class="q-service-price" style="font-size:10px;color:#666;font-weight:500;text-align:right;">'+bits.join(' <span style="color:#bbb;">|</span> ')+'</div></div>';
-      if(trg)out+='<div class="q-service-row" style="border-top:none;padding-top:0;"><div class="q-service-name" style="font-size:10px;color:#888;font-weight:400;">'+esc(trg)+'</div><div></div></div>';
-    });
-    return out;
-  };
-  function coHrs(card){return parseFloat(card.querySelector('.sla-co-hrs').value)||0;}
-  window.slaCoBudgetRows=function(){
-    var out='';
-    document.querySelectorAll('#sla-co-list .sla-co-card').forEach(function(card){
-      var name=(card.querySelector('.sla-co-name').value||'').trim(); if(!name)return;
-      var amt=rowAmt(card); if(amt<=0)return;
-      var hrs=coHrs(card), hl=hrs>0?' <span style="color:#888;font-size:10px;">('+hrs+' hrs)</span>':'';
-      var incl=card.querySelector('.sla-co-incl').value;
-      if(incl==='Included') out+='<div class="q-service-row"><div class="q-service-name">'+esc(name)+hl+'</div><div class="q-service-price">'+fmt(amt)+'</div></div>';
-      else out+='<div class="q-service-row"><div class="q-service-name" style="color:#888;">'+esc(name)+hl+' <span style="font-size:10px;">('+esc(incl.toLowerCase())+')</span></div><div class="q-service-price" style="color:#888;">'+fmt(amt)+'</div></div>';
-    });
-    return out;
-  };
-  // Agreement budget table row (3 columns incl. Hours Allotted) — included call-outs only, so rows reconcile with the contracted total
-  window.slaCoBudgetRowsTr=function(){
-    var out='';
-    document.querySelectorAll('#sla-co-list .sla-co-card').forEach(function(card){
-      if(card.querySelector('.sla-co-incl').value!=='Included')return;
-      var name=(card.querySelector('.sla-co-name').value||'').trim(); if(!name)return;
-      var amt=rowAmt(card); if(amt<=0)return;
-      var hrs=coHrs(card);
-      out+='<tr><td><span class="fa-bcat-dot" style="background:#e8620a;"></span>'+esc(name)+'</td><td style="text-align:center;">'+(hrs>0?hrs:'\u2014')+'</td><td style="text-align:right;">'+fmt(amt)+'</td></tr>';
-    });
-    return out;
-  };
-  // rate-schedule rows for the custom call-outs (two formats)
-  window.slaCoRateRowsQ=function(){
-    var out='';
-    window.slaCoGather().forEach(function(c){var r=parseFloat(c.rate)||0; if(c.name&&r>0)
-      out+='<div class="q-service-row"><div class="q-service-name">'+esc(c.name)+' <span style="color:#888;font-size:10px;">(custom call-out)</span></div><div class="q-service-price">$'+r.toFixed(2)+' / hr</div></div>';});
-    return out;
-  };
-  window.slaCoRateRowsTr=function(){
-    var out='';
-    window.slaCoGather().forEach(function(c){var r=parseFloat(c.rate)||0; if(c.name&&r>0)
-      out+='<tr><td>'+esc(c.name)+' (custom call-out)</td><td style="text-align:right;">$'+r.toFixed(2)+' / hr</td></tr>';});
-    return out;
-  };
-})();
-</script>
 <script>
 /* Progressive disclosure — the SLA creator grows as each section gets a chosen value */
 (function(){
   function init(){
     var anchor=document.getElementById('slapm-sec'); if(!anchor)return;
     var body=anchor.closest('.sla-body'); if(!body)return;
-    var opreq=document.getElementById('slaops-sec-opreq');
-    var configIds=['slaops-sec-meeting','slaops-sec-workflow','slaops-sec-hotspare'];
-    var configMods=configIds.map(function(id){return document.getElementById(id);}).filter(Boolean);
-    var steps=[].slice.call(body.querySelectorAll(':scope > .sla-section')).filter(function(s){
-      return !s.classList.contains('slaops-module') && configIds.indexOf(s.id)<0;
-    });
+    var steps=[].slice.call(body.querySelectorAll(':scope > .sla-section'));
     if(steps.length<3)return;
     var ALWAYS=2, revealed=ALWAYS;
     function complete(s){
@@ -14054,13 +13599,6 @@ function qbRenderQuoteSites(){
     }
     function apply(){
       steps.forEach(function(s,i){ s.style.display = (i<revealed) ? '' : 'none'; });
-      var opIdx=opreq?steps.indexOf(opreq):-1;
-      var opVisible = opIdx>=0 && opIdx<revealed;
-      configMods.forEach(function(m){
-        if(!opVisible) m.style.display='none';                    // hide configurator until op-req is reached
-        else if(m.id==='slaops-sec-hotspare') m.style.display=''; // hot spare rides with op-req
-        // meeting / workflow remain governed by the Phase-1 logic
-      });
     }
     function recompute(){
       var firstIncomplete=steps.length;
