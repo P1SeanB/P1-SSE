@@ -3123,6 +3123,7 @@
             </tr>
           </tbody>
         </table>
+        <label style="display:inline-flex;align-items:center;gap:8px;font-size:12px;color:var(--text);margin-top:8px;cursor:pointer;"><input type="checkbox" id="sla-show-budget-amts" checked style="accent-color:#e8620a;"> Show budget rates &amp; dollar amounts on the proposal and agreement <span style="color:var(--text3);">(off = hours only)</span></label>
         <div class="sla-bud-summary">
           <div>Annual service budget &nbsp;<strong id="sla-bud-total">$0.00</strong></div>
           <div class="sla-bud-min na" id="sla-bud-min">Budget optional for Essential</div>
@@ -7105,6 +7106,8 @@ function gatherEstimateData() {
   });
   var _sheetEl = document.getElementById('sla-rate-sheet');
   data.slaSheetUserSet = !!(_sheetEl && _sheetEl.dataset.userSet === '1');
+  var _amtEl = document.getElementById('sla-show-budget-amts');
+  data.slaShowBudgetAmts = _amtEl ? _amtEl.checked : true;
 
   // PM Builder + customer priority mapping
   if (typeof slaPmGather === 'function') data.slaPm = slaPmGather();
@@ -7630,6 +7633,8 @@ function restoreEstimateData(data) {
     });
     var _sh = document.getElementById('sla-rate-sheet');
     if (_sh) _sh.dataset.userSet = data.slaSheetUserSet ? '1' : '';
+    var _am = document.getElementById('sla-show-budget-amts');
+    if (_am) _am.checked = data.slaShowBudgetAmts !== false;
     // Sync the Mo/Qtr toggle to the saved billing cycle without converting the saved rate.
     var _cyc = (document.getElementById('sla-billing-cycle')||{}).value === 'quarterly' ? 'quarterly' : 'monthly';
     if (typeof _slaFreqState === 'object') _slaFreqState.freq = _cyc;
@@ -10434,6 +10439,8 @@ function slaClearNonCustomer() {
   });
   var sheetEl = document.getElementById('sla-rate-sheet');
   if (sheetEl){ sheetEl.dataset.userSet = ''; sheetEl.value = 'standard'; }
+  var amtsEl = document.getElementById('sla-show-budget-amts');
+  if (amtsEl) amtsEl.checked = true;
   slaMapRestore([]);
   var csAcctEl = document.getElementById('sla-cs-acct');
   if (csAcctEl) { csAcctEl.textContent = '\u2014'; csAcctEl.style.color = 'var(--text3)'; }
@@ -10914,7 +10921,9 @@ function slaDocData(){
     svcBudget: svcBudget, mat: mat,
     sheetKey: sheetKey, sheetName: slaSheetName(sheetKey),
     periods: slaTermPeriods(), pastSheet: slaTermExtendsPastSheet(),
-    map: slaMapGather()
+    map: slaMapGather(),
+    showAmts: !(document.getElementById('sla-show-budget-amts') && !document.getElementById('sla-show-budget-amts').checked),
+    totalHrs: rows.reduce(function(a,r){ return a + r.hrs; }, 0)
   };
 }
 // Rate schedule table(s) — one per rate period the agreement term touches.
@@ -11142,16 +11151,20 @@ function generateSLAProposal() {
   if (D.svcBudget > 0 || pmTotal > 0 || D.mat > 0) {
     var budgetRows = '';
     D.usedRows.forEach(function(r){
-      budgetRows += '<div class="q-service-row"><div class="q-service-name">'+r.name+' <span style="color:#888;font-size:10px;">('+r.hrs+' hrs · '+r.tcName.toLowerCase()+' @ '+slaMoney(r.rate)+')</span></div><div class="q-service-price">'+slaMoney(r.amt)+'</div></div>';
+      budgetRows += D.showAmts
+        ? '<div class="q-service-row"><div class="q-service-name">'+r.name+' <span style="color:#888;font-size:10px;">('+r.hrs+' hrs · '+r.tcName.toLowerCase()+' @ '+slaMoney(r.rate)+')</span></div><div class="q-service-price">'+slaMoney(r.amt)+'</div></div>'
+        : '<div class="q-service-row"><div class="q-service-name">'+r.name+' <span style="color:#888;font-size:10px;">('+r.tcName.toLowerCase()+')</span></div><div class="q-service-price">'+r.hrs+' hrs</div></div>';
     });
     if (D.svcBudget > 0) {
-      budgetRows += '<div class="q-service-row" style="border-top:1.5px solid #1c1c1c;"><div class="q-service-name" style="font-weight:700;">Annual Service Budget</div><div class="q-service-price" style="font-weight:700;">'+slaMoney(D.svcBudget)+'</div></div>';
+      budgetRows += '<div class="q-service-row" style="border-top:1.5px solid #1c1c1c;"><div class="q-service-name" style="font-weight:700;">Annual Service Budget</div><div class="q-service-price" style="font-weight:700;">'+(D.showAmts ? slaMoney(D.svcBudget) : D.totalHrs+' hrs')+'</div></div>';
     }
     if (pmTotal > 0) {
-      budgetRows += '<div class="q-service-row"><div class="q-service-name">Preventive Maintenance Labor <span style="color:#888;font-size:10px;">('+pmVisits+' visit'+(pmVisits===1?'':'s')+' × '+pmHrsNum+' hrs · billed separately)</span></div><div class="q-service-price">'+slaMoney(pmTotal)+'</div></div>';
+      budgetRows += D.showAmts
+        ? '<div class="q-service-row"><div class="q-service-name">Preventive Maintenance Labor <span style="color:#888;font-size:10px;">('+pmVisits+' visit'+(pmVisits===1?'':'s')+' × '+pmHrsNum+' hrs · billed separately)</span></div><div class="q-service-price">'+slaMoney(pmTotal)+'</div></div>'
+        : '<div class="q-service-row"><div class="q-service-name">Preventive Maintenance Labor <span style="color:#888;font-size:10px;">('+pmVisits+' visit'+(pmVisits===1?'':'s')+' × '+pmHrsNum+' hrs · separate from the service budget)</span></div><div class="q-service-price">'+(pmVisits*pmHrsNum)+' hrs</div></div>';
     }
     if (D.mat > 0) {
-      budgetRows += '<div class="q-service-row"><div class="q-service-name">Materials Allowance</div><div class="q-service-price">'+slaMoney(D.mat)+'</div></div>';
+      budgetRows += '<div class="q-service-row"><div class="q-service-name">Materials Allowance</div><div class="q-service-price">'+(D.showAmts ? slaMoney(D.mat) : 'Included')+'</div></div>';
     }
     html += '<div class="q-section">' +
       '<div class="q-section-title">Annual Service Budget</div>' +
@@ -11366,7 +11379,7 @@ function generateSLAPrint() {
 
   // ── §2 SERVICE PACKAGE ──
   var budgetLine = D.svcBudget > 0
-    ? 'An Annual Service Budget of <strong>'+fmt(D.svcBudget)+'</strong> applies to unscheduled service &amp; repair, as set forth in §3.'
+    ? 'An Annual Service Budget of <strong>'+(D.showAmts ? fmt(D.svcBudget) : D.totalHrs+' service hours')+'</strong> applies to unscheduled service &amp; repair, as set forth in §3.'
     : 'No Annual Service Budget is established; unscheduled service &amp; repair is billed at the published T&amp;M rates set forth in §3.';
   html += '<div class="fa-section"><div class="fa-section-head"><span class="fa-section-num">§2</span><span class="fa-section-title">Service Package — '+tierName+'</span></div>' +
     '<p class="fa-body">Customer has selected the <strong>'+tierName+'</strong> service package. Under this package:</p>' +
@@ -11386,14 +11399,23 @@ function generateSLAPrint() {
   var budgetRows = '';
   D.usedRows.forEach(function(r, i){
     var dot = r.req==='general' ? '#1a6b4a' : r.req==='expedited' ? '#8a5a00' : '#8a1f1f';
-    budgetRows += '<tr><td><span class="fa-bcat-dot" style="background:'+dot+';"></span>'+r.name+' &middot; '+r.tcName+'</td><td style="text-align:center;">'+r.hrs+'</td><td style="text-align:right;">'+fmt(r.rate)+' / hr</td><td style="text-align:right;">'+fmt(r.amt)+'</td></tr>';
+    budgetRows += D.showAmts
+      ? '<tr><td><span class="fa-bcat-dot" style="background:'+dot+';"></span>'+r.name+' &middot; '+r.tcName+'</td><td style="text-align:center;">'+r.hrs+'</td><td style="text-align:right;">'+fmt(r.rate)+' / hr</td><td style="text-align:right;">'+fmt(r.amt)+'</td></tr>'
+      : '<tr><td><span class="fa-bcat-dot" style="background:'+dot+';"></span>'+r.name+' &middot; '+r.tcName+'</td><td style="text-align:right;">'+r.hrs+' hrs</td></tr>';
   });
   if (D.svcBudget > 0) {
-    budgetRows += '<tr style="border-top:1.5px solid #1c1c1c;"><td style="font-weight:700;">Annual Service Budget</td><td></td><td></td><td style="text-align:right;font-weight:700;">'+fmt(D.svcBudget)+'</td></tr>';
+    budgetRows += D.showAmts
+      ? '<tr style="border-top:1.5px solid #1c1c1c;"><td style="font-weight:700;">Annual Service Budget</td><td></td><td></td><td style="text-align:right;font-weight:700;">'+fmt(D.svcBudget)+'</td></tr>'
+      : '<tr style="border-top:1.5px solid #1c1c1c;"><td style="font-weight:700;">Annual Service Budget &mdash; total hours</td><td style="text-align:right;font-weight:700;">'+D.totalHrs+' hrs</td></tr>';
   }
-  var otherRows =
-    '<tr><td>Preventive Maintenance Labor (billed separately)</td><td style="text-align:center;">'+(pmHrsNum>0 ? (pmVisits+' × '+pmHrsNum+' hrs') : '—')+'</td><td style="text-align:right;">'+fmt(D.pmRate)+' / hr</td><td style="text-align:right;">'+pmTotalFmt+'</td></tr>' +
-    (D.mat > 0 ? '<tr><td><span class="fa-bcat-dot" style="background:#1a4a8a;"></span>Materials Allowance</td><td style="text-align:center;">—</td><td></td><td style="text-align:right;">'+matAmt+'</td></tr>' : '');
+  var otherRows = D.showAmts
+    ? '<tr><td>Preventive Maintenance Labor (billed separately)</td><td style="text-align:center;">'+(pmHrsNum>0 ? (pmVisits+' × '+pmHrsNum+' hrs') : '—')+'</td><td style="text-align:right;">'+fmt(D.pmRate)+' / hr</td><td style="text-align:right;">'+pmTotalFmt+'</td></tr>' +
+      (D.mat > 0 ? '<tr><td><span class="fa-bcat-dot" style="background:#1a4a8a;"></span>Materials Allowance</td><td style="text-align:center;">—</td><td></td><td style="text-align:right;">'+matAmt+'</td></tr>' : '')
+    : (pmHrsNum>0 ? '<tr><td>Preventive Maintenance Labor (separate from the service budget) &middot; '+pmVisits+' visit'+(pmVisits===1?'':'s')+' &times; '+pmHrsNum+' hrs</td><td style="text-align:right;">'+(pmVisits*pmHrsNum)+' hrs</td></tr>' : '') +
+      (D.mat > 0 ? '<tr><td><span class="fa-bcat-dot" style="background:#1a4a8a;"></span>Materials Allowance</td><td style="text-align:right;">Included</td></tr>' : '');
+  var budgetHead = D.showAmts
+    ? '<thead><tr><th style="width:40%">Item</th><th style="width:16%;text-align:center;">Hours</th><th style="text-align:right;">Rate</th><th style="text-align:right;">Annual Amount</th></tr></thead>'
+    : '<thead><tr><th style="width:75%">Item</th><th style="text-align:right;">Hours</th></tr></thead>';
 
   var summaryRows = '';
   if (perInvoice > 0) {
@@ -11426,7 +11448,7 @@ function generateSLAPrint() {
       '</div>'
     : '') +
     (D.svcBudget > 0 ? '<div style="font-size:9.5px;font-weight:700;color:#1c1c1c;margin:4px 0 3px;">ANNUAL SERVICE BUDGET — recommended mix, for planning purposes only</div>' : '') +
-    '<table class="fa-budget-table"><thead><tr><th style="width:40%">Item</th><th style="width:16%;text-align:center;">Hours</th><th style="text-align:right;">Rate</th><th style="text-align:right;">Annual Amount</th></tr></thead><tbody>' + budgetRows + otherRows + '</tbody></table>' +
+    '<table class="fa-budget-table">' + budgetHead + '<tbody>' + budgetRows + otherRows + '</tbody></table>' +
     '<p class="fa-body" style="margin-top:8px;">'+_rateIntro+'</p>' +
     slaRateScheduleHTML(D, 'fa') +
     (summaryRows ?
@@ -11474,7 +11496,7 @@ function generateSLAPrint() {
     ['TERM','This Agreement commences on <strong>'+startDate+'</strong> and continues for a period of <strong>'+termDisplay+'</strong> through <strong>'+endDate+'</strong> ("<strong>Initial Term</strong>"). '+(autoRenew.toLowerCase().indexOf('yes')>=0?'Upon expiration, this Agreement automatically renews for successive one (1) year periods unless either party provides written notice of non-renewal at least thirty (30) days prior to the then-current expiration date.':'This Agreement does not automatically renew. A new agreement must be executed prior to expiration to continue services.')],
     ['FEES &amp; PAYMENT','The '+rateLabel+' of <strong>'+fmt(perInvoice)+'</strong> is billed <strong>'+billingLbl.toLowerCase()+'</strong> and is due within thirty (30) days of invoice. A late charge of 1.5% per month applies to balances outstanding beyond thirty (30) days. Company may suspend services upon thirty (30) days\' written notice of non-payment.'],
     ['ANNUAL SERVICE BUDGET', (D.svcBudget > 0
-        ? 'The Annual Service Budget under this Agreement is <strong>'+fmt(D.svcBudget)+'</strong>. '+SLA_BUDGET_CLAUSE
+        ? 'The Annual Service Budget under this Agreement is <strong>'+(D.showAmts ? fmt(D.svcBudget) : D.totalHrs+' service hours')+'</strong>. '+SLA_BUDGET_CLAUSE
         : 'No Annual Service Budget is established under this Agreement. Unscheduled service &amp; repair is billed at the published T&amp;M rates for the request type and time classification of each call.')],
     ['PREVENTIVE MAINTENANCE', SLA_PM_CLAUSE],
     ['EARLY TERMINATION', SLA_EARLY_TERM_CLAUSE],
