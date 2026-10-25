@@ -2123,6 +2123,21 @@
         </button>
         <div id="mat-panel" style="display:none;margin-top:8px;background:var(--surface2);border-radius:var(--radius-sm);padding:10px 12px;border-left:3px solid #e8620a;">
           <div id="mat-panel-title" style="font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#e8620a;margin-bottom:10px;">Installation Labor / Materials</div>
+          <!-- T&M service type: sets sell/hr on every labor line that is not Manual -->
+          <div id="tm-svc-bar" style="display:none;margin-bottom:10px;padding:8px 10px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);font-size:11px;color:var(--text2);">
+            <div style="display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;">
+              <span style="font-weight:600;">Service type</span>
+              <span class="tm-seg" data-tm-group="req"><button type="button" data-v="general">General</button><button type="button" data-v="expedited">Expedited</button><button type="button" data-v="emergency">Emergency</button></span>
+              <span style="font-weight:600;">Time</span>
+              <span class="tm-seg" data-tm-group="tc"><button type="button" data-v="st">Straight</button><button type="button" data-v="th">Time &amp; &frac12;</button><button type="button" data-v="dt">Double</button></span>
+            </div>
+            <div style="display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;margin-top:6px;">
+              <label style="display:flex;gap:6px;align-items:center;">Rate sheet <select id="tm-sheet" class="tm-sel"><option value="">Auto</option><option value="standard">Standard</option><option value="sf">SF Local 6</option></select></label>
+              <label style="display:flex;gap:6px;align-items:center;">Rate period <select id="tm-period" class="tm-sel"></select></label>
+              <span id="tm-rate-out" style="margin-left:auto;font-family:'DM Mono',monospace;font-weight:700;color:#e8620a;"></span>
+            </div>
+            <div id="tm-sheet-note" style="margin-top:4px;font-size:10px;color:var(--text3);"></div>
+          </div>
           <!-- Column headers — dynamic, shown per row type via JS -->
           <div id="mat-rows"></div>
           <div style="display:flex;gap:6px;margin-top:6px;">
@@ -3559,12 +3574,173 @@ const $ = id => document.getElementById(id);
 //  unchanged). In the Supabase phase this object will be populated from the
 //  database after login instead of being hardcoded here.
 // ===========================================================================
+
+// ===========================================================================
+// T&M SERVICE TYPE SELECTOR (Quote Builder labor lines)
+// Sell/hr comes from the published T&M rate sheet (P1_RATES.tmRateSheet, the
+// same data the SLA Creator uses): service type x time classification x rate
+// period x sheet (Standard, or SF Local 6 when the site is in San Francisco AND
+// the system type is Fire Monitoring & Services). A line follows the bar unless
+// it is set to its own type on its tag, or the sell rate is typed (Manual).
+// Text/wiring only; the arithmetic per line is unchanged (hours x sell/hr).
+// ===========================================================================
+var TM_STATE = { req:'general', tc:'st', sheet:'', period:'' };
+var TM_REQ = { general:'General', expedited:'Expedited', emergency:'Emergency' };
+var TM_REQ_SHORT = { general:'Gen', expedited:'Exp', emergency:'Emg' };
+var TM_TC = { st:'Straight time', th:'Time and a half', dt:'Double time' };
+var TM_TC_SHORT = { st:'ST', th:'1.5x', dt:'2x' };
+function tmHasSheet(){ return !!(P1_RATES && P1_RATES.tmRateSheet && P1_RATES.tmRateSheet.standard && P1_RATES.tmRateSheet.standard.length); }
+function tmSheetKey(){ return TM_STATE.sheet || ((typeof slaIsLocal6Job === 'function' && slaIsLocal6Job()) ? 'sf' : 'standard'); }
+function tmPeriods(){ return (typeof slaRatePeriods === 'function') ? slaRatePeriods(tmSheetKey()) : []; }
+// Default period: the one in effect 45 days out (work quoted now is usually done
+// a few weeks later), else the latest period.
+function tmDefaultPeriodIdx(ps){
+  var d = new Date(); d.setDate(d.getDate() + 45);
+  for (var i = 0; i < ps.length; i++) if (ps[i].start && ps[i].start <= d && (!ps[i].end || d <= ps[i].end)) return i;
+  return ps.length ? ps.length - 1 : -1;
+}
+function tmPeriod(){
+  var ps = tmPeriods(); if (!ps.length) return null;
+  var i = TM_STATE.period === '' ? tmDefaultPeriodIdx(ps) : Math.min(+TM_STATE.period, ps.length - 1);
+  return ps[i] || null;
+}
+function tmRateFor(req, tc){ var p = tmPeriod(); return (p && p[req]) ? (Number(p[req][tc]) || 0) : 0; }
+function tmParse(code){ if (!code || code === 'manual') return null; var a = code.split('-'); return { req:a[0], tc:a[1] }; }
+function tmLineRate(el){
+  var mode = el.dataset.tm || '';
+  if (mode === 'manual') return null;
+  var c = tmParse(mode) || { req:TM_STATE.req, tc:TM_STATE.tc };
+  return tmRateFor(c.req, c.tc);
+}
+function tmTagLabel(mode){
+  if (mode === 'manual') return 'Manual';
+  var c = tmParse(mode) || { req:TM_STATE.req, tc:TM_STATE.tc };
+  return TM_REQ_SHORT[c.req] + ' · ' + TM_TC_SHORT[c.tc] + (mode ? '' : ' ↑');
+}
+function tmTagOptions(sel, mode){
+  var h = '<option value="">\u2191 ' + TM_REQ_SHORT[TM_STATE.req] + ' · ' + TM_TC_SHORT[TM_STATE.tc] + ' (bar)</option>';
+  ['general','expedited','emergency'].forEach(function(r){ ['st','th','dt'].forEach(function(t){
+    h += '<option value="' + r + '-' + t + '">' + TM_REQ[r] + ' · ' + TM_TC[t] + '</option>'; }); });
+  h += '<option value="manual">Manual</option>';
+  sel.innerHTML = h; sel.value = mode || '';
+  sel.title = 'Rate for this line: ' + tmTagLabel(mode);
+}
+// Add the per-line tag beside the line total; typing a sell rate marks the line Manual.
+function tmAttach(sellEl, totalEl){
+  if (!sellEl || !totalEl || sellEl._tmTag) return;
+  var cell = document.createElement('div');
+  cell.style.cssText = 'display:flex;align-items:center;justify-content:space-between;gap:6px;min-width:0;';
+  var tag = document.createElement('select');
+  tag.className = 'tm-tag';
+  tag.style.cssText = 'font-size:10px;padding:2px 4px;border:1px solid var(--border2);border-radius:10px;background:var(--surface2);color:var(--text2);max-width:130px;cursor:pointer;';
+  totalEl.parentNode.insertBefore(cell, totalEl);
+  cell.appendChild(tag); cell.appendChild(totalEl);
+  sellEl._tmTag = tag;
+  sellEl.dataset.tm = '';
+  tmTagOptions(tag, '');
+  if (!tmHasSheet()) tag.style.display = 'none';
+  tag.onchange = function(){ tmSetLineMode(sellEl, tag.value, true); };
+  sellEl.addEventListener('input', function(e){ if (e.isTrusted && sellEl.dataset.tm !== 'manual') tmSetLineMode(sellEl, 'manual'); });
+  var r = tmLineRate(sellEl); if (r) sellEl.value = r.toFixed(2);
+}
+function tmSetLineMode(sellEl, mode, applyNow){
+  sellEl.dataset.tm = mode || '';
+  if (sellEl._tmTag) tmTagOptions(sellEl._tmTag, mode || '');
+  if (applyNow){
+    var r = tmLineRate(sellEl);
+    if (r) sellEl.value = r.toFixed(2);
+    if (typeof updateMatTotal === 'function') updateMatTotal();
+    if (typeof calc === 'function') calc();
+  }
+}
+function tmSellEls(){
+  var rows = document.getElementById('mat-rows'); if (!rows) return [];
+  return Array.prototype.slice.call(rows.querySelectorAll('input[id$="-sellrate"], input[id$="-lpsellrate"]')).filter(function(e){ return e._tmTag; });
+}
+function tmApplyAll(){
+  if (!tmHasSheet()) return;
+  tmSellEls().forEach(function(el){
+    var r = tmLineRate(el); if (r) el.value = r.toFixed(2);
+    if (el._tmTag) tmTagOptions(el._tmTag, el.dataset.tm || '');
+  });
+  if (typeof updateMatTotal === 'function') updateMatTotal();
+  if (typeof calc === 'function') calc();
+  tmRenderBar();
+}
+function tmRenderBar(){
+  var bar = document.getElementById('tm-svc-bar'); if (!bar) return;
+  if (!tmHasSheet()){ bar.style.display = 'none'; return; }
+  bar.style.display = '';
+  bar.querySelectorAll('.tm-seg').forEach(function(seg){
+    var g = seg.dataset.tmGroup;
+    seg.querySelectorAll('button').forEach(function(b){
+      var on = b.dataset.v === TM_STATE[g];
+      b.style.cssText = 'font-size:11px;padding:3px 10px;border:1px solid ' + (on ? '#e8620a' : 'var(--border2)') + ';background:' + (on ? '#e8620a' : 'var(--surface2)') + ';color:' + (on ? '#fff' : 'var(--text2)') + ';cursor:pointer;font-family:inherit;font-weight:' + (on ? '700' : '500') + ';margin-right:-1px;';
+    });
+  });
+  var shSel = document.getElementById('tm-sheet');
+  if (shSel){
+    var auto = (typeof slaIsLocal6Job === 'function' && slaIsLocal6Job()) ? 'SF Local 6' : 'Standard';
+    shSel.options[0].textContent = 'Auto (' + auto + ')';
+    shSel.value = TM_STATE.sheet || '';
+  }
+  var ps = tmPeriods(), pSel = document.getElementById('tm-period');
+  if (pSel){
+    var di = tmDefaultPeriodIdx(ps);
+    var fmt = function(d){ return d ? (d.getMonth()+1) + '/' + d.getDate() + '/' + String(d.getFullYear()).slice(2) : ''; };
+    pSel.innerHTML = ps.map(function(p, i){ return '<option value="' + i + '">' + p.label + ' (' + fmt(p.start) + '–' + fmt(p.end) + ')' + (i === di ? ' • default' : '') + '</option>'; }).join('');
+    pSel.value = TM_STATE.period === '' ? String(di) : String(TM_STATE.period);
+  }
+  var out = document.getElementById('tm-rate-out');
+  var r = tmRateFor(TM_STATE.req, TM_STATE.tc);
+  if (out) out.textContent = r ? ('$' + r.toFixed(2) + '/hr') : '';
+  var note = document.getElementById('tm-sheet-note');
+  if (note) note.textContent = 'Applies to every labor line marked ↑. Use a line’s tag for its own rate, or type a sell rate to keep it (Manual).' + (tmSheetKey() === 'sf' ? ' SF Local 6 rates: site in San Francisco + Fire Monitoring & Services.' : '');
+}
+function tmInit(){
+  var bar = document.getElementById('tm-svc-bar'); if (!bar) return;
+  if (!bar._wired){
+    bar._wired = true;
+    bar.querySelectorAll('.tm-seg button').forEach(function(b){
+      b.onclick = function(){ TM_STATE[b.parentNode.dataset.tmGroup] = b.dataset.v; tmApplyAll(); };
+    });
+    document.getElementById('tm-sheet').onchange = function(){ TM_STATE.sheet = this.value; TM_STATE.period = ''; tmApplyAll(); };
+    document.getElementById('tm-period').onchange = function(){ TM_STATE.period = this.value === String(tmDefaultPeriodIdx(tmPeriods())) ? '' : this.value; tmApplyAll(); };
+    ['siteCity','systemType'].forEach(function(id){
+      var el = document.getElementById(id); if (!el) return;
+      var h = function(){ if (!TM_STATE.sheet) tmApplyAll(); };
+      el.addEventListener('change', h); el.addEventListener('blur', h);
+    });
+  }
+  tmSellEls().forEach(function(el){ if (el._tmTag) el._tmTag.style.display = tmHasSheet() ? '' : 'none'; });
+  tmApplyAll();
+}
+function tmGather(){ return { req:TM_STATE.req, tc:TM_STATE.tc, sheet:TM_STATE.sheet, period:TM_STATE.period }; }
+function tmRestore(d){
+  TM_STATE = { req:'general', tc:'st', sheet:'', period:'' };
+  if (d){ ['req','tc','sheet','period'].forEach(function(k){ if (d[k] != null) TM_STATE[k] = String(d[k]); }); }
+  tmRenderBar();
+}
+// One line on the printed quote naming the rate, when every labor line uses the same type.
+function tmQuoteNote(items){
+  var el = document.getElementById('q-tm-rate-note'); if (!el) return;
+  var labor = (items || []).filter(function(i){ return i.type === 'labor' && !i.alt && i.hrs > 0; });
+  el.style.display = 'none';
+  if (!labor.length || !tmHasSheet()) return;
+  var codes = labor.map(function(i){ var m = i.tm || ''; return m === 'manual' ? 'manual' : (m || (TM_STATE.req + '-' + TM_STATE.tc)); });
+  if (codes.some(function(c){ return c === 'manual' || c !== codes[0]; })) return;
+  var c = tmParse(codes[0]), p = tmPeriod();
+  el.textContent = 'Labor billed at the ' + TM_REQ[c.req] + ' Service · ' + TM_TC[c.tc].toLowerCase() + ' rate' + (tmSheetKey() === 'sf' ? ' (San Francisco Local 6 rate sheet)' : '') + (p && p.start ? ', rates effective ' + p.start.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) + (p.end ? ' \u2013 ' + p.end.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '') : '') + '.';
+  el.style.display = '';
+}
+
 let P1_RATES = {};  // ← rate values are loaded from Supabase after login (see auth controller at end of file)
 
 // Apply rate-driven defaults to inputs/sliders/selects at load.
 // Writes the SAME values the HTML already has today, so nothing changes now;
 // once P1_RATES is sourced from Supabase, these defaults follow automatically.
 function applyRateDefaults(){
+  if (typeof tmInit === 'function') setTimeout(tmInit, 0);
   function setVal(id, v){ var el = document.getElementById(id); if(el) el.value = v; }
   setVal('laborRateSlider', P1_RATES.laborBillDefault);
   setVal('svcGMSlider',     P1_RATES.svcGM);
@@ -6039,6 +6215,7 @@ function addMatRow() {
   lpTotalEl.style.cssText='font-size:12px;font-family:monospace;font-weight:700;color:#e8620a;text-align:right;';
   lpFields.appendChild(lpHrsEl); lpFields.appendChild(lpRateEl);
   lpFields.appendChild(lpSellEl); lpFields.appendChild(lpTotalEl);
+  if (typeof tmAttach === 'function') tmAttach(lpSellEl, lpTotalEl);
   lpWrap.appendChild(lpLabels); lpWrap.appendChild(lpFields);
   // Collapsed by default — revealed by the "+ Labor" button below. Collapsing
   // never clears values; only zeroing the hours removes the labor.
@@ -6180,6 +6357,7 @@ function addMatRow() {
 
   laborFieldsEl.appendChild(hrsEl); laborFieldsEl.appendChild(rateEl);
   laborFieldsEl.appendChild(sellRateEl); laborFieldsEl.appendChild(laborSellEl);
+  if (typeof tmAttach === 'function') tmAttach(sellRateEl, laborSellEl);
 
   // ── Optional image attachment (per line item) ──
   const imgInput = document.createElement('input');
@@ -6589,7 +6767,7 @@ function getMatDataAll() {
         const mc = p1MatCompute({ cost:cost, qty:qty, unit:unit, matMarkup:matMarkup, lpHrs:lpHrs,
                                   waste:pkg.waste, pkgSize:pkg.pkgSize, costBy:pkg.costBy, manualCost:pkg.manualCost });
         items.push({ type:'material', base:base, desc:desc||'Material', cost:cost, qty:qty, unit:unit,
-                     laborHrs:lpHrs, laborRate:lpRate, laborSellRate:lpSell,
+                     laborHrs:lpHrs, laborRate:lpRate, laborSellRate:lpSell, laborTm:((document.getElementById(base+'-lpsellrate')||{}).dataset||{}).tm||'',
                      pkgSize:pkg.pkgSize, pkgUnit:pkg.pkgUnit, waste:pkg.waste, costBy:pkg.costBy, manualCost:pkg.manualCost,
                      adjQty:mc.adjQty, packages:mc.packages,
                      lineTotal:mc.jobCost, unitSell:mc.unitSellVal, totalSell:mc.totalSell, image: rowEl._imageData || null });
@@ -6598,14 +6776,14 @@ function getMatDataAll() {
         // picks it up with no special-casing. Flagged `attached` so export
         // skips it — it round-trips via the material row's labor fields.
         if (lpHrs > 0) {
-          items.push({ type:'labor', attached:true, base:base, desc:(desc||'Material')+' — Installation Labor', hrs:+mc.labHrs.toFixed(2), rate:lpRate, sellPerHr:lpSell, lineTotal:lpRate*mc.labHrs, totalSell:lpSell*mc.labHrs, image:null });
+          items.push({ type:'labor', attached:true, base:base, desc:(desc||'Material')+' — Installation Labor', hrs:+mc.labHrs.toFixed(2), rate:lpRate, sellPerHr:lpSell, tm:((document.getElementById(base+'-lpsellrate')||{}).dataset||{}).tm||'', lineTotal:lpRate*mc.labHrs, totalSell:lpSell*mc.labHrs, image:null });
         }
       }
     } else {
       const hrs      = parseFloat((document.getElementById(base+'-hrs')     ||{}).value)||0;
       const rate     = parseFloat((document.getElementById(base+'-rate')    ||{}).value)||P1_RATES.laborCostPerHr;
       const sellRate = parseFloat((document.getElementById(base+'-sellrate')||{}).value)||P1_RATES.laborSellDefault;
-      if (desc||hrs>0) items.push({ type:'labor', base:base, desc:desc||'Labor', hrs:hrs, rate:rate, sellPerHr:sellRate, lineTotal:rate*hrs, totalSell:sellRate*hrs, image: rowEl._imageData || null });
+      if (desc||hrs>0) items.push({ type:'labor', base:base, desc:desc||'Labor', hrs:hrs, rate:rate, sellPerHr:sellRate, tm:((document.getElementById(base+'-sellrate')||{}).dataset||{}).tm||'', lineTotal:rate*hrs, totalSell:sellRate*hrs, image: rowEl._imageData || null });
     }
     if (isAlt) for (let k=_n0; k<items.length; k++) items[k].alt = true;
   });
@@ -6627,6 +6805,7 @@ function resetMatPanel() {
     const el=document.getElementById(id); if(el) el.textContent='$0.00';
   });
   var lhReset=document.getElementById('mat-labor-hrs-display'); if(lhReset) lhReset.textContent='';
+  if (typeof tmRestore === 'function') tmRestore(null);
 }
 
 function addPartRow() {
@@ -6955,7 +7134,7 @@ function p1SerializeMatItem(m) {
   if (m.type === 'material') {
     r.cost = m.cost; r.qty = m.qty;
     if (m.unit && m.unit !== 'ea') r.unit = m.unit;
-    if (m.laborHrs > 0) { r.laborHrs = m.laborHrs; r.laborRate = m.laborRate; r.laborSellRate = m.laborSellRate; }
+    if (m.laborHrs > 0) { r.laborHrs = m.laborHrs; r.laborRate = m.laborRate; r.laborSellRate = m.laborSellRate; r.laborTm = m.laborTm || ''; }
     if (m.pkgSize > 0) r.pkgSize = m.pkgSize;
     if (m.pkgUnit) r.pkgUnit = m.pkgUnit;
     if (m.waste > 0) r.waste = m.waste;
@@ -6964,7 +7143,7 @@ function p1SerializeMatItem(m) {
     if (m.adjQty && m.adjQty !== m.qty) r.adjQty = +m.adjQty.toFixed(4);
     if (m.packages > 0) r.packages = m.packages;
   }
-  else { r.hrs = m.hrs; r.rate = m.rate; r.sellRate = m.sellPerHr; }
+  else { r.hrs = m.hrs; r.rate = m.rate; r.sellRate = m.sellPerHr; r.tm = m.tm || ''; }
   if (m.image) r.image = m.image;
   return r;
 }
@@ -7112,6 +7291,7 @@ function gatherEstimateData() {
   // PM Builder + customer priority mapping
   if (typeof slaPmGather === 'function') data.slaPm = slaPmGather();
   if (typeof slaMapGather === 'function') data.slaPriorityMap = slaMapGather();
+  if (typeof tmGather === 'function') data.tmRate = tmGather();
 
   // Active tier
   var activeTierCard = document.querySelector('.sla-tier-card.active');
@@ -7171,6 +7351,7 @@ function p1BuildMatRowFromData(m) {
         var lhEl = document.getElementById(base+'-lphrs');     if(lhEl) lhEl.value = m.laborHrs;
         var lrEl = document.getElementById(base+'-lprate');    if(lrEl && m.laborRate)     lrEl.value = m.laborRate;
         var lsEl = document.getElementById(base+'-lpsellrate');if(lsEl && m.laborSellRate) lsEl.value = m.laborSellRate;
+        if (lsEl && typeof tmSetLineMode === 'function') tmSetLineMode(lsEl, m.laborTm != null ? m.laborTm : 'manual');
         // auto-expand the labor panel so imported labor is visible
         var lpRowEl = document.getElementById(base+'-lprow');
         if (lpRowEl) { lpRowEl.style.display='block'; rowEl._lpOpen = true; }
@@ -7202,6 +7383,7 @@ function p1BuildMatRowFromData(m) {
       var hEl = document.getElementById(base+'-hrs');      if(hEl) hEl.value = m.hrs      || '';
       var rEl = document.getElementById(base+'-rate');     if(rEl) rEl.value = m.rate     || 120;
       var sEl = document.getElementById(base+'-sellrate'); if(sEl) sEl.value = m.sellRate || P1_RATES.laborSellDefault;
+      if (sEl && typeof tmSetLineMode === 'function') tmSetLineMode(sEl, m.tm != null ? m.tm : (m.sellRate ? 'manual' : ''));
     }
     if (m.image && typeof p1SetImage === 'function') p1SetImage(rowEl, m.image);
   }
@@ -7656,6 +7838,7 @@ function restoreEstimateData(data) {
   }
   if (data.slaPm && typeof slaPmRestore === 'function') slaPmRestore(data.slaPm);
   if (typeof slaMapRestore === 'function') slaMapRestore(data.slaPriorityMap || []);
+  if (typeof tmRestore === 'function') tmRestore(data.tmRate || null);
   if (window.slaRevealAll) setTimeout(window.slaRevealAll, 30);
   if (typeof slaUpdateRunningTotal === 'function') setTimeout(slaUpdateRunningTotal, 50);
 
@@ -9108,6 +9291,7 @@ function generateCustomerQuote() {
       else if (qSystem === 'Time & Material Only') qMatHdr.textContent = 'Time & Material Services';
       else qMatHdr.textContent = (matItems.length > 0) ? 'Installation Labor/Materials — One-Time' : 'One-Time Costs';
     }
+    if (typeof tmQuoteNote === 'function') tmQuoteNote(matItems);
     var qMatLbl = document.getElementById('q-mat-total-label');
     if (qMatLbl) {
       if (qSystem === 'Material Only') qMatLbl.textContent = 'Material Total';
@@ -9476,6 +9660,7 @@ function doIOSPrint() {
   <div id="q-mat-box" style="display:none;margin:12px 0;background:#f4f4f4;border-left:4px solid #1c1c1c;border-radius:8px;padding:12px 20px;">
     <div id="q-mat-header" style="font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#1c1c1c;margin-bottom:8px;">Installation Labor/Materials — One-Time</div>
     <div id="q-mat-lines" style="font-size:12px;color:#444;margin-bottom:8px;"></div>
+    <div id="q-tm-rate-note" style="display:none;font-size:11px;color:#555;margin:-2px 0 8px;"></div>
     <div id="q-tm-sub-lines"></div>
     <div id="q-cost-summary" style="display:none;"></div>
     <div style="border-top:1px solid #ddd;padding-top:8px;display:flex;justify-content:space-between;align-items:center;">
