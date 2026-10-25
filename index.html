@@ -6184,7 +6184,7 @@ function addMatRow() {
   lpWrap.id = id+'-lprow';
   lpWrap.style.cssText = 'margin-top:5px;padding:5px 8px;background:var(--surface);border:1px solid var(--border);border-left:3px solid #e8620a;border-radius:var(--radius-sm);';
   const lpLabels = document.createElement('div');
-  lpLabels.style.cssText = 'display:grid;grid-template-columns:80px 70px 70px 1fr;gap:5px;margin-bottom:2px;';
+  lpLabels.style.cssText = 'display:grid;grid-template-columns:80px 70px 88px 1fr;gap:5px;margin-bottom:2px;';
   const lpHrsLabel = document.createElement('span');
   lpHrsLabel.textContent = 'Lab hrs/ea';
   const lpLabelStyle = 'font-size:9px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;color:var(--text3);text-align:right;';
@@ -6194,7 +6194,7 @@ function addMatRow() {
     const s=document.createElement('span'); s.textContent=t; s.style.cssText=lpLabelStyle; lpLabels.appendChild(s);
   });
   const lpFields = document.createElement('div');
-  lpFields.style.cssText='display:grid;grid-template-columns:80px 70px 70px 1fr;gap:5px;align-items:center;';
+  lpFields.style.cssText='display:grid;grid-template-columns:80px 70px 88px 1fr;gap:5px;align-items:center;';
   const lpInputStyle='font-size:12px;padding:4px 6px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface2);color:var(--text);font-family:monospace;text-align:right;width:100%;';
   const lpHrsEl = document.createElement('input');
   lpHrsEl.type='number'; lpHrsEl.id=id+'-lphrs'; lpHrsEl.min='0'; lpHrsEl.step='0.25'; lpHrsEl.placeholder='0';
@@ -6320,7 +6320,7 @@ function addMatRow() {
   const laborLabels = document.createElement('div');
   // must match laborFieldsEl below, or Sell/hr floats out over its own input --
   // the attached-labor panel already pairs these tracks correctly
-  laborLabels.style.cssText = 'display:none;grid-template-columns:80px 70px 70px 1fr;gap:5px;margin-bottom:2px;';
+  laborLabels.style.cssText = 'display:none;grid-template-columns:80px 70px 88px 1fr;gap:5px;margin-bottom:2px;';
   ['Hours','Cost/hr','Sell/hr','Total Sell'].forEach(function(t) {
     const s = document.createElement('span');
     s.textContent = t;
@@ -6330,7 +6330,7 @@ function addMatRow() {
 
   // Labor fields
   const laborFieldsEl = document.createElement('div');
-  laborFieldsEl.style.cssText = 'display:none;grid-template-columns:80px 70px 70px 1fr;gap:5px;align-items:center;';
+  laborFieldsEl.style.cssText = 'display:none;grid-template-columns:80px 70px 88px 1fr;gap:5px;align-items:center;';
 
   const hrsEl = document.createElement('input');
   hrsEl.type='number'; hrsEl.id=id+'-hrs'; hrsEl.min='0'; hrsEl.step='0.5'; hrsEl.placeholder='0';
