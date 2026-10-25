@@ -2124,12 +2124,12 @@
         <div id="mat-panel" style="display:none;margin-top:8px;background:var(--surface2);border-radius:var(--radius-sm);padding:10px 12px;border-left:3px solid #e8620a;">
           <div id="mat-panel-title" style="font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#e8620a;margin-bottom:10px;">Installation Labor / Materials</div>
           <!-- T&M service type: sets sell/hr on every labor line that is not Manual -->
-          <div id="tm-svc-bar" style="display:none;margin-bottom:10px;padding:6px 10px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);font-size:11px;color:var(--text2);">
-            <button type="button" id="tm-head" onclick="tmToggleBar()" style="display:flex;width:100%;align-items:center;gap:8px;background:transparent;border:0;padding:2px 0;cursor:pointer;font-family:inherit;font-size:11px;color:var(--text2);text-align:left;">
+          <div id="tm-svc-bar" style="display:none;width:fit-content;max-width:100%;box-sizing:border-box;margin-bottom:10px;padding:6px 12px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);font-size:11px;color:var(--text2);">
+            <button type="button" id="tm-head" onclick="tmToggleBar()" style="display:flex;align-items:center;gap:8px;background:transparent;border:0;padding:2px 0;cursor:pointer;font-family:inherit;font-size:11px;color:var(--text2);text-align:left;">
               <span id="tm-caret" style="color:#e8620a;font-weight:700;width:10px;">&#9656;</span>
               <span style="font-weight:600;">Labor rate</span>
+              <span id="tm-head-rate" style="font-family:'DM Mono',monospace;font-weight:700;color:#e8620a;"></span>
               <span id="tm-summary" style="color:var(--text3);"></span>
-              <span id="tm-head-rate" style="margin-left:auto;font-family:'DM Mono',monospace;font-weight:700;color:#e8620a;"></span>
             </button>
             <div id="tm-body" style="display:none;margin-top:6px;">
             <div style="display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;">
