@@ -3257,12 +3257,12 @@
             </tr>
             <tr>
               <td><span class="sla-badge sla-badge-amber">Expedited</span></td>
-              <td>Service completed within 4 business days</td>
+              <td>Technician on site within 4 business days, ahead of the next available date</td>
               <td>Expedited rate for the time classification of the work</td>
             </tr>
             <tr>
               <td><span class="sla-badge sla-badge-red">Emergency</span></td>
-              <td>Same-day service</td>
+              <td>Technician dispatched the same day</td>
               <td>Emergency rate for the time classification of the work &middot; portal to portal</td>
             </tr>
           </tbody>
@@ -9703,8 +9703,8 @@ var SLA_PACKAGE_DEFAULTS = {
 };
 var SLA_REQ_TYPES = [
   { key:'general',   id:'gen', name:'General',   response:'Scheduled at the next available date' },
-  { key:'expedited', id:'exp', name:'Expedited', response:'Service completed within 4 business days' },
-  { key:'emergency', id:'emg', name:'Emergency', response:'Same-day service' }
+  { key:'expedited', id:'exp', name:'Expedited', response:'Technician on site within 4 business days, ahead of the next available date' },
+  { key:'emergency', id:'emg', name:'Emergency', response:'Technician dispatched the same day' }
 ];
 var SLA_TIME_CLASSES = [
   { key:'st', name:'Straight time' },
@@ -11385,7 +11385,7 @@ function generateSLAPrint() {
     '<p class="fa-body">Customer has selected the <strong>'+tierName+'</strong> service package. Under this package:</p>' +
     '<ul class="fa-tc-list" style="border:1px solid #e8e8e8;border-radius:3px;overflow:hidden;">' +
       '<li><span class="fa-tc-num">PM VISITS</span><span>Company shall perform <strong>'+pmFreqText+'</strong> scheduled preventive maintenance visits per contract year at the Service Address, to be mutually scheduled in advance. Company shall provide a written inspection report and deficiency log following each visit.</span></li>' +
-      '<li><span class="fa-tc-num">REQUEST TYPES</span><span>Customer may request <strong>General</strong> (scheduled at the next available date), <strong>Expedited</strong> (service completed within four (4) business days), or <strong>Emergency</strong> (same-day) service, as set forth in §4.</span></li>' +
+      '<li><span class="fa-tc-num">REQUEST TYPES</span><span>Customer may request <strong>General</strong> (scheduled at the next available date), <strong>Expedited</strong> (ahead of the next available date, with a technician on site within four (4) business days), or <strong>Emergency</strong> (technician dispatched the same day) service, as set forth in §4.</span></li>' +
       '<li><span class="fa-tc-num">TRIAGE</span><span>Company shall acknowledge each service request by callback or ticket opened by a qualified person within <strong>'+pkg.triage+'</strong>.</span></li>' +
       '<li><span class="fa-tc-num">EMERGENCY COVERAGE</span><span>'+pkg.emergencyCoverage+'.</span></li>' +
       '<li><span class="fa-tc-num">SCHEDULING</span><span>'+pkg.scheduling+'.</span></li>' +
@@ -11475,9 +11475,11 @@ function generateSLAPrint() {
       '<th>Billed At</th>' +
     '</tr></thead><tbody>' +
     '<tr><td><span class="fa-rbadge fa-rbadge-green">General</span></td><td><strong>Scheduled at the next available date</strong></td><td>General rate for the time classification of the work</td></tr>' +
-    '<tr><td><span class="fa-rbadge fa-rbadge-amber">Expedited</span></td><td><strong>Service completed within four (4) business days</strong></td><td>Expedited rate for the time classification of the work</td></tr>' +
-    '<tr><td><span class="fa-rbadge fa-rbadge-red">Emergency</span></td><td><strong>Same-day service</strong></td><td>Emergency rate for the time classification of the work, billed portal to portal</td></tr>' +
+    '<tr><td><span class="fa-rbadge fa-rbadge-amber">Expedited</span></td><td><strong>Scheduled ahead of the next available date at Customer\'s request, with a technician on site within four (4) business days</strong></td><td>Expedited rate for the time classification of the work</td></tr>' +
+    '<tr><td><span class="fa-rbadge fa-rbadge-red">Emergency</span></td><td><strong>A technician is dispatched the same day</strong></td><td>Emergency rate for the time classification of the work, billed portal to portal</td></tr>' +
     '</tbody></table>' +
+    '<p class="fa-body" style="margin-top:8px;">If Company\'s next available General Service date meets the date Customer requests, the request is scheduled and billed as General Service. Response times refer to the arrival of a qualified technician on site to begin service; Company does not guarantee the time required to resolve an issue, which may depend on parts availability, manufacturer support, third-party systems, or Customer access.</p>' +
+    '<p class="fa-body"><strong>Requesting Service.</strong> Customer may request service by email to service@point1.zendesk.com, which opens a service ticket, or by calling (925) 667-2950 for 24/7 service, stating the request type and the date service is needed. Emergency Service must be requested by phone.</p>' +
     mapHtml +
   '</div>';
 
