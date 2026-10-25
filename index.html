@@ -3628,8 +3628,8 @@ function tmTagLabel(mode){
 function tmTagOptions(sel, mode){
   var h = '<option value="">\u2191 ' + TM_REQ_SHORT[TM_STATE.req] + ' · ' + TM_TC_SHORT[TM_STATE.tc] + ' (bar)</option>';
   ['general','expedited','emergency'].forEach(function(r){ ['st','th','dt'].forEach(function(t){
-    h += '<option value="' + r + '-' + t + '">' + TM_REQ[r] + ' · ' + TM_TC[t] + '</option>'; }); });
-  h += '<option value="manual">Manual</option>';
+    h += '<option value="' + r + '-' + t + '">' + TM_REQ[r] + ' · ' + TM_TC_SHORT[t] + '</option>'; }); });
+  h += '<option value="manual">Manual (typed rate)</option>';
   sel.innerHTML = h; sel.value = mode || '';
   sel.title = 'Rate for this line: ' + tmTagLabel(mode);
 }
@@ -3641,19 +3641,40 @@ function tmAttach(sellEl, totalEl){
   var tag = document.createElement('select');
   tag.className = 'tm-tag';
   tag.style.cssText = 'font-size:10px;padding:2px 4px;border:1px solid var(--border2);border-radius:10px;background:var(--surface2);color:var(--text2);max-width:130px;cursor:pointer;';
+  // Hidden while the line follows the bar; the small ⋯ button opens it for a one-off rate.
+  var more = document.createElement('button');
+  more.type = 'button'; more.className = 'tm-more'; more.textContent = '\u22EF';
+  more.title = 'Use a different service type or time for this line';
+  more.style.cssText = 'font-size:13px;line-height:1;padding:1px 6px;border:1px solid transparent;border-radius:8px;background:transparent;color:var(--text3);cursor:pointer;';
+  more.onmouseenter = function(){ more.style.borderColor = 'var(--border2)'; };
+  more.onmouseleave = function(){ more.style.borderColor = 'transparent'; };
+  var left = document.createElement('div');
+  left.style.cssText = 'display:flex;align-items:center;gap:4px;min-width:0;';
+  left.appendChild(more); left.appendChild(tag);
   totalEl.parentNode.insertBefore(cell, totalEl);
-  cell.appendChild(tag); cell.appendChild(totalEl);
-  sellEl._tmTag = tag;
+  cell.appendChild(left); cell.appendChild(totalEl);
+  sellEl._tmTag = tag; sellEl._tmMore = more;
+  more.onclick = function(){ tag._open = true; tmTagVis(sellEl); try { tag.focus(); if (tag.showPicker) tag.showPicker(); } catch(e){} };
+  tag.addEventListener('blur', function(){ setTimeout(function(){ tag._open = false; tmTagVis(sellEl); }, 150); });
   sellEl.dataset.tm = '';
   tmTagOptions(tag, '');
-  if (!tmHasSheet()) tag.style.display = 'none';
+  tmTagVis(sellEl);
   tag.onchange = function(){ tmSetLineMode(sellEl, tag.value, true); };
   sellEl.addEventListener('input', function(e){ if (e.isTrusted && sellEl.dataset.tm !== 'manual') tmSetLineMode(sellEl, 'manual'); });
   var r = tmLineRate(sellEl); if (r) sellEl.value = r.toFixed(2);
 }
+// Tag shows only when the line differs from the bar (own type or Manual) or the ⋯ was clicked.
+function tmTagVis(sellEl){
+  var tag = sellEl._tmTag, more = sellEl._tmMore; if (!tag) return;
+  var has = tmHasSheet(), differs = !!(sellEl.dataset.tm || '');
+  tag.style.display = (has && (differs || tag._open)) ? '' : 'none';
+  if (more) more.style.display = (has && !differs && !tag._open) ? '' : 'none';
+  tag.style.borderColor = differs ? '#e8620a' : 'var(--border2)';
+  tag.style.color = differs ? '#e8620a' : 'var(--text2)';
+}
 function tmSetLineMode(sellEl, mode, applyNow){
   sellEl.dataset.tm = mode || '';
-  if (sellEl._tmTag) tmTagOptions(sellEl._tmTag, mode || '');
+  if (sellEl._tmTag){ tmTagOptions(sellEl._tmTag, mode || ''); if (!mode) sellEl._tmTag._open = false; tmTagVis(sellEl); }
   if (applyNow){
     var r = tmLineRate(sellEl);
     if (r) sellEl.value = r.toFixed(2);
@@ -3669,7 +3690,7 @@ function tmApplyAll(){
   if (!tmHasSheet()) return;
   tmSellEls().forEach(function(el){
     var r = tmLineRate(el); if (r) el.value = r.toFixed(2);
-    if (el._tmTag) tmTagOptions(el._tmTag, el.dataset.tm || '');
+    if (el._tmTag){ tmTagOptions(el._tmTag, el.dataset.tm || ''); tmTagVis(el); }
   });
   if (typeof updateMatTotal === 'function') updateMatTotal();
   if (typeof calc === 'function') calc();
@@ -3706,7 +3727,7 @@ function tmRenderBar(){
   if (sum){ var pp = tmPeriod(); sum.textContent = TM_REQ[TM_STATE.req] + ' \u00B7 ' + TM_TC[TM_STATE.tc] + ' \u00B7 ' + (tmSheetKey() === 'sf' ? 'SF Local 6' : 'Standard') + (pp ? ' \u00B7 ' + pp.label : ''); }
   if (hr) hr.textContent = r ? ('$' + r.toFixed(2) + '/hr') : '';
   var note = document.getElementById('tm-sheet-note');
-  if (note) note.textContent = 'Applies to every labor line marked ↑. Use a line’s tag for its own rate, or type a sell rate to keep it (Manual).' + (tmSheetKey() === 'sf' ? ' SF Local 6 rates: site in San Francisco + Fire Monitoring & Services.' : '');
+  if (note) note.textContent = 'Applies to every labor line. For a one-off rate on a single line, use its \u22EF button or type the sell rate (Manual).' + (tmSheetKey() === 'sf' ? ' SF Local 6 rates: site in San Francisco + Fire Monitoring & Services.' : '');
 }
 function tmInit(){
   var bar = document.getElementById('tm-svc-bar'); if (!bar) return;
@@ -3723,7 +3744,7 @@ function tmInit(){
       el.addEventListener('change', h); el.addEventListener('blur', h);
     });
   }
-  tmSellEls().forEach(function(el){ if (el._tmTag) el._tmTag.style.display = tmHasSheet() ? '' : 'none'; });
+  tmSellEls().forEach(function(el){ tmTagVis(el); });
   tmApplyAll();
 }
 function tmToggleBar(force){
