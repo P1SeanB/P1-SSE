@@ -3851,41 +3851,103 @@ var QT_DEFAULTS = {
 };
 // Quick set for security / access control proposals. Applying it adds these items (checked)
 // and unchecks the general items it replaces, so the proposal never lists both versions.
+// Quick sets, one per system. Several can be on at once. Lines shared between sets use
+// identical wording, so a line used by two active sets prints once; turning a set off
+// removes only lines no other active set still uses. Each set also unchecks the general
+// items it replaces, and turning the last such set off checks them again.
+var QT_SH = {
+  incl: ['Testing and Commissioning','Fire Stopping of Point 1 Installed Penetrations','Project Management','Final As-Built Documentation (Electronic Format)'],
+  excl: [
+    { text:'120VAC Electrical Connections and Circuits', cat:'Electrical & Power' },
+    { text:'Building Grounding and Bonding Systems', cat:'Electrical & Power' },
+    { text:'Conduit raceways, chases, sleeves, and splice cans', cat:'Pathways & Building' },
+    { text:'Core Drilling by Others', cat:'Pathways & Building' },
+    { text:'Plywood or Plywood Backing', cat:'Pathways & Building' },
+    { text:'Ceiling Removal and Replacement', cat:'Pathways & Building' },
+    { text:'Painting, Patching, and Finish Repairs', cat:'Pathways & Building' },
+    { text:'Overtime or After-Hours Work', cat:'Site & Schedule' },
+    { text:'Removal or Disposal of Hazardous Materials', cat:'Site & Schedule' },
+    { text:'Debris Removal Fees and Dump Charges', cat:'Site & Schedule' },
+    { text:'Permits and Permit Fees', cat:'Permits & Fees' }
+  ],
+  net: { text:'Network switches, infrastructure, and configuration', cat:'Network & IT' },
+  clar: ['Any work, labor, material, equipment, system, cabling, or related items not specifically identified within this scope are excluded.','All work is based on access being available during normal business hours, Monday through Friday, 7:00 AM to 3:30 PM, excluding holidays.','Owner or electrical contractor shall provide all required conduit pathways, sleeves, raceways, junction boxes, pull strings, and cable support infrastructure.','Raceway and conduit sizing shall be provided by others in accordance with NEC requirements.','Point 1 Electrical Systems is not responsible for modifications to existing building infrastructure required to facilitate installation.','A secure and lockable equipment location shall be provided by the owner prior to commencement of work.','Any concealed conditions, asbestos-containing materials, hazardous materials, undocumented field conditions, or unforeseen site conditions encountered during installation may result in additional costs.','Point 1 Electrical Systems shall not be responsible for additional time, costs, or delays caused by site access restrictions, additional PPE requirements, hazard pay associated with site conditions, owner-furnished equipment, network availability, or third-party contractors.'],
+  replaces: {
+    inclusions: ['Installation, programming, and testing','Coordination'],
+    exclusions: ['110/120 volt','Overtime, after-hours','Permits, plan check','Conduit','Network hardware','Ceiling, wall, and floor','Debris, including','Hazardous material','Fire stopping of raceways'],
+    clarifications: ['Any work, labor, equipment','All work is based on the hours','Point One Electrical Systems shall not be responsible','Additional work or deficiencies']
+  }
+};
 var QT_SETS = {
-  security: {
-    label: 'Security system',
-    inclusions: ['Access Control Cabling','Access control system configuration and database programming','Panel and Device Terminations','Testing and Commissioning','Fire Stopping of Point 1 Installed Penetrations','Project Management','Final As-Built Documentation (Electronic Format)'],
-    exclusions: [
-      { text:'120VAC Electrical Connections and Circuits', cat:'Electrical & Power' },
-      { text:'Building Grounding and Bonding Systems', cat:'Electrical & Power' },
+  access: {
+    label: 'Access Control',
+    inclusions: ['Access Control Cabling','Access control system configuration and database programming','Panel and Device Terminations'].concat(QT_SH.incl),
+    exclusions: QT_SH.excl.concat([
       { text:'Fire Alarm System Connections', cat:'Electrical & Power' },
-      { text:'Conduit raceways, chases, sleeves, and splice cans', cat:'Pathways & Building' },
-      { text:'Core Drilling by Others', cat:'Pathways & Building' },
-      { text:'Plywood or Plywood Backing', cat:'Pathways & Building' },
-      { text:'Ceiling Removal and Replacement', cat:'Pathways & Building' },
-      { text:'Painting, Patching, and Finish Repairs', cat:'Pathways & Building' },
-      { text:'Network switches, infrastructure, and configuration', cat:'Network & IT' },
+      QT_SH.net,
+      { text:'Electrified locking hardware and door preparation by others', cat:'Doors & Hardware' },
       { text:'Door Hardware Replacement Unless Specifically Identified', cat:'Doors & Hardware' },
-      { text:'Locksmith Services', cat:'Doors & Hardware' },
-      { text:'Overtime or After-Hours Work', cat:'Site & Schedule' },
-      { text:'Removal or Disposal of Hazardous Materials', cat:'Site & Schedule' },
-      { text:'Debris Removal Fees and Dump Charges', cat:'Site & Schedule' },
-      { text:'Permits and Permit Fees', cat:'Permits & Fees' }
+      { text:'Locksmith Services', cat:'Doors & Hardware' }
+    ]),
+    clarifications: QT_SH.clar.concat(['Existing access control panels and network infrastructure are assumed to have adequate capacity for the proposed devices.','Any required panel upgrades, software licensing, database expansion, or network modifications discovered during installation shall be quoted separately.','Existing locking hardware is assumed to be compatible and in proper working condition. Any repairs, replacements, or modifications required will be considered additional work.']),
+    replaces: QT_SH.replaces
+  },
+  video: {
+    label: 'Video Surveillance',
+    inclusions: ['Video Surveillance Cabling','Camera Mounting, Aiming, and Focus','NVR/VMS Configuration and Camera Programming','Viewing Client and Mobile App Setup for Designated Users'].concat(QT_SH.incl),
+    exclusions: QT_SH.excl.concat([
+      QT_SH.net,
+      { text:'Remote access, port forwarding, and firewall configuration by Customer IT', cat:'Network & IT' },
+      { text:'VMS software licenses unless specifically listed', cat:'Software & Licensing' },
+      { text:'Video storage beyond the retention specified', cat:'Software & Licensing' },
+      { text:'Lift or special equipment rental for high mounting locations', cat:'Site & Schedule' }
+    ]),
+    clarifications: QT_SH.clar.concat(['Camera field of view and image quality depend on lighting and mounting conditions; views are based on the specified equipment and locations.','Network bandwidth and port availability are assumed adequate for the proposed cameras.','Any required VMS upgrades, licensing, storage expansion, or network modifications discovered during installation shall be quoted separately.']),
+    replaces: QT_SH.replaces
+  },
+  intrusion: {
+    label: 'Intrusion',
+    inclusions: ['Intrusion System Cabling','Panel and Device Terminations','Intrusion panel, keypad, and sensor programming','Central station account setup and signal testing'].concat(QT_SH.incl),
+    exclusions: QT_SH.excl.concat([
+      { text:'Central station monitoring (provided under a separate agreement)', cat:'Monitoring & Services' },
+      { text:'Communicator cellular or data service (provided under a separate agreement)', cat:'Monitoring & Services' },
+      { text:'Telephone (POTS) lines', cat:'Network & IT' },
+      { text:'Alarm permits, registrations, and false alarm fines', cat:'Permits & Fees' }
+    ]),
+    clarifications: QT_SH.clar.concat(['User codes, passcodes, and the emergency contact list shall be provided by Customer prior to programming.','Signal testing with the central station requires Customer participation for verification.','Existing intrusion devices are assumed to be in proper working condition. Any repairs or replacements required will be considered additional work.']),
+    replaces: QT_SH.replaces
+  },
+  fire: {
+    label: 'Fire Alarm',
+    inclusions: ['Fire Alarm Device Installation and Wiring','Panel and Device Terminations','Fire alarm panel programming','Updated UL Certificate (monitored systems)'].concat(QT_SH.incl),
+    exclusions: QT_SH.excl.concat([
+      { text:'Fire sprinkler system work', cat:'Other Trades' },
+      { text:'Elevator recall, HVAC shutdown, and door holder connections by others', cat:'Other Trades' },
+      { text:'Fire watch', cat:'Site & Schedule' },
+      { text:'AHJ inspection and re-inspection fees', cat:'Permits & Fees' },
+      { text:'Plan check and stamped drawings unless specifically listed', cat:'Design & Documentation' }
+    ]),
+    clarifications: QT_SH.clar.concat(['Work requiring the fire alarm system to be placed out of service will be coordinated with the monitoring company and AHJ. Fire watch, if required, is by others.','Existing fire alarm devices and wiring are assumed to be in proper working condition. Deficiencies found will be reported and quoted separately.']),
+    replaces: QT_SH.replaces
+  },
+  av: {
+    label: 'Audio Visual',
+    inclusions: ['Audio Visual Cabling','Equipment Installation and Terminations','Control system and DSP programming','User Training (up to 2 hours)','Testing and Commissioning','Project Management','Final As-Built Documentation (Electronic Format)'],
+    exclusions: [QT_SH.excl[0], QT_SH.excl[2], QT_SH.excl[5], QT_SH.excl[6], QT_SH.excl[7], QT_SH.excl[8], QT_SH.excl[9], QT_SH.excl[10], QT_SH.net,
+      { text:'Furniture, millwork, and display wall backing', cat:'Pathways & Building' },
+      { text:'Software subscriptions and licensing unless specifically listed', cat:'Software & Licensing' },
+      { text:'Content creation and media', cat:'Other' }
     ],
-    clarifications: ['Any work, labor, material, equipment, system, cabling, or related items not specifically identified within this scope are excluded.','All work is based on access being available during normal business hours, Monday through Friday, 7:00 AM to 3:30 PM, excluding holidays.','Owner or electrical contractor shall provide all required conduit pathways, sleeves, raceways, junction boxes, pull strings, and cable support infrastructure.','Raceway and conduit sizing shall be provided by others in accordance with NEC requirements.','Point 1 Electrical Systems is not responsible for modifications to existing building infrastructure required to facilitate installation.','Existing access control panels and network infrastructure are assumed to have adequate capacity for the proposed devices.','Any required panel upgrades, software licensing, database expansion, or network modifications discovered during installation shall be quoted separately.','Existing locking hardware is assumed to be compatible and in proper working condition. Any repairs, replacements, or modifications required will be considered additional work.','A secure and lockable equipment location shall be provided by the owner prior to commencement of work.','Any concealed conditions, asbestos-containing materials, hazardous materials, undocumented field conditions, or unforeseen site conditions encountered during installation may result in additional costs.','Point 1 Electrical Systems shall not be responsible for additional time, costs, or delays caused by site access restrictions, additional PPE requirements, hazard pay associated with site conditions, owner-furnished equipment, network availability, or third-party contractors.'],
-    // general items this set replaces (matched by the start of their text)
-    replaces: {
-      inclusions: ['Installation, programming, and testing','Coordination'],
-      exclusions: ['110/120 volt','Overtime, after-hours','Permits, plan check','Conduit','Network hardware','Ceiling, wall, and floor','Debris, including','Hazardous material','Fire stopping of raceways'],
-      clarifications: ['Any work, labor, equipment','All work is based on the hours','Point One Electrical Systems shall not be responsible','Additional work or deficiencies']
-    }
+    clarifications: [QT_SH.clar[0], QT_SH.clar[1], QT_SH.clar[6], QT_SH.clar[7], 'Room acoustics and lighting conditions are by others and may affect system performance.', 'Owner-furnished equipment is assumed to be compatible and in proper working condition.'],
+    replaces: QT_SH.replaces
   }
 };
 // Exclusions print and display grouped by category in this order.
-var QT_CATS = ['Electrical & Power','Pathways & Building','Network & IT','Doors & Hardware','Site & Schedule','Permits & Fees','Design & Documentation','Other'];
+var QT_CATS = ['Electrical & Power','Pathways & Building','Network & IT','Software & Licensing','Doors & Hardware','Other Trades','Monitoring & Services','Site & Schedule','Permits & Fees','Design & Documentation','Other'];
 function qtCatOf(x){
   if (x.cat) return x.cat;
-  var all = [].concat(QT_DEFAULTS.exclusions, QT_SETS.security.exclusions);
+  var all = QT_DEFAULTS.exclusions.slice();
+  Object.keys(QT_SETS).forEach(function(k){ all = all.concat(QT_SETS[k].exclusions); });
   for (var i = 0; i < all.length; i++) if (all[i].text === x.text && all[i].cat) return all[i].cat;
   return 'Other';
 }
@@ -3960,11 +4022,29 @@ function qtToggleSet(k){
     var key = g[0], list = QT_STATE[key];
     var reps = (set.replaces && set.replaces[key]) || [];
     if (!on){
-      list.forEach(function(x){ if (!x.set && reps.some(function(r){ return x.text.indexOf(r) === 0; })) { if (x.on) x.replacedBy = k; x.on = false; } });
-      (set[key] || []).forEach(function(t){ var txt = t.text || t; if (!list.some(function(x){ return x.text === txt; })){ var o = { text:txt, on:true, set:k }; if (t.cat) o.cat = t.cat; list.push(o); } });
+      list.forEach(function(x){
+        if (x.sets || x.custom || !reps.some(function(r){ return x.text.indexOf(r) === 0; })) return;
+        // remember only items that were actually checked (or already held off by another set)
+        if (x.on || (x.replacedBy && x.replacedBy.length)){ x.replacedBy = x.replacedBy || []; if (x.replacedBy.indexOf(k) < 0) x.replacedBy.push(k); }
+        x.on = false;
+      });
+      (set[key] || []).forEach(function(t){
+        var txt = t.text || t, ex = null;
+        list.forEach(function(x){ if (x.text === txt) ex = x; });
+        if (ex){ if (ex.sets){ if (ex.sets.indexOf(k) < 0) ex.sets.push(k); } else { ex.sets = [k]; ex.on = true; } }
+        else { var o = { text:txt, on:true, sets:[k] }; if (t.cat) o.cat = t.cat; list.push(o); }
+      });
     } else {
-      QT_STATE[key] = list.filter(function(x){ return x.set !== k; });
-      QT_STATE[key].forEach(function(x){ if (x.replacedBy === k){ x.on = true; delete x.replacedBy; } });
+      QT_STATE[key] = list.filter(function(x){
+        if (!x.sets) return true;
+        x.sets = x.sets.filter(function(s){ return s !== k; });
+        return x.sets.length > 0;
+      });
+      QT_STATE[key].forEach(function(x){
+        if (!x.replacedBy || !x.replacedBy.length){ delete x.replacedBy; return; }
+        x.replacedBy = x.replacedBy.filter(function(s){ return s !== k; });
+        if (!x.replacedBy.length){ x.on = true; delete x.replacedBy; }
+      });
     }
   });
   if (on) QT_STATE.sets.splice(QT_STATE.sets.indexOf(k), 1); else QT_STATE.sets.push(k);
@@ -3980,8 +4060,8 @@ function qtGather(){ return QT_STATE ? JSON.parse(JSON.stringify(QT_STATE)) : nu
 // A saved quote keeps exactly what it had; quotes saved before this feature start from the defaults.
 function qtRestore(d){
   QT_STATE = qtFresh();
-  if (d) QT_GROUPS.forEach(function(g){ if (Array.isArray(d[g[0]])) QT_STATE[g[0]] = d[g[0]].map(function(x){ var o = { text:String(x.text), on:!!x.on, custom:!!x.custom }; if (x.cat) o.cat = x.cat; if (x.set) o.set = x.set; if (x.replacedBy) o.replacedBy = x.replacedBy; return o; }); });
-  if (d && Array.isArray(d.sets)) QT_STATE.sets = d.sets.slice();
+  if (d) QT_GROUPS.forEach(function(g){ if (Array.isArray(d[g[0]])) QT_STATE[g[0]] = d[g[0]].map(function(x){ var mig = function(v){ return v === 'security' ? 'access' : v; }; var o = { text:String(x.text), on:!!x.on, custom:!!x.custom }; if (x.cat) o.cat = x.cat; if (Array.isArray(x.sets)) o.sets = x.sets.map(mig); else if (x.set) o.sets = [mig(x.set)]; if (x.replacedBy) o.replacedBy = (Array.isArray(x.replacedBy) ? x.replacedBy : [x.replacedBy]).map(mig); return o; }); });
+  if (d && Array.isArray(d.sets)) QT_STATE.sets = d.sets.map(function(v){ return v === 'security' ? 'access' : v; }).filter(function(v){ return QT_SETS[v]; });
   qtRender();
 }
 function qtRenderQuote(qSystem){
