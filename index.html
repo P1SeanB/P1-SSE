@@ -2144,6 +2144,7 @@
               <span id="tm-rate-out" style="display:none;"></span>
             </div>
             <div id="tm-sheet-note" style="margin-top:4px;font-size:10px;color:var(--text3);"></div>
+            <div id="tm-reset-wrap" style="display:none;margin-top:6px;"><button type="button" onclick="tmResetAllLines()" style="font-size:11px;padding:3px 10px;border:1px solid #e8620a;border-radius:var(--radius-sm);background:transparent;color:#e8620a;cursor:pointer;font-family:inherit;font-weight:600;">Reset all lines to this rate</button> <span id="tm-reset-count" style="font-size:10px;color:var(--text3);"></span></div>
             </div>
           </div>
           <!-- Column headers — dynamic, shown per row type via JS -->
@@ -3675,6 +3676,7 @@ function tmTagVis(sellEl){
 function tmSetLineMode(sellEl, mode, applyNow){
   sellEl.dataset.tm = mode || '';
   if (sellEl._tmTag){ tmTagOptions(sellEl._tmTag, mode || ''); if (!mode) sellEl._tmTag._open = false; tmTagVis(sellEl); }
+  tmRenderBar();
   if (applyNow){
     var r = tmLineRate(sellEl);
     if (r) sellEl.value = r.toFixed(2);
@@ -3726,6 +3728,10 @@ function tmRenderBar(){
   var sum = document.getElementById('tm-summary'), hr = document.getElementById('tm-head-rate');
   if (sum){ var pp = tmPeriod(); sum.textContent = TM_REQ[TM_STATE.req] + ' \u00B7 ' + TM_TC[TM_STATE.tc] + ' \u00B7 ' + (tmSheetKey() === 'sf' ? 'SF Local 6' : 'Standard') + (pp ? ' \u00B7 ' + pp.label : ''); }
   if (hr) hr.textContent = r ? ('$' + r.toFixed(2) + '/hr') : '';
+  var off = tmSellEls().filter(function(el){ return (el.dataset.tm || '') !== ''; }).length;
+  var rw = document.getElementById('tm-reset-wrap'), rc = document.getElementById('tm-reset-count');
+  if (rw) rw.style.display = off ? '' : 'none';
+  if (rc) rc.textContent = off ? (off + ' line' + (off > 1 ? 's' : '') + ' not on the bar rate (Manual or own rate)') : '';
   var note = document.getElementById('tm-sheet-note');
   if (note) note.textContent = 'Applies to every labor line. For a one-off rate on a single line, use its \u22EF button or type the sell rate (Manual).' + (tmSheetKey() === 'sf' ? ' SF Local 6 rates: site in San Francisco + Fire Monitoring & Services.' : '');
 }
@@ -3752,6 +3758,12 @@ function tmToggleBar(force){
   var open = (force != null) ? !!force : body.style.display === 'none';
   body.style.display = open ? '' : 'none';
   if (car) car.innerHTML = open ? '&#9662;' : '&#9656;';
+}
+// Put every line (Manual and own-rate lines included) back on the bar rate in one click,
+// e.g. a quote saved before the rate bar existed.
+function tmResetAllLines(){
+  tmSellEls().forEach(function(el){ el.dataset.tm = ''; if (el._tmTag) el._tmTag._open = false; });
+  tmApplyAll();
 }
 function tmGather(){ return { req:TM_STATE.req, tc:TM_STATE.tc, sheet:TM_STATE.sheet, period:TM_STATE.period }; }
 function tmRestore(d){
