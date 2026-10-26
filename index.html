@@ -3821,22 +3821,22 @@ var QT_DEFAULTS = {
     { text:'Permits and plan check', on:false }
   ],
   exclusions: [
-    { text:'110/120 volt electrical connections', on:true },
-    { text:'Overtime, after-hours, weekend, and holiday work unless quoted', on:true },
-    { text:'Permits, plan check, and AHJ inspection fees', on:true },
-    { text:'Conduit', on:true },
-    { text:'Network hardware and configuration', on:true },
-    { text:'Ceiling, wall, and floor cutting, patching, and painting', on:true },
-    { text:'Drawings, CAD design, and submittals', on:false },
-    { text:'Debris, including but not limited to off-site removal and fees', on:false },
-    { text:'Labeling of junction boxes, conduit, wires, and terminal cabinets', on:false },
-    { text:'Painting of covers and junction boxes', on:false },
-    { text:'Wire hangers and channels above ceiling', on:false },
-    { text:'Fire stopping of raceways and pathways', on:false },
-    { text:'Lift or special equipment rental', on:false },
-    { text:'Fire watch', on:false },
-    { text:'Correction of existing deficiencies found during the work', on:false },
-    { text:'Hazardous material abatement', on:false }
+    { text:'110/120 volt electrical connections', on:true, cat:'Electrical & Power' },
+    { text:'Overtime, after-hours, weekend, and holiday work unless quoted', on:true, cat:'Site & Schedule' },
+    { text:'Permits, plan check, and AHJ inspection fees', on:true, cat:'Permits & Fees' },
+    { text:'Conduit', on:true, cat:'Pathways & Building' },
+    { text:'Network hardware and configuration', on:true, cat:'Network & IT' },
+    { text:'Ceiling, wall, and floor cutting, patching, and painting', on:true, cat:'Pathways & Building' },
+    { text:'Drawings, CAD design, and submittals', on:false, cat:'Design & Documentation' },
+    { text:'Debris, including but not limited to off-site removal and fees', on:false, cat:'Site & Schedule' },
+    { text:'Labeling of junction boxes, conduit, wires, and terminal cabinets', on:false, cat:'Pathways & Building' },
+    { text:'Painting of covers and junction boxes', on:false, cat:'Pathways & Building' },
+    { text:'Wire hangers and channels above ceiling', on:false, cat:'Pathways & Building' },
+    { text:'Fire stopping of raceways and pathways', on:false, cat:'Pathways & Building' },
+    { text:'Lift or special equipment rental', on:false, cat:'Site & Schedule' },
+    { text:'Fire watch', on:false, cat:'Site & Schedule' },
+    { text:'Correction of existing deficiencies found during the work', on:false, cat:'Site & Schedule' },
+    { text:'Hazardous material abatement', on:false, cat:'Site & Schedule' }
   ],
   clarifications: [
     { text:'Any work, labor, equipment, system, cabling, and/or related items are not included unless specifically described in this proposal.', on:true },
@@ -3854,17 +3854,41 @@ var QT_DEFAULTS = {
 var QT_SETS = {
   security: {
     label: 'Security system',
-    inclusions: ['Access Control Cabling','Base System Access Control Programming','Panel and Device Terminations','Testing and Commissioning','System Configuration and Database Programming','Fire Stopping of Point 1 Installed Penetrations','Project Management','Installation Labor','Standard Business Hour Work (Monday through Friday)','Final As-Built Documentation (Electronic Format)'],
-    exclusions: ['Supply and Installation of Electronic Network Switches','Overtime or After-Hours Work','Permits and Permit Fees','Painting, Patching, and Finish Repairs','Core Drilling by Others','Conduit Raceway(s)','Conduit Chases/Sleeves','Plywood or Plywood Backing','Splice Cans','Network Infrastructure','Fire Alarm System Connections','120VAC Electrical Connections and Circuits','Building Grounding and Bonding Systems','Ceiling Removal and Replacement','Removal or Disposal of Hazardous Materials','Debris Removal Fees and Dump Charges','Door Hardware Replacement Unless Specifically Identified','Locksmith Services','Network Configuration by Others'],
-    clarifications: ['Any work, labor, material, equipment, system, cabling, or related items not specifically identified within this scope are excluded.','All work is based on access being available during normal business hours, Monday through Friday, 7:00 AM to 3:30 PM, excluding holidays.','Owner or electrical contractor shall provide all required conduit pathways, sleeves, raceways, junction boxes, pull strings, and cable support infrastructure.','Raceway and conduit sizing shall be provided by others in accordance with NEC requirements.','Point 1 Electrical Systems is not responsible for modifications to existing building infrastructure required to facilitate installation.','Existing access control panels and network infrastructure are assumed to have adequate capacity for the proposed devices.','Any required panel upgrades, software licensing, database expansion, or network modifications discovered during installation shall be quoted separately.','Existing locking hardware is assumed to be compatible and in proper working condition. Any repairs, replacements, or modifications required will be considered additional work.','A secure and lockable equipment location shall be provided by the owner prior to commencement of work.','Electronic copies of project documentation, test results, and as-built drawings will be provided upon project completion.','Any concealed conditions, asbestos-containing materials, hazardous materials, undocumented field conditions, or unforeseen site conditions encountered during installation may result in additional costs.','Point 1 Electrical Systems shall not be responsible for delays caused by owner-furnished equipment, network availability, site access restrictions, or third-party contractors.'],
+    inclusions: ['Access Control Cabling','Access control system configuration and database programming','Panel and Device Terminations','Testing and Commissioning','Fire Stopping of Point 1 Installed Penetrations','Project Management','Final As-Built Documentation (Electronic Format)'],
+    exclusions: [
+      { text:'120VAC Electrical Connections and Circuits', cat:'Electrical & Power' },
+      { text:'Building Grounding and Bonding Systems', cat:'Electrical & Power' },
+      { text:'Fire Alarm System Connections', cat:'Electrical & Power' },
+      { text:'Conduit raceways, chases, sleeves, and splice cans', cat:'Pathways & Building' },
+      { text:'Core Drilling by Others', cat:'Pathways & Building' },
+      { text:'Plywood or Plywood Backing', cat:'Pathways & Building' },
+      { text:'Ceiling Removal and Replacement', cat:'Pathways & Building' },
+      { text:'Painting, Patching, and Finish Repairs', cat:'Pathways & Building' },
+      { text:'Network switches, infrastructure, and configuration', cat:'Network & IT' },
+      { text:'Door Hardware Replacement Unless Specifically Identified', cat:'Doors & Hardware' },
+      { text:'Locksmith Services', cat:'Doors & Hardware' },
+      { text:'Overtime or After-Hours Work', cat:'Site & Schedule' },
+      { text:'Removal or Disposal of Hazardous Materials', cat:'Site & Schedule' },
+      { text:'Debris Removal Fees and Dump Charges', cat:'Site & Schedule' },
+      { text:'Permits and Permit Fees', cat:'Permits & Fees' }
+    ],
+    clarifications: ['Any work, labor, material, equipment, system, cabling, or related items not specifically identified within this scope are excluded.','All work is based on access being available during normal business hours, Monday through Friday, 7:00 AM to 3:30 PM, excluding holidays.','Owner or electrical contractor shall provide all required conduit pathways, sleeves, raceways, junction boxes, pull strings, and cable support infrastructure.','Raceway and conduit sizing shall be provided by others in accordance with NEC requirements.','Point 1 Electrical Systems is not responsible for modifications to existing building infrastructure required to facilitate installation.','Existing access control panels and network infrastructure are assumed to have adequate capacity for the proposed devices.','Any required panel upgrades, software licensing, database expansion, or network modifications discovered during installation shall be quoted separately.','Existing locking hardware is assumed to be compatible and in proper working condition. Any repairs, replacements, or modifications required will be considered additional work.','A secure and lockable equipment location shall be provided by the owner prior to commencement of work.','Any concealed conditions, asbestos-containing materials, hazardous materials, undocumented field conditions, or unforeseen site conditions encountered during installation may result in additional costs.','Point 1 Electrical Systems shall not be responsible for additional time, costs, or delays caused by site access restrictions, additional PPE requirements, hazard pay associated with site conditions, owner-furnished equipment, network availability, or third-party contractors.'],
     // general items this set replaces (matched by the start of their text)
     replaces: {
-      inclusions: ['Installation, programming, and testing'],
+      inclusions: ['Installation, programming, and testing','Coordination'],
       exclusions: ['110/120 volt','Overtime, after-hours','Permits, plan check','Conduit','Network hardware','Ceiling, wall, and floor','Debris, including','Hazardous material','Fire stopping of raceways'],
-      clarifications: ['Any work, labor, equipment','All work is based on the hours']
+      clarifications: ['Any work, labor, equipment','All work is based on the hours','Point One Electrical Systems shall not be responsible','Additional work or deficiencies']
     }
   }
 };
+// Exclusions print and display grouped by category in this order.
+var QT_CATS = ['Electrical & Power','Pathways & Building','Network & IT','Doors & Hardware','Site & Schedule','Permits & Fees','Design & Documentation','Other'];
+function qtCatOf(x){
+  if (x.cat) return x.cat;
+  var all = [].concat(QT_DEFAULTS.exclusions, QT_SETS.security.exclusions);
+  for (var i = 0; i < all.length; i++) if (all[i].text === x.text && all[i].cat) return all[i].cat;
+  return 'Other';
+}
 var QT_GROUPS = [['inclusions','Inclusions'],['exclusions','Exclusions'],['clarifications','Clarifications']];
 var QT_TYPES = ['Time & Material Only','Flat Rate Estimate','Budget Estimate'];
 var QT_STATE = null;
@@ -3872,11 +3896,11 @@ function qtMaster(){
   var c = (P1_RATES && P1_RATES.quoteTerms) || null, out = {};
   QT_GROUPS.forEach(function(g){
     var src = (c && Array.isArray(c[g[0]]) && c[g[0]].length) ? c[g[0]] : QT_DEFAULTS[g[0]];
-    out[g[0]] = src.map(function(x){ return { text:String(x.text||x), on:x.on !== false && x.on !== 0 }; });
+    out[g[0]] = src.map(function(x){ var o = { text:String(x.text||x), on:x.on !== false && x.on !== 0 }; if (x.cat) o.cat = x.cat; return o; });
   });
   return out;
 }
-function qtFresh(){ var m = qtMaster(), st = {}; QT_GROUPS.forEach(function(g){ st[g[0]] = m[g[0]].map(function(x){ return { text:x.text, on:x.on }; }); }); return st; }
+function qtFresh(){ var m = qtMaster(), st = {}; QT_GROUPS.forEach(function(g){ st[g[0]] = m[g[0]].map(function(x){ var o = { text:x.text, on:x.on }; if (x.cat) o.cat = x.cat; return o; }); }); return st; }
 function qtEsc(t){ return String(t).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
 function qtApplies(){ var v = ((document.getElementById('systemType')||{}).value||''); return QT_TYPES.indexOf(v) >= 0; }
 function qtToggle(force){
@@ -3903,8 +3927,8 @@ function qtRender(){
   host.innerHTML = QT_GROUPS.map(function(g){
     var k = g[0];
     return '<div><div style="font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#e8620a;margin-bottom:6px;">' + g[1] + '</div>' +
-      QT_STATE[k].map(function(x, i){
-        return '<label style="display:flex;gap:6px;align-items:flex-start;font-size:12px;color:var(--text2);margin-bottom:4px;line-height:1.35;cursor:pointer;">' +
+      qtOrdered(k).map(function(it){ var x = it.x, i = it.i;
+        return (it.head ? '<div style="font-size:9px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--text3);margin:8px 0 3px;">' + qtEsc(it.head) + '</div>' : '') + '<label style="display:flex;gap:6px;align-items:flex-start;font-size:12px;color:var(--text2);margin-bottom:4px;line-height:1.35;cursor:pointer;">' +
           '<input type="checkbox" data-qt="' + k + '" data-i="' + i + '"' + (x.on ? ' checked' : '') + ' style="margin-top:2px;flex:none;">' +
           '<span style="flex:1;">' + qtEsc(x.text) + '</span>' +
           (x.custom ? '<button type="button" data-qtdel="' + k + '" data-i="' + i + '" title="Remove" style="border:0;background:transparent;color:var(--text3);cursor:pointer;font-size:12px;">×</button>' : '') +
@@ -3919,6 +3943,15 @@ function qtRender(){
   host.querySelectorAll('[data-qtadd]').forEach(function(b){ b.onclick = function(){ add(b.dataset.qtadd); }; });
   host.querySelectorAll('[data-qtnew]').forEach(function(inp){ inp.onkeydown = function(e){ if (e.key === 'Enter'){ e.preventDefault(); add(inp.dataset.qtnew); } }; });
 }
+// Items in display order; exclusions grouped by category with a heading at each group start.
+function qtOrdered(k){
+  var rows = QT_STATE[k].map(function(x, i){ return { x:x, i:i }; });
+  if (k !== 'exclusions') return rows;
+  rows.forEach(function(r){ r.c = qtCatOf(r.x); r.o = QT_CATS.indexOf(r.c); if (r.o < 0) r.o = QT_CATS.length; });
+  rows.sort(function(a, b){ return (a.o - b.o) || (a.i - b.i); });
+  var last = null; rows.forEach(function(r){ if (r.c !== last){ r.head = r.c; last = r.c; } });
+  return rows;
+}
 function qtToggleSet(k){
   var set = QT_SETS[k]; if (!set) return;
   QT_STATE.sets = QT_STATE.sets || [];
@@ -3928,7 +3961,7 @@ function qtToggleSet(k){
     var reps = (set.replaces && set.replaces[key]) || [];
     if (!on){
       list.forEach(function(x){ if (!x.set && reps.some(function(r){ return x.text.indexOf(r) === 0; })) { if (x.on) x.replacedBy = k; x.on = false; } });
-      (set[key] || []).forEach(function(t){ if (!list.some(function(x){ return x.text === t; })) list.push({ text:t, on:true, set:k }); });
+      (set[key] || []).forEach(function(t){ var txt = t.text || t; if (!list.some(function(x){ return x.text === txt; })){ var o = { text:txt, on:true, set:k }; if (t.cat) o.cat = t.cat; list.push(o); } });
     } else {
       QT_STATE[key] = list.filter(function(x){ return x.set !== k; });
       QT_STATE[key].forEach(function(x){ if (x.replacedBy === k){ x.on = true; delete x.replacedBy; } });
@@ -3947,7 +3980,7 @@ function qtGather(){ return QT_STATE ? JSON.parse(JSON.stringify(QT_STATE)) : nu
 // A saved quote keeps exactly what it had; quotes saved before this feature start from the defaults.
 function qtRestore(d){
   QT_STATE = qtFresh();
-  if (d) QT_GROUPS.forEach(function(g){ if (Array.isArray(d[g[0]])) QT_STATE[g[0]] = d[g[0]].map(function(x){ var o = { text:String(x.text), on:!!x.on, custom:!!x.custom }; if (x.set) o.set = x.set; if (x.replacedBy) o.replacedBy = x.replacedBy; return o; }); });
+  if (d) QT_GROUPS.forEach(function(g){ if (Array.isArray(d[g[0]])) QT_STATE[g[0]] = d[g[0]].map(function(x){ var o = { text:String(x.text), on:!!x.on, custom:!!x.custom }; if (x.cat) o.cat = x.cat; if (x.set) o.set = x.set; if (x.replacedBy) o.replacedBy = x.replacedBy; return o; }); });
   if (d && Array.isArray(d.sets)) QT_STATE.sets = d.sets.slice();
   qtRender();
 }
@@ -3956,8 +3989,10 @@ function qtRenderQuote(qSystem){
   if (!QT_STATE || QT_TYPES.indexOf(qSystem) < 0){ box.style.display = 'none'; box.innerHTML = ''; return; }
   var html = QT_GROUPS.map(function(g){
     var items = QT_STATE[g[0]].filter(function(x){ return x.on; }); if (!items.length) return '';
-    return '<div style="break-inside:avoid;page-break-inside:avoid;margin-bottom:10px;"><div style="font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#1c1c1c;margin-bottom:4px;">' + g[1] + '</div>' +
-      '<ol style="margin:0;padding-left:18px;line-height:1.5;">' + items.map(function(x){ return '<li>' + qtEsc(x.text) + '</li>'; }).join('') + '</ol></div>';
+    return '<div style="' + (g[0] === 'exclusions' ? '' : 'break-inside:avoid;page-break-inside:avoid;') + 'margin-bottom:10px;"><div style="font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#1c1c1c;margin-bottom:4px;break-after:avoid;page-break-after:avoid;">' + g[1] + '</div>' +
+      (g[0] === 'exclusions'
+        ? QT_CATS.concat(['__x']).map(function(c){ var its = items.filter(function(x){ var xc = qtCatOf(x); return c === '__x' ? QT_CATS.indexOf(xc) < 0 : xc === c; }); if (!its.length) return ''; return '<div style="break-inside:avoid;page-break-inside:avoid;margin:2px 0 4px;"><div style="font-size:10px;font-weight:600;color:#666;">' + qtEsc(c === '__x' ? 'Other' : c) + '</div><ul style="margin:0;padding-left:18px;line-height:1.5;">' + its.map(function(x){ return '<li>' + qtEsc(x.text) + '</li>'; }).join('') + '</ul></div>'; }).join('')
+        : '<ol style="margin:0;padding-left:18px;line-height:1.5;">' + items.map(function(x){ return '<li>' + qtEsc(x.text) + '</li>'; }).join('') + '</ol>') + '</div>';
   }).join('');
   box.innerHTML = html; box.style.display = html ? '' : 'none';
 }
