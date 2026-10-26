@@ -1648,6 +1648,7 @@
       </button>
       <div id="qt-body" style="display:none;margin-top:10px;">
         <div style="font-size:11px;color:var(--text3);margin-bottom:8px;">Checked items print on the proposal above the signature. Standard items start checked; check others as they apply, or add your own.</div>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px;font-size:11px;color:var(--text2);"><span style="font-weight:600;">Quick sets</span><span id="qt-sets"></span></div>
         <div id="qt-lists" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;"></div>
       </div>
     </div>
@@ -3848,6 +3849,22 @@ var QT_DEFAULTS = {
     { text:'Project bonding can be provided at rate, if required.', on:false }
   ]
 };
+// Quick set for security / access control proposals. Applying it adds these items (checked)
+// and unchecks the general items it replaces, so the proposal never lists both versions.
+var QT_SETS = {
+  security: {
+    label: 'Security system',
+    inclusions: ['Access Control Cabling','Base System Access Control Programming','Panel and Device Terminations','Testing and Commissioning','System Configuration and Database Programming','Fire Stopping of Point 1 Installed Penetrations','Project Management','Installation Labor','Standard Business Hour Work (Monday through Friday)','Final As-Built Documentation (Electronic Format)'],
+    exclusions: ['Supply and Installation of Electronic Network Switches','Overtime or After-Hours Work','Permits and Permit Fees','Painting, Patching, and Finish Repairs','Core Drilling by Others','Conduit Raceway(s)','Conduit Chases/Sleeves','Plywood or Plywood Backing','Splice Cans','Network Infrastructure','Fire Alarm System Connections','120VAC Electrical Connections and Circuits','Building Grounding and Bonding Systems','Ceiling Removal and Replacement','Removal or Disposal of Hazardous Materials','Debris Removal Fees and Dump Charges','Door Hardware Replacement Unless Specifically Identified','Locksmith Services','Network Configuration by Others'],
+    clarifications: ['Any work, labor, material, equipment, system, cabling, or related items not specifically identified within this scope are excluded.','All work is based on access being available during normal business hours, Monday through Friday, 7:00 AM to 3:30 PM, excluding holidays.','Owner or electrical contractor shall provide all required conduit pathways, sleeves, raceways, junction boxes, pull strings, and cable support infrastructure.','Raceway and conduit sizing shall be provided by others in accordance with NEC requirements.','Point 1 Electrical Systems is not responsible for modifications to existing building infrastructure required to facilitate installation.','Existing access control panels and network infrastructure are assumed to have adequate capacity for the proposed devices.','Any required panel upgrades, software licensing, database expansion, or network modifications discovered during installation shall be quoted separately.','Existing locking hardware is assumed to be compatible and in proper working condition. Any repairs, replacements, or modifications required will be considered additional work.','A secure and lockable equipment location shall be provided by the owner prior to commencement of work.','Electronic copies of project documentation, test results, and as-built drawings will be provided upon project completion.','Any concealed conditions, asbestos-containing materials, hazardous materials, undocumented field conditions, or unforeseen site conditions encountered during installation may result in additional costs.','Point 1 Electrical Systems shall not be responsible for delays caused by owner-furnished equipment, network availability, site access restrictions, or third-party contractors.'],
+    // general items this set replaces (matched by the start of their text)
+    replaces: {
+      inclusions: ['Installation, programming, and testing'],
+      exclusions: ['110/120 volt','Overtime, after-hours','Permits, plan check','Conduit','Network hardware','Ceiling, wall, and floor','Debris, including','Hazardous material','Fire stopping of raceways'],
+      clarifications: ['Any work, labor, equipment','All work is based on the hours']
+    }
+  }
+};
 var QT_GROUPS = [['inclusions','Inclusions'],['exclusions','Exclusions'],['clarifications','Clarifications']];
 var QT_TYPES = ['Time & Material Only','Flat Rate Estimate','Budget Estimate'];
 var QT_STATE = null;
@@ -3874,6 +3891,14 @@ function qtRender(){
   var host = document.getElementById('qt-lists'), sum = document.getElementById('qt-summary');
   var n = function(k){ return QT_STATE[k].filter(function(x){ return x.on; }).length; };
   if (sum) sum.textContent = n('inclusions') + ' included · ' + n('exclusions') + ' excluded · ' + n('clarifications') + ' clarifications';
+  var setsEl = document.getElementById('qt-sets');
+  if (setsEl){
+    setsEl.innerHTML = Object.keys(QT_SETS).map(function(k){
+      var on = (QT_STATE.sets || []).indexOf(k) >= 0;
+      return '<button type="button" data-qtset="' + k + '" style="font-size:11px;padding:3px 10px;border:1px solid ' + (on ? '#e8620a' : 'var(--border2)') + ';border-radius:var(--radius-sm);background:' + (on ? '#e8620a' : 'transparent') + ';color:' + (on ? '#fff' : 'var(--text2)') + ';cursor:pointer;font-weight:600;">' + (on ? '\u2713 ' : '+ ') + QT_SETS[k].label + '</button>';
+    }).join(' ');
+    setsEl.querySelectorAll('[data-qtset]').forEach(function(b){ b.onclick = function(){ qtToggleSet(b.dataset.qtset); }; });
+  }
   if (!host) return;
   host.innerHTML = QT_GROUPS.map(function(g){
     var k = g[0];
@@ -3894,6 +3919,24 @@ function qtRender(){
   host.querySelectorAll('[data-qtadd]').forEach(function(b){ b.onclick = function(){ add(b.dataset.qtadd); }; });
   host.querySelectorAll('[data-qtnew]').forEach(function(inp){ inp.onkeydown = function(e){ if (e.key === 'Enter'){ e.preventDefault(); add(inp.dataset.qtnew); } }; });
 }
+function qtToggleSet(k){
+  var set = QT_SETS[k]; if (!set) return;
+  QT_STATE.sets = QT_STATE.sets || [];
+  var on = QT_STATE.sets.indexOf(k) >= 0;
+  QT_GROUPS.forEach(function(g){
+    var key = g[0], list = QT_STATE[key];
+    var reps = (set.replaces && set.replaces[key]) || [];
+    if (!on){
+      list.forEach(function(x){ if (!x.set && reps.some(function(r){ return x.text.indexOf(r) === 0; })) { if (x.on) x.replacedBy = k; x.on = false; } });
+      (set[key] || []).forEach(function(t){ if (!list.some(function(x){ return x.text === t; })) list.push({ text:t, on:true, set:k }); });
+    } else {
+      QT_STATE[key] = list.filter(function(x){ return x.set !== k; });
+      QT_STATE[key].forEach(function(x){ if (x.replacedBy === k){ x.on = true; delete x.replacedBy; } });
+    }
+  });
+  if (on) QT_STATE.sets.splice(QT_STATE.sets.indexOf(k), 1); else QT_STATE.sets.push(k);
+  qtRender();
+}
 function qtInit(){
   if (!QT_STATE) QT_STATE = qtFresh();
   var sys = document.getElementById('systemType');
@@ -3904,7 +3947,8 @@ function qtGather(){ return QT_STATE ? JSON.parse(JSON.stringify(QT_STATE)) : nu
 // A saved quote keeps exactly what it had; quotes saved before this feature start from the defaults.
 function qtRestore(d){
   QT_STATE = qtFresh();
-  if (d) QT_GROUPS.forEach(function(g){ if (Array.isArray(d[g[0]])) QT_STATE[g[0]] = d[g[0]].map(function(x){ return { text:String(x.text), on:!!x.on, custom:!!x.custom }; }); });
+  if (d) QT_GROUPS.forEach(function(g){ if (Array.isArray(d[g[0]])) QT_STATE[g[0]] = d[g[0]].map(function(x){ var o = { text:String(x.text), on:!!x.on, custom:!!x.custom }; if (x.set) o.set = x.set; if (x.replacedBy) o.replacedBy = x.replacedBy; return o; }); });
+  if (d && Array.isArray(d.sets)) QT_STATE.sets = d.sets.slice();
   qtRender();
 }
 function qtRenderQuote(qSystem){
