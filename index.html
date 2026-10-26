@@ -3849,111 +3849,100 @@ var QT_DEFAULTS = {
     { text:'Project bonding can be provided at rate, if required.', on:false }
   ]
 };
-// Quick set for security / access control proposals. Applying it adds these items (checked)
-// and unchecks the general items it replaces, so the proposal never lists both versions.
-// Quick sets, one per system. Several can be on at once. Lines shared between sets use
-// identical wording, so a line used by two active sets prints once; turning a set off
-// removes only lines no other active set still uses. Each set also unchecks the general
-// items it replaces, and turning the last such set off checks them again.
-var QT_SH = {
-  incl: ['Testing and Commissioning','Fire Stopping of Point 1 Installed Penetrations','Project Management','Final As-Built Documentation (Electronic Format)'],
-  excl: [
-    { text:'120VAC Electrical Connections and Circuits', cat:'Electrical & Power' },
-    { text:'Building Grounding and Bonding Systems', cat:'Electrical & Power' },
-    { text:'Conduit raceways, chases, sleeves, and splice cans', cat:'Pathways & Building' },
-    { text:'Core Drilling by Others', cat:'Pathways & Building' },
-    { text:'Plywood or Plywood Backing', cat:'Pathways & Building' },
-    { text:'Ceiling Removal and Replacement', cat:'Pathways & Building' },
-    { text:'Painting, Patching, and Finish Repairs', cat:'Pathways & Building' },
-    { text:'Overtime or After-Hours Work', cat:'Site & Schedule' },
-    { text:'Removal or Disposal of Hazardous Materials', cat:'Site & Schedule' },
-    { text:'Debris Removal Fees and Dump Charges', cat:'Site & Schedule' },
-    { text:'Permits and Permit Fees', cat:'Permits & Fees' }
-  ],
-  net: { text:'Network switches, infrastructure, and configuration', cat:'Network & IT' },
-  clar: ['Any work, labor, material, equipment, system, cabling, or related items not specifically identified within this scope are excluded.','All work is based on access being available during normal business hours, Monday through Friday, 7:00 AM to 3:30 PM, excluding holidays.','Owner or electrical contractor shall provide all required conduit pathways, sleeves, raceways, junction boxes, pull strings, and cable support infrastructure.','Raceway and conduit sizing shall be provided by others in accordance with NEC requirements.','Point 1 Electrical Systems is not responsible for modifications to existing building infrastructure required to facilitate installation.','A secure and lockable equipment location shall be provided by the owner prior to commencement of work.','Any concealed conditions, asbestos-containing materials, hazardous materials, undocumented field conditions, or unforeseen site conditions encountered during installation may result in additional costs.','Point 1 Electrical Systems shall not be responsible for additional time, costs, or delays caused by site access restrictions, additional PPE requirements, hazard pay associated with site conditions, owner-furnished equipment, network availability, or third-party contractors.'],
-  replaces: {
-    inclusions: ['Installation, programming, and testing','Coordination'],
-    exclusions: ['110/120 volt','Overtime, after-hours','Permits, plan check','Conduit','Network hardware','Ceiling, wall, and floor','Debris, including','Hazardous material','Fire stopping of raceways'],
-    clarifications: ['Any work, labor, equipment','All work is based on the hours','Point One Electrical Systems shall not be responsible','Additional work or deficiencies']
-  }
+// ---------------------------------------------------------------------------
+// System quick sets. Turning on any system adds ONE common section (base) plus only
+// the lines unique to each system. Ideas every system shares are single lines that
+// name the active systems ("Existing access control and video surveillance
+// equipment..."), so adding a system never repeats a line. The Project / new install
+// switch adds construction-only language. While any set or the switch is on, the
+// general items those lines cover are set aside (hidden, not printed).
+// Generated lines are rebuilt from the active sets each render; a line the user
+// unchecks is remembered by its key in QT_STATE.off.
+// ---------------------------------------------------------------------------
+var QT_SYS = {
+  access:    { label:'Access Control',     name:'access control' },
+  video:     { label:'Video Surveillance', name:'video surveillance' },
+  intrusion: { label:'Intrusion',          name:'intrusion' },
+  fire:      { label:'Fire Alarm',         name:'fire alarm' },
+  av:        { label:'Audio Visual',       name:'audio visual' }
 };
-var QT_SETS = {
-  access: {
-    label: 'Access Control',
-    inclusions: ['Access Control Cabling','Access control system configuration and database programming','Panel and Device Terminations'].concat(QT_SH.incl),
-    exclusions: QT_SH.excl.concat([
-      { text:'Fire Alarm System Connections', cat:'Electrical & Power' },
-      QT_SH.net,
-      { text:'Electrified locking hardware and door preparation by others', cat:'Doors & Hardware' },
-      { text:'Door Hardware Replacement Unless Specifically Identified', cat:'Doors & Hardware' },
-      { text:'Locksmith Services', cat:'Doors & Hardware' }
-    ]),
-    clarifications: QT_SH.clar.concat(['Existing access control panels and network infrastructure are assumed to have adequate capacity for the proposed devices.','Any required panel upgrades, software licensing, database expansion, or network modifications discovered during installation shall be quoted separately.','Existing locking hardware is assumed to be compatible and in proper working condition. Any repairs, replacements, or modifications required will be considered additional work.']),
-    replaces: QT_SH.replaces
-  },
-  video: {
-    label: 'Video Surveillance',
-    inclusions: ['Video Surveillance Cabling','Camera Mounting, Aiming, and Focus','NVR/VMS Configuration and Camera Programming','Viewing Client and Mobile App Setup for Designated Users'].concat(QT_SH.incl),
-    exclusions: QT_SH.excl.concat([
-      QT_SH.net,
-      { text:'Remote access, port forwarding, and firewall configuration by Customer IT', cat:'Network & IT' },
-      { text:'VMS software licenses unless specifically listed', cat:'Software & Licensing' },
-      { text:'Video storage beyond the retention specified', cat:'Software & Licensing' },
-      { text:'Lift or special equipment rental for high mounting locations', cat:'Site & Schedule' }
-    ]),
-    clarifications: QT_SH.clar.concat(['Camera field of view and image quality depend on lighting and mounting conditions; views are based on the specified equipment and locations.','Network bandwidth and port availability are assumed adequate for the proposed cameras.','Any required VMS upgrades, licensing, storage expansion, or network modifications discovered during installation shall be quoted separately.']),
-    replaces: QT_SH.replaces
-  },
-  intrusion: {
-    label: 'Intrusion',
-    inclusions: ['Intrusion System Cabling','Panel and Device Terminations','Intrusion panel, keypad, and sensor programming','Central station account setup and signal testing'].concat(QT_SH.incl),
-    exclusions: QT_SH.excl.concat([
-      { text:'Central station monitoring (provided under a separate agreement)', cat:'Monitoring & Services' },
-      { text:'Communicator cellular or data service (provided under a separate agreement)', cat:'Monitoring & Services' },
-      { text:'Telephone (POTS) lines', cat:'Network & IT' },
-      { text:'Alarm permits, registrations, and false alarm fines', cat:'Permits & Fees' }
-    ]),
-    clarifications: QT_SH.clar.concat(['User codes, passcodes, and the emergency contact list shall be provided by Customer prior to programming.','Signal testing with the central station requires Customer participation for verification.','Existing intrusion devices are assumed to be in proper working condition. Any repairs or replacements required will be considered additional work.']),
-    replaces: QT_SH.replaces
-  },
-  fire: {
-    label: 'Fire Alarm',
-    inclusions: ['Fire Alarm Device Installation and Wiring','Panel and Device Terminations','Fire alarm panel programming','Updated UL Certificate (monitored systems)'].concat(QT_SH.incl),
-    exclusions: QT_SH.excl.concat([
-      { text:'Fire sprinkler system work', cat:'Other Trades' },
-      { text:'Elevator recall, HVAC shutdown, and door holder connections by others', cat:'Other Trades' },
-      { text:'Fire watch', cat:'Site & Schedule' },
-      { text:'AHJ inspection and re-inspection fees', cat:'Permits & Fees' },
-      { text:'Plan check and stamped drawings unless specifically listed', cat:'Design & Documentation' }
-    ]),
-    clarifications: QT_SH.clar.concat(['Work requiring the fire alarm system to be placed out of service will be coordinated with the monitoring company and AHJ. Fire watch, if required, is by others.','Existing fire alarm devices and wiring are assumed to be in proper working condition. Deficiencies found will be reported and quoted separately.']),
-    replaces: QT_SH.replaces
-  },
-  av: {
-    label: 'Audio Visual',
-    inclusions: ['Audio Visual Cabling','Equipment Installation and Terminations','Control system and DSP programming','User Training (up to 2 hours)','Testing and Commissioning','Project Management','Final As-Built Documentation (Electronic Format)'],
-    exclusions: [QT_SH.excl[0], QT_SH.excl[2], QT_SH.excl[5], QT_SH.excl[6], QT_SH.excl[7], QT_SH.excl[8], QT_SH.excl[9], QT_SH.excl[10], QT_SH.net,
-      { text:'Furniture, millwork, and display wall backing', cat:'Pathways & Building' },
-      { text:'Software subscriptions and licensing unless specifically listed', cat:'Software & Licensing' },
-      { text:'Content creation and media', cat:'Other' }
-    ],
-    clarifications: [QT_SH.clar[0], QT_SH.clar[1], QT_SH.clar[6], QT_SH.clar[7], 'Room acoustics and lighting conditions are by others and may affect system performance.', 'Owner-furnished equipment is assumed to be compatible and in proper working condition.'],
-    replaces: QT_SH.replaces
-  }
+// Each line: key, group, text (string, or function of the active-system name list), cat (exclusions),
+// when: 'base' (any system on), a system key, list of system keys, or 'project'.
+var QT_LINES = [
+  // base inclusions
+  { k:'b-cable', g:'inclusions', when:'base', text:function(n, c){ return 'Cabling for the ' + n + (c > 1 ? ' systems' : ' system'); } },
+  { k:'b-term',  g:'inclusions', when:'base', text:'Device terminations, system configuration, and programming' },
+  { k:'b-test',  g:'inclusions', when:'base', text:'Testing and Commissioning' },
+  { k:'b-pm',    g:'inclusions', when:'base', text:'Project Management' },
+  // base exclusions
+  { k:'b-120',   g:'exclusions', when:'base', cat:'Electrical & Power',  text:'120VAC Electrical Connections and Circuits' },
+  { k:'b-cond',  g:'exclusions', when:'base', cat:'Pathways & Building', text:'Conduit raceways, chases, sleeves, and splice cans' },
+  { k:'b-fin',   g:'exclusions', when:'base', cat:'Pathways & Building', text:'Core drilling, ceiling removal and replacement, painting, patching, and finish repairs' },
+  { k:'b-net',   g:'exclusions', when:['access','video','av'], cat:'Network & IT', text:'Network switches, infrastructure, and configuration' },
+  { k:'b-ot',    g:'exclusions', when:'base', cat:'Site & Schedule',     text:'Overtime or After-Hours Work' },
+  { k:'b-haz',   g:'exclusions', when:'base', cat:'Site & Schedule',     text:'Removal or Disposal of Hazardous Materials' },
+  { k:'b-deb',   g:'exclusions', when:'base', cat:'Site & Schedule',     text:'Debris Removal Fees and Dump Charges' },
+  { k:'b-perm',  g:'exclusions', when:'base', cat:'Permits & Fees',      text:'Permits and Permit Fees' },
+  // base clarifications
+  { k:'b-scope', g:'clarifications', when:'base', text:'Any work, labor, material, equipment, system, cabling, or related items not specifically identified within this scope are excluded.' },
+  { k:'b-hours', g:'clarifications', when:'base', text:'All work is based on access being available during normal business hours, Monday through Friday, 7:00 AM to 3:30 PM, excluding holidays.' },
+  { k:'b-exist', g:'clarifications', when:'base', text:function(n){ return 'Existing ' + n + ' equipment and network infrastructure are assumed to be in proper working condition with adequate capacity for the proposed work. Any repairs, upgrades, licensing, or network modifications required will be quoted separately.'; } },
+  { k:'b-delay', g:'clarifications', when:'base', text:'Point 1 Electrical Systems shall not be responsible for additional time, costs, or delays caused by site access restrictions, additional PPE requirements, concealed or hazardous conditions, owner-furnished equipment, network availability, or third-party contractors.' },
+  // access control
+  { k:'ac-fa',   g:'exclusions', when:'access', cat:'Electrical & Power', text:'Fire Alarm System Connections' },
+  { k:'ac-door', g:'exclusions', when:'access', cat:'Doors & Hardware',   text:'Electrified locking hardware, door preparation, and door hardware replacement unless specifically identified' },
+  { k:'ac-lock', g:'exclusions', when:'access', cat:'Doors & Hardware',   text:'Locksmith Services' },
+  // video
+  { k:'v-mount', g:'inclusions', when:'video', text:'Camera mounting, aiming, and focus' },
+  { k:'v-view',  g:'inclusions', when:'video', text:'Viewing client and mobile app setup for designated users' },
+  { k:'v-lic',   g:'exclusions', when:'video', cat:'Software & Licensing', text:'VMS software licenses and video storage beyond the retention specified' },
+  { k:'v-ra',    g:'exclusions', when:'video', cat:'Network & IT',         text:'Remote access, port forwarding, and firewall configuration by Customer IT' },
+  { k:'v-lift',  g:'exclusions', when:'video', cat:'Site & Schedule',      text:'Lift or special equipment rental for high mounting locations' },
+  { k:'v-fov',   g:'clarifications', when:'video', text:'Camera field of view and image quality depend on lighting and mounting conditions.' },
+  // intrusion
+  { k:'i-cs',    g:'inclusions', when:'intrusion', text:'Central station account setup and signal testing' },
+  { k:'i-mon',   g:'exclusions', when:'intrusion', cat:'Monitoring & Services', text:'Central station monitoring and communicator data service (separate agreement)' },
+  { k:'i-pots',  g:'exclusions', when:'intrusion', cat:'Network & IT',          text:'Telephone (POTS) lines' },
+  { k:'i-perm',  g:'exclusions', when:'intrusion', cat:'Permits & Fees',        text:'Alarm permits, registrations, and false alarm fines' },
+  { k:'i-codes', g:'clarifications', when:'intrusion', text:'User codes and the emergency contact list shall be provided by Customer prior to programming.' },
+  // fire alarm
+  { k:'f-ul',    g:'inclusions', when:'fire', text:'Updated UL Certificate (monitored systems)' },
+  { k:'f-spr',   g:'exclusions', when:'fire', cat:'Other Trades',    text:'Fire sprinkler system work' },
+  { k:'f-tie',   g:'exclusions', when:'fire', cat:'Other Trades',    text:'Elevator recall, HVAC shutdown, and door holder connections by others' },
+  { k:'f-watch', g:'exclusions', when:'fire', cat:'Site & Schedule', text:'Fire watch' },
+  { k:'f-ahj',   g:'exclusions', when:'fire', cat:'Permits & Fees',  text:'AHJ inspection, re-inspection, and plan check fees' },
+  { k:'f-oos',   g:'clarifications', when:'fire', text:'Work requiring the fire alarm system to be placed out of service will be coordinated with the monitoring company and AHJ.' },
+  // audio visual
+  { k:'av-train',g:'inclusions', when:'av', text:'User training (up to 2 hours)' },
+  { k:'av-furn', g:'exclusions', when:'av', cat:'Pathways & Building',  text:'Furniture, millwork, and display wall backing' },
+  { k:'av-sw',   g:'exclusions', when:'av', cat:'Software & Licensing', text:'Software subscriptions, licensing, and content creation unless specifically listed' },
+  { k:'av-room', g:'clarifications', when:'av', text:'Room acoustics and lighting conditions are by others and may affect system performance.' },
+  // project / new install
+  { k:'p-fs',    g:'inclusions', when:'project', text:'Fire Stopping of Point 1 Installed Penetrations' },
+  { k:'p-asb',   g:'inclusions', when:'project', text:'Final As-Built Documentation (Electronic Format)' },
+  { k:'p-gnd',   g:'exclusions', when:'project', cat:'Electrical & Power',  text:'Building Grounding and Bonding Systems' },
+  { k:'p-ply',   g:'exclusions', when:'project', cat:'Pathways & Building', text:'Plywood or Plywood Backing' },
+  { k:'p-path',  g:'clarifications', when:'project', text:'Owner or electrical contractor shall provide all required conduit pathways, sleeves, raceways, junction boxes, pull strings, and cable support infrastructure.' },
+  { k:'p-nec',   g:'clarifications', when:'project', text:'Raceway and conduit sizing shall be provided by others in accordance with NEC requirements.' },
+  { k:'p-bldg',  g:'clarifications', when:'project', text:'Point 1 Electrical Systems is not responsible for modifications to existing building infrastructure required to facilitate installation.' },
+  { k:'p-room',  g:'clarifications', when:'project', text:'A secure and lockable equipment location shall be provided by the owner prior to commencement of work.' }
+];
+// General items set aside while any system set or the project switch is on (matched by text start).
+var QT_REPLACES = {
+  inclusions: ['Installation, programming, and testing','Coordination'],
+  exclusions: ['110/120 volt','Overtime, after-hours','Permits, plan check','Conduit','Network hardware','Ceiling, wall, and floor','Debris, including','Hazardous material','Fire stopping of raceways'],
+  clarifications: ['Any work, labor, equipment','All work is based on the hours','Point One Electrical Systems shall not be responsible','Additional work or deficiencies']
 };
 // Exclusions print and display grouped by category in this order.
 var QT_CATS = ['Electrical & Power','Pathways & Building','Network & IT','Software & Licensing','Doors & Hardware','Other Trades','Monitoring & Services','Site & Schedule','Permits & Fees','Design & Documentation','Other'];
-function qtCatOf(x){
-  if (x.cat) return x.cat;
-  var all = QT_DEFAULTS.exclusions.slice();
-  Object.keys(QT_SETS).forEach(function(k){ all = all.concat(QT_SETS[k].exclusions); });
-  for (var i = 0; i < all.length; i++) if (all[i].text === x.text && all[i].cat) return all[i].cat;
-  return 'Other';
-}
 var QT_GROUPS = [['inclusions','Inclusions'],['exclusions','Exclusions'],['clarifications','Clarifications']];
 var QT_TYPES = ['Time & Material Only','Flat Rate Estimate','Budget Estimate'];
 var QT_STATE = null;
+function qtCatOf(x){
+  if (x.cat) return x.cat;
+  for (var i = 0; i < QT_DEFAULTS.exclusions.length; i++) if (QT_DEFAULTS.exclusions[i].text === x.text && QT_DEFAULTS.exclusions[i].cat) return QT_DEFAULTS.exclusions[i].cat;
+  return 'Other';
+}
 function qtMaster(){
   var c = (P1_RATES && P1_RATES.quoteTerms) || null, out = {};
   QT_GROUPS.forEach(function(g){
@@ -3962,7 +3951,7 @@ function qtMaster(){
   });
   return out;
 }
-function qtFresh(){ var m = qtMaster(), st = {}; QT_GROUPS.forEach(function(g){ st[g[0]] = m[g[0]].map(function(x){ var o = { text:x.text, on:x.on }; if (x.cat) o.cat = x.cat; return o; }); }); return st; }
+function qtFresh(){ var m = qtMaster(), st = { sets:[], project:false, off:{} }; QT_GROUPS.forEach(function(g){ st[g[0]] = m[g[0]].map(function(x){ var o = { text:x.text, on:x.on }; if (x.cat) o.cat = x.cat; return o; }); }); return st; }
 function qtEsc(t){ return String(t).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
 function qtApplies(){ var v = ((document.getElementById('systemType')||{}).value||''); return QT_TYPES.indexOf(v) >= 0; }
 function qtToggle(force){
@@ -3970,84 +3959,77 @@ function qtToggle(force){
   var open = force != null ? !!force : b.style.display === 'none';
   b.style.display = open ? '' : 'none'; if (c) c.innerHTML = open ? '&#9662;' : '&#9656;';
 }
+function qtAnyOn(){ return !!(QT_STATE && ((QT_STATE.sets || []).length || QT_STATE.project)); }
+function qtNames(){
+  var ns = (QT_STATE.sets || []).map(function(k){ return QT_SYS[k] ? QT_SYS[k].name : null; }).filter(Boolean);
+  if (ns.length < 2) return ns.join('');
+  return ns.slice(0, -1).join(', ') + (ns.length > 2 ? ',' : '') + ' and ' + ns[ns.length - 1];
+}
+function qtLineActive(L){
+  var sets = QT_STATE.sets || [];
+  if (L.when === 'project') return !!QT_STATE.project;
+  if (L.when === 'base') return sets.length > 0;
+  if (Array.isArray(L.when)) return L.when.some(function(k){ return sets.indexOf(k) >= 0; });
+  return sets.indexOf(L.when) >= 0;
+}
+function qtReplaced(k, x){ return qtAnyOn() && !x.custom && (QT_REPLACES[k] || []).some(function(r){ return x.text.indexOf(r) === 0; }); }
+// Everything shown for one group, in order: general items, then generated lines, then custom items.
+function qtItems(k){
+  var rows = [], n = qtNames(), cnt = (QT_STATE.sets || []).length;
+  QT_STATE[k].forEach(function(x, i){ if (!x.custom && !qtReplaced(k, x)) rows.push({ src:'gen', i:i, text:x.text, on:x.on, cat:x.cat }); });
+  QT_LINES.forEach(function(L){ if (L.g === k && qtLineActive(L)) rows.push({ src:'line', key:L.k, text:(typeof L.text === 'function' ? L.text(n, cnt) : L.text), on:!QT_STATE.off[L.k], cat:L.cat }); });
+  QT_STATE[k].forEach(function(x, i){ if (x.custom) rows.push({ src:'gen', i:i, text:x.text, on:x.on, cat:x.cat, custom:true }); });
+  if (k === 'exclusions'){
+    rows.forEach(function(r, j){ r.c = r.cat || qtCatOf(r); r.o = QT_CATS.indexOf(r.c); if (r.o < 0) r.o = QT_CATS.length; r.j = j; });
+    rows.sort(function(a, b){ return (a.o - b.o) || (a.j - b.j); });
+    var last = null; rows.forEach(function(r){ if (r.c !== last){ r.head = r.c; last = r.c; } });
+  }
+  return rows;
+}
 function qtRender(){
   if (!QT_STATE) QT_STATE = qtFresh();
+  QT_STATE.off = QT_STATE.off || {}; QT_STATE.sets = QT_STATE.sets || [];
   var card = document.getElementById('qt-card'); if (!card) return;
   card.style.display = qtApplies() ? '' : 'none';
   var host = document.getElementById('qt-lists'), sum = document.getElementById('qt-summary');
-  var n = function(k){ return QT_STATE[k].filter(function(x){ return x.on; }).length; };
+  var n = function(k){ return qtItems(k).filter(function(x){ return x.on; }).length; };
   if (sum) sum.textContent = n('inclusions') + ' included · ' + n('exclusions') + ' excluded · ' + n('clarifications') + ' clarifications';
   var setsEl = document.getElementById('qt-sets');
   if (setsEl){
-    setsEl.innerHTML = Object.keys(QT_SETS).map(function(k){
-      var on = (QT_STATE.sets || []).indexOf(k) >= 0;
-      return '<button type="button" data-qtset="' + k + '" style="font-size:11px;padding:3px 10px;border:1px solid ' + (on ? '#e8620a' : 'var(--border2)') + ';border-radius:var(--radius-sm);background:' + (on ? '#e8620a' : 'transparent') + ';color:' + (on ? '#fff' : 'var(--text2)') + ';cursor:pointer;font-weight:600;">' + (on ? '\u2713 ' : '+ ') + QT_SETS[k].label + '</button>';
-    }).join(' ');
+    var btn = function(attr, on, label){ return '<button type="button" ' + attr + ' style="font-size:11px;padding:3px 10px;border:1px solid ' + (on ? '#e8620a' : 'var(--border2)') + ';border-radius:var(--radius-sm);background:' + (on ? '#e8620a' : 'transparent') + ';color:' + (on ? '#fff' : 'var(--text2)') + ';cursor:pointer;font-weight:600;margin:0 4px 4px 0;">' + (on ? '✓ ' : '+ ') + label + '</button>'; };
+    setsEl.innerHTML = Object.keys(QT_SYS).map(function(k){ return btn('data-qtset="' + k + '"', QT_STATE.sets.indexOf(k) >= 0, QT_SYS[k].label); }).join('') +
+      '<span style="display:inline-block;width:1px;height:16px;background:var(--border2);margin:0 8px 0 4px;vertical-align:middle;"></span>' +
+      btn('data-qtproj="1"', !!QT_STATE.project, 'Project / new install');
     setsEl.querySelectorAll('[data-qtset]').forEach(function(b){ b.onclick = function(){ qtToggleSet(b.dataset.qtset); }; });
+    var pb = setsEl.querySelector('[data-qtproj]'); if (pb) pb.onclick = function(){ QT_STATE.project = !QT_STATE.project; qtRender(); };
   }
   if (!host) return;
   host.innerHTML = QT_GROUPS.map(function(g){
     var k = g[0];
     return '<div><div style="font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#e8620a;margin-bottom:6px;">' + g[1] + '</div>' +
-      qtOrdered(k).map(function(it){ var x = it.x, i = it.i;
-        return (it.head ? '<div style="font-size:9px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--text3);margin:8px 0 3px;">' + qtEsc(it.head) + '</div>' : '') + '<label style="display:flex;gap:6px;align-items:flex-start;font-size:12px;color:var(--text2);margin-bottom:4px;line-height:1.35;cursor:pointer;">' +
-          '<input type="checkbox" data-qt="' + k + '" data-i="' + i + '"' + (x.on ? ' checked' : '') + ' style="margin-top:2px;flex:none;">' +
-          '<span style="flex:1;">' + qtEsc(x.text) + '</span>' +
-          (x.custom ? '<button type="button" data-qtdel="' + k + '" data-i="' + i + '" title="Remove" style="border:0;background:transparent;color:var(--text3);cursor:pointer;font-size:12px;">×</button>' : '') +
+      qtItems(k).map(function(r){
+        var id = r.src === 'line' ? 'data-qtl="' + r.key + '"' : 'data-qt="' + k + '" data-i="' + r.i + '"';
+        return (r.head ? '<div style="font-size:9px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--text3);margin:8px 0 3px;">' + qtEsc(r.head) + '</div>' : '') +
+          '<label style="display:flex;gap:6px;align-items:flex-start;font-size:12px;color:var(--text2);margin-bottom:4px;line-height:1.35;cursor:pointer;">' +
+          '<input type="checkbox" ' + id + (r.on ? ' checked' : '') + ' style="margin-top:2px;flex:none;">' +
+          '<span style="flex:1;">' + qtEsc(r.text) + '</span>' +
+          (r.custom ? '<button type="button" data-qtdel="' + k + '" data-i="' + r.i + '" title="Remove" style="border:0;background:transparent;color:var(--text3);cursor:pointer;font-size:12px;">×</button>' : '') +
           '</label>';
       }).join('') +
       '<div style="display:flex;gap:4px;margin-top:6px;"><input type="text" data-qtnew="' + k + '" placeholder="Add custom item" style="flex:1;min-width:0;font-size:12px;padding:4px 6px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface2);color:var(--text);">' +
       '<button type="button" data-qtadd="' + k + '" style="font-size:11px;padding:3px 10px;border:1px solid var(--border2);border-radius:var(--radius-sm);background:transparent;color:var(--text2);cursor:pointer;">+ Add</button></div></div>';
   }).join('');
   host.querySelectorAll('[data-qt]').forEach(function(cb){ cb.onchange = function(){ QT_STATE[cb.dataset.qt][+cb.dataset.i].on = cb.checked; qtRender(); }; });
+  host.querySelectorAll('[data-qtl]').forEach(function(cb){ cb.onchange = function(){ if (cb.checked) delete QT_STATE.off[cb.dataset.qtl]; else QT_STATE.off[cb.dataset.qtl] = true; qtRender(); }; });
   host.querySelectorAll('[data-qtdel]').forEach(function(b){ b.onclick = function(e){ e.preventDefault(); QT_STATE[b.dataset.qtdel].splice(+b.dataset.i, 1); qtRender(); }; });
   var add = function(k){ var inp = host.querySelector('[data-qtnew="' + k + '"]'); var t = (inp && inp.value || '').trim(); if (!t) return; QT_STATE[k].push({ text:t, on:true, custom:true }); qtRender(); var again = host.querySelector('[data-qtnew="' + k + '"]'); if (again) again.focus(); };
   host.querySelectorAll('[data-qtadd]').forEach(function(b){ b.onclick = function(){ add(b.dataset.qtadd); }; });
   host.querySelectorAll('[data-qtnew]').forEach(function(inp){ inp.onkeydown = function(e){ if (e.key === 'Enter'){ e.preventDefault(); add(inp.dataset.qtnew); } }; });
 }
-// Items in display order; exclusions grouped by category with a heading at each group start.
-function qtOrdered(k){
-  var rows = QT_STATE[k].map(function(x, i){ return { x:x, i:i }; });
-  if (k !== 'exclusions') return rows;
-  rows.forEach(function(r){ r.c = qtCatOf(r.x); r.o = QT_CATS.indexOf(r.c); if (r.o < 0) r.o = QT_CATS.length; });
-  rows.sort(function(a, b){ return (a.o - b.o) || (a.i - b.i); });
-  var last = null; rows.forEach(function(r){ if (r.c !== last){ r.head = r.c; last = r.c; } });
-  return rows;
-}
 function qtToggleSet(k){
-  var set = QT_SETS[k]; if (!set) return;
-  QT_STATE.sets = QT_STATE.sets || [];
-  var on = QT_STATE.sets.indexOf(k) >= 0;
-  QT_GROUPS.forEach(function(g){
-    var key = g[0], list = QT_STATE[key];
-    var reps = (set.replaces && set.replaces[key]) || [];
-    if (!on){
-      list.forEach(function(x){
-        if (x.sets || x.custom || !reps.some(function(r){ return x.text.indexOf(r) === 0; })) return;
-        // remember only items that were actually checked (or already held off by another set)
-        if (x.on || (x.replacedBy && x.replacedBy.length)){ x.replacedBy = x.replacedBy || []; if (x.replacedBy.indexOf(k) < 0) x.replacedBy.push(k); }
-        x.on = false;
-      });
-      (set[key] || []).forEach(function(t){
-        var txt = t.text || t, ex = null;
-        list.forEach(function(x){ if (x.text === txt) ex = x; });
-        if (ex){ if (ex.sets){ if (ex.sets.indexOf(k) < 0) ex.sets.push(k); } else { ex.sets = [k]; ex.on = true; } }
-        else { var o = { text:txt, on:true, sets:[k] }; if (t.cat) o.cat = t.cat; list.push(o); }
-      });
-    } else {
-      QT_STATE[key] = list.filter(function(x){
-        if (!x.sets) return true;
-        x.sets = x.sets.filter(function(s){ return s !== k; });
-        return x.sets.length > 0;
-      });
-      QT_STATE[key].forEach(function(x){
-        if (!x.replacedBy || !x.replacedBy.length){ delete x.replacedBy; return; }
-        x.replacedBy = x.replacedBy.filter(function(s){ return s !== k; });
-        if (!x.replacedBy.length){ x.on = true; delete x.replacedBy; }
-      });
-    }
-  });
-  if (on) QT_STATE.sets.splice(QT_STATE.sets.indexOf(k), 1); else QT_STATE.sets.push(k);
+  if (!QT_SYS[k]) return;
+  var i = QT_STATE.sets.indexOf(k);
+  if (i >= 0) QT_STATE.sets.splice(i, 1); else QT_STATE.sets.push(k);
   qtRender();
 }
 function qtInit(){
@@ -4056,23 +4038,42 @@ function qtInit(){
   if (sys && !sys._qtWired){ sys._qtWired = true; sys.addEventListener('change', qtRender); }
   qtRender();
 }
-function qtGather(){ return QT_STATE ? JSON.parse(JSON.stringify(QT_STATE)) : null; }
-// A saved quote keeps exactly what it had; quotes saved before this feature start from the defaults.
+function qtGather(){
+  if (!QT_STATE) return null;
+  var o = { sets:QT_STATE.sets.slice(), project:!!QT_STATE.project, off:JSON.parse(JSON.stringify(QT_STATE.off || {})) };
+  QT_GROUPS.forEach(function(g){ o[g[0]] = QT_STATE[g[0]].map(function(x){ var r = { text:x.text, on:!!x.on }; if (x.custom) r.custom = true; if (x.cat) r.cat = x.cat; return r; }); });
+  return o;
+}
+// A saved quote keeps what it had; quotes saved before this feature start from the defaults.
+// Older saves that stored set lines as items (x.set / x.sets) drop those lines (now generated)
+// and map the old "security" set to Access Control.
 function qtRestore(d){
   QT_STATE = qtFresh();
-  if (d) QT_GROUPS.forEach(function(g){ if (Array.isArray(d[g[0]])) QT_STATE[g[0]] = d[g[0]].map(function(x){ var mig = function(v){ return v === 'security' ? 'access' : v; }; var o = { text:String(x.text), on:!!x.on, custom:!!x.custom }; if (x.cat) o.cat = x.cat; if (Array.isArray(x.sets)) o.sets = x.sets.map(mig); else if (x.set) o.sets = [mig(x.set)]; if (x.replacedBy) o.replacedBy = (Array.isArray(x.replacedBy) ? x.replacedBy : [x.replacedBy]).map(mig); return o; }); });
-  if (d && Array.isArray(d.sets)) QT_STATE.sets = d.sets.map(function(v){ return v === 'security' ? 'access' : v; }).filter(function(v){ return QT_SETS[v]; });
+  if (d){
+    QT_GROUPS.forEach(function(g){
+      if (!Array.isArray(d[g[0]])) return;
+      QT_STATE[g[0]] = d[g[0]].filter(function(x){ return !(x.set || (Array.isArray(x.sets) && x.sets.length)); }).map(function(x){
+        var o = { text:String(x.text), on:!!x.on || !!(x.replacedBy && (x.replacedBy.length || typeof x.replacedBy === 'string')) };
+        if (x.custom) o.custom = true; if (x.cat) o.cat = x.cat; return o;
+      });
+    });
+    if (Array.isArray(d.sets)) QT_STATE.sets = d.sets.map(function(v){ return v === 'security' ? 'access' : v; }).filter(function(v, i, a){ return QT_SYS[v] && a.indexOf(v) === i; });
+    QT_STATE.project = !!d.project;
+    QT_STATE.off = (d.off && typeof d.off === 'object') ? JSON.parse(JSON.stringify(d.off)) : {};
+  }
   qtRender();
 }
 function qtRenderQuote(qSystem){
   var box = document.getElementById('q-terms-box'); if (!box) return;
   if (!QT_STATE || QT_TYPES.indexOf(qSystem) < 0){ box.style.display = 'none'; box.innerHTML = ''; return; }
   var html = QT_GROUPS.map(function(g){
-    var items = QT_STATE[g[0]].filter(function(x){ return x.on; }); if (!items.length) return '';
-    return '<div style="' + (g[0] === 'exclusions' ? '' : 'break-inside:avoid;page-break-inside:avoid;') + 'margin-bottom:10px;"><div style="font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#1c1c1c;margin-bottom:4px;break-after:avoid;page-break-after:avoid;">' + g[1] + '</div>' +
-      (g[0] === 'exclusions'
-        ? QT_CATS.concat(['__x']).map(function(c){ var its = items.filter(function(x){ var xc = qtCatOf(x); return c === '__x' ? QT_CATS.indexOf(xc) < 0 : xc === c; }); if (!its.length) return ''; return '<div style="break-inside:avoid;page-break-inside:avoid;margin:2px 0 4px;"><div style="font-size:10px;font-weight:600;color:#666;">' + qtEsc(c === '__x' ? 'Other' : c) + '</div><ul style="margin:0;padding-left:18px;line-height:1.5;">' + its.map(function(x){ return '<li>' + qtEsc(x.text) + '</li>'; }).join('') + '</ul></div>'; }).join('')
-        : '<ol style="margin:0;padding-left:18px;line-height:1.5;">' + items.map(function(x){ return '<li>' + qtEsc(x.text) + '</li>'; }).join('') + '</ol>') + '</div>';
+    var items = qtItems(g[0]).filter(function(x){ return x.on; }); if (!items.length) return '';
+    var head = '<div style="font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#1c1c1c;margin-bottom:4px;break-after:avoid;page-break-after:avoid;">' + g[1] + '</div>';
+    if (g[0] !== 'exclusions')
+      return '<div style="break-inside:avoid;page-break-inside:avoid;margin-bottom:10px;">' + head + '<ol style="margin:0;padding-left:18px;line-height:1.5;">' + items.map(function(x){ return '<li>' + qtEsc(x.text) + '</li>'; }).join('') + '</ol></div>';
+    var parts = [], cur = null;
+    items.forEach(function(x){ if (!cur || cur.c !== x.c){ cur = { c:x.c, its:[] }; parts.push(cur); } cur.its.push(x); });
+    return '<div style="margin-bottom:10px;">' + head + parts.map(function(p){ return '<div style="break-inside:avoid;page-break-inside:avoid;margin:2px 0 4px;"><div style="font-size:10px;font-weight:600;color:#666;">' + qtEsc(p.c) + '</div><ul style="margin:0;padding-left:18px;line-height:1.5;">' + p.its.map(function(x){ return '<li>' + qtEsc(x.text) + '</li>'; }).join('') + '</ul></div>'; }).join('') + '</div>';
   }).join('');
   box.innerHTML = html; box.style.display = html ? '' : 'none';
 }
