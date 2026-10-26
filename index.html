@@ -2144,7 +2144,7 @@
               <span id="tm-rate-out" style="display:none;"></span>
             </div>
             <div id="tm-sheet-note" style="margin-top:4px;font-size:10px;color:var(--text3);"></div>
-            <div id="tm-reset-wrap" style="display:none;margin-top:6px;"><button type="button" onclick="tmResetAllLines()" style="font-size:11px;padding:3px 10px;border:1px solid #e8620a;border-radius:var(--radius-sm);background:transparent;color:#e8620a;cursor:pointer;font-family:inherit;font-weight:600;">Reset all lines to this rate</button> <span id="tm-reset-count" style="font-size:10px;color:var(--text3);"></span></div>
+            <div id="tm-reset-wrap" style="margin-top:6px;"><button type="button" id="tm-reset-btn" onclick="tmResetAllLines()" style="font-size:11px;padding:3px 10px;border:1px solid #e8620a;border-radius:var(--radius-sm);background:transparent;color:#e8620a;cursor:pointer;font-family:inherit;font-weight:600;">Reset all lines to this rate</button> <span id="tm-reset-count" style="font-size:10px;color:var(--text3);"></span></div>
             </div>
           </div>
           <!-- Column headers — dynamic, shown per row type via JS -->
@@ -3730,8 +3730,9 @@ function tmRenderBar(){
   if (hr) hr.textContent = r ? ('$' + r.toFixed(2) + '/hr') : '';
   var off = tmSellEls().filter(function(el){ return (el.dataset.tm || '') !== ''; }).length;
   var rw = document.getElementById('tm-reset-wrap'), rc = document.getElementById('tm-reset-count');
-  if (rw) rw.style.display = off ? '' : 'none';
-  if (rc) rc.textContent = off ? (off + ' line' + (off > 1 ? 's' : '') + ' not on the bar rate (Manual or own rate)') : '';
+  var rb = document.getElementById('tm-reset-btn');
+  if (rb){ rb.disabled = !off; rb.style.opacity = off ? '1' : '0.45'; rb.style.cursor = off ? 'pointer' : 'default'; }
+  if (rc) rc.textContent = off ? (off + ' line' + (off > 1 ? 's' : '') + ' not on this rate (Manual or own rate)') : 'All lines are on this rate';
   var note = document.getElementById('tm-sheet-note');
   if (note) note.textContent = 'Applies to every labor line. For a one-off rate on a single line, use its \u22EF button or type the sell rate (Manual).' + (tmSheetKey() === 'sf' ? ' SF Local 6 rates: site in San Francisco + Fire Monitoring & Services.' : '');
 }
