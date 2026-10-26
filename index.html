@@ -1639,6 +1639,19 @@
       <div class="rte-wrap"><div class="rte" contenteditable="true" data-ph="Scope notes, special terms, follow-up items…"></div><textarea id="notes" style="display:none"></textarea></div>
     </div>
 
+    <!-- Inclusions / Exclusions / Clarifications (T&M, Flat Rate, Budget proposals) -->
+    <div class="card" id="qt-card" style="display:none;">
+      <button type="button" onclick="qtToggle()" style="display:flex;align-items:center;gap:8px;background:transparent;border:0;padding:0;cursor:pointer;font-family:inherit;width:100%;text-align:left;">
+        <span id="qt-caret" style="color:#e8620a;font-weight:700;width:10px;">&#9656;</span>
+        <span class="card-title" style="margin:0;">Inclusions, Exclusions &amp; Clarifications</span>
+        <span id="qt-summary" style="font-size:11px;color:var(--text3);margin-left:4px;"></span>
+      </button>
+      <div id="qt-body" style="display:none;margin-top:10px;">
+        <div style="font-size:11px;color:var(--text3);margin-bottom:8px;">Checked items print on the proposal above the signature. Standard items start checked; check others as they apply, or add your own.</div>
+        <div id="qt-lists" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;"></div>
+      </div>
+    </div>
+
     <!-- Monthly Costs -->
     <div class="card" id="monthly-costs-card" style="display:none;">
       <div class="card-title">Monthly costs</div>
@@ -3785,12 +3798,133 @@ function tmQuoteNote(items){
   el.style.display = '';
 }
 
+// ===========================================================================
+// INCLUSIONS / EXCLUSIONS / CLARIFICATIONS (Quote Builder -> proposal)
+// Defaults follow Point 1's Service Proposal Template wording. The master list
+// can be replaced without a code change by P1_RATES.quoteTerms
+// ({inclusions:[{text,on}], exclusions:[...], clarifications:[...]}).
+// Each quote keeps its own copy (checked state + custom items) in data.quoteTerms.
+// Text only: nothing here touches pricing.
+// ===========================================================================
+var QT_DEFAULTS = {
+  inclusions: [
+    { text:'Labor and materials as itemized above', on:true },
+    { text:'Installation, programming, and testing of the work performed', on:true },
+    { text:'Coordination', on:true },
+    { text:'One-year warranty on equipment and labor provided', on:true },
+    { text:'Updated UL Certificate', on:false },
+    { text:'Hosting services', on:false },
+    { text:'Flex conduit', on:false },
+    { text:'Back boxes for devices installed', on:false },
+    { text:'Wiring for devices installed', on:false },
+    { text:'Permits and plan check', on:false }
+  ],
+  exclusions: [
+    { text:'110/120 volt electrical connections', on:true },
+    { text:'Overtime, after-hours, weekend, and holiday work unless quoted', on:true },
+    { text:'Permits, plan check, and AHJ inspection fees', on:true },
+    { text:'Conduit', on:true },
+    { text:'Network hardware and configuration', on:true },
+    { text:'Ceiling, wall, and floor cutting, patching, and painting', on:true },
+    { text:'Drawings, CAD design, and submittals', on:false },
+    { text:'Debris, including but not limited to off-site removal and fees', on:false },
+    { text:'Labeling of junction boxes, conduit, wires, and terminal cabinets', on:false },
+    { text:'Painting of covers and junction boxes', on:false },
+    { text:'Wire hangers and channels above ceiling', on:false },
+    { text:'Fire stopping of raceways and pathways', on:false },
+    { text:'Lift or special equipment rental', on:false },
+    { text:'Fire watch', on:false },
+    { text:'Correction of existing deficiencies found during the work', on:false },
+    { text:'Hazardous material abatement', on:false }
+  ],
+  clarifications: [
+    { text:'Any work, labor, equipment, system, cabling, and/or related items are not included unless specifically described in this proposal.', on:true },
+    { text:'All work is based on the hours of 7:00 AM to 3:30 PM, Monday through Friday (excluding holidays).', on:true },
+    { text:'Point One Electrical Systems shall not be responsible for additional time and costs for items including but not limited to: additional site access restrictions, additional PPE requirements, hazard pay associated with site conditions, or other unforeseen site requirements.', on:true },
+    { text:'Time & Material pricing is an estimate. Billing is for actual hours worked and materials used at the rates shown.', on:true },
+    { text:'Additional work or deficiencies found during service will be quoted separately or performed on a Time & Material basis with Customer approval.', on:true },
+    { text:'Rates follow the service type and time classification on Point 1’s current Time & Material rate sheet.', on:false },
+    { text:'Response times refer to a technician’s arrival on site. Point 1 does not guarantee the time to resolve an issue.', on:false },
+    { text:'Project bonding can be provided at rate, if required.', on:false }
+  ]
+};
+var QT_GROUPS = [['inclusions','Inclusions'],['exclusions','Exclusions'],['clarifications','Clarifications']];
+var QT_TYPES = ['Time & Material Only','Flat Rate Estimate','Budget Estimate'];
+var QT_STATE = null;
+function qtMaster(){
+  var c = (P1_RATES && P1_RATES.quoteTerms) || null, out = {};
+  QT_GROUPS.forEach(function(g){
+    var src = (c && Array.isArray(c[g[0]]) && c[g[0]].length) ? c[g[0]] : QT_DEFAULTS[g[0]];
+    out[g[0]] = src.map(function(x){ return { text:String(x.text||x), on:x.on !== false && x.on !== 0 }; });
+  });
+  return out;
+}
+function qtFresh(){ var m = qtMaster(), st = {}; QT_GROUPS.forEach(function(g){ st[g[0]] = m[g[0]].map(function(x){ return { text:x.text, on:x.on }; }); }); return st; }
+function qtEsc(t){ return String(t).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+function qtApplies(){ var v = ((document.getElementById('systemType')||{}).value||''); return QT_TYPES.indexOf(v) >= 0; }
+function qtToggle(force){
+  var b = document.getElementById('qt-body'), c = document.getElementById('qt-caret'); if (!b) return;
+  var open = force != null ? !!force : b.style.display === 'none';
+  b.style.display = open ? '' : 'none'; if (c) c.innerHTML = open ? '&#9662;' : '&#9656;';
+}
+function qtRender(){
+  if (!QT_STATE) QT_STATE = qtFresh();
+  var card = document.getElementById('qt-card'); if (!card) return;
+  card.style.display = qtApplies() ? '' : 'none';
+  var host = document.getElementById('qt-lists'), sum = document.getElementById('qt-summary');
+  var n = function(k){ return QT_STATE[k].filter(function(x){ return x.on; }).length; };
+  if (sum) sum.textContent = n('inclusions') + ' included · ' + n('exclusions') + ' excluded · ' + n('clarifications') + ' clarifications';
+  if (!host) return;
+  host.innerHTML = QT_GROUPS.map(function(g){
+    var k = g[0];
+    return '<div><div style="font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#e8620a;margin-bottom:6px;">' + g[1] + '</div>' +
+      QT_STATE[k].map(function(x, i){
+        return '<label style="display:flex;gap:6px;align-items:flex-start;font-size:12px;color:var(--text2);margin-bottom:4px;line-height:1.35;cursor:pointer;">' +
+          '<input type="checkbox" data-qt="' + k + '" data-i="' + i + '"' + (x.on ? ' checked' : '') + ' style="margin-top:2px;flex:none;">' +
+          '<span style="flex:1;">' + qtEsc(x.text) + '</span>' +
+          (x.custom ? '<button type="button" data-qtdel="' + k + '" data-i="' + i + '" title="Remove" style="border:0;background:transparent;color:var(--text3);cursor:pointer;font-size:12px;">×</button>' : '') +
+          '</label>';
+      }).join('') +
+      '<div style="display:flex;gap:4px;margin-top:6px;"><input type="text" data-qtnew="' + k + '" placeholder="Add custom item" style="flex:1;min-width:0;font-size:12px;padding:4px 6px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface2);color:var(--text);">' +
+      '<button type="button" data-qtadd="' + k + '" style="font-size:11px;padding:3px 10px;border:1px solid var(--border2);border-radius:var(--radius-sm);background:transparent;color:var(--text2);cursor:pointer;">+ Add</button></div></div>';
+  }).join('');
+  host.querySelectorAll('[data-qt]').forEach(function(cb){ cb.onchange = function(){ QT_STATE[cb.dataset.qt][+cb.dataset.i].on = cb.checked; qtRender(); }; });
+  host.querySelectorAll('[data-qtdel]').forEach(function(b){ b.onclick = function(e){ e.preventDefault(); QT_STATE[b.dataset.qtdel].splice(+b.dataset.i, 1); qtRender(); }; });
+  var add = function(k){ var inp = host.querySelector('[data-qtnew="' + k + '"]'); var t = (inp && inp.value || '').trim(); if (!t) return; QT_STATE[k].push({ text:t, on:true, custom:true }); qtRender(); var again = host.querySelector('[data-qtnew="' + k + '"]'); if (again) again.focus(); };
+  host.querySelectorAll('[data-qtadd]').forEach(function(b){ b.onclick = function(){ add(b.dataset.qtadd); }; });
+  host.querySelectorAll('[data-qtnew]').forEach(function(inp){ inp.onkeydown = function(e){ if (e.key === 'Enter'){ e.preventDefault(); add(inp.dataset.qtnew); } }; });
+}
+function qtInit(){
+  if (!QT_STATE) QT_STATE = qtFresh();
+  var sys = document.getElementById('systemType');
+  if (sys && !sys._qtWired){ sys._qtWired = true; sys.addEventListener('change', qtRender); }
+  qtRender();
+}
+function qtGather(){ return QT_STATE ? JSON.parse(JSON.stringify(QT_STATE)) : null; }
+// A saved quote keeps exactly what it had; quotes saved before this feature start from the defaults.
+function qtRestore(d){
+  QT_STATE = qtFresh();
+  if (d) QT_GROUPS.forEach(function(g){ if (Array.isArray(d[g[0]])) QT_STATE[g[0]] = d[g[0]].map(function(x){ return { text:String(x.text), on:!!x.on, custom:!!x.custom }; }); });
+  qtRender();
+}
+function qtRenderQuote(qSystem){
+  var box = document.getElementById('q-terms-box'); if (!box) return;
+  if (!QT_STATE || QT_TYPES.indexOf(qSystem) < 0){ box.style.display = 'none'; box.innerHTML = ''; return; }
+  var html = QT_GROUPS.map(function(g){
+    var items = QT_STATE[g[0]].filter(function(x){ return x.on; }); if (!items.length) return '';
+    return '<div style="break-inside:avoid;page-break-inside:avoid;margin-bottom:10px;"><div style="font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#1c1c1c;margin-bottom:4px;">' + g[1] + '</div>' +
+      '<ol style="margin:0;padding-left:18px;line-height:1.5;">' + items.map(function(x){ return '<li>' + qtEsc(x.text) + '</li>'; }).join('') + '</ol></div>';
+  }).join('');
+  box.innerHTML = html; box.style.display = html ? '' : 'none';
+}
+
 let P1_RATES = {};  // ← rate values are loaded from Supabase after login (see auth controller at end of file)
 
 // Apply rate-driven defaults to inputs/sliders/selects at load.
 // Writes the SAME values the HTML already has today, so nothing changes now;
 // once P1_RATES is sourced from Supabase, these defaults follow automatically.
 function applyRateDefaults(){
+  if (typeof qtInit === 'function') setTimeout(qtInit, 0);
   if (typeof tmInit === 'function') setTimeout(tmInit, 0);
   function setVal(id, v){ var el = document.getElementById(id); if(el) el.value = v; }
   setVal('laborRateSlider', P1_RATES.laborBillDefault);
@@ -5071,6 +5205,7 @@ function clearSystems() {
 }
 
 function clearForm() {
+  if (typeof qtRestore === 'function') { try { qtRestore(null); } catch(e){} }
   // Reset system and site type dropdowns first
   // Reset budget labor detail toggle
   var budgetLaborCB2 = document.getElementById('budget-show-labor');
@@ -7343,6 +7478,7 @@ function gatherEstimateData() {
   if (typeof slaPmGather === 'function') data.slaPm = slaPmGather();
   if (typeof slaMapGather === 'function') data.slaPriorityMap = slaMapGather();
   if (typeof tmGather === 'function') data.tmRate = tmGather();
+  if (typeof qtGather === 'function') data.quoteTerms = qtGather();
 
   // Active tier
   var activeTierCard = document.querySelector('.sla-tier-card.active');
@@ -7890,6 +8026,7 @@ function restoreEstimateData(data) {
   if (data.slaPm && typeof slaPmRestore === 'function') slaPmRestore(data.slaPm);
   if (typeof slaMapRestore === 'function') slaMapRestore(data.slaPriorityMap || []);
   if (typeof tmRestore === 'function') tmRestore(data.tmRate || null);
+  if (typeof qtRestore === 'function') qtRestore(data.quoteTerms || null);
   if (window.slaRevealAll) setTimeout(window.slaRevealAll, 30);
   if (typeof slaUpdateRunningTotal === 'function') setTimeout(slaUpdateRunningTotal, 50);
 
@@ -9461,6 +9598,7 @@ function generateCustomerQuote() {
     qBudgetDisclaimer.style.display = 'none';
   }
 
+  if (typeof qtRenderQuote === 'function') qtRenderQuote(qSystem);
   // Set authorization text based on estimate type
   var qSigAuthText = document.getElementById('q-sig-auth-text');
   if (qSigAuthText) {
@@ -9727,6 +9865,9 @@ function doIOSPrint() {
     <div id="q-alt-lines" style="font-size:12px;color:#444;"></div>
     <div id="q-alt-note" style="display:none;font-size:10px;color:#777;font-style:italic;margin-top:6px;"></div>
   </div>
+
+  <!-- Inclusions / Exclusions / Clarifications -->
+  <div id="q-terms-box" style="display:none;margin:12px 0;font-size:11px;color:#444;"></div>
 
   <!-- Signature area — shown for T&M only -->
   <div id="q-signature-block" style="display:none;margin:16px 0 8px 0;break-inside:avoid;page-break-inside:avoid;">
