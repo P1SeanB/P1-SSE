@@ -5386,6 +5386,7 @@ function clearForm() {
 
   $('systemType').value = '';
   $('siteType').value = '';
+  if (typeof qtRender === 'function') qtRender();
   updateMonthlyCostsVisibility();
   updateFireFields();
   updateOtherMonthly();
@@ -11378,6 +11379,8 @@ function estTypeSelect(value, label) {
   if (typeof updateAVCommercialChecks==='function') updateAVCommercialChecks();
   if (typeof updateTMSubSliderRange==='function') updateTMSubSliderRange();
   if (typeof updateMatBtnLabel==='function') updateMatBtnLabel();
+  // the hidden input fires no change event, so the checklist card has to be told
+  if (typeof qtRender==='function') qtRender();
   if (typeof calc==='function') calc();
 }
 
