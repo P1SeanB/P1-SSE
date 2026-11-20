@@ -7123,7 +7123,10 @@ function getMatDataAll() {
                      laborHrs:lpHrs, laborRate:lpRate, laborSellRate:lpSell, laborTm:((document.getElementById(base+'-lpsellrate')||{}).dataset||{}).tm||'',
                      pkgSize:pkg.pkgSize, pkgUnit:pkg.pkgUnit, waste:pkg.waste, costBy:pkg.costBy, manualCost:pkg.manualCost,
                      adjQty:mc.adjQty, packages:mc.packages,
-                     lineTotal:mc.jobCost, unitSell:mc.unitSellVal, totalSell:mc.totalSell, image: rowEl._imageData || null });
+                     lineTotal:mc.jobCost, unitSell:mc.unitSellVal, totalSell:mc.totalSell, image: rowEl._imageData || null,
+                     partno: ((document.getElementById(base+'-partno')||{}).value||'').trim(),
+                     mfg: ((document.getElementById(base+'-mfg')||{}).value||'').trim(),
+                     partShow: !!((document.getElementById(base+'-partshow')||{}).checked) });
         // Synthesize the attached labor as a labor item so every consumer
         // (labor totals, labor card, quote labor section, copy summary)
         // picks it up with no special-casing. Flagged `attached` so export
@@ -9534,7 +9537,8 @@ function generateCustomerQuote() {
         const row = document.createElement('div');
         row.style.cssText = 'display:grid;grid-template-columns:1fr auto auto;gap:12px;align-items:baseline;padding:3px 0;border-bottom:1px solid #eee;font-size:12px;';
         const itemUnit = item.unit || 'ea';
-        const n=document.createElement('span'); n.style.color='#444'; n.textContent=item.desc+(itemUnit!=='ea' ? ' ('+item.qty+' ft)' : ' (Qty: '+item.qty+')');
+        var partSuffix = (item.partShow && item.partno) ? (item.mfg ? ('  ·  '+item.mfg+' '+item.partno) : ('  ·  Part # '+item.partno)) : '';
+        const n=document.createElement('span'); n.style.color='#444'; n.textContent=item.desc+partSuffix+(itemUnit!=='ea' ? ' ('+item.qty+' ft)' : ' (Qty: '+item.qty+')');
         const u=document.createElement('span'); u.style.cssText='font-family:monospace;font-size:11px;color:#888;white-space:nowrap;'; u.textContent=money(item.unitSell)+'/'+p1UnitLabel(itemUnit);
         const t=document.createElement('span'); t.style.cssText='font-family:monospace;font-weight:700;white-space:nowrap;'; t.textContent=money(lineBilled);
         row.appendChild(n); row.appendChild(u); row.appendChild(t);
@@ -9769,12 +9773,23 @@ function generateCustomerQuote() {
   // Set authorization text based on estimate type
   var qSigAuthText = document.getElementById('q-sig-auth-text');
   if (qSigAuthText) {
+    // Materials acceptance language keys off what the proposal actually shows:
+    // "part numbers" is only claimed when at least one line is printing its part #,
+    // and the reference-image paragraph only prints when the proposal carries images.
+    var _qMat = (typeof getMatData === 'function') ? getMatData() : [];
+    var _anyPartShown = _qMat.some(function(i){ return i.type==='material' && i.partShow && i.partno; });
+    var _hasRefImages = _qMat.some(function(i){ return i.image; });
+    var _acceptObj = _anyPartShown ? 'materials, equipment, manufacturers, and part numbers' : 'materials, equipment, and manufacturers';
+    var _acceptSentence = ' Customer also acknowledges and accepts the ' + _acceptObj + ' identified in this proposal.';
+    var _refImgPara = _hasRefImages
+      ? '<div style="margin-top:8px;">Reference images are representative and are provided to assist with product identification. Actual product appearance, labeling, packaging, or color may vary by manufacturer or production revision without affecting the specified product&rsquo;s intended function. Where an approved equivalent is permitted in this proposal, Point 1 Electrical Systems may furnish an equivalent product meeting the intended application.</div>'
+      : '';
     if (qSystem === 'Material Only') {
-      qSigAuthText.innerHTML = 'By signing below, customer authorizes Point 1 Electrical Systems to provide the materials described above and agrees to pay upon delivery/completion. <span id="q-sig-expiry"></span>';
+      qSigAuthText.innerHTML = 'By signing below, Customer authorizes Point 1 Electrical Systems to provide the materials described above and agrees to pay upon delivery/completion.' + _acceptSentence + ' <span id="q-sig-expiry"></span>' + _refImgPara;
     } else if (qSystem === 'Flat Rate Estimate') {
-      qSigAuthText.innerHTML = 'By signing below, customer authorizes Point 1 Electrical Systems to perform the services described above at the flat rate prices stated herein and agrees to pay upon completion. The flat rate pricing includes all labor, materials, and associated costs as itemized above. Any work, materials, or services requested outside of the defined scope of this estimate will be quoted separately and require additional written authorization prior to commencement. <span id="q-sig-expiry"></span>';
+      qSigAuthText.innerHTML = 'By signing below, Customer authorizes Point 1 Electrical Systems to perform the services described above at the flat rate prices stated herein and agrees to pay upon completion. The flat rate pricing includes all labor, materials, and associated costs as itemized above.' + _acceptSentence + ' Any work, materials, or services requested outside of the defined scope of this estimate will be quoted separately and require additional written authorization prior to commencement. <span id="q-sig-expiry"></span>' + _refImgPara;
     } else {
-      qSigAuthText.innerHTML = 'By signing below, customer authorizes Point 1 Electrical Systems to perform the Time &amp; Material services described above and agrees to pay upon completion. Any additional time &amp; material needed outside of this scope will be billed at the Point 1 Time &amp; Material rate. <span id="q-sig-expiry"></span>';
+      qSigAuthText.innerHTML = 'By signing below, Customer authorizes Point 1 Electrical Systems to perform the Time &amp; Material services described above and agrees to pay upon completion.' + _acceptSentence + ' Any additional time &amp; material needed outside this scope will be billed at the Point 1 Time &amp; Material rate. <span id="q-sig-expiry"></span>' + _refImgPara;
     }
   }
   // Expiry date for T&M and Flat Rate
@@ -15585,7 +15600,14 @@ document.addEventListener('click', function(e){
     var anchor=labels.children[2];                 // each goes straight after Unit Cost,
     labels.insertBefore(lab('Quote #',base+'-lq'), anchor.nextSibling);   // so insert backwards
     labels.insertBefore(lab('Source', base+'-ls'), anchor.nextSibling);
-    labels.insertBefore(lab('Part #', base+'-lpn'),anchor.nextSibling);
+    // Part # label carries a checkbox: tick it to print this part # on the generated proposal.
+    var pnLab=document.createElement('label'); pnLab.id=base+'-lpn';
+    pnLab.style.cssText=lS+'display:flex;align-items:center;justify-content:center;gap:3px;cursor:pointer;';
+    pnLab.title='Check to print this part # on the generated proposal';
+    var pshow=document.createElement('input'); pshow.type='checkbox'; pshow.id=base+'-partshow';
+    pshow.style.cssText='margin:0;width:11px;height:11px;cursor:pointer;accent-color:#e8620a;flex:0 0 auto;';
+    pnLab.appendChild(pshow); pnLab.appendChild(document.createTextNode('Part #'));
+    labels.insertBefore(pnLab, anchor.nextSibling);
     labels.insertBefore(lab('Vendor', base+'-lv'), anchor.nextSibling);
 
     var iS='font-size:11px;padding:4px 5px;border:1px solid var(--border);border-radius:var(--radius-sm);'
@@ -15730,11 +15752,13 @@ document.addEventListener('click', function(e){
     var o={};
     FIELDS.forEach(function(k){ var v=val(base,k); if(v) o[k]=v; });
     var s=srcOf(base); if(s) o.srctype=s;
+    var ps=document.getElementById(base+'-partshow'); if(ps && ps.checked) o.partshow='1';
     return Object.keys(o).length ? o : null;
   }
   function writeRow(base,o){
     if(!o) return;
     FIELDS.forEach(function(k){ if(o[k]!=null){ var e=g(base,k); if(e) e.value=o[k]; } });
+    var psb=document.getElementById(base+'-partshow'); if(psb) psb.checked = (o.partshow==='1' || o.partshow===true);
     var vs=g(base,'vendor');
     if(vs && o.vendor){ var r=resolve(o.vendor); if(r){ vs.value=r; } }   // alias-tolerant
     // the source type lives on the inline select, not a field named srctype
