@@ -3119,7 +3119,7 @@
               <div class="sla-rmr-val" style="flex:1;"><input type="number" id="sla-rmr-pm" placeholder="0" min="0" step="0.5" oninput="slaBudgetCalc()" style="font-family:'DM Mono',monospace;font-size:18px;font-weight:500;"></div>
               <div style="font-size:10px;color:var(--text3);white-space:nowrap;">hrs / visit</div>
             </div>
-            <div class="sla-rmr-sub" id="sla-pm-calc-sub">Billed separately · General straight time</div>
+            <div class="sla-rmr-sub" id="sla-pm-calc-sub">Included in the SLA rate · General straight time</div>
           </div>
         </div>
 
@@ -3172,7 +3172,7 @@
           <div>Annual service budget &nbsp;<strong id="sla-bud-total">$0.00</strong></div>
           <div class="sla-bud-min na" id="sla-bud-min">Budget optional for Essential</div>
         </div>
-        <div style="font-size:10px;color:var(--text3);margin-top:6px;line-height:1.5;">The hours above only size the budget. Service is drawn down at the rate sheet rate for each call&rsquo;s request type and time classification, whatever the actual mix. Unused budget is forfeited at the end of each agreement year. PM labor is billed separately and never counts against the budget.</div>
+        <div style="font-size:10px;color:var(--text3);margin-top:6px;line-height:1.5;">The hours above only size the budget. Service is drawn down at the rate sheet rate for each call&rsquo;s request type and time classification, whatever the actual mix. Unused budget is forfeited at the end of each agreement year. PM labor is included in the annual commitment and never counts against the budget.</div>
         <!-- Rate reference note -->
         <div class="sla-rate-note">
           <strong>Rate sheet:</strong>
@@ -10609,9 +10609,9 @@ function slaCalcSLARate(svcBudget) {
   var pmSub = document.getElementById('sla-pm-calc-sub');
   if (pmSub) {
     if (pmHrs > 0) {
-      pmSub.textContent = visitCount + ' visit' + (visitCount > 1 ? 's' : '') + ' \u00D7 ' + pmHrs + ' hrs \u00D7 ' + slaMoney(pmStraightRate) + ' = ' + slaMoney(pmVal) + ' \u00B7 billed separately';
+      pmSub.textContent = visitCount + ' visit' + (visitCount > 1 ? 's' : '') + ' \u00D7 ' + pmHrs + ' hrs \u00D7 ' + slaMoney(pmStraightRate) + ' = ' + slaMoney(pmVal) + ' \u00B7 included in the SLA rate';
     } else {
-      pmSub.textContent = 'Hrs/visit \u00D7 ' + visitCount + ' visit' + (visitCount > 1 ? 's' : '') + ' \u00D7 ' + slaMoney(pmStraightRate) + '/hr General ST \u00B7 billed separately';
+      pmSub.textContent = 'Hrs/visit \u00D7 ' + visitCount + ' visit' + (visitCount > 1 ? 's' : '') + ' \u00D7 ' + slaMoney(pmStraightRate) + '/hr General ST \u00B7 included in the SLA rate';
     }
   }
 
@@ -11449,7 +11449,7 @@ function parseDollar(s) {
 
 // ── Shared data for the SLA proposal + agreement (all pricing from the T&M rate sheet) ──
 var SLA_BUDGET_CLAUSE = 'The Annual Service Budget is based on a recommended mix of service hours for planning purposes only. Actual service will be billed against the budget at the T&amp;M rates in effect for the request type (General, Expedited, Emergency) and time classification of each call. Any unused budget is forfeited at the end of each agreement year. Service beyond the budget is billed at the published T&amp;M rates, and all package benefits remain in effect.';
-var SLA_PM_CLAUSE = 'Preventive maintenance labor is billed separately from the Annual Service Budget and does not draw down the budget.';
+var SLA_PM_CLAUSE = 'Preventive maintenance labor is included in the annual commitment and does not draw down the Annual Service Budget.';
 var SLA_EARLY_TERM_CLAUSE = 'If this Agreement is terminated before the end of an agreement year, any service used beyond the budget amount paid to date will be billed at the published T&amp;M rates.';
 function slaClassText(sheetKey){
   return sheetKey === 'sf'
@@ -11712,8 +11712,8 @@ function generateSLAProposal() {
     }
     if (pmTotal > 0) {
       budgetRows += D.showAmts
-        ? '<div class="q-service-row"><div class="q-service-name">Preventive Maintenance Labor <span style="color:#888;font-size:10px;">('+pmVisits+' visit'+(pmVisits===1?'':'s')+' × '+pmHrsNum+' hrs · billed separately)</span></div><div class="q-service-price">'+slaMoney(pmTotal)+'</div></div>'
-        : '<div class="q-service-row"><div class="q-service-name">Preventive Maintenance Labor <span style="color:#888;font-size:10px;">('+pmVisits+' visit'+(pmVisits===1?'':'s')+' × '+pmHrsNum+' hrs · separate from the service budget)</span></div><div class="q-service-price">'+(pmVisits*pmHrsNum)+' hrs</div></div>';
+        ? '<div class="q-service-row"><div class="q-service-name">Preventive Maintenance Labor <span style="color:#888;font-size:10px;">('+pmVisits+' visit'+(pmVisits===1?'':'s')+' × '+pmHrsNum+' hrs · included in the annual commitment)</span></div><div class="q-service-price">'+slaMoney(pmTotal)+'</div></div>'
+        : '<div class="q-service-row"><div class="q-service-name">Preventive Maintenance Labor <span style="color:#888;font-size:10px;">('+pmVisits+' visit'+(pmVisits===1?'':'s')+' × '+pmHrsNum+' hrs · included in the annual commitment)</span></div><div class="q-service-price">'+(pmVisits*pmHrsNum)+' hrs</div></div>';
     }
     if (D.mat > 0) {
       budgetRows += '<div class="q-service-row"><div class="q-service-name">Materials Allowance</div><div class="q-service-price">'+(D.showAmts ? slaMoney(D.mat) : 'Included')+'</div></div>';
@@ -11965,10 +11965,10 @@ function generateSLAPrint() {
       : '<tr style="border-top:1.5px solid #1c1c1c;"><td style="font-weight:700;">Annual Service Budget &mdash; total hours</td><td style="text-align:right;font-weight:700;">'+D.totalHrs+' hrs</td></tr>';
   }
   var otherRows = D.showAmts
-    ? '<tr><td>Preventive Maintenance Labor (billed separately)</td><td style="text-align:center;">'+(pmHrsNum>0 ? (pmVisits+' × '+pmHrsNum+' hrs') : '—')+'</td><td style="text-align:right;">'+fmt(D.pmRate)+' / hr</td><td style="text-align:right;">'+pmTotalFmt+'</td></tr>' +
+    ? '<tr><td>Preventive Maintenance Labor (included in the annual commitment)</td><td style="text-align:center;">'+(pmHrsNum>0 ? (pmVisits+' × '+pmHrsNum+' hrs') : '—')+'</td><td style="text-align:right;">'+fmt(D.pmRate)+' / hr</td><td style="text-align:right;">'+pmTotalFmt+'</td></tr>' +
       (D.mat > 0 ? '<tr><td><span class="fa-bcat-dot" style="background:#1a4a8a;"></span>Materials Allowance</td><td style="text-align:center;">—</td><td></td><td style="text-align:right;">'+matAmt+'</td></tr>' : '') +
       (D.susp > 0 ? '<tr><td><span class="fa-bcat-dot" style="background:#5a3a8a;"></span>SUSP / License</td><td style="text-align:center;">—</td><td></td><td style="text-align:right;">'+suspAmt+'</td></tr>' : '')
-    : (pmHrsNum>0 ? '<tr><td>Preventive Maintenance Labor (separate from the service budget) &middot; '+pmVisits+' visit'+(pmVisits===1?'':'s')+' &times; '+pmHrsNum+' hrs</td><td style="text-align:right;">'+(pmVisits*pmHrsNum)+' hrs</td></tr>' : '') +
+    : (pmHrsNum>0 ? '<tr><td>Preventive Maintenance Labor (included in the annual commitment) &middot; '+pmVisits+' visit'+(pmVisits===1?'':'s')+' &times; '+pmHrsNum+' hrs</td><td style="text-align:right;">'+(pmVisits*pmHrsNum)+' hrs</td></tr>' : '') +
       (D.mat > 0 ? '<tr><td><span class="fa-bcat-dot" style="background:#1a4a8a;"></span>Materials Allowance</td><td style="text-align:right;">Included</td></tr>' : '') +
       (D.susp > 0 ? '<tr><td><span class="fa-bcat-dot" style="background:#5a3a8a;"></span>SUSP / License</td><td style="text-align:right;">Included</td></tr>' : '');
   var budgetHead = D.showAmts
