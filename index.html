@@ -3159,6 +3159,12 @@
               <td style="background:var(--surface2);"></td>
               <td><input type="text" class="sla-budget-mat-total" id="sla-bud-mat-amt" placeholder="$0.00" oninput="slaBudgetCalc()" onblur="slaFormatCurrency(this)"></td>
             </tr>
+            <tr>
+              <td class="sla-budget-cat"><div class="sla-budget-dot" style="background:#5a3a8a;"></div>SUSP / License</td>
+              <td style="background:var(--surface2);color:var(--text3);font-size:11px;font-style:italic;padding:7px 10px;">Annual software subscription / license &middot; not part of the service budget</td>
+              <td style="background:var(--surface2);"></td>
+              <td><input type="text" class="sla-budget-mat-total" id="sla-bud-susp-amt" placeholder="$0.00" oninput="slaBudgetCalc()" onblur="slaFormatCurrency(this)"></td>
+            </tr>
           </tbody>
         </table>
         <label style="display:inline-flex;align-items:center;gap:8px;font-size:12px;color:var(--text);margin-top:8px;cursor:pointer;"><input type="checkbox" id="sla-show-budget-amts" checked style="accent-color:#e8620a;"> Show budget rates &amp; dollar amounts on the proposal and agreement <span style="color:var(--text3);">(off = hours only)</span></label>
@@ -7615,7 +7621,7 @@ function gatherEstimateData() {
 
   // ── SLA Creator data ──
   var slaFields = ['sla-agr-num','sla-agr-date','sla-cs-acct','sla-rmr-monthly','sla-rmr-pm',
-    'sla-bud-gen-hrs','sla-bud-exp-hrs','sla-bud-emg-hrs','sla-bud-mat-amt',
+    'sla-bud-gen-hrs','sla-bud-exp-hrs','sla-bud-emg-hrs','sla-bud-mat-amt','sla-bud-susp-amt',
     'sla-start-date','sla-end-date','sla-custom-months','sla-notes'];
   data.slaFields = {};
   slaFields.forEach(function(id) {
@@ -10526,6 +10532,10 @@ function slaMaterialsAmt(){
   var el = document.getElementById('sla-bud-mat-amt');
   return el ? (parseFloat((el.value||'').replace(/[^0-9.]/g,'')) || 0) : 0;
 }
+function slaSuspAmt(){
+  var el = document.getElementById('sla-bud-susp-amt');
+  return el ? (parseFloat((el.value||'').replace(/[^0-9.]/g,'')) || 0) : 0;
+}
 
 // Stop proposal/agreement generation when a required budget is below the package minimum.
 function slaGuardBudget(){
@@ -10606,7 +10616,8 @@ function slaCalcSLARate(svcBudget) {
   }
 
   var matVal = slaMaterialsAmt();
-  var annualTotal = pmVal + (svcBudget || 0) + matVal;
+  var suspVal = slaSuspAmt();
+  var annualTotal = pmVal + (svcBudget || 0) + matVal + suspVal;
   if (annualTotal <= 0) return;
 
   // Convert annual total to monthly base, then display per selected frequency
@@ -10966,7 +10977,7 @@ function slaClearNonCustomer() {
 
   ['sla-agr-num','sla-agr-date',
    'sla-rmr-monthly','sla-rmr-pm',
-   'sla-bud-gen-hrs','sla-bud-exp-hrs','sla-bud-emg-hrs','sla-bud-mat-amt',
+   'sla-bud-gen-hrs','sla-bud-exp-hrs','sla-bud-emg-hrs','sla-bud-mat-amt','sla-bud-susp-amt',
    'sla-start-date','sla-end-date','sla-custom-months','sla-notes'].forEach(function(id) {
     var el = document.getElementById(id);
     if (el) el.value = '';
@@ -11454,11 +11465,12 @@ function slaDocData(){
   var rows = slaBudgetRows();
   var svcBudget = rows.reduce(function(a,r){ return a + r.amt; }, 0);
   var mat = slaMaterialsAmt();
+  var susp = slaSuspAmt();
   var sheetKey = (slaRateSource() === 'sheet' && slaSheetKey() === 'sf' && P1_RATES.tmRateSheet.sf && P1_RATES.tmRateSheet.sf.length) ? 'sf' : 'standard';
   return {
     pkg: pkg, pmHrs: pmHrs, pmVisits: pmVisits, pmRate: pmRate, pmTotal: pmHrs * pmVisits * pmRate,
     rows: rows, usedRows: rows.filter(function(r){ return r.hrs > 0; }),
-    svcBudget: svcBudget, mat: mat,
+    svcBudget: svcBudget, mat: mat, susp: susp,
     sheetKey: sheetKey, sheetName: slaSheetName(sheetKey),
     periods: slaTermPeriods(), pastSheet: slaTermExtendsPastSheet(),
     map: slaMapGather(),
@@ -11688,7 +11700,7 @@ function generateSLAProposal() {
   }
 
   // Annual Service Budget
-  if (D.svcBudget > 0 || pmTotal > 0 || D.mat > 0) {
+  if (D.svcBudget > 0 || pmTotal > 0 || D.mat > 0 || D.susp > 0) {
     var budgetRows = '';
     D.usedRows.forEach(function(r){
       budgetRows += D.showAmts
@@ -11705,6 +11717,9 @@ function generateSLAProposal() {
     }
     if (D.mat > 0) {
       budgetRows += '<div class="q-service-row"><div class="q-service-name">Materials Allowance</div><div class="q-service-price">'+(D.showAmts ? slaMoney(D.mat) : 'Included')+'</div></div>';
+    }
+    if (D.susp > 0) {
+      budgetRows += '<div class="q-service-row"><div class="q-service-name">SUSP / License</div><div class="q-service-price">'+(D.showAmts ? slaMoney(D.susp) : 'Included')+'</div></div>';
     }
     html += '<div class="q-section">' +
       '<div class="q-section-title">Annual Service Budget</div>' +
@@ -11852,6 +11867,7 @@ function generateSLAPrint() {
   var perInvoice   = billing==='quarterly' ? monthlyBase*3 : monthlyBase;
   var totalAnnual  = Math.round(perInvoice*100)/100 * (billing==='quarterly' ? 4 : 12);
   var matAmt       = D.mat > 0 ? fmt(D.mat) : '—';
+  var suspAmt      = D.susp > 0 ? fmt(D.susp) : '—';
 
   // ── Systems ──
   var sysCards = Array.from(document.querySelectorAll('.sla-sys-card.active'));
@@ -11950,9 +11966,11 @@ function generateSLAPrint() {
   }
   var otherRows = D.showAmts
     ? '<tr><td>Preventive Maintenance Labor (billed separately)</td><td style="text-align:center;">'+(pmHrsNum>0 ? (pmVisits+' × '+pmHrsNum+' hrs') : '—')+'</td><td style="text-align:right;">'+fmt(D.pmRate)+' / hr</td><td style="text-align:right;">'+pmTotalFmt+'</td></tr>' +
-      (D.mat > 0 ? '<tr><td><span class="fa-bcat-dot" style="background:#1a4a8a;"></span>Materials Allowance</td><td style="text-align:center;">—</td><td></td><td style="text-align:right;">'+matAmt+'</td></tr>' : '')
+      (D.mat > 0 ? '<tr><td><span class="fa-bcat-dot" style="background:#1a4a8a;"></span>Materials Allowance</td><td style="text-align:center;">—</td><td></td><td style="text-align:right;">'+matAmt+'</td></tr>' : '') +
+      (D.susp > 0 ? '<tr><td><span class="fa-bcat-dot" style="background:#5a3a8a;"></span>SUSP / License</td><td style="text-align:center;">—</td><td></td><td style="text-align:right;">'+suspAmt+'</td></tr>' : '')
     : (pmHrsNum>0 ? '<tr><td>Preventive Maintenance Labor (separate from the service budget) &middot; '+pmVisits+' visit'+(pmVisits===1?'':'s')+' &times; '+pmHrsNum+' hrs</td><td style="text-align:right;">'+(pmVisits*pmHrsNum)+' hrs</td></tr>' : '') +
-      (D.mat > 0 ? '<tr><td><span class="fa-bcat-dot" style="background:#1a4a8a;"></span>Materials Allowance</td><td style="text-align:right;">Included</td></tr>' : '');
+      (D.mat > 0 ? '<tr><td><span class="fa-bcat-dot" style="background:#1a4a8a;"></span>Materials Allowance</td><td style="text-align:right;">Included</td></tr>' : '') +
+      (D.susp > 0 ? '<tr><td><span class="fa-bcat-dot" style="background:#5a3a8a;"></span>SUSP / License</td><td style="text-align:right;">Included</td></tr>' : '');
   var budgetHead = D.showAmts
     ? '<thead><tr><th style="width:40%">Item</th><th style="width:16%;text-align:center;">Hours</th><th style="text-align:right;">Rate</th><th style="text-align:right;">Annual Amount</th></tr></thead>'
     : '<thead><tr><th style="width:75%">Item</th><th style="text-align:right;">Hours</th></tr></thead>';
@@ -11972,7 +11990,7 @@ function generateSLAPrint() {
     : 'Unscheduled service &amp; repair is billed on a time-and-materials basis at the following published T&amp;M rates ('+D.sheetName+' rate sheet):';
 
   html += '<div class="fa-section"><div class="fa-section-head"><span class="fa-section-num">§3</span><span class="fa-section-title">Service Fees &amp; Annual Service Budget</span></div>' +
-    '<p class="fa-body">The recurring SLA fee is billed on a <strong>'+billingLbl.toLowerCase()+'</strong> basis and covers '+(function(){ var parts=[]; if(D.svcBudget>0) parts.push('the Annual Service Budget'); parts.push('preventive maintenance labor'); if(D.mat>0) parts.push('the materials allowance'); return parts.length>2 ? parts.slice(0,-1).join(', ')+', and '+parts[parts.length-1] : parts.join(' and '); })()+', as set forth below.'+(D.svcBudget > 0 ? ' '+SLA_BUDGET_CLAUSE : '')+'</p>' +
+    '<p class="fa-body">The recurring SLA fee is billed on a <strong>'+billingLbl.toLowerCase()+'</strong> basis and covers '+(function(){ var parts=[]; if(D.svcBudget>0) parts.push('the Annual Service Budget'); parts.push('preventive maintenance labor'); if(D.mat>0) parts.push('the materials allowance'); if(D.susp>0) parts.push('the software subscription / license'); return parts.length>2 ? parts.slice(0,-1).join(', ')+', and '+parts[parts.length-1] : parts.join(' and '); })()+', as set forth below.'+(D.svcBudget > 0 ? ' '+SLA_BUDGET_CLAUSE : '')+'</p>' +
     (slaRateNum > 0 ?
       '<div style="display:flex;gap:10px;margin-bottom:10px;">' +
         '<div style="flex:1;background:#f7f7f5;border:1px solid #e0e0e0;border-radius:4px;padding:10px 14px;">' +
